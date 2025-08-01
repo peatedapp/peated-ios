@@ -1,0 +1,36 @@
+import Foundation
+import OpenAPIRuntime
+import OpenAPIURLSession
+import HTTPTypes
+
+/// Main API client for Peated
+public actor APIClient {
+    private let client: Client
+    private let transport: URLSessionTransport
+    
+    public init(serverURL: URL, configuration: URLSessionTransport.Configuration = .init()) {
+        self.transport = URLSessionTransport(configuration: configuration)
+        
+        // Configure date transcoding to handle various date formats
+        let runtimeConfiguration = OpenAPIRuntime.Configuration(
+            dateTranscoder: CustomDateTranscoder()
+        )
+        
+        // Add auth middleware
+        let authMiddleware = AuthMiddleware()
+        
+        self.client = Client(
+            serverURL: serverURL,
+            configuration: runtimeConfiguration,
+            transport: transport,
+            middlewares: [authMiddleware]
+        )
+    }
+    
+    /// Get the underlying generated client for direct access
+    public var generatedClient: Client {
+        client
+    }
+    
+    // Add convenience methods here as needed
+}
