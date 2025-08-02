@@ -1,5 +1,5 @@
 import Foundation
-import OpenAPIRuntime
+import PeatedAPI
 import HTTPTypes
 
 struct AuthMiddleware: ClientMiddleware {

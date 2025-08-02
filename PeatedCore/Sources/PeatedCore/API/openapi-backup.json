@@ -1,0 +1,928 @@
+{
+  "info": {
+    "title": "Peated API",
+    "version": "1.0.0",
+    "description": "The Peated API"
+  },
+  "servers": [
+    {
+      "url": "/v1"
+    }
+  ],
+  "openapi": "3.1.0",
+  "paths": {
+    "/admin/queue/info": {
+      "get": {}
+    },
+    "/ai/bottle-lookup": {
+      "post": {}
+    },
+    "/ai/country-lookup": {
+      "post": {}
+    },
+    "/ai/entity-lookup": {
+      "post": {}
+    },
+    "/ai/extract-labels": {
+      "post": {}
+    },
+    "/ai/region-lookup": {
+      "post": {}
+    },
+    "/auth/login": {
+      "post": {}
+    },
+    "/auth/me": {
+      "get": {}
+    },
+    "/auth/register": {
+      "post": {}
+    },
+    "/auth/magic-link/confirm": {
+      "post": {}
+    },
+    "/auth/magic-link": {
+      "post": {}
+    },
+    "/auth/password-reset/confirm": {
+      "post": {}
+    },
+    "/auth/password-reset": {
+      "post": {}
+    },
+    "/badges/{badge}": {
+      "get": {},
+      "patch": {}
+    },
+    "/badges": {
+      "get": {},
+      "post": {}
+    },
+    "/badges/{badge}/users": {
+      "get": {}
+    },
+    "/badges/{badge}/image": {
+      "post": {}
+    },
+    "/bottles/{bottle}": {
+      "get": {},
+      "patch": {},
+      "delete": {}
+    },
+    "/bottles": {
+      "get": {},
+      "post": {},
+      "put": {}
+    },
+    "/bottles/{bottle}/merge-targets": {
+      "post": {}
+    },
+    "/bottles/validations": {
+      "post": {}
+    },
+    "/bottles/{bottle}/similar": {
+      "get": {}
+    },
+    "/bottles/{bottle}/tags": {
+      "get": {}
+    },
+    "/bottles/{bottle}/suggested-tags": {
+      "get": {}
+    },
+    "/bottles/{bottle}/image": {
+      "post": {}
+    },
+    "/bottles/unmatched": {
+      "get": {}
+    },
+    "/bottles/{bottle}/prices": {
+      "get": {}
+    },
+    "/bottles/{bottle}/price-history": {
+      "get": {}
+    },
+    "/bottle-aliases": {
+      "get": {},
+      "put": {}
+    },
+    "/bottle-aliases/{alias}": {
+      "patch": {},
+      "delete": {}
+    },
+    "/bottle-releases/{release}": {
+      "get": {},
+      "patch": {},
+      "delete": {}
+    },
+    "/bottles/{bottle}/releases": {
+      "get": {}
+    },
+    "/bottle-releases": {
+      "post": {}
+    },
+    "/bottle-series/{series}": {
+      "get": {},
+      "patch": {},
+      "delete": {}
+    },
+    "/bottle-series": {
+      "get": {},
+      "post": {}
+    },
+    "/changes": {
+      "get": {}
+    },
+    "/users/{user}/collections": {
+      "get": {}
+    },
+    "/users/{user}/collections/{collection}/bottles": {
+      "post": {},
+      "delete": {},
+      "get": {}
+    },
+    "/tastings/{tasting}/comments": {
+      "post": {}
+    },
+    "/comments/{comment}": {
+      "delete": {}
+    },
+    "/comments": {
+      "get": {}
+    },
+    "/countries/{country}": {
+      "get": {},
+      "patch": {}
+    },
+    "/countries": {
+      "get": {}
+    },
+    "/countries/categories": {
+      "get": {}
+    },
+    "/email/resend-verification": {
+      "post": {}
+    },
+    "/email/verify": {
+      "post": {}
+    },
+    "/entities/{entity}": {
+      "get": {},
+      "patch": {},
+      "delete": {}
+    },
+    "/entities": {
+      "get": {},
+      "post": {}
+    },
+    "/entities/{entity}/merge": {
+      "post": {}
+    },
+    "/entities/{entity}/aliases": {
+      "get": {}
+    },
+    "/entity-aliases/{name}": {
+      "delete": {}
+    },
+    "/entities/{entity}/categories": {
+      "get": {}
+    },
+    "/events/{event}": {
+      "get": {},
+      "patch": {}
+    },
+    "/events": {
+      "get": {},
+      "post": {}
+    },
+    "/external-sites": {
+      "get": {},
+      "post": {}
+    },
+    "/external-sites/{site}": {
+      "get": {},
+      "patch": {}
+    },
+    "/external-sites/{site}/trigger": {
+      "post": {}
+    },
+    "/external-sites/{site}/config/{key}": {
+      "get": {},
+      "put": {}
+    },
+    "/flights/{flight}": {
+      "get": {},
+      "patch": {},
+      "delete": {}
+    },
+    "/flights": {
+      "get": {},
+      "post": {}
+    },
+    "/friends/{user}": {
+      "put": {},
+      "delete": {}
+    },
+    "/friends": {
+      "get": {}
+    },
+    "/smws/distillers": {
+      "get": {}
+    },
+    "/notifications/count": {
+      "get": {}
+    },
+    "/notifications/{notification}": {
+      "delete": {},
+      "patch": {}
+    },
+    "/notifications": {
+      "get": {}
+    },
+    "/prices": {
+      "get": {}
+    },
+    "/prices/{price}": {
+      "patch": {}
+    },
+    "/external-sites/{site}/prices": {
+      "post": {}
+    },
+    "/price-changes": {
+      "get": {}
+    },
+    "/countries/{country}/regions/{region}": {
+      "get": {},
+      "patch": {},
+      "delete": {}
+    },
+    "/countries/{country}/regions": {
+      "get": {},
+      "post": {}
+    },
+    "/reviews": {
+      "get": {},
+      "post": {}
+    },
+    "/reviews/{review}": {
+      "patch": {}
+    },
+    "/": {
+      "get": {}
+    },
+    "/search": {
+      "get": {}
+    },
+    "/stats": {
+      "get": {}
+    },
+    "/tags/{tag}": {
+      "get": {},
+      "patch": {}
+    },
+    "/tags": {
+      "post": {},
+      "get": {}
+    },
+    "/tastings/{tasting}": {
+      "get": {},
+      "patch": {},
+      "delete": {}
+    },
+    "/tastings": {
+      "get": {},
+      "post": {}
+    },
+    "/tastings/{tasting}/image": {
+      "post": {},
+      "delete": {}
+    },
+    "/tastings/{tasting}/toast": {
+      "post": {}
+    },
+    "/users/{user}": {
+      "get": {
+        "operationId": "users_details",
+        "summary": "Get user details",
+        "description": "Retrieve user profile information including statistics for tastings, bottles, and contributions",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "const": "me"
+                },
+                {
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "number",
+                      "readOnly": true,
+                      "description": "Unique identifier for the user"
+                    },
+                    "username": {
+                      "type": "string",
+                      "minLength": 1,
+                      "description": "Unique username for the user"
+                    },
+                    "pictureUrl": {
+                      "default": null,
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ],
+                      "readOnly": true,
+                      "description": "URL to the user's profile picture"
+                    },
+                    "private": {
+                      "default": false,
+                      "type": "boolean",
+                      "description": "Whether the user's profile is private"
+                    },
+                    "email": {
+                      "type": "string",
+                      "format": "email",
+                      "description": "User's email address"
+                    },
+                    "verified": {
+                      "type": "boolean",
+                      "readOnly": true,
+                      "description": "Whether the user's email is verified"
+                    },
+                    "admin": {
+                      "type": "boolean",
+                      "description": "Whether the user has admin privileges"
+                    },
+                    "mod": {
+                      "type": "boolean",
+                      "description": "Whether the user has moderator privileges"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "readOnly": true,
+                      "description": "Timestamp when the user account was created"
+                    },
+                    "friendStatus": {
+                      "enum": [
+                        "pending",
+                        "friends",
+                        "none"
+                      ],
+                      "description": "Friendship status with the current user",
+                      "readOnly": true
+                    },
+                    "stats": {
+                      "type": "object",
+                      "properties": {
+                        "tastings": {
+                          "type": "number"
+                        },
+                        "bottles": {
+                          "type": "number"
+                        },
+                        "collected": {
+                          "type": "number"
+                        },
+                        "contributions": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "tastings",
+                        "bottles",
+                        "collected",
+                        "contributions"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "username",
+                    "stats"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "BAD_REQUEST"
+                        },
+                        "status": {
+                          "const": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Bad Request."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNAUTHORIZED"
+                        },
+                        "status": {
+                          "const": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "FORBIDDEN"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Forbidden."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "NOT_FOUND"
+                        },
+                        "status": {
+                          "const": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "The resource was not found."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "CONFLICT"
+                        },
+                        "status": {
+                          "const": 409
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Conflict."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "PAYLOAD_TOO_LARGE"
+                        },
+                        "status": {
+                          "const": 413
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Payload too large."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "INTERNAL_SERVER_ERROR"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Internal server error."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "METHOD_NOT_ALLOWED"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Method not allowed."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNPROCESSABLE_ENTITY"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unprocessable entity."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {}
+    },
+    "/users": {
+      "get": {}
+    },
+    "/users/{user}/avatar": {
+      "post": {}
+    },
+    "/users/{user}/badges": {
+      "get": {}
+    },
+    "/users/{user}/flavors": {
+      "get": {}
+    },
+    "/users/{user}/regions": {
+      "get": {}
+    },
+    "/users/{user}/tags": {
+      "get": {}
+    },
+    "/version": {
+      "get": {}
+    }
+  }
+}

@@ -1,6 +1,5 @@
 import Foundation
-import OpenAPIRuntime
-import OpenAPIURLSession
+import PeatedAPI
 import HTTPTypes
 
 /// Main API client for Peated

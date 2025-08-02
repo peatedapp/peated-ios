@@ -2,862 +2,410 @@
 
 ## Overview
 
-The Profile screen serves as the user's personal dashboard, showcasing their whisky journey through statistics, achievements, recent activity, and social connections. It also provides access to settings and account management.
+The Profile screen serves as the user's personal dashboard, showcasing their whisky journey through statistics, achievements, and activity. Based on the production design, it emphasizes visual hierarchy with prominent stats and a clean, scannable layout.
 
 ## Visual Layout
 
 ```
 ┌─────────────────────────────────────────┐
-│  Profile                           ⚙️   │
+│  Profile                           🚪   │
 ├─────────────────────────────────────────┤
 │                                         │
-│       [Avatar]                          │
-│    John Smith                           │
-│    @johnsmith                           │
+│            [Avatar]                     │
+│         @dcramer                        │
+│      dcramer@gmail.com                  │
 │                                         │
-│  ┌─────────────┬─────────────────┐     │
-│  │  Following  │    Followers     │     │
-│  │     127     │       89         │     │
-│  └─────────────┴─────────────────┘     │
+│         [🛡️ Admin]                      │
 │                                         │
-│  "Exploring the world of whisky,        │
-│   one dram at a time 🥃"               │
+│  ┌───────┬───────┬───────┬──────────┐  │
+│  │  177  │  159  │  28   │   126k   │  │
+│  │Tastings│Bottles│Collected│Contributions│
+│  └───────┴───────┴───────┴──────────┘  │
 │                                         │
+│  Achievements                           │
 │  ┌─────────────────────────────────┐   │
-│  │        Edit Profile             │   │
+│  │ 🍃 Single Malter    Level 11    │   │
+│  │ 🔥 Bourbon Lover    Level 5     │   │
+│  │ 🗺️ Explorer         Level 3     │   │
 │  └─────────────────────────────────┘   │
 │                                         │
-│  ─────────────────────────────────      │
-│                                         │
-│  Statistics                             │
-│  ┌───────┬───────┬───────┬───────┐     │
-│  │  234  │  89   │  4.2  │  12   │     │
-│  │Tastings│Unique│  Avg  │Countries│    │
-│  └───────┴───────┴───────┴───────┘     │
-│                                         │
-│  Achievements                    See All│
-│  ┌─────────────────────────────────┐   │
-│  │ 🏆 Century Club (100 tastings)  │   │
-│  │ 🌍 World Explorer (5 countries) │   │
-│  │ 🔥 30 Day Streak                │   │
-│  └─────────────────────────────────┘   │
+│  [Activity]     [Favorites]             │
 │                                         │
 │  Recent Activity                        │
 │  ┌─────────────────────────────────┐   │
-│  │ [Tasting] Ardbeg 10 ★★★★☆       │   │
-│  │ [Tasting] Lagavulin 16 ★★★★★    │   │
-│  │ [Achievement] Islay Explorer 🏆  │   │
+│  │                                 │   │
+│  │    No recent activity           │   │
+│  │                                 │   │
 │  └─────────────────────────────────┘   │
 │                                         │
 ├─────────────────────────────────────────┤
-│ [Feed] [Search] [Library] [Profile]     │
+│ [Activity] [Search] [Library] [Profile] │
 └─────────────────────────────────────────┘
 ```
 
-### Settings Screen
-```
-┌─────────────────────────────────────────┐
-│  ← Profile         Settings             │
-├─────────────────────────────────────────┤
-│                                         │
-│  Account                                │
-│  ┌─────────────────────────────────┐   │
-│  │ Profile Information          >  │   │
-│  │ Email & Password             >  │   │
-│  │ Privacy Settings             >  │   │
-│  │ Blocked Users               >  │   │
-│  └─────────────────────────────────┘   │
-│                                         │
-│  Preferences                            │
-│  ┌─────────────────────────────────┐   │
-│  │ Notifications                >  │   │
-│  │ Units (Metric/Imperial)      >  │   │
-│  │ Default Privacy              >  │   │
-│  │ Data Usage                   >  │   │
-│  └─────────────────────────────────┘   │
-│                                         │
-│  About                                  │
-│  ┌─────────────────────────────────┐   │
-│  │ Help & Support              >  │   │
-│  │ Terms of Service            >  │   │
-│  │ Privacy Policy              >  │   │
-│  │ Version 1.0.0                  │   │
-│  └─────────────────────────────────┘   │
-│                                         │
-│  ┌─────────────────────────────────┐   │
-│  │         Sign Out               │   │
-│  └─────────────────────────────────┘   │
-│                                         │
-│  ┌─────────────────────────────────┐   │
-│  │     Delete Account             │   │
-│  └─────────────────────────────────┘   │
-│                                         │
-└─────────────────────────────────────────┘
-```
+## Implementation Details
 
-## Implementation
+### Based on Production Website
+
+The production profile page (peated.com/users/dcramer) revealed key design elements:
+
+1. **User Avatar**: Circular profile photo (when available)
+2. **Username Display**: Prominent @username format
+3. **Role Badges**: Admin/Mod badges with distinct styling
+4. **Statistics Grid**: Four key metrics displayed prominently
+5. **Achievements**: Visual badges with levels
+6. **Navigation Tabs**: Activity and Favorites sections
+7. **Clean Layout**: Dark theme with clear visual hierarchy
+
+### Current Implementation
 
 ```swift
 import SwiftUI
+import PeatedCore
 
-struct ProfileScreen: View {
+struct ProfileView: View {
     @State private var model = ProfileModel()
-    @State private var showingSettings = false
-    @State private var showingEditProfile = false
+    @State private var showingLogoutAlert = false
     @State private var selectedTab = 0
-    @EnvironmentObject var authManager: AuthManager
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    // Profile header
+                VStack(spacing: 0) {
+                    // Profile header with avatar
                     profileHeader
                     
-                    // Social stats
-                    socialStats
+                    // Statistics section
+                    statsSection
+                        .padding(.horizontal)
+                        .padding(.vertical, 20)
                     
-                    // Bio
-                    if let bio = model.user?.bio, !bio.isEmpty {
-                        biSection(bio)
+                    // Achievements badges
+                    if !model.achievements.isEmpty {
+                        badgesSection
+                            .padding(.bottom, 20)
                     }
                     
-                    // Edit profile button
-                    editProfileButton
+                    // Activity/Favorites tabs
+                    Picker("Content", selection: $selectedTab) {
+                        Text("Activity").tag(0)
+                        Text("Favorites").tag(1)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    .padding(.bottom, 16)
                     
-                    Divider()
-                        .padding(.horizontal)
-                    
-                    // Statistics
-                    statisticsSection
-                    
-                    // Achievements
-                    achievementsSection
-                    
-                    // Recent activity
-                    recentActivitySection
+                    // Tab content
+                    Group {
+                        if selectedTab == 0 {
+                            activitySection
+                        } else {
+                            favoritesSection
+                        }
+                    }
+                    .padding(.horizontal)
                 }
-                .padding(.vertical)
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingSettings = true }) {
-                        Image(systemName: "gearshape")
-                    }
-                }
-            }
-            .sheet(isPresented: $showingSettings) {
-                NavigationView {
-                    SettingsScreen()
-                }
-            }
-            .sheet(isPresented: $showingEditProfile) {
-                NavigationView {
-                    EditProfileView(user: model.user ?? User.placeholder)
-                }
-            }
-            .task {
-                await model.loadProfile()
-            }
-            .refreshable {
-                await model.refresh()
-            }
-        }
-    }
-    
-    // MARK: - Profile Header
-    @ViewBuilder
-    private var profileHeader: some View {
-        VStack(spacing: 12) {
-            // Avatar
-            UserAvatar(
-                user: model.user,
-                size: 100,
-                showsEditOverlay: true,
-                onEdit: {
-                    showingEditProfile = true
-                }
-            )
-            
-            // Name
-            Text(model.user?.displayName ?? model.user?.username ?? "")
-                .font(.title2)
-                .fontWeight(.bold)
-            
-            // Username
-            Text("@\(model.user?.username ?? "")")
-                .font(.body)
-                .foregroundColor(.secondary)
-        }
-    }
-    
-    // MARK: - Social Stats
-    @ViewBuilder
-    private var socialStats: some View {
-        HStack(spacing: 0) {
-            NavigationLink(destination: FollowingListView(userId: model.user?.id ?? "")) {
-                VStack(spacing: 4) {
-                    Text("Following")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Text("\(model.followingCount)")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.plain)
-            
-            Divider()
-                .frame(height: 40)
-            
-            NavigationLink(destination: FollowersListView(userId: model.user?.id ?? "")) {
-                VStack(spacing: 4) {
-                    Text("Followers")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Text("\(model.followersCount)")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
-        .padding(.horizontal)
-    }
-    
-    // MARK: - Bio Section
-    @ViewBuilder
-    private func biSection(_ bio: String) -> some View {
-        Text(bio)
-            .font(.body)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal)
-    }
-    
-    // MARK: - Edit Profile Button
-    @ViewBuilder
-    private var editProfileButton: some View {
-        Button(action: { showingEditProfile = true }) {
-            Text("Edit Profile")
-                .font(.body)
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(10)
-        }
-        .padding(.horizontal)
-    }
-    
-    // MARK: - Statistics Section
-    @ViewBuilder
-    private var statisticsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Statistics")
-                    .font(.headline)
-                
-                Spacer()
-                
-                NavigationLink(destination: DetailedStatsView()) {
-                    Text("Details")
-                        .font(.caption)
-                        .foregroundColor(.accentColor)
-                }
-            }
-            .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 16) {
-                    StatCard(
-                        value: "\(model.stats.totalTastings)",
-                        label: "Tastings",
-                        icon: "checkmark.circle.fill",
-                        color: .blue
-                    )
-                    
-                    StatCard(
-                        value: "\(model.stats.uniqueBottles)",
-                        label: "Unique",
-                        icon: "square.grid.2x2.fill",
-                        color: .green
-                    )
-                    
-                    StatCard(
-                        value: String(format: "%.1f", model.stats.averageRating),
-                        label: "Avg Rating",
-                        icon: "star.fill",
-                        color: .yellow
-                    )
-                    
-                    StatCard(
-                        value: "\(model.stats.countriesCount)",
-                        label: "Countries",
-                        icon: "globe",
-                        color: .purple
-                    )
-                    
-                    StatCard(
-                        value: "\(model.stats.currentStreak)",
-                        label: "Day Streak",
-                        icon: "flame.fill",
-                        color: .orange
-                    )
-                }
-                .padding(.horizontal)
-            }
-        }
-    }
-    
-    // MARK: - Achievements Section
-    @ViewBuilder
-    private var achievementsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Achievements")
-                    .font(.headline)
-                
-                Spacer()
-                
-                NavigationLink(destination: AchievementsView()) {
-                    Text("See All")
-                        .font(.caption)
-                        .foregroundColor(.accentColor)
-                }
-            }
-            .padding(.horizontal)
-            
-            if model.recentAchievements.isEmpty {
-                EmptyStateCard(
-                    icon: "trophy",
-                    message: "No achievements yet",
-                    action: "Start tasting to earn achievements"
-                )
-                .padding(.horizontal)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(model.recentAchievements.prefix(3)) { achievement in
-                        AchievementRow(achievement: achievement)
-                    }
-                }
-                .padding(.horizontal)
-            }
-        }
-    }
-    
-    // MARK: - Recent Activity Section
-    @ViewBuilder
-    private var recentActivitySection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Recent Activity")
-                    .font(.headline)
-                
-                Spacer()
-                
-                NavigationLink(destination: ActivityHistoryView()) {
-                    Text("View All")
-                        .font(.caption)
-                        .foregroundColor(.accentColor)
-                }
-            }
-            .padding(.horizontal)
-            
-            if model.recentActivity.isEmpty {
-                EmptyStateCard(
-                    icon: "clock",
-                    message: "No recent activity",
-                    action: "Add your first tasting"
-                )
-                .padding(.horizontal)
-            } else {
-                VStack(spacing: 0) {
-                    ForEach(model.recentActivity.prefix(5)) { activity in
-                        ActivityRow(activity: activity)
-                        
-                        if activity != model.recentActivity.prefix(5).last {
-                            Divider()
-                                .padding(.leading, 56)
-                        }
-                    }
-                }
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(12)
-                .padding(.horizontal)
-            }
-        }
-    }
-}
-
-// MARK: - Stat Card
-struct StatCard: View {
-    let value: String
-    let label: String
-    let icon: String
-    let color: Color
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.title2)
-                .foregroundColor(color)
-            
-            Text(value)
-                .font(.title)
-                .fontWeight(.bold)
-            
-            Text(label)
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .frame(width: 100, height: 100)
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - Achievement Row
-struct AchievementRow: View {
-    let achievement: Achievement
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Text(achievement.emoji)
-                .font(.title2)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(achievement.name)
-                    .font(.body)
-                    .fontWeight(.medium)
-                
-                Text(achievement.description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            if achievement.isNew {
-                Text("NEW")
-                    .font(.caption2)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.red)
-                    .cornerRadius(4)
-            }
-        }
-        .padding()
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - Activity Row
-struct ActivityRow: View {
-    let activity: UserActivity
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            // Icon based on activity type
-            Image(systemName: activity.icon)
-                .font(.title3)
-                .foregroundColor(activity.iconColor)
-                .frame(width: 32, height: 32)
-                .background(activity.iconColor.opacity(0.1))
-                .cornerRadius(8)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(activity.title)
-                    .font(.body)
-                    .lineLimit(1)
-                
-                Text(activity.timestamp.relativeTime)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Spacer()
-            
-            if let rating = activity.rating {
-                HStack(spacing: 2) {
-                    RatingView(rating: rating, size: 12)
-                }
-            }
-        }
-        .padding()
-    }
-}
-
-// MARK: - Settings Screen
-struct SettingsScreen: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var authManager: AuthManager
-    @State private var showingSignOutAlert = false
-    @State private var showingDeleteAccountAlert = false
-    
-    var body: some View {
-        List {
-            // Account Section
-            Section("Account") {
-                NavigationLink(destination: ProfileInformationView()) {
-                    Label("Profile Information", systemImage: "person.circle")
-                }
-                
-                NavigationLink(destination: EmailPasswordView()) {
-                    Label("Email & Password", systemImage: "envelope")
-                }
-                
-                NavigationLink(destination: PrivacySettingsView()) {
-                    Label("Privacy Settings", systemImage: "lock")
-                }
-                
-                NavigationLink(destination: BlockedUsersView()) {
-                    Label("Blocked Users", systemImage: "person.2.slash")
-                }
-            }
-            
-            // Preferences Section
-            Section("Preferences") {
-                NavigationLink(destination: NotificationSettingsView()) {
-                    Label("Notifications", systemImage: "bell")
-                }
-                
-                NavigationLink(destination: UnitsSettingsView()) {
-                    Label("Units", systemImage: "ruler")
-                }
-                
-                NavigationLink(destination: DefaultPrivacyView()) {
-                    Label("Default Privacy", systemImage: "eye")
-                }
-                
-                NavigationLink(destination: DataUsageView()) {
-                    Label("Data Usage", systemImage: "arrow.up.arrow.down")
-                }
-            }
-            
-            // About Section
-            Section("About") {
-                NavigationLink(destination: HelpSupportView()) {
-                    Label("Help & Support", systemImage: "questionmark.circle")
-                }
-                
-                NavigationLink(destination: TermsOfServiceView()) {
-                    Label("Terms of Service", systemImage: "doc.text")
-                }
-                
-                NavigationLink(destination: PrivacyPolicyView()) {
-                    Label("Privacy Policy", systemImage: "hand.raised")
-                }
-                
-                HStack {
-                    Text("Version")
-                    Spacer()
-                    Text(Bundle.main.appVersion)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            // Actions Section
-            Section {
-                Button(action: { showingSignOutAlert = true }) {
-                    HStack {
-                        Spacer()
-                        Text("Sign Out")
+                    Button(action: { showingLogoutAlert = true }) {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
                             .foregroundColor(.red)
-                        Spacer()
-                    }
-                }
-                
-                Button(action: { showingDeleteAccountAlert = true }) {
-                    HStack {
-                        Spacer()
-                        Text("Delete Account")
-                            .foregroundColor(.red)
-                        Spacer()
                     }
                 }
             }
         }
-        .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button("Done") {
-                    dismiss()
-                }
-            }
-        }
-        .alert("Sign Out", isPresented: $showingSignOutAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Sign Out", role: .destructive) {
-                authManager.signOut()
-                dismiss()
-            }
-        } message: {
-            Text("Are you sure you want to sign out?")
-        }
-        .alert("Delete Account", isPresented: $showingDeleteAccountAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Delete", role: .destructive) {
-                Task {
-                    await deleteAccount()
-                }
-            }
-        } message: {
-            Text("This will permanently delete your account and all associated data. This action cannot be undone.")
-        }
-    }
-    
-    private func deleteAccount() async {
-        // Implement account deletion
-    }
-}
-
-// MARK: - Model
-@Observable
-class ProfileModel {
-    var user: User?
-    var stats = UserStatistics()
-    var followingCount = 0
-    var followersCount = 0
-    var recentAchievements: [Achievement] = []
-    var recentActivity: [UserActivity] = []
-    var isLoading = false
-    
-    struct UserStatistics {
-        var totalTastings: Int = 0
-        var uniqueBottles: Int = 0
-        var averageRating: Double = 0.0
-        var countriesCount: Int = 0
-        var currentStreak: Int = 0
-        var longestStreak: Int = 0
-        var favoriteCategory: String?
-        var favoriteDistillery: String?
-    }
-    
-    func loadProfile() async {
-        isLoading = true
-        
-        // Load user data
-        // Load statistics
-        // Load achievements
-        // Load recent activity
-        
-        // Mock data
-        stats = UserStatistics(
-            totalTastings: 234,
-            uniqueBottles: 89,
-            averageRating: 4.2,
-            countriesCount: 12,
-            currentStreak: 7,
-            longestStreak: 30
-        )
-        
-        followingCount = 127
-        followersCount = 89
-        
-        recentAchievements = [
-            Achievement(
-                id: "1",
-                name: "Century Club",
-                description: "100 tastings completed",
-                emoji: "🏆",
-                unlockedAt: Date(),
-                isNew: true
-            ),
-            Achievement(
-                id: "2",
-                name: "World Explorer",
-                description: "Tried whiskies from 5 countries",
-                emoji: "🌍",
-                unlockedAt: Date().addingTimeInterval(-86400),
-                isNew: false
-            )
-        ]
-        
-        isLoading = false
-    }
-    
-    func refresh() async {
-        await loadProfile()
-    }
-}
-
-// MARK: - Models
-struct Achievement: Identifiable {
-    let id: String
-    let name: String
-    let description: String
-    let emoji: String
-    let unlockedAt: Date
-    let isNew: Bool
-}
-
-struct UserActivity: Identifiable {
-    let id: String
-    let type: ActivityType
-    let title: String
-    let timestamp: Date
-    let rating: Double?
-    
-    enum ActivityType {
-        case tasting
-        case achievement
-        case follow
-        case milestone
-    }
-    
-    var icon: String {
-        switch type {
-        case .tasting: return "wineglass"
-        case .achievement: return "trophy"
-        case .follow: return "person.badge.plus"
-        case .milestone: return "flag.checkered"
-        }
-    }
-    
-    var iconColor: Color {
-        switch type {
-        case .tasting: return .blue
-        case .achievement: return .yellow
-        case .follow: return .green
-        case .milestone: return .purple
+        .task {
+            await model.loadUser()
         }
     }
 }
 ```
 
+### Key Components
+
+#### Profile Header
+```swift
+private var profileHeader: some View {
+    VStack(spacing: 16) {
+        // Avatar with fallback to initials
+        if let pictureUrl = model.user?.pictureUrl {
+            AsyncImage(url: URL(string: pictureUrl)) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Circle()
+                    .fill(Color.gray.opacity(0.3))
+                    .overlay(ProgressView())
+            }
+            .frame(width: 100, height: 100)
+            .clipShape(Circle())
+        } else {
+            Circle()
+                .fill(Color.gray.opacity(0.3))
+                .frame(width: 100, height: 100)
+                .overlay(
+                    Text(model.user?.username.prefix(1).uppercased() ?? "?")
+                        .font(.largeTitle)
+                        .fontWeight(.medium)
+                        .foregroundColor(.gray)
+                )
+        }
+        
+        // Username and email
+        VStack(spacing: 4) {
+            Text("@\(model.user?.username ?? "Loading...")")
+                .font(.title2)
+                .fontWeight(.semibold)
+            
+            Text(model.user?.email ?? "")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        
+        // Role badges (admin supersedes mod)
+        if let user = model.user {
+            if user.admin {
+                HStack(spacing: 4) {
+                    Image(systemName: "shield.fill")
+                        .font(.caption2)
+                    Text("Admin")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.red)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+            } else if user.mod {
+                HStack(spacing: 4) {
+                    Image(systemName: "star.fill")
+                        .font(.caption2)
+                    Text("Moderator")
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(Color.orange)
+                .foregroundColor(.white)
+                .cornerRadius(12)
+            }
+        }
+    }
+    .padding(.top, 20)
+    .padding(.horizontal)
+}
+```
+
+#### Statistics Section
+```swift
+private var statsSection: some View {
+    HStack(spacing: 0) {
+        StatView(title: "Tastings", value: model.user?.tastingsCount ?? 0)
+        Divider().frame(height: 40)
+        StatView(title: "Bottles", value: model.user?.bottlesCount ?? 0)
+        Divider().frame(height: 40)
+        StatView(title: "Collected", value: model.user?.collectedCount ?? 0)
+        Divider().frame(height: 40)
+        StatView(title: "Contributions", value: model.user?.contributionsCount ?? 0)
+    }
+    .padding(.vertical, 16)
+    .background(Color(.systemGray6))
+    .cornerRadius(12)
+}
+
+// Number formatting for large values
+private func formatNumber(_ number: Int) -> String {
+    if number >= 1_000_000 {
+        return String(format: "%.1fM", Double(number) / 1_000_000)
+    } else if number >= 10_000 {
+        return String(format: "%.0fk", Double(number) / 1_000)
+    } else if number >= 1_000 {
+        return String(format: "%.1fk", Double(number) / 1_000)
+    } else {
+        return "\(number)"
+    }
+}
+```
+
+#### Achievements Section
+```swift
+private var badgesSection: some View {
+    VStack(alignment: .leading, spacing: 12) {
+        Text("Achievements")
+            .font(.headline)
+            .padding(.horizontal)
+        
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(model.achievements) { achievement in
+                    VStack(spacing: 6) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.orange.opacity(0.15))
+                                .frame(width: 80, height: 80)
+                            
+                            VStack(spacing: 2) {
+                                Image(systemName: achievementIcon(for: achievement.name))
+                                    .font(.title)
+                                    .foregroundColor(.orange)
+                                
+                                if achievement.level > 0 {
+                                    Text("\(achievement.level)")
+                                        .font(.caption2)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.orange)
+                                }
+                            }
+                        }
+                        
+                        Text(achievement.name)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .multilineTextAlignment(.center)
+                            .frame(width: 80)
+                            .lineLimit(2)
+                    }
+                }
+            }
+            .padding(.horizontal)
+        }
+    }
+}
+```
+
+## API Integration
+
+### User Details Endpoint
+The profile fetches additional data from `/users/{user}` which provides:
+- Basic user info (id, username, email, admin, mod flags)
+- Statistics object with counts (tastings, bottles, collected, contributions)
+- Profile picture URL (not currently provided by API)
+
+### Authentication State
+Profile data is initially populated from the authentication response, then enriched with the detailed stats from the user details endpoint.
+
 ## Features
 
-### Profile Information
-- **Avatar**: Editable profile photo
-- **Display Name**: Full name display
-- **Username**: Unique identifier
-- **Bio**: Personal description
-- **Social Stats**: Following/followers with navigation
+### Core Information
+- **Username**: Displayed with @ prefix
+- **Email**: Shown below username for authenticated user
+- **Role Badges**: Admin (red) or Moderator (orange)
+- **Avatar**: Profile picture with initial fallback
 
-### Statistics Dashboard
-- **Core Metrics**: Tastings, unique bottles, average rating
-- **Geographic**: Countries explored
-- **Streaks**: Current and longest
-- **Detailed View**: Deep analytics
+### Statistics
+- **Tastings**: Total number of whisky tastings
+- **Bottles**: Number of unique bottles tried
+- **Collected**: Bottles in collection
+- **Contributions**: Total platform contributions
+- **Number Formatting**: Large numbers abbreviated (126k instead of 125,909)
 
-### Achievements System
-- **Recent Unlocks**: Latest 3 achievements
-- **Visual Badges**: Emoji representation
-- **Progress Tracking**: Partial completion
-- **Categories**: Various achievement types
-- **New Indicators**: Highlight recent unlocks
+### Achievements
+- **Visual Badges**: Icons representing achievement types
+- **Levels**: Progress indication for each achievement
+- **Horizontal Scroll**: Accommodates multiple achievements
+- **Dynamic Icons**: Different icons based on achievement name
 
-### Activity Timeline
-- **Recent Tastings**: Latest check-ins
-- **Achievements**: Newly unlocked
-- **Milestones**: Significant events
-- **Social**: Following updates
+### Activity Tabs
+- **Activity**: Recent tastings and actions (placeholder)
+- **Favorites**: Saved items (placeholder)
 
-### Settings Organization
-
-#### Account Management
-- **Profile Information**: Edit name, username, bio
-- **Email & Password**: Security updates
-- **Privacy Settings**: Visibility controls
-- **Blocked Users**: Manage blocks
-
-#### Preferences
-- **Notifications**: Push and email settings
-- **Units**: Metric/Imperial
-- **Default Privacy**: New tasting defaults
-- **Data Usage**: Cellular/WiFi settings
-
-#### About & Support
-- **Help**: FAQs and support
-- **Terms**: Legal documents
-- **Version**: App information
-
-## Navigation
-
-### From Profile
-- Settings → Full settings menu
-- Edit Profile → Profile editor
-- Following/Followers → User lists
-- Statistics → Detailed analytics
-- Achievements → Full list
-- Activity → Complete history
-
-### To Profile
-- Tab bar navigation
-- After editing profile
-- From other user profiles
+### Actions
+- **Logout**: Red logout icon in navigation bar
+- **Pull to Refresh**: Standard iOS gesture support
 
 ## State Management
 
-### Profile Data
-- User information cached
-- Real-time stat updates
-- Achievement notifications
-- Activity feed pagination
+```swift
+@Observable
+class ProfileModel {
+    var user: User?
+    var achievements: [Achievement] = []
+    var isLoading = false
+    var error: Error?
+    
+    private let authManager = AuthenticationManager.shared
+    
+    func loadUser() async {
+        // Get current user from auth manager
+        user = authManager.currentUser
+        
+        // Load achievements (currently mocked)
+        achievements = [
+            Achievement(id: "1", name: "Single Malter", level: 11),
+            Achievement(id: "2", name: "Bourbon Lover", level: 5),
+            Achievement(id: "3", name: "Explorer", level: 3)
+        ]
+    }
+    
+    func logout() async {
+        isLoading = true
+        await authManager.logout()
+        isLoading = false
+    }
+}
+```
 
-### Settings Persistence
-- UserDefaults for preferences
-- Keychain for sensitive data
-- CloudKit sync (future)
+## Navigation
 
-## User Experience
+### To Profile
+- Tab bar navigation (Profile tab)
+- After successful login
+- From other user profiles (future)
 
-### Visual Design
-- Clean card layouts
-- Clear information hierarchy
-- Consistent spacing
-- Platform conventions
+### From Profile
+- Logout → Returns to login screen
+- Activity tab → Shows recent activity
+- Favorites tab → Shows saved items
 
-### Interactions
-- Pull-to-refresh
-- Smooth transitions
-- Loading states
-- Error handling
+## Design Considerations
 
-### Empty States
-- No achievements yet
-- No recent activity
-- Helpful CTAs
+### Visual Hierarchy
+1. Avatar and username most prominent
+2. Statistics clearly visible and scannable
+3. Achievements add visual interest
+4. Clean separation between sections
 
-## Privacy & Security
+### Responsive Layout
+- Statistics adapt to different screen sizes
+- Achievements scroll horizontally
+- Proper spacing and padding throughout
 
-### Account Actions
-- Sign out confirmation
-- Account deletion warning
-- Data export option
-- Privacy controls
-
-### Data Protection
-- Secure credential storage
-- Privacy by default
-- Clear data policies
-
-## Accessibility
-
-- VoiceOver optimized
-- Dynamic Type support
-- High contrast mode
-- Reduced motion respected
+### Dark Theme
+- Consistent with platform aesthetic
+- Gray backgrounds for depth
+- High contrast for readability
 
 ## Future Enhancements
 
-- Profile themes/customization
+### Near Term
+- Fetch real achievements from API
+- Implement activity feed
+- Add favorites functionality
+- Profile editing capability
+
+### Long Term
+- Top regions and flavors sections
+- Social features (following/followers)
+- Activity insights and trends
+- Profile customization options
 - Public profile sharing
-- Achievement sharing
-- Activity insights
-- Export data options
-- Badge collections
+
+## Accessibility
+
+- VoiceOver labels for all interactive elements
+- High contrast text on backgrounds
+- Semantic grouping of related content
+- Standard iOS navigation patterns
+
+## Performance
+
+- Lazy loading of achievements
+- Efficient number formatting
+- Cached user data from auth
+- Minimal API calls

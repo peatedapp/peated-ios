@@ -21,8 +21,9 @@ This approach is common in production iOS apps and aligns with industry best pra
 When the backend API changes, update the client code:
 
 ```bash
-# Run the update script
-./Scripts/update-api-client.sh
+# Run the update script from the PeatedAPI package
+cd PeatedAPI
+./update-api.sh
 ```
 
 The script will:

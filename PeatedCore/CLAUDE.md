@@ -34,7 +34,7 @@ For comprehensive documentation see:
 ## OpenAPI Integration
 
 - The API client is generated **manually** from `openapi.json` (not at build time)
-- Use `../Scripts/update-api-client.sh` to update API bindings
+- Use `../PeatedAPI/update-api.sh` to update API bindings
 - Configuration is in `openapi-generator-config.yaml`
 - Generated code uses `public` access modifier for external visibility
 - **Generated files ARE committed** to version control (production approach)

@@ -22,15 +22,6 @@ let package = Package(
             from: "0.14.0"
         ),
         
-        // OpenAPI Runtime (generator not needed for pre-generated code)
-        .package(
-            url: "https://github.com/apple/swift-openapi-runtime",
-            from: "1.0.0"
-        ),
-        .package(
-            url: "https://github.com/apple/swift-openapi-urlsession",
-            from: "1.0.0"
-        ),
         
         // Authentication
         .package(
@@ -48,7 +39,10 @@ let package = Package(
         .package(
             url: "https://github.com/swiftlang/swift-syntax",
             from: "601.0.0"
-        )
+        ),
+        
+        // Local PeatedAPI package
+        .package(path: "../PeatedAPI")
     ],
     targets: [
         // Macro target
@@ -66,8 +60,7 @@ let package = Package(
             dependencies: [
                 "PeatedCoreMacros",
                 .product(name: "SQLite", package: "SQLite.swift"),
-                .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
-                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
+                .product(name: "PeatedAPI", package: "PeatedAPI"),
                 .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
                 .product(name: "KeychainAccess", package: "KeychainAccess")
             ],

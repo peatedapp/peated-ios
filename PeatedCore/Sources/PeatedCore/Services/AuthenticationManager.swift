@@ -1,9 +1,11 @@
 import Foundation
 import SwiftUI
 import GoogleSignIn
-import OpenAPIRuntime
-import OpenAPIURLSession
+import PeatedAPI
 import HTTPTypes
+#if canImport(UIKit)
+import UIKit
+#endif
 
 public final class AuthenticationManager: ObservableObject, @unchecked Sendable {
   public static let shared = AuthenticationManager()
@@ -41,11 +43,11 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     if keychain.hasToken {
       do {
         // Try to fetch the current user profile
-        let token = try keychain.getToken()
+        _ = try keychain.getToken()
         
         // Token is already configured via AuthMiddleware
         let client = await apiClient.generatedClient
-        let response = try await client.auth_period_me()
+        let response = try await client.auth_me()
         
         // Extract the user from the response
         if case .ok(let okResponse) = response,
@@ -61,7 +63,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
           
           // Fetch additional user details including stats
           do {
-            let detailsResponse = try await client.users_period_details(
+            let detailsResponse = try await client.users_details(
               path: .init(user: .init(value1: jsonPayload.user.id))
             )
             
@@ -99,13 +101,13 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
       let client = await apiClient.generatedClient
       
       // Create the request body
-      let body = Operations.auth_period_login.Input.Body.json(
+      let body = Operations.auth_login.Input.Body.json(
         .init(
           value1: .init(email: email, password: password)
         )
       )
       
-      let response = try await client.auth_period_login(body: body)
+      let response = try await client.auth_login(body: body)
       
       // Extract the successful response
       if case .ok(let okResponse) = response,
@@ -129,7 +131,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         
         // Fetch additional user details including stats
         do {
-          let detailsResponse = try await client.users_period_details(
+          let detailsResponse = try await client.users_details(
             path: .init(user: .init(value1: apiUser.id))
           )
           
@@ -162,6 +164,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
   }
   
   public func loginWithGoogle() async throws -> User {
+    #if canImport(UIKit)
     let presentingViewController = await MainActor.run {
       getRootViewController()
     }
@@ -184,13 +187,13 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         let client = await apiClient.generatedClient
         
         // Create the request body for Google auth (using idToken)
-        let body = Operations.auth_period_login.Input.Body.json(
+        let body = Operations.auth_login.Input.Body.json(
           .init(
             value3: .init(idToken: idToken)
           )
         )
         
-        let response = try await client.auth_period_login(body: body)
+        let response = try await client.auth_login(body: body)
         
         // Extract the successful response
         if case .ok(let okResponse) = response,
@@ -214,7 +217,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
           
           // Fetch additional user details including stats
           do {
-            let detailsResponse = try await client.users_period_details(
+            let detailsResponse = try await client.users_details(
               path: .init(user: .init(value1: apiUser.id))
             )
             
@@ -247,6 +250,9 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
       isLoading = false
       throw error
     }
+    #else
+    throw AuthError.noPresentingViewController
+    #endif
   }
   
   public func logout() async {
@@ -271,6 +277,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     return apiClient
   }
   
+  #if canImport(UIKit)
   @MainActor
   private func getRootViewController() -> UIViewController? {
     guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -279,6 +286,12 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     }
     return window.rootViewController
   }
+  #else
+  @MainActor
+  private func getRootViewController() -> Any? {
+    return nil
+  }
+  #endif
 }
 
 // MARK: - Auth Errors

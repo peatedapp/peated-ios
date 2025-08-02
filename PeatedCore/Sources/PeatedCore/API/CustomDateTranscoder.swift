@@ -1,5 +1,5 @@
 import Foundation
-import OpenAPIRuntime
+import PeatedAPI
 
 struct CustomDateTranscoder: DateTranscoder {
     private let decoder: JSONDecoder
