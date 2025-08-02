@@ -22,9 +22,8 @@ echo "🔧 Fixing nullable fields..."
 echo "🔧 Fixing parameter schemas..."
 ./fix-parameter-schemas.sh Sources/PeatedAPI/openapi.json
 
-# Note: Operation names are now properly camelCased on the server (as of 2025-08-02)
-# The fix-operation-names.sh script is no longer needed and has been retired.
-# Server now provides operationIDs like "authLogin", "bottlesList" etc.
+# Note: As of 2025-08-02, server now provides proper camelCase operationIDs
+# (e.g., "getAdminQueueInfo", "aiBottleLookup", etc.)
 
 # Generate using swift-openapi-generator
 echo "🛠️  Generating API client..."
