@@ -43,11 +43,11 @@ public struct Client: APIProtocol {
     /// Retrieve job queue statistics including waiting, active, completed, and failed jobs. Requires admin privileges
     ///
     /// - Remark: HTTP `GET /admin/queue/info`.
-    /// - Remark: Generated from `#/paths//admin/queue/info/get(adminQueueInfo)`.
-    public func adminQueueInfo(_ input: Operations.AdminQueueInfo.Input) async throws -> Operations.AdminQueueInfo.Output {
+    /// - Remark: Generated from `#/paths//admin/queue/info/get(admin.queueInfo)`.
+    public func admin_queueInfo(_ input: Operations.Admin_queueInfo.Input) async throws -> Operations.Admin_queueInfo.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.AdminQueueInfo.id,
+            forOperation: Operations.Admin_queueInfo.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/admin/queue/info",
@@ -68,7 +68,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.Ok.Body
+                    let body: Operations.Admin_queueInfo.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -78,7 +78,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.Ok.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -90,7 +90,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.BadRequest.Body
+                    let body: Operations.Admin_queueInfo.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -100,7 +100,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -112,7 +112,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.Unauthorized.Body
+                    let body: Operations.Admin_queueInfo.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -122,7 +122,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -134,7 +134,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.Forbidden.Body
+                    let body: Operations.Admin_queueInfo.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -144,7 +144,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -156,7 +156,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.NotFound.Body
+                    let body: Operations.Admin_queueInfo.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -166,7 +166,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -178,7 +178,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.Conflict.Body
+                    let body: Operations.Admin_queueInfo.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -188,7 +188,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -200,7 +200,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.ContentTooLarge.Body
+                    let body: Operations.Admin_queueInfo.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -210,7 +210,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -222,7 +222,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AdminQueueInfo.Output.InternalServerError.Body
+                    let body: Operations.Admin_queueInfo.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -232,7 +232,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AdminQueueInfo.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Admin_queueInfo.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -259,11 +259,11 @@ public struct Client: APIProtocol {
     /// Use AI to generate bottle details including description, category, flavor profile, tasting notes, and suggested tags. Requires moderator privileges
     ///
     /// - Remark: HTTP `POST /ai/bottle-lookup`.
-    /// - Remark: Generated from `#/paths//ai/bottle-lookup/post(aiBottleLookup)`.
-    public func aiBottleLookup(_ input: Operations.AiBottleLookup.Input) async throws -> Operations.AiBottleLookup.Output {
+    /// - Remark: Generated from `#/paths//ai/bottle-lookup/post(ai.bottleLookup)`.
+    public func ai_bottleLookup(_ input: Operations.Ai_bottleLookup.Input) async throws -> Operations.Ai_bottleLookup.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.AiBottleLookup.id,
+            forOperation: Operations.Ai_bottleLookup.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/ai/bottle-lookup",
@@ -293,7 +293,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.Ok.Body
+                    let body: Operations.Ai_bottleLookup.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -303,7 +303,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.Ok.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -315,7 +315,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.BadRequest.Body
+                    let body: Operations.Ai_bottleLookup.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -325,7 +325,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -337,7 +337,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.Unauthorized.Body
+                    let body: Operations.Ai_bottleLookup.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -347,7 +347,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -359,7 +359,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.Forbidden.Body
+                    let body: Operations.Ai_bottleLookup.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -369,7 +369,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -381,7 +381,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.NotFound.Body
+                    let body: Operations.Ai_bottleLookup.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -391,7 +391,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -403,7 +403,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.Conflict.Body
+                    let body: Operations.Ai_bottleLookup.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -413,7 +413,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -425,7 +425,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.ContentTooLarge.Body
+                    let body: Operations.Ai_bottleLookup.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -435,7 +435,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -447,7 +447,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiBottleLookup.Output.InternalServerError.Body
+                    let body: Operations.Ai_bottleLookup.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -457,7 +457,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiBottleLookup.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Ai_bottleLookup.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -484,11 +484,11 @@ public struct Client: APIProtocol {
     /// Use AI to generate country details and information. Requires moderator privileges
     ///
     /// - Remark: HTTP `POST /ai/country-lookup`.
-    /// - Remark: Generated from `#/paths//ai/country-lookup/post(aiCountryLookup)`.
-    public func aiCountryLookup(_ input: Operations.AiCountryLookup.Input) async throws -> Operations.AiCountryLookup.Output {
+    /// - Remark: Generated from `#/paths//ai/country-lookup/post(ai.countryLookup)`.
+    public func ai_countryLookup(_ input: Operations.Ai_countryLookup.Input) async throws -> Operations.Ai_countryLookup.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.AiCountryLookup.id,
+            forOperation: Operations.Ai_countryLookup.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/ai/country-lookup",
@@ -520,7 +520,7 @@ public struct Client: APIProtocol {
                     return .ok(.init())
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiCountryLookup.Output.BadRequest.Body
+                    let body: Operations.Ai_countryLookup.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -530,7 +530,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiCountryLookup.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Ai_countryLookup.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -542,7 +542,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiCountryLookup.Output.Unauthorized.Body
+                    let body: Operations.Ai_countryLookup.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -552,7 +552,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiCountryLookup.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Ai_countryLookup.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -564,7 +564,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiCountryLookup.Output.Forbidden.Body
+                    let body: Operations.Ai_countryLookup.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -574,7 +574,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiCountryLookup.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Ai_countryLookup.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -586,7 +586,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiCountryLookup.Output.NotFound.Body
+                    let body: Operations.Ai_countryLookup.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -596,7 +596,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiCountryLookup.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Ai_countryLookup.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -608,7 +608,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiCountryLookup.Output.Conflict.Body
+                    let body: Operations.Ai_countryLookup.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -618,7 +618,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiCountryLookup.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Ai_countryLookup.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -630,7 +630,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiCountryLookup.Output.ContentTooLarge.Body
+                    let body: Operations.Ai_countryLookup.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -640,7 +640,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiCountryLookup.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Ai_countryLookup.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -652,7 +652,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiCountryLookup.Output.InternalServerError.Body
+                    let body: Operations.Ai_countryLookup.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -662,7 +662,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiCountryLookup.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Ai_countryLookup.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -689,11 +689,11 @@ public struct Client: APIProtocol {
     /// Use AI to generate entity details including description, establishment year, type, and website. Requires moderator privileges
     ///
     /// - Remark: HTTP `POST /ai/entity-lookup`.
-    /// - Remark: Generated from `#/paths//ai/entity-lookup/post(aiEntityLookup)`.
-    public func aiEntityLookup(_ input: Operations.AiEntityLookup.Input) async throws -> Operations.AiEntityLookup.Output {
+    /// - Remark: Generated from `#/paths//ai/entity-lookup/post(ai.entityLookup)`.
+    public func ai_entityLookup(_ input: Operations.Ai_entityLookup.Input) async throws -> Operations.Ai_entityLookup.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.AiEntityLookup.id,
+            forOperation: Operations.Ai_entityLookup.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/ai/entity-lookup",
@@ -723,7 +723,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.Ok.Body
+                    let body: Operations.Ai_entityLookup.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -733,7 +733,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.Ok.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -745,7 +745,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.BadRequest.Body
+                    let body: Operations.Ai_entityLookup.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -755,7 +755,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -767,7 +767,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.Unauthorized.Body
+                    let body: Operations.Ai_entityLookup.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -777,7 +777,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -789,7 +789,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.Forbidden.Body
+                    let body: Operations.Ai_entityLookup.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -799,7 +799,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -811,7 +811,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.NotFound.Body
+                    let body: Operations.Ai_entityLookup.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -821,7 +821,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -833,7 +833,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.Conflict.Body
+                    let body: Operations.Ai_entityLookup.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -843,7 +843,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -855,7 +855,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.ContentTooLarge.Body
+                    let body: Operations.Ai_entityLookup.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -865,7 +865,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -877,7 +877,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiEntityLookup.Output.InternalServerError.Body
+                    let body: Operations.Ai_entityLookup.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -887,7 +887,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiEntityLookup.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Ai_entityLookup.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -914,11 +914,11 @@ public struct Client: APIProtocol {
     /// Use AI to extract bottle details from image URLs or text labels including brand, expression, age, and other metadata
     ///
     /// - Remark: HTTP `POST /ai/extract-labels`.
-    /// - Remark: Generated from `#/paths//ai/extract-labels/post(aiLabelExtract)`.
-    public func aiLabelExtract(_ input: Operations.AiLabelExtract.Input) async throws -> Operations.AiLabelExtract.Output {
+    /// - Remark: Generated from `#/paths//ai/extract-labels/post(ai.labelExtract)`.
+    public func ai_labelExtract(_ input: Operations.Ai_labelExtract.Input) async throws -> Operations.Ai_labelExtract.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.AiLabelExtract.id,
+            forOperation: Operations.Ai_labelExtract.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/ai/extract-labels",
@@ -948,7 +948,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.Ok.Body
+                    let body: Operations.Ai_labelExtract.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -958,7 +958,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.Ok.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -970,7 +970,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.BadRequest.Body
+                    let body: Operations.Ai_labelExtract.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -980,7 +980,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -992,7 +992,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.Unauthorized.Body
+                    let body: Operations.Ai_labelExtract.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1002,7 +1002,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1014,7 +1014,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.Forbidden.Body
+                    let body: Operations.Ai_labelExtract.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1024,7 +1024,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1036,7 +1036,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.NotFound.Body
+                    let body: Operations.Ai_labelExtract.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1046,7 +1046,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1058,7 +1058,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.Conflict.Body
+                    let body: Operations.Ai_labelExtract.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1068,7 +1068,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1080,7 +1080,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.ContentTooLarge.Body
+                    let body: Operations.Ai_labelExtract.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1090,7 +1090,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1102,7 +1102,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiLabelExtract.Output.InternalServerError.Body
+                    let body: Operations.Ai_labelExtract.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1112,7 +1112,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiLabelExtract.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Ai_labelExtract.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1139,11 +1139,11 @@ public struct Client: APIProtocol {
     /// Use AI to generate region details and descriptions for a specific country. Requires moderator privileges
     ///
     /// - Remark: HTTP `POST /ai/region-lookup`.
-    /// - Remark: Generated from `#/paths//ai/region-lookup/post(aiRegionLookup)`.
-    public func aiRegionLookup(_ input: Operations.AiRegionLookup.Input) async throws -> Operations.AiRegionLookup.Output {
+    /// - Remark: Generated from `#/paths//ai/region-lookup/post(ai.regionLookup)`.
+    public func ai_regionLookup(_ input: Operations.Ai_regionLookup.Input) async throws -> Operations.Ai_regionLookup.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.AiRegionLookup.id,
+            forOperation: Operations.Ai_regionLookup.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/ai/region-lookup",
@@ -1173,7 +1173,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.Ok.Body
+                    let body: Operations.Ai_regionLookup.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1183,7 +1183,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.Ok.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1195,7 +1195,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.BadRequest.Body
+                    let body: Operations.Ai_regionLookup.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1205,7 +1205,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1217,7 +1217,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.Unauthorized.Body
+                    let body: Operations.Ai_regionLookup.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1227,7 +1227,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1239,7 +1239,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.Forbidden.Body
+                    let body: Operations.Ai_regionLookup.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1249,7 +1249,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1261,7 +1261,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.NotFound.Body
+                    let body: Operations.Ai_regionLookup.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1271,7 +1271,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1283,7 +1283,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.Conflict.Body
+                    let body: Operations.Ai_regionLookup.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1293,7 +1293,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1305,7 +1305,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.ContentTooLarge.Body
+                    let body: Operations.Ai_regionLookup.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1315,7 +1315,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -1327,7 +1327,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.AiRegionLookup.Output.InternalServerError.Body
+                    let body: Operations.Ai_regionLookup.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -1337,7 +1337,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.AiRegionLookup.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Ai_regionLookup.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -2930,11 +2930,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific achievement badge
     ///
     /// - Remark: HTTP `GET /badges/{badge}`.
-    /// - Remark: Generated from `#/paths//badges/{badge}/get(badgesDetails)`.
-    public func badgesDetails(_ input: Operations.BadgesDetails.Input) async throws -> Operations.BadgesDetails.Output {
+    /// - Remark: Generated from `#/paths//badges/{badge}/get(badges.details)`.
+    public func badges_details(_ input: Operations.Badges_details.Input) async throws -> Operations.Badges_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BadgesDetails.id,
+            forOperation: Operations.Badges_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/badges/{}",
@@ -2957,7 +2957,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.Ok.Body
+                    let body: Operations.Badges_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -2967,7 +2967,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -2979,7 +2979,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.BadRequest.Body
+                    let body: Operations.Badges_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -2989,7 +2989,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3001,7 +3001,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.Unauthorized.Body
+                    let body: Operations.Badges_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3011,7 +3011,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3023,7 +3023,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.Forbidden.Body
+                    let body: Operations.Badges_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3033,7 +3033,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3045,7 +3045,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.NotFound.Body
+                    let body: Operations.Badges_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3055,7 +3055,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3067,7 +3067,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.Conflict.Body
+                    let body: Operations.Badges_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3077,7 +3077,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3089,7 +3089,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Badges_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3099,7 +3099,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3111,7 +3111,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesDetails.Output.InternalServerError.Body
+                    let body: Operations.Badges_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3121,7 +3121,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Badges_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3148,11 +3148,11 @@ public struct Client: APIProtocol {
     /// Update badge information including name, description, and validation checks. Requires admin privileges
     ///
     /// - Remark: HTTP `PATCH /badges/{badge}`.
-    /// - Remark: Generated from `#/paths//badges/{badge}/patch(badgesUpdate)`.
-    public func badgesUpdate(_ input: Operations.BadgesUpdate.Input) async throws -> Operations.BadgesUpdate.Output {
+    /// - Remark: Generated from `#/paths//badges/{badge}/patch(badges.update)`.
+    public func badges_update(_ input: Operations.Badges_update.Input) async throws -> Operations.Badges_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BadgesUpdate.id,
+            forOperation: Operations.Badges_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/badges/{}",
@@ -3186,7 +3186,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.Ok.Body
+                    let body: Operations.Badges_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3196,7 +3196,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3208,7 +3208,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.BadRequest.Body
+                    let body: Operations.Badges_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3218,7 +3218,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3230,7 +3230,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.Unauthorized.Body
+                    let body: Operations.Badges_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3240,7 +3240,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3252,7 +3252,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.Forbidden.Body
+                    let body: Operations.Badges_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3262,7 +3262,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3274,7 +3274,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.NotFound.Body
+                    let body: Operations.Badges_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3284,7 +3284,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3296,7 +3296,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.Conflict.Body
+                    let body: Operations.Badges_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3306,7 +3306,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3318,7 +3318,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Badges_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3328,7 +3328,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3340,7 +3340,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUpdate.Output.InternalServerError.Body
+                    let body: Operations.Badges_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3350,7 +3350,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Badges_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3377,11 +3377,11 @@ public struct Client: APIProtocol {
     /// Retrieve available badges with search and pagination support
     ///
     /// - Remark: HTTP `GET /badges`.
-    /// - Remark: Generated from `#/paths//badges/get(badgesList)`.
-    public func badgesList(_ input: Operations.BadgesList.Input) async throws -> Operations.BadgesList.Output {
+    /// - Remark: Generated from `#/paths//badges/get(badges.list)`.
+    public func badges_list(_ input: Operations.Badges_list.Input) async throws -> Operations.Badges_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BadgesList.id,
+            forOperation: Operations.Badges_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/badges",
@@ -3430,7 +3430,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.Ok.Body
+                    let body: Operations.Badges_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3440,7 +3440,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3452,7 +3452,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.BadRequest.Body
+                    let body: Operations.Badges_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3462,7 +3462,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3474,7 +3474,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.Unauthorized.Body
+                    let body: Operations.Badges_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3484,7 +3484,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3496,7 +3496,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.Forbidden.Body
+                    let body: Operations.Badges_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3506,7 +3506,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3518,7 +3518,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.NotFound.Body
+                    let body: Operations.Badges_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3528,7 +3528,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3540,7 +3540,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.Conflict.Body
+                    let body: Operations.Badges_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3550,7 +3550,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3562,7 +3562,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.ContentTooLarge.Body
+                    let body: Operations.Badges_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3572,7 +3572,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3584,7 +3584,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesList.Output.InternalServerError.Body
+                    let body: Operations.Badges_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3594,7 +3594,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Badges_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3621,11 +3621,11 @@ public struct Client: APIProtocol {
     /// Create a new achievement badge with validation checks and configuration. Requires admin privileges
     ///
     /// - Remark: HTTP `POST /badges`.
-    /// - Remark: Generated from `#/paths//badges/post(badgesCreate)`.
-    public func badgesCreate(_ input: Operations.BadgesCreate.Input) async throws -> Operations.BadgesCreate.Output {
+    /// - Remark: Generated from `#/paths//badges/post(badges.create)`.
+    public func badges_create(_ input: Operations.Badges_create.Input) async throws -> Operations.Badges_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BadgesCreate.id,
+            forOperation: Operations.Badges_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/badges",
@@ -3655,7 +3655,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.Ok.Body
+                    let body: Operations.Badges_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3665,7 +3665,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3677,7 +3677,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.BadRequest.Body
+                    let body: Operations.Badges_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3687,7 +3687,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3699,7 +3699,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.Unauthorized.Body
+                    let body: Operations.Badges_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3709,7 +3709,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3721,7 +3721,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.Forbidden.Body
+                    let body: Operations.Badges_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3731,7 +3731,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3743,7 +3743,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.NotFound.Body
+                    let body: Operations.Badges_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3753,7 +3753,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3765,7 +3765,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.Conflict.Body
+                    let body: Operations.Badges_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3775,7 +3775,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3787,7 +3787,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Badges_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3797,7 +3797,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3809,7 +3809,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesCreate.Output.InternalServerError.Body
+                    let body: Operations.Badges_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3819,7 +3819,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Badges_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3846,11 +3846,11 @@ public struct Client: APIProtocol {
     /// Retrieve users who have earned a specific badge, ordered by XP. Requires authentication
     ///
     /// - Remark: HTTP `GET /badges/{badge}/users`.
-    /// - Remark: Generated from `#/paths//badges/{badge}/users/get(badgesUserList)`.
-    public func badgesUserList(_ input: Operations.BadgesUserList.Input) async throws -> Operations.BadgesUserList.Output {
+    /// - Remark: Generated from `#/paths//badges/{badge}/users/get(badges.userList)`.
+    public func badges_userList(_ input: Operations.Badges_userList.Input) async throws -> Operations.Badges_userList.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BadgesUserList.id,
+            forOperation: Operations.Badges_userList.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/badges/{}/users",
@@ -3887,7 +3887,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.Ok.Body
+                    let body: Operations.Badges_userList.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3897,7 +3897,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3909,7 +3909,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.BadRequest.Body
+                    let body: Operations.Badges_userList.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3919,7 +3919,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3931,7 +3931,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.Unauthorized.Body
+                    let body: Operations.Badges_userList.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3941,7 +3941,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3953,7 +3953,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.Forbidden.Body
+                    let body: Operations.Badges_userList.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3963,7 +3963,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3975,7 +3975,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.NotFound.Body
+                    let body: Operations.Badges_userList.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -3985,7 +3985,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -3997,7 +3997,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.Conflict.Body
+                    let body: Operations.Badges_userList.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4007,7 +4007,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4019,7 +4019,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.ContentTooLarge.Body
+                    let body: Operations.Badges_userList.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4029,7 +4029,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4041,7 +4041,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesUserList.Output.InternalServerError.Body
+                    let body: Operations.Badges_userList.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4051,7 +4051,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesUserList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Badges_userList.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4078,11 +4078,11 @@ public struct Client: APIProtocol {
     /// Upload and update the image for a badge with automatic compression and resizing. Requires admin privileges
     ///
     /// - Remark: HTTP `POST /badges/{badge}/image`.
-    /// - Remark: Generated from `#/paths//badges/{badge}/image/post(badgesImageUpdate)`.
-    public func badgesImageUpdate(_ input: Operations.BadgesImageUpdate.Input) async throws -> Operations.BadgesImageUpdate.Output {
+    /// - Remark: Generated from `#/paths//badges/{badge}/image/post(badges.imageUpdate)`.
+    public func badges_imageUpdate(_ input: Operations.Badges_imageUpdate.Input) async throws -> Operations.Badges_imageUpdate.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BadgesImageUpdate.id,
+            forOperation: Operations.Badges_imageUpdate.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/badges/{}/image",
@@ -4116,7 +4116,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.Ok.Body
+                    let body: Operations.Badges_imageUpdate.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4126,7 +4126,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4138,7 +4138,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.BadRequest.Body
+                    let body: Operations.Badges_imageUpdate.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4148,7 +4148,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4160,7 +4160,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.Unauthorized.Body
+                    let body: Operations.Badges_imageUpdate.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4170,7 +4170,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4182,7 +4182,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.Forbidden.Body
+                    let body: Operations.Badges_imageUpdate.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4192,7 +4192,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4204,7 +4204,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.NotFound.Body
+                    let body: Operations.Badges_imageUpdate.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4214,7 +4214,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4226,7 +4226,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.Conflict.Body
+                    let body: Operations.Badges_imageUpdate.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4236,7 +4236,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4248,7 +4248,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Badges_imageUpdate.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4258,7 +4258,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -4270,7 +4270,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BadgesImageUpdate.Output.InternalServerError.Body
+                    let body: Operations.Badges_imageUpdate.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -4280,7 +4280,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BadgesImageUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Badges_imageUpdate.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -7797,11 +7797,11 @@ public struct Client: APIProtocol {
     /// Retrieve bottle aliases with filtering by bottle, unknown status, and search support
     ///
     /// - Remark: HTTP `GET /bottle-aliases`.
-    /// - Remark: Generated from `#/paths//bottle-aliases/get(bottleAliasesList)`.
-    public func bottleAliasesList(_ input: Operations.BottleAliasesList.Input) async throws -> Operations.BottleAliasesList.Output {
+    /// - Remark: Generated from `#/paths//bottle-aliases/get(bottleAliases.list)`.
+    public func bottleAliases_list(_ input: Operations.BottleAliases_list.Input) async throws -> Operations.BottleAliases_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleAliasesList.id,
+            forOperation: Operations.BottleAliases_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-aliases",
@@ -7857,7 +7857,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.Ok.Body
+                    let body: Operations.BottleAliases_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -7867,7 +7867,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -7879,7 +7879,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.BadRequest.Body
+                    let body: Operations.BottleAliases_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -7889,7 +7889,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -7901,7 +7901,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.Unauthorized.Body
+                    let body: Operations.BottleAliases_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -7911,7 +7911,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -7923,7 +7923,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.Forbidden.Body
+                    let body: Operations.BottleAliases_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -7933,7 +7933,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -7945,7 +7945,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.NotFound.Body
+                    let body: Operations.BottleAliases_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -7955,7 +7955,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -7967,7 +7967,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.Conflict.Body
+                    let body: Operations.BottleAliases_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -7977,7 +7977,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -7989,7 +7989,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.ContentTooLarge.Body
+                    let body: Operations.BottleAliases_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -7999,7 +7999,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8011,7 +8011,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesList.Output.InternalServerError.Body
+                    let body: Operations.BottleAliases_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8021,7 +8021,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleAliases_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8048,11 +8048,11 @@ public struct Client: APIProtocol {
     /// Create or update a bottle alias and associate it with a bottle. Updates related prices and reviews. Requires moderator privileges
     ///
     /// - Remark: HTTP `PUT /bottle-aliases`.
-    /// - Remark: Generated from `#/paths//bottle-aliases/put(bottleAliasesUpsert)`.
-    public func bottleAliasesUpsert(_ input: Operations.BottleAliasesUpsert.Input) async throws -> Operations.BottleAliasesUpsert.Output {
+    /// - Remark: Generated from `#/paths//bottle-aliases/put(bottleAliases.upsert)`.
+    public func bottleAliases_upsert(_ input: Operations.BottleAliases_upsert.Input) async throws -> Operations.BottleAliases_upsert.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleAliasesUpsert.id,
+            forOperation: Operations.BottleAliases_upsert.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-aliases",
@@ -8082,7 +8082,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.Ok.Body
+                    let body: Operations.BottleAliases_upsert.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8104,7 +8104,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.BadRequest.Body
+                    let body: Operations.BottleAliases_upsert.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8114,7 +8114,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpsert.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleAliases_upsert.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8126,7 +8126,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.Unauthorized.Body
+                    let body: Operations.BottleAliases_upsert.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8136,7 +8136,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpsert.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleAliases_upsert.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8148,7 +8148,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.Forbidden.Body
+                    let body: Operations.BottleAliases_upsert.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8158,7 +8158,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpsert.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleAliases_upsert.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8170,7 +8170,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.NotFound.Body
+                    let body: Operations.BottleAliases_upsert.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8180,7 +8180,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpsert.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleAliases_upsert.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8192,7 +8192,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.Conflict.Body
+                    let body: Operations.BottleAliases_upsert.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8202,7 +8202,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpsert.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleAliases_upsert.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8214,7 +8214,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.ContentTooLarge.Body
+                    let body: Operations.BottleAliases_upsert.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8224,7 +8224,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpsert.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleAliases_upsert.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8236,7 +8236,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpsert.Output.InternalServerError.Body
+                    let body: Operations.BottleAliases_upsert.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8246,7 +8246,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpsert.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleAliases_upsert.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8273,11 +8273,11 @@ public struct Client: APIProtocol {
     /// Update bottle alias properties such as ignored status. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /bottle-aliases/{alias}`.
-    /// - Remark: Generated from `#/paths//bottle-aliases/{alias}/patch(bottleAliasesUpdate)`.
-    public func bottleAliasesUpdate(_ input: Operations.BottleAliasesUpdate.Input) async throws -> Operations.BottleAliasesUpdate.Output {
+    /// - Remark: Generated from `#/paths//bottle-aliases/{alias}/patch(bottleAliases.update)`.
+    public func bottleAliases_update(_ input: Operations.BottleAliases_update.Input) async throws -> Operations.BottleAliases_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleAliasesUpdate.id,
+            forOperation: Operations.BottleAliases_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-aliases/{}",
@@ -8311,7 +8311,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.Ok.Body
+                    let body: Operations.BottleAliases_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8321,7 +8321,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8333,7 +8333,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.BadRequest.Body
+                    let body: Operations.BottleAliases_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8343,7 +8343,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8355,7 +8355,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.Unauthorized.Body
+                    let body: Operations.BottleAliases_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8365,7 +8365,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8377,7 +8377,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.Forbidden.Body
+                    let body: Operations.BottleAliases_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8387,7 +8387,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8399,7 +8399,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.NotFound.Body
+                    let body: Operations.BottleAliases_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8409,7 +8409,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8421,7 +8421,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.Conflict.Body
+                    let body: Operations.BottleAliases_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8431,7 +8431,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8443,7 +8443,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.BottleAliases_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8453,7 +8453,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8465,7 +8465,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesUpdate.Output.InternalServerError.Body
+                    let body: Operations.BottleAliases_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8475,7 +8475,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleAliases_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8502,11 +8502,11 @@ public struct Client: APIProtocol {
     /// Remove bottle alias association and clear related references. Cannot delete canonical names. Requires moderator privileges
     ///
     /// - Remark: HTTP `DELETE /bottle-aliases/{alias}`.
-    /// - Remark: Generated from `#/paths//bottle-aliases/{alias}/delete(bottleAliasesDelete)`.
-    public func bottleAliasesDelete(_ input: Operations.BottleAliasesDelete.Input) async throws -> Operations.BottleAliasesDelete.Output {
+    /// - Remark: Generated from `#/paths//bottle-aliases/{alias}/delete(bottleAliases.delete)`.
+    public func bottleAliases_delete(_ input: Operations.BottleAliases_delete.Input) async throws -> Operations.BottleAliases_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleAliasesDelete.id,
+            forOperation: Operations.BottleAliases_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-aliases/{}",
@@ -8540,7 +8540,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.Ok.Body
+                    let body: Operations.BottleAliases_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8562,7 +8562,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.BadRequest.Body
+                    let body: Operations.BottleAliases_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8572,7 +8572,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleAliases_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8584,7 +8584,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.Unauthorized.Body
+                    let body: Operations.BottleAliases_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8594,7 +8594,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleAliases_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8606,7 +8606,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.Forbidden.Body
+                    let body: Operations.BottleAliases_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8616,7 +8616,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleAliases_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8628,7 +8628,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.NotFound.Body
+                    let body: Operations.BottleAliases_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8638,7 +8638,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleAliases_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8650,7 +8650,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.Conflict.Body
+                    let body: Operations.BottleAliases_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8660,7 +8660,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleAliases_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8672,7 +8672,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.ContentTooLarge.Body
+                    let body: Operations.BottleAliases_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8682,7 +8682,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleAliases_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -8694,7 +8694,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleAliasesDelete.Output.InternalServerError.Body
+                    let body: Operations.BottleAliases_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -8704,7 +8704,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleAliasesDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleAliases_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -9878,11 +9878,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific bottle series by its ID
     ///
     /// - Remark: HTTP `GET /bottle-series/{series}`.
-    /// - Remark: Generated from `#/paths//bottle-series/{series}/get(bottleSeriesDetails)`.
-    public func bottleSeriesDetails(_ input: Operations.BottleSeriesDetails.Input) async throws -> Operations.BottleSeriesDetails.Output {
+    /// - Remark: Generated from `#/paths//bottle-series/{series}/get(bottleSeries.details)`.
+    public func bottleSeries_details(_ input: Operations.BottleSeries_details.Input) async throws -> Operations.BottleSeries_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleSeriesDetails.id,
+            forOperation: Operations.BottleSeries_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-series/{}",
@@ -9905,7 +9905,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.Ok.Body
+                    let body: Operations.BottleSeries_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -9915,7 +9915,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -9927,7 +9927,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.BadRequest.Body
+                    let body: Operations.BottleSeries_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -9937,7 +9937,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -9949,7 +9949,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.Unauthorized.Body
+                    let body: Operations.BottleSeries_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -9959,7 +9959,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -9971,7 +9971,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.Forbidden.Body
+                    let body: Operations.BottleSeries_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -9981,7 +9981,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -9993,7 +9993,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.NotFound.Body
+                    let body: Operations.BottleSeries_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10003,7 +10003,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10015,7 +10015,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.Conflict.Body
+                    let body: Operations.BottleSeries_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10025,7 +10025,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10037,7 +10037,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.ContentTooLarge.Body
+                    let body: Operations.BottleSeries_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10047,7 +10047,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10059,7 +10059,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDetails.Output.InternalServerError.Body
+                    let body: Operations.BottleSeries_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10069,7 +10069,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleSeries_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10096,11 +10096,11 @@ public struct Client: APIProtocol {
     /// Update bottle series information including name and description. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /bottle-series/{series}`.
-    /// - Remark: Generated from `#/paths//bottle-series/{series}/patch(bottleSeriesUpdate)`.
-    public func bottleSeriesUpdate(_ input: Operations.BottleSeriesUpdate.Input) async throws -> Operations.BottleSeriesUpdate.Output {
+    /// - Remark: Generated from `#/paths//bottle-series/{series}/patch(bottleSeries.update)`.
+    public func bottleSeries_update(_ input: Operations.BottleSeries_update.Input) async throws -> Operations.BottleSeries_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleSeriesUpdate.id,
+            forOperation: Operations.BottleSeries_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-series/{}",
@@ -10134,7 +10134,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.Ok.Body
+                    let body: Operations.BottleSeries_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10144,7 +10144,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10156,7 +10156,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.BadRequest.Body
+                    let body: Operations.BottleSeries_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10166,7 +10166,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10178,7 +10178,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.Unauthorized.Body
+                    let body: Operations.BottleSeries_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10188,7 +10188,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10200,7 +10200,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.Forbidden.Body
+                    let body: Operations.BottleSeries_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10210,7 +10210,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10222,7 +10222,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.NotFound.Body
+                    let body: Operations.BottleSeries_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10232,7 +10232,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10244,7 +10244,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.Conflict.Body
+                    let body: Operations.BottleSeries_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10254,7 +10254,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10266,7 +10266,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.BottleSeries_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10276,7 +10276,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10288,7 +10288,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesUpdate.Output.InternalServerError.Body
+                    let body: Operations.BottleSeries_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10298,7 +10298,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleSeries_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10325,11 +10325,11 @@ public struct Client: APIProtocol {
     /// Delete a bottle series and remove its reference from associated bottles. Requires moderator privileges
     ///
     /// - Remark: HTTP `DELETE /bottle-series/{series}`.
-    /// - Remark: Generated from `#/paths//bottle-series/{series}/delete(bottleSeriesDelete)`.
-    public func bottleSeriesDelete(_ input: Operations.BottleSeriesDelete.Input) async throws -> Operations.BottleSeriesDelete.Output {
+    /// - Remark: Generated from `#/paths//bottle-series/{series}/delete(bottleSeries.delete)`.
+    public func bottleSeries_delete(_ input: Operations.BottleSeries_delete.Input) async throws -> Operations.BottleSeries_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleSeriesDelete.id,
+            forOperation: Operations.BottleSeries_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-series/{}",
@@ -10363,7 +10363,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.Ok.Body
+                    let body: Operations.BottleSeries_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10385,7 +10385,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.BadRequest.Body
+                    let body: Operations.BottleSeries_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10395,7 +10395,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleSeries_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10407,7 +10407,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.Unauthorized.Body
+                    let body: Operations.BottleSeries_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10417,7 +10417,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleSeries_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10429,7 +10429,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.Forbidden.Body
+                    let body: Operations.BottleSeries_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10439,7 +10439,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleSeries_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10451,7 +10451,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.NotFound.Body
+                    let body: Operations.BottleSeries_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10461,7 +10461,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleSeries_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10473,7 +10473,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.Conflict.Body
+                    let body: Operations.BottleSeries_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10483,7 +10483,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleSeries_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10495,7 +10495,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.ContentTooLarge.Body
+                    let body: Operations.BottleSeries_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10505,7 +10505,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleSeries_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10517,7 +10517,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesDelete.Output.InternalServerError.Body
+                    let body: Operations.BottleSeries_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10527,7 +10527,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleSeries_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10554,11 +10554,11 @@ public struct Client: APIProtocol {
     /// Retrieve bottle series for a specific brand with search and pagination support
     ///
     /// - Remark: HTTP `GET /bottle-series`.
-    /// - Remark: Generated from `#/paths//bottle-series/get(bottleSeriesList)`.
-    public func bottleSeriesList(_ input: Operations.BottleSeriesList.Input) async throws -> Operations.BottleSeriesList.Output {
+    /// - Remark: Generated from `#/paths//bottle-series/get(bottleSeries.list)`.
+    public func bottleSeries_list(_ input: Operations.BottleSeries_list.Input) async throws -> Operations.BottleSeries_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleSeriesList.id,
+            forOperation: Operations.BottleSeries_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-series",
@@ -10607,7 +10607,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.Ok.Body
+                    let body: Operations.BottleSeries_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10617,7 +10617,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10629,7 +10629,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.BadRequest.Body
+                    let body: Operations.BottleSeries_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10639,7 +10639,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10651,7 +10651,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.Unauthorized.Body
+                    let body: Operations.BottleSeries_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10661,7 +10661,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10673,7 +10673,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.Forbidden.Body
+                    let body: Operations.BottleSeries_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10683,7 +10683,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10695,7 +10695,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.NotFound.Body
+                    let body: Operations.BottleSeries_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10705,7 +10705,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10717,7 +10717,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.Conflict.Body
+                    let body: Operations.BottleSeries_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10727,7 +10727,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10739,7 +10739,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.ContentTooLarge.Body
+                    let body: Operations.BottleSeries_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10749,7 +10749,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10761,7 +10761,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesList.Output.InternalServerError.Body
+                    let body: Operations.BottleSeries_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10771,7 +10771,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleSeries_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10798,11 +10798,11 @@ public struct Client: APIProtocol {
     /// Create a new bottle series for a brand with name and description
     ///
     /// - Remark: HTTP `POST /bottle-series`.
-    /// - Remark: Generated from `#/paths//bottle-series/post(bottleSeriesCreate)`.
-    public func bottleSeriesCreate(_ input: Operations.BottleSeriesCreate.Input) async throws -> Operations.BottleSeriesCreate.Output {
+    /// - Remark: Generated from `#/paths//bottle-series/post(bottleSeries.create)`.
+    public func bottleSeries_create(_ input: Operations.BottleSeries_create.Input) async throws -> Operations.BottleSeries_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.BottleSeriesCreate.id,
+            forOperation: Operations.BottleSeries_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/bottle-series",
@@ -10832,7 +10832,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.Ok.Body
+                    let body: Operations.BottleSeries_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10842,7 +10842,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10854,7 +10854,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.BadRequest.Body
+                    let body: Operations.BottleSeries_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10864,7 +10864,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10876,7 +10876,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.Unauthorized.Body
+                    let body: Operations.BottleSeries_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10886,7 +10886,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10898,7 +10898,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.Forbidden.Body
+                    let body: Operations.BottleSeries_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10908,7 +10908,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10920,7 +10920,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.NotFound.Body
+                    let body: Operations.BottleSeries_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10930,7 +10930,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10942,7 +10942,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.Conflict.Body
+                    let body: Operations.BottleSeries_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10952,7 +10952,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10964,7 +10964,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.ContentTooLarge.Body
+                    let body: Operations.BottleSeries_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10974,7 +10974,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -10986,7 +10986,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.BottleSeriesCreate.Output.InternalServerError.Body
+                    let body: Operations.BottleSeries_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -10996,7 +10996,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.BottleSeriesCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.BottleSeries_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11023,11 +11023,11 @@ public struct Client: APIProtocol {
     /// Retrieve change history for bottles and entities with filtering by user and object type
     ///
     /// - Remark: HTTP `GET /changes`.
-    /// - Remark: Generated from `#/paths//changes/get(changesList)`.
-    public func changesList(_ input: Operations.ChangesList.Input) async throws -> Operations.ChangesList.Output {
+    /// - Remark: Generated from `#/paths//changes/get(changes.list)`.
+    public func changes_list(_ input: Operations.Changes_list.Input) async throws -> Operations.Changes_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ChangesList.id,
+            forOperation: Operations.Changes_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/changes",
@@ -11076,7 +11076,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.Ok.Body
+                    let body: Operations.Changes_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11086,7 +11086,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11098,7 +11098,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.BadRequest.Body
+                    let body: Operations.Changes_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11108,7 +11108,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11120,7 +11120,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.Unauthorized.Body
+                    let body: Operations.Changes_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11130,7 +11130,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11142,7 +11142,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.Forbidden.Body
+                    let body: Operations.Changes_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11152,7 +11152,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11164,7 +11164,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.NotFound.Body
+                    let body: Operations.Changes_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11174,7 +11174,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11186,7 +11186,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.Conflict.Body
+                    let body: Operations.Changes_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11196,7 +11196,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11208,7 +11208,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.ContentTooLarge.Body
+                    let body: Operations.Changes_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11218,7 +11218,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11230,7 +11230,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ChangesList.Output.InternalServerError.Body
+                    let body: Operations.Changes_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11240,7 +11240,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ChangesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Changes_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11267,11 +11267,11 @@ public struct Client: APIProtocol {
     /// Retrieve collections for a specific user with optional bottle filtering. Respects user privacy settings
     ///
     /// - Remark: HTTP `GET /users/{user}/collections`.
-    /// - Remark: Generated from `#/paths//users/{user}/collections/get(collectionsList)`.
-    public func collectionsList(_ input: Operations.CollectionsList.Input) async throws -> Operations.CollectionsList.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/collections/get(collections.list)`.
+    public func collections_list(_ input: Operations.Collections_list.Input) async throws -> Operations.Collections_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CollectionsList.id,
+            forOperation: Operations.Collections_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/collections",
@@ -11315,7 +11315,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.Ok.Body
+                    let body: Operations.Collections_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11325,7 +11325,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11337,7 +11337,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.BadRequest.Body
+                    let body: Operations.Collections_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11347,7 +11347,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11359,7 +11359,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.Unauthorized.Body
+                    let body: Operations.Collections_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11369,7 +11369,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11381,7 +11381,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.Forbidden.Body
+                    let body: Operations.Collections_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11391,7 +11391,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11403,7 +11403,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.NotFound.Body
+                    let body: Operations.Collections_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11413,7 +11413,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11425,7 +11425,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.Conflict.Body
+                    let body: Operations.Collections_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11435,7 +11435,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11447,7 +11447,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.ContentTooLarge.Body
+                    let body: Operations.Collections_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11457,7 +11457,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11469,7 +11469,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsList.Output.InternalServerError.Body
+                    let body: Operations.Collections_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11479,7 +11479,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Collections_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11506,11 +11506,11 @@ public struct Client: APIProtocol {
     /// Retrieve bottles in a user's collection with pagination support. Respects privacy settings
     ///
     /// - Remark: HTTP `GET /users/{user}/collections/{collection}/bottles`.
-    /// - Remark: Generated from `#/paths//users/{user}/collections/{collection}/bottles/get(collectionsBottlesList)`.
-    public func collectionsBottlesList(_ input: Operations.CollectionsBottlesList.Input) async throws -> Operations.CollectionsBottlesList.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/collections/{collection}/bottles/get(collections.bottles.list)`.
+    public func collections_bottles_list(_ input: Operations.Collections_bottles_list.Input) async throws -> Operations.Collections_bottles_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CollectionsBottlesList.id,
+            forOperation: Operations.Collections_bottles_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/collections/{}/bottles",
@@ -11548,7 +11548,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.Ok.Body
+                    let body: Operations.Collections_bottles_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11558,7 +11558,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11570,7 +11570,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.BadRequest.Body
+                    let body: Operations.Collections_bottles_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11580,7 +11580,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11592,7 +11592,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.Unauthorized.Body
+                    let body: Operations.Collections_bottles_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11602,7 +11602,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11614,7 +11614,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.Forbidden.Body
+                    let body: Operations.Collections_bottles_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11624,7 +11624,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11636,7 +11636,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.NotFound.Body
+                    let body: Operations.Collections_bottles_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11646,7 +11646,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11658,7 +11658,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.Conflict.Body
+                    let body: Operations.Collections_bottles_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11668,7 +11668,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11680,7 +11680,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.ContentTooLarge.Body
+                    let body: Operations.Collections_bottles_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11690,7 +11690,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11702,7 +11702,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesList.Output.InternalServerError.Body
+                    let body: Operations.Collections_bottles_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11712,7 +11712,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Collections_bottles_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11739,11 +11739,11 @@ public struct Client: APIProtocol {
     /// Add a bottle (and optionally a specific release) to a user's collection. Requires authentication and ownership
     ///
     /// - Remark: HTTP `POST /users/{user}/collections/{collection}/bottles`.
-    /// - Remark: Generated from `#/paths//users/{user}/collections/{collection}/bottles/post(collectionsBottlesCreate)`.
-    public func collectionsBottlesCreate(_ input: Operations.CollectionsBottlesCreate.Input) async throws -> Operations.CollectionsBottlesCreate.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/collections/{collection}/bottles/post(collections.bottles.create)`.
+    public func collections_bottles_create(_ input: Operations.Collections_bottles_create.Input) async throws -> Operations.Collections_bottles_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CollectionsBottlesCreate.id,
+            forOperation: Operations.Collections_bottles_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/collections/{}/bottles",
@@ -11776,7 +11776,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.Ok.Body
+                    let body: Operations.Collections_bottles_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11798,7 +11798,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.BadRequest.Body
+                    let body: Operations.Collections_bottles_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11808,7 +11808,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Collections_bottles_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11820,7 +11820,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.Unauthorized.Body
+                    let body: Operations.Collections_bottles_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11830,7 +11830,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Collections_bottles_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11842,7 +11842,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.Forbidden.Body
+                    let body: Operations.Collections_bottles_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11852,7 +11852,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Collections_bottles_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11864,7 +11864,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.NotFound.Body
+                    let body: Operations.Collections_bottles_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11874,7 +11874,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Collections_bottles_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11886,7 +11886,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.Conflict.Body
+                    let body: Operations.Collections_bottles_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11896,7 +11896,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Collections_bottles_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11908,7 +11908,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Collections_bottles_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11918,7 +11918,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Collections_bottles_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11930,7 +11930,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesCreate.Output.InternalServerError.Body
+                    let body: Operations.Collections_bottles_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -11940,7 +11940,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Collections_bottles_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -11967,11 +11967,11 @@ public struct Client: APIProtocol {
     /// Remove a bottle (and optionally a specific release) from a user's collection. Requires authentication and ownership
     ///
     /// - Remark: HTTP `DELETE /users/{user}/collections/{collection}/bottles`.
-    /// - Remark: Generated from `#/paths//users/{user}/collections/{collection}/bottles/delete(collectionsBottlesDelete)`.
-    public func collectionsBottlesDelete(_ input: Operations.CollectionsBottlesDelete.Input) async throws -> Operations.CollectionsBottlesDelete.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/collections/{collection}/bottles/delete(collections.bottles.delete)`.
+    public func collections_bottles_delete(_ input: Operations.Collections_bottles_delete.Input) async throws -> Operations.Collections_bottles_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CollectionsBottlesDelete.id,
+            forOperation: Operations.Collections_bottles_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/collections/{}/bottles",
@@ -12004,7 +12004,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.Ok.Body
+                    let body: Operations.Collections_bottles_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12026,7 +12026,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.BadRequest.Body
+                    let body: Operations.Collections_bottles_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12036,7 +12036,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Collections_bottles_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12048,7 +12048,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.Unauthorized.Body
+                    let body: Operations.Collections_bottles_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12058,7 +12058,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Collections_bottles_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12070,7 +12070,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.Forbidden.Body
+                    let body: Operations.Collections_bottles_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12080,7 +12080,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Collections_bottles_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12092,7 +12092,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.NotFound.Body
+                    let body: Operations.Collections_bottles_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12102,7 +12102,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Collections_bottles_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12114,7 +12114,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.Conflict.Body
+                    let body: Operations.Collections_bottles_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12124,7 +12124,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Collections_bottles_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12136,7 +12136,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Collections_bottles_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12146,7 +12146,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Collections_bottles_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12158,7 +12158,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CollectionsBottlesDelete.Output.InternalServerError.Body
+                    let body: Operations.Collections_bottles_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12168,7 +12168,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CollectionsBottlesDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Collections_bottles_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12895,11 +12895,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific country using its slug
     ///
     /// - Remark: HTTP `GET /countries/{country}`.
-    /// - Remark: Generated from `#/paths//countries/{country}/get(countriesDetails)`.
-    public func countriesDetails(_ input: Operations.CountriesDetails.Input) async throws -> Operations.CountriesDetails.Output {
+    /// - Remark: Generated from `#/paths//countries/{country}/get(countries.details)`.
+    public func countries_details(_ input: Operations.Countries_details.Input) async throws -> Operations.Countries_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CountriesDetails.id,
+            forOperation: Operations.Countries_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/{}",
@@ -12922,7 +12922,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.Ok.Body
+                    let body: Operations.Countries_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12932,7 +12932,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12944,7 +12944,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.BadRequest.Body
+                    let body: Operations.Countries_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12954,7 +12954,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12966,7 +12966,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.Unauthorized.Body
+                    let body: Operations.Countries_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12976,7 +12976,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -12988,7 +12988,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.Forbidden.Body
+                    let body: Operations.Countries_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -12998,7 +12998,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13010,7 +13010,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.NotFound.Body
+                    let body: Operations.Countries_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13020,7 +13020,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13032,7 +13032,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.Conflict.Body
+                    let body: Operations.Countries_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13042,7 +13042,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13054,7 +13054,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Countries_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13064,7 +13064,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13076,7 +13076,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesDetails.Output.InternalServerError.Body
+                    let body: Operations.Countries_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13086,7 +13086,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Countries_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13113,11 +13113,11 @@ public struct Client: APIProtocol {
     /// Update country information including description and summary. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /countries/{country}`.
-    /// - Remark: Generated from `#/paths//countries/{country}/patch(countriesUpdate)`.
-    public func countriesUpdate(_ input: Operations.CountriesUpdate.Input) async throws -> Operations.CountriesUpdate.Output {
+    /// - Remark: Generated from `#/paths//countries/{country}/patch(countries.update)`.
+    public func countries_update(_ input: Operations.Countries_update.Input) async throws -> Operations.Countries_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CountriesUpdate.id,
+            forOperation: Operations.Countries_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/{}",
@@ -13151,7 +13151,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.Ok.Body
+                    let body: Operations.Countries_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13161,7 +13161,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13173,7 +13173,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.BadRequest.Body
+                    let body: Operations.Countries_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13183,7 +13183,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13195,7 +13195,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.Unauthorized.Body
+                    let body: Operations.Countries_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13205,7 +13205,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13217,7 +13217,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.Forbidden.Body
+                    let body: Operations.Countries_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13227,7 +13227,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13239,7 +13239,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.NotFound.Body
+                    let body: Operations.Countries_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13249,7 +13249,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13261,7 +13261,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.Conflict.Body
+                    let body: Operations.Countries_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13271,7 +13271,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13283,7 +13283,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Countries_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13293,7 +13293,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13305,7 +13305,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesUpdate.Output.InternalServerError.Body
+                    let body: Operations.Countries_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13315,7 +13315,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Countries_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13342,11 +13342,11 @@ public struct Client: APIProtocol {
     /// Retrieve countries with filtering by major whisky regions, bottle counts, and search support
     ///
     /// - Remark: HTTP `GET /countries`.
-    /// - Remark: Generated from `#/paths//countries/get(countriesList)`.
-    public func countriesList(_ input: Operations.CountriesList.Input) async throws -> Operations.CountriesList.Output {
+    /// - Remark: Generated from `#/paths//countries/get(countries.list)`.
+    public func countries_list(_ input: Operations.Countries_list.Input) async throws -> Operations.Countries_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CountriesList.id,
+            forOperation: Operations.Countries_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries",
@@ -13409,7 +13409,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.Ok.Body
+                    let body: Operations.Countries_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13419,7 +13419,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13431,7 +13431,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.BadRequest.Body
+                    let body: Operations.Countries_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13441,7 +13441,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13453,7 +13453,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.Unauthorized.Body
+                    let body: Operations.Countries_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13463,7 +13463,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13475,7 +13475,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.Forbidden.Body
+                    let body: Operations.Countries_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13485,7 +13485,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13497,7 +13497,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.NotFound.Body
+                    let body: Operations.Countries_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13507,7 +13507,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13519,7 +13519,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.Conflict.Body
+                    let body: Operations.Countries_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13529,7 +13529,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13541,7 +13541,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.ContentTooLarge.Body
+                    let body: Operations.Countries_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13551,7 +13551,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13563,7 +13563,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesList.Output.InternalServerError.Body
+                    let body: Operations.Countries_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13573,7 +13573,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Countries_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13600,11 +13600,11 @@ public struct Client: APIProtocol {
     /// Retrieve whisky categories and their counts for a specific country based on distillery locations
     ///
     /// - Remark: HTTP `GET /countries/categories`.
-    /// - Remark: Generated from `#/paths//countries/categories/get(countriesCategories)`.
-    public func countriesCategories(_ input: Operations.CountriesCategories.Input) async throws -> Operations.CountriesCategories.Output {
+    /// - Remark: Generated from `#/paths//countries/categories/get(countries.categories)`.
+    public func countries_categories(_ input: Operations.Countries_categories.Input) async throws -> Operations.Countries_categories.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.CountriesCategories.id,
+            forOperation: Operations.Countries_categories.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/categories",
@@ -13632,7 +13632,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.Ok.Body
+                    let body: Operations.Countries_categories.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13642,7 +13642,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.Ok.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13654,7 +13654,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.BadRequest.Body
+                    let body: Operations.Countries_categories.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13664,7 +13664,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13676,7 +13676,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.Unauthorized.Body
+                    let body: Operations.Countries_categories.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13686,7 +13686,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13698,7 +13698,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.Forbidden.Body
+                    let body: Operations.Countries_categories.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13708,7 +13708,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13720,7 +13720,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.NotFound.Body
+                    let body: Operations.Countries_categories.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13730,7 +13730,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13742,7 +13742,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.Conflict.Body
+                    let body: Operations.Countries_categories.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13752,7 +13752,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13764,7 +13764,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.ContentTooLarge.Body
+                    let body: Operations.Countries_categories.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13774,7 +13774,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13786,7 +13786,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.CountriesCategories.Output.InternalServerError.Body
+                    let body: Operations.Countries_categories.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13796,7 +13796,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.CountriesCategories.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Countries_categories.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13823,11 +13823,11 @@ public struct Client: APIProtocol {
     /// Resend email verification to the authenticated user's email address
     ///
     /// - Remark: HTTP `POST /email/resend-verification`.
-    /// - Remark: Generated from `#/paths//email/resend-verification/post(emailResendVerification)`.
-    public func emailResendVerification(_ input: Operations.EmailResendVerification.Input) async throws -> Operations.EmailResendVerification.Output {
+    /// - Remark: Generated from `#/paths//email/resend-verification/post(email.resendVerification)`.
+    public func email_resendVerification(_ input: Operations.Email_resendVerification.Input) async throws -> Operations.Email_resendVerification.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EmailResendVerification.id,
+            forOperation: Operations.Email_resendVerification.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/email/resend-verification",
@@ -13848,7 +13848,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.Ok.Body
+                    let body: Operations.Email_resendVerification.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13870,7 +13870,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.BadRequest.Body
+                    let body: Operations.Email_resendVerification.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13880,7 +13880,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailResendVerification.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Email_resendVerification.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13892,7 +13892,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.Unauthorized.Body
+                    let body: Operations.Email_resendVerification.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13902,7 +13902,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailResendVerification.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Email_resendVerification.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13914,7 +13914,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.Forbidden.Body
+                    let body: Operations.Email_resendVerification.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13924,7 +13924,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailResendVerification.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Email_resendVerification.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13936,7 +13936,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.NotFound.Body
+                    let body: Operations.Email_resendVerification.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13946,7 +13946,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailResendVerification.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Email_resendVerification.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13958,7 +13958,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.Conflict.Body
+                    let body: Operations.Email_resendVerification.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13968,7 +13968,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailResendVerification.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Email_resendVerification.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -13980,7 +13980,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.ContentTooLarge.Body
+                    let body: Operations.Email_resendVerification.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -13990,7 +13990,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailResendVerification.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Email_resendVerification.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14002,7 +14002,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailResendVerification.Output.InternalServerError.Body
+                    let body: Operations.Email_resendVerification.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14012,7 +14012,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailResendVerification.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Email_resendVerification.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14039,11 +14039,11 @@ public struct Client: APIProtocol {
     /// Verify user email address using verification token from email
     ///
     /// - Remark: HTTP `POST /email/verify`.
-    /// - Remark: Generated from `#/paths//email/verify/post(emailVerify)`.
-    public func emailVerify(_ input: Operations.EmailVerify.Input) async throws -> Operations.EmailVerify.Output {
+    /// - Remark: Generated from `#/paths//email/verify/post(email.verify)`.
+    public func email_verify(_ input: Operations.Email_verify.Input) async throws -> Operations.Email_verify.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EmailVerify.id,
+            forOperation: Operations.Email_verify.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/email/verify",
@@ -14073,7 +14073,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.Ok.Body
+                    let body: Operations.Email_verify.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14095,7 +14095,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.BadRequest.Body
+                    let body: Operations.Email_verify.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14105,7 +14105,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailVerify.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Email_verify.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14117,7 +14117,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.Unauthorized.Body
+                    let body: Operations.Email_verify.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14127,7 +14127,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailVerify.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Email_verify.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14139,7 +14139,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.Forbidden.Body
+                    let body: Operations.Email_verify.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14149,7 +14149,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailVerify.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Email_verify.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14161,7 +14161,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.NotFound.Body
+                    let body: Operations.Email_verify.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14171,7 +14171,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailVerify.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Email_verify.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14183,7 +14183,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.Conflict.Body
+                    let body: Operations.Email_verify.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14193,7 +14193,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailVerify.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Email_verify.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14205,7 +14205,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.ContentTooLarge.Body
+                    let body: Operations.Email_verify.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14215,7 +14215,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailVerify.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Email_verify.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14227,7 +14227,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EmailVerify.Output.InternalServerError.Body
+                    let body: Operations.Email_verify.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14237,7 +14237,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EmailVerify.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Email_verify.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14264,11 +14264,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific entity (brand, distillery, or bottler) including creator information
     ///
     /// - Remark: HTTP `GET /entities/{entity}`.
-    /// - Remark: Generated from `#/paths//entities/{entity}/get(entitiesDetails)`.
-    public func entitiesDetails(_ input: Operations.EntitiesDetails.Input) async throws -> Operations.EntitiesDetails.Output {
+    /// - Remark: Generated from `#/paths//entities/{entity}/get(entities.details)`.
+    public func entities_details(_ input: Operations.Entities_details.Input) async throws -> Operations.Entities_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesDetails.id,
+            forOperation: Operations.Entities_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities/{}",
@@ -14291,7 +14291,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.Ok.Body
+                    let body: Operations.Entities_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14301,7 +14301,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14313,7 +14313,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.BadRequest.Body
+                    let body: Operations.Entities_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14323,7 +14323,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14335,7 +14335,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.Unauthorized.Body
+                    let body: Operations.Entities_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14345,7 +14345,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14357,7 +14357,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.Forbidden.Body
+                    let body: Operations.Entities_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14367,7 +14367,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14379,7 +14379,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.NotFound.Body
+                    let body: Operations.Entities_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14389,7 +14389,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14401,7 +14401,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.Conflict.Body
+                    let body: Operations.Entities_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14411,7 +14411,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14423,7 +14423,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14433,7 +14433,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14445,7 +14445,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDetails.Output.InternalServerError.Body
+                    let body: Operations.Entities_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14455,7 +14455,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14482,11 +14482,11 @@ public struct Client: APIProtocol {
     /// Update entity information including name, location, type, and description. Automatically updates related bottles and aliases. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /entities/{entity}`.
-    /// - Remark: Generated from `#/paths//entities/{entity}/patch(entitiesUpdate)`.
-    public func entitiesUpdate(_ input: Operations.EntitiesUpdate.Input) async throws -> Operations.EntitiesUpdate.Output {
+    /// - Remark: Generated from `#/paths//entities/{entity}/patch(entities.update)`.
+    public func entities_update(_ input: Operations.Entities_update.Input) async throws -> Operations.Entities_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesUpdate.id,
+            forOperation: Operations.Entities_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities/{}",
@@ -14520,7 +14520,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.Ok.Body
+                    let body: Operations.Entities_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14530,7 +14530,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14542,7 +14542,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.BadRequest.Body
+                    let body: Operations.Entities_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14552,7 +14552,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14564,7 +14564,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.Unauthorized.Body
+                    let body: Operations.Entities_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14574,7 +14574,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14586,7 +14586,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.Forbidden.Body
+                    let body: Operations.Entities_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14596,7 +14596,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14608,7 +14608,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.NotFound.Body
+                    let body: Operations.Entities_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14618,7 +14618,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14630,7 +14630,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.Conflict.Body
+                    let body: Operations.Entities_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14640,7 +14640,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14652,7 +14652,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14662,7 +14662,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14674,7 +14674,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesUpdate.Output.InternalServerError.Body
+                    let body: Operations.Entities_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14684,7 +14684,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14711,11 +14711,11 @@ public struct Client: APIProtocol {
     /// Delete an entity and create a tombstone record. Removes associated aliases. Requires admin privileges
     ///
     /// - Remark: HTTP `DELETE /entities/{entity}`.
-    /// - Remark: Generated from `#/paths//entities/{entity}/delete(entitiesDelete)`.
-    public func entitiesDelete(_ input: Operations.EntitiesDelete.Input) async throws -> Operations.EntitiesDelete.Output {
+    /// - Remark: Generated from `#/paths//entities/{entity}/delete(entities.delete)`.
+    public func entities_delete(_ input: Operations.Entities_delete.Input) async throws -> Operations.Entities_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesDelete.id,
+            forOperation: Operations.Entities_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities/{}",
@@ -14749,7 +14749,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.Ok.Body
+                    let body: Operations.Entities_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14771,7 +14771,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.BadRequest.Body
+                    let body: Operations.Entities_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14781,7 +14781,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14793,7 +14793,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.Unauthorized.Body
+                    let body: Operations.Entities_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14803,7 +14803,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14815,7 +14815,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.Forbidden.Body
+                    let body: Operations.Entities_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14825,7 +14825,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14837,7 +14837,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.NotFound.Body
+                    let body: Operations.Entities_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14847,7 +14847,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14859,7 +14859,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.Conflict.Body
+                    let body: Operations.Entities_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14869,7 +14869,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14881,7 +14881,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14891,7 +14891,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14903,7 +14903,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesDelete.Output.InternalServerError.Body
+                    let body: Operations.Entities_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -14913,7 +14913,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -14940,11 +14940,11 @@ public struct Client: APIProtocol {
     /// Search and filter entities (brands, distilleries, bottlers) with advanced filtering by location, type, and search context
     ///
     /// - Remark: HTTP `GET /entities`.
-    /// - Remark: Generated from `#/paths//entities/get(entitiesList)`.
-    public func entitiesList(_ input: Operations.EntitiesList.Input) async throws -> Operations.EntitiesList.Output {
+    /// - Remark: Generated from `#/paths//entities/get(entities.list)`.
+    public func entities_list(_ input: Operations.Entities_list.Input) async throws -> Operations.Entities_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesList.id,
+            forOperation: Operations.Entities_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities",
@@ -15035,7 +15035,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.Ok.Body
+                    let body: Operations.Entities_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15045,7 +15045,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15057,7 +15057,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.BadRequest.Body
+                    let body: Operations.Entities_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15067,7 +15067,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15079,7 +15079,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.Unauthorized.Body
+                    let body: Operations.Entities_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15089,7 +15089,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15101,7 +15101,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.Forbidden.Body
+                    let body: Operations.Entities_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15111,7 +15111,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15123,7 +15123,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.NotFound.Body
+                    let body: Operations.Entities_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15133,7 +15133,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15145,7 +15145,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.Conflict.Body
+                    let body: Operations.Entities_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15155,7 +15155,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15167,7 +15167,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15177,7 +15177,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15189,7 +15189,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesList.Output.InternalServerError.Body
+                    let body: Operations.Entities_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15199,7 +15199,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15226,11 +15226,11 @@ public struct Client: APIProtocol {
     /// Create a new entity (brand, distillery, or bottler) with location and type information
     ///
     /// - Remark: HTTP `POST /entities`.
-    /// - Remark: Generated from `#/paths//entities/post(entitiesCreate)`.
-    public func entitiesCreate(_ input: Operations.EntitiesCreate.Input) async throws -> Operations.EntitiesCreate.Output {
+    /// - Remark: Generated from `#/paths//entities/post(entities.create)`.
+    public func entities_create(_ input: Operations.Entities_create.Input) async throws -> Operations.Entities_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesCreate.id,
+            forOperation: Operations.Entities_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities",
@@ -15260,7 +15260,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.Ok.Body
+                    let body: Operations.Entities_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15270,7 +15270,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15282,7 +15282,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.BadRequest.Body
+                    let body: Operations.Entities_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15292,7 +15292,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15304,7 +15304,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.Unauthorized.Body
+                    let body: Operations.Entities_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15314,7 +15314,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15326,7 +15326,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.Forbidden.Body
+                    let body: Operations.Entities_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15336,7 +15336,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15348,7 +15348,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.NotFound.Body
+                    let body: Operations.Entities_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15358,7 +15358,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15370,7 +15370,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.Conflict.Body
+                    let body: Operations.Entities_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15380,7 +15380,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15392,7 +15392,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15402,7 +15402,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15414,7 +15414,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCreate.Output.InternalServerError.Body
+                    let body: Operations.Entities_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15424,7 +15424,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15451,11 +15451,11 @@ public struct Client: APIProtocol {
     /// Merge two entities together, combining their data and references. Requires moderator privileges
     ///
     /// - Remark: HTTP `POST /entities/{entity}/merge`.
-    /// - Remark: Generated from `#/paths//entities/{entity}/merge/post(entitiesMerge)`.
-    public func entitiesMerge(_ input: Operations.EntitiesMerge.Input) async throws -> Operations.EntitiesMerge.Output {
+    /// - Remark: Generated from `#/paths//entities/{entity}/merge/post(entities.merge)`.
+    public func entities_merge(_ input: Operations.Entities_merge.Input) async throws -> Operations.Entities_merge.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesMerge.id,
+            forOperation: Operations.Entities_merge.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities/{}/merge",
@@ -15487,7 +15487,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.Ok.Body
+                    let body: Operations.Entities_merge.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15497,7 +15497,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.Ok.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15509,7 +15509,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.BadRequest.Body
+                    let body: Operations.Entities_merge.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15519,7 +15519,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15531,7 +15531,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.Unauthorized.Body
+                    let body: Operations.Entities_merge.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15541,7 +15541,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15553,7 +15553,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.Forbidden.Body
+                    let body: Operations.Entities_merge.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15563,7 +15563,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15575,7 +15575,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.NotFound.Body
+                    let body: Operations.Entities_merge.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15585,7 +15585,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15597,7 +15597,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.Conflict.Body
+                    let body: Operations.Entities_merge.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15607,7 +15607,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15619,7 +15619,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_merge.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15629,7 +15629,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15641,7 +15641,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesMerge.Output.InternalServerError.Body
+                    let body: Operations.Entities_merge.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15651,7 +15651,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesMerge.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_merge.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15678,11 +15678,11 @@ public struct Client: APIProtocol {
     /// Retrieve all aliases for a specific entity, indicating which is canonical
     ///
     /// - Remark: HTTP `GET /entities/{entity}/aliases`.
-    /// - Remark: Generated from `#/paths//entities/{entity}/aliases/get(entitiesAliasesList)`.
-    public func entitiesAliasesList(_ input: Operations.EntitiesAliasesList.Input) async throws -> Operations.EntitiesAliasesList.Output {
+    /// - Remark: Generated from `#/paths//entities/{entity}/aliases/get(entities.aliases.list)`.
+    public func entities_aliases_list(_ input: Operations.Entities_aliases_list.Input) async throws -> Operations.Entities_aliases_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesAliasesList.id,
+            forOperation: Operations.Entities_aliases_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities/{}/aliases",
@@ -15705,7 +15705,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.Ok.Body
+                    let body: Operations.Entities_aliases_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15715,7 +15715,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15727,7 +15727,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.BadRequest.Body
+                    let body: Operations.Entities_aliases_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15737,7 +15737,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15749,7 +15749,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.Unauthorized.Body
+                    let body: Operations.Entities_aliases_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15759,7 +15759,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15771,7 +15771,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.Forbidden.Body
+                    let body: Operations.Entities_aliases_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15781,7 +15781,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15793,7 +15793,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.NotFound.Body
+                    let body: Operations.Entities_aliases_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15803,7 +15803,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15815,7 +15815,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.Conflict.Body
+                    let body: Operations.Entities_aliases_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15825,7 +15825,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15837,7 +15837,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_aliases_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15847,7 +15847,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15859,7 +15859,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesList.Output.InternalServerError.Body
+                    let body: Operations.Entities_aliases_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15869,7 +15869,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_aliases_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15896,11 +15896,11 @@ public struct Client: APIProtocol {
     /// Remove entity alias association. Cannot delete canonical names. Requires moderator privileges
     ///
     /// - Remark: HTTP `DELETE /entity-aliases/{name}`.
-    /// - Remark: Generated from `#/paths//entity-aliases/{name}/delete(entitiesAliasesDelete)`.
-    public func entitiesAliasesDelete(_ input: Operations.EntitiesAliasesDelete.Input) async throws -> Operations.EntitiesAliasesDelete.Output {
+    /// - Remark: Generated from `#/paths//entity-aliases/{name}/delete(entities.aliases.delete)`.
+    public func entities_aliases_delete(_ input: Operations.Entities_aliases_delete.Input) async throws -> Operations.Entities_aliases_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesAliasesDelete.id,
+            forOperation: Operations.Entities_aliases_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entity-aliases/{}",
@@ -15934,7 +15934,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.Ok.Body
+                    let body: Operations.Entities_aliases_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15956,7 +15956,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.BadRequest.Body
+                    let body: Operations.Entities_aliases_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15966,7 +15966,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_aliases_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -15978,7 +15978,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.Unauthorized.Body
+                    let body: Operations.Entities_aliases_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -15988,7 +15988,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_aliases_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16000,7 +16000,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.Forbidden.Body
+                    let body: Operations.Entities_aliases_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16010,7 +16010,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_aliases_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16022,7 +16022,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.NotFound.Body
+                    let body: Operations.Entities_aliases_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16032,7 +16032,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_aliases_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16044,7 +16044,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.Conflict.Body
+                    let body: Operations.Entities_aliases_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16054,7 +16054,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_aliases_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16066,7 +16066,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_aliases_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16076,7 +16076,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_aliases_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16088,7 +16088,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesAliasesDelete.Output.InternalServerError.Body
+                    let body: Operations.Entities_aliases_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16098,7 +16098,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesAliasesDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_aliases_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16125,11 +16125,11 @@ public struct Client: APIProtocol {
     /// Retrieve whisky categories and their counts for bottles associated with a specific entity
     ///
     /// - Remark: HTTP `GET /entities/{entity}/categories`.
-    /// - Remark: Generated from `#/paths//entities/{entity}/categories/get(entitiesCategoriesList)`.
-    public func entitiesCategoriesList(_ input: Operations.EntitiesCategoriesList.Input) async throws -> Operations.EntitiesCategoriesList.Output {
+    /// - Remark: Generated from `#/paths//entities/{entity}/categories/get(entities.categories.list)`.
+    public func entities_categories_list(_ input: Operations.Entities_categories_list.Input) async throws -> Operations.Entities_categories_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EntitiesCategoriesList.id,
+            forOperation: Operations.Entities_categories_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/entities/{}/categories",
@@ -16152,7 +16152,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.Ok.Body
+                    let body: Operations.Entities_categories_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16162,7 +16162,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16174,7 +16174,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.BadRequest.Body
+                    let body: Operations.Entities_categories_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16184,7 +16184,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16196,7 +16196,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.Unauthorized.Body
+                    let body: Operations.Entities_categories_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16206,7 +16206,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16218,7 +16218,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.Forbidden.Body
+                    let body: Operations.Entities_categories_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16228,7 +16228,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16240,7 +16240,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.NotFound.Body
+                    let body: Operations.Entities_categories_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16250,7 +16250,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16262,7 +16262,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.Conflict.Body
+                    let body: Operations.Entities_categories_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16272,7 +16272,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16284,7 +16284,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.ContentTooLarge.Body
+                    let body: Operations.Entities_categories_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16294,7 +16294,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16306,7 +16306,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EntitiesCategoriesList.Output.InternalServerError.Body
+                    let body: Operations.Entities_categories_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16316,7 +16316,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EntitiesCategoriesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Entities_categories_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16343,11 +16343,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific whisky event
     ///
     /// - Remark: HTTP `GET /events/{event}`.
-    /// - Remark: Generated from `#/paths//events/{event}/get(eventsDetails)`.
-    public func eventsDetails(_ input: Operations.EventsDetails.Input) async throws -> Operations.EventsDetails.Output {
+    /// - Remark: Generated from `#/paths//events/{event}/get(events.details)`.
+    public func events_details(_ input: Operations.Events_details.Input) async throws -> Operations.Events_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EventsDetails.id,
+            forOperation: Operations.Events_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/events/{}",
@@ -16370,7 +16370,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.Ok.Body
+                    let body: Operations.Events_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16380,7 +16380,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Events_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16392,7 +16392,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.BadRequest.Body
+                    let body: Operations.Events_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16402,7 +16402,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Events_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16414,7 +16414,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.Unauthorized.Body
+                    let body: Operations.Events_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16424,7 +16424,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Events_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16436,7 +16436,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.Forbidden.Body
+                    let body: Operations.Events_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16446,7 +16446,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Events_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16458,7 +16458,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.NotFound.Body
+                    let body: Operations.Events_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16468,7 +16468,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Events_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16480,7 +16480,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.Conflict.Body
+                    let body: Operations.Events_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16490,7 +16490,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Events_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16502,7 +16502,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Events_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16512,7 +16512,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Events_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16524,7 +16524,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsDetails.Output.InternalServerError.Body
+                    let body: Operations.Events_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16534,7 +16534,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Events_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16561,11 +16561,11 @@ public struct Client: APIProtocol {
     /// Update event information including dates, location, and details. Requires admin privileges
     ///
     /// - Remark: HTTP `PATCH /events/{event}`.
-    /// - Remark: Generated from `#/paths//events/{event}/patch(eventsUpdate)`.
-    public func eventsUpdate(_ input: Operations.EventsUpdate.Input) async throws -> Operations.EventsUpdate.Output {
+    /// - Remark: Generated from `#/paths//events/{event}/patch(events.update)`.
+    public func events_update(_ input: Operations.Events_update.Input) async throws -> Operations.Events_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EventsUpdate.id,
+            forOperation: Operations.Events_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/events/{}",
@@ -16599,7 +16599,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.Ok.Body
+                    let body: Operations.Events_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16609,7 +16609,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Events_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16621,7 +16621,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.BadRequest.Body
+                    let body: Operations.Events_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16631,7 +16631,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Events_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16643,7 +16643,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.Unauthorized.Body
+                    let body: Operations.Events_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16653,7 +16653,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Events_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16665,7 +16665,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.Forbidden.Body
+                    let body: Operations.Events_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16675,7 +16675,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Events_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16687,7 +16687,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.NotFound.Body
+                    let body: Operations.Events_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16697,7 +16697,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Events_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16709,7 +16709,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.Conflict.Body
+                    let body: Operations.Events_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16719,7 +16719,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Events_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16731,7 +16731,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Events_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16741,7 +16741,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Events_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16753,7 +16753,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsUpdate.Output.InternalServerError.Body
+                    let body: Operations.Events_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16763,7 +16763,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Events_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16790,11 +16790,11 @@ public struct Client: APIProtocol {
     /// Retrieve whisky events with filtering by upcoming dates, search, and sorting options
     ///
     /// - Remark: HTTP `GET /events`.
-    /// - Remark: Generated from `#/paths//events/get(eventsList)`.
-    public func eventsList(_ input: Operations.EventsList.Input) async throws -> Operations.EventsList.Output {
+    /// - Remark: Generated from `#/paths//events/get(events.list)`.
+    public func events_list(_ input: Operations.Events_list.Input) async throws -> Operations.Events_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EventsList.id,
+            forOperation: Operations.Events_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/events",
@@ -16850,7 +16850,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.Ok.Body
+                    let body: Operations.Events_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16860,7 +16860,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Events_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16872,7 +16872,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.BadRequest.Body
+                    let body: Operations.Events_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16882,7 +16882,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Events_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16894,7 +16894,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.Unauthorized.Body
+                    let body: Operations.Events_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16904,7 +16904,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Events_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16916,7 +16916,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.Forbidden.Body
+                    let body: Operations.Events_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16926,7 +16926,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Events_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16938,7 +16938,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.NotFound.Body
+                    let body: Operations.Events_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16948,7 +16948,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Events_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16960,7 +16960,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.Conflict.Body
+                    let body: Operations.Events_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16970,7 +16970,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Events_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -16982,7 +16982,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.ContentTooLarge.Body
+                    let body: Operations.Events_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -16992,7 +16992,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Events_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17004,7 +17004,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsList.Output.InternalServerError.Body
+                    let body: Operations.Events_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17014,7 +17014,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Events_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17041,11 +17041,11 @@ public struct Client: APIProtocol {
     /// Create a new whisky event with dates and details. Requires admin privileges
     ///
     /// - Remark: HTTP `POST /events`.
-    /// - Remark: Generated from `#/paths//events/post(eventsCreate)`.
-    public func eventsCreate(_ input: Operations.EventsCreate.Input) async throws -> Operations.EventsCreate.Output {
+    /// - Remark: Generated from `#/paths//events/post(events.create)`.
+    public func events_create(_ input: Operations.Events_create.Input) async throws -> Operations.Events_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.EventsCreate.id,
+            forOperation: Operations.Events_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/events",
@@ -17075,7 +17075,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.Ok.Body
+                    let body: Operations.Events_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17085,7 +17085,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Events_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17097,7 +17097,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.BadRequest.Body
+                    let body: Operations.Events_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17107,7 +17107,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Events_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17119,7 +17119,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.Unauthorized.Body
+                    let body: Operations.Events_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17129,7 +17129,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Events_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17141,7 +17141,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.Forbidden.Body
+                    let body: Operations.Events_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17151,7 +17151,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Events_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17163,7 +17163,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.NotFound.Body
+                    let body: Operations.Events_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17173,7 +17173,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Events_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17185,7 +17185,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.Conflict.Body
+                    let body: Operations.Events_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17195,7 +17195,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Events_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17207,7 +17207,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Events_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17217,7 +17217,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Events_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17229,7 +17229,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.EventsCreate.Output.InternalServerError.Body
+                    let body: Operations.Events_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17239,7 +17239,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.EventsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Events_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17266,11 +17266,11 @@ public struct Client: APIProtocol {
     /// Retrieve external sites with search and sorting options
     ///
     /// - Remark: HTTP `GET /external-sites`.
-    /// - Remark: Generated from `#/paths//external-sites/get(externalSitesList)`.
-    public func externalSitesList(_ input: Operations.ExternalSitesList.Input) async throws -> Operations.ExternalSitesList.Output {
+    /// - Remark: Generated from `#/paths//external-sites/get(externalSites.list)`.
+    public func externalSites_list(_ input: Operations.ExternalSites_list.Input) async throws -> Operations.ExternalSites_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ExternalSitesList.id,
+            forOperation: Operations.ExternalSites_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites",
@@ -17319,7 +17319,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.Ok.Body
+                    let body: Operations.ExternalSites_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17329,7 +17329,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17341,7 +17341,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.BadRequest.Body
+                    let body: Operations.ExternalSites_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17351,7 +17351,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17363,7 +17363,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.Unauthorized.Body
+                    let body: Operations.ExternalSites_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17373,7 +17373,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17385,7 +17385,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.Forbidden.Body
+                    let body: Operations.ExternalSites_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17395,7 +17395,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17407,7 +17407,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.NotFound.Body
+                    let body: Operations.ExternalSites_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17417,7 +17417,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17429,7 +17429,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.Conflict.Body
+                    let body: Operations.ExternalSites_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17439,7 +17439,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17451,7 +17451,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.ContentTooLarge.Body
+                    let body: Operations.ExternalSites_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17461,7 +17461,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17473,7 +17473,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesList.Output.InternalServerError.Body
+                    let body: Operations.ExternalSites_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17483,7 +17483,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.ExternalSites_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17510,11 +17510,11 @@ public struct Client: APIProtocol {
     /// Create a new external site configuration for price scraping or data integration. Requires admin privileges
     ///
     /// - Remark: HTTP `POST /external-sites`.
-    /// - Remark: Generated from `#/paths//external-sites/post(externalSitesCreate)`.
-    public func externalSitesCreate(_ input: Operations.ExternalSitesCreate.Input) async throws -> Operations.ExternalSitesCreate.Output {
+    /// - Remark: Generated from `#/paths//external-sites/post(externalSites.create)`.
+    public func externalSites_create(_ input: Operations.ExternalSites_create.Input) async throws -> Operations.ExternalSites_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ExternalSitesCreate.id,
+            forOperation: Operations.ExternalSites_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites",
@@ -17544,7 +17544,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.Ok.Body
+                    let body: Operations.ExternalSites_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17554,7 +17554,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17566,7 +17566,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.BadRequest.Body
+                    let body: Operations.ExternalSites_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17576,7 +17576,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17588,7 +17588,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.Unauthorized.Body
+                    let body: Operations.ExternalSites_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17598,7 +17598,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17610,7 +17610,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.Forbidden.Body
+                    let body: Operations.ExternalSites_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17620,7 +17620,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17632,7 +17632,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.NotFound.Body
+                    let body: Operations.ExternalSites_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17642,7 +17642,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17654,7 +17654,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.Conflict.Body
+                    let body: Operations.ExternalSites_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17664,7 +17664,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17676,7 +17676,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.ContentTooLarge.Body
+                    let body: Operations.ExternalSites_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17686,7 +17686,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17698,7 +17698,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesCreate.Output.InternalServerError.Body
+                    let body: Operations.ExternalSites_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17708,7 +17708,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.ExternalSites_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17735,11 +17735,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific external site by its type
     ///
     /// - Remark: HTTP `GET /external-sites/{site}`.
-    /// - Remark: Generated from `#/paths//external-sites/{site}/get(externalSitesDetails)`.
-    public func externalSitesDetails(_ input: Operations.ExternalSitesDetails.Input) async throws -> Operations.ExternalSitesDetails.Output {
+    /// - Remark: Generated from `#/paths//external-sites/{site}/get(externalSites.details)`.
+    public func externalSites_details(_ input: Operations.ExternalSites_details.Input) async throws -> Operations.ExternalSites_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ExternalSitesDetails.id,
+            forOperation: Operations.ExternalSites_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites/{}",
@@ -17762,7 +17762,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.Ok.Body
+                    let body: Operations.ExternalSites_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17772,7 +17772,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17784,7 +17784,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.BadRequest.Body
+                    let body: Operations.ExternalSites_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17794,7 +17794,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17806,7 +17806,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.Unauthorized.Body
+                    let body: Operations.ExternalSites_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17816,7 +17816,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17828,7 +17828,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.Forbidden.Body
+                    let body: Operations.ExternalSites_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17838,7 +17838,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17850,7 +17850,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.NotFound.Body
+                    let body: Operations.ExternalSites_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17860,7 +17860,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17872,7 +17872,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.Conflict.Body
+                    let body: Operations.ExternalSites_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17882,7 +17882,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17894,7 +17894,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.ContentTooLarge.Body
+                    let body: Operations.ExternalSites_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17904,7 +17904,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17916,7 +17916,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesDetails.Output.InternalServerError.Body
+                    let body: Operations.ExternalSites_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -17926,7 +17926,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.ExternalSites_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -17953,11 +17953,11 @@ public struct Client: APIProtocol {
     /// Update external site configuration including name, type, and run frequency. Requires admin privileges
     ///
     /// - Remark: HTTP `PATCH /external-sites/{site}`.
-    /// - Remark: Generated from `#/paths//external-sites/{site}/patch(externalSitesUpdate)`.
-    public func externalSitesUpdate(_ input: Operations.ExternalSitesUpdate.Input) async throws -> Operations.ExternalSitesUpdate.Output {
+    /// - Remark: Generated from `#/paths//external-sites/{site}/patch(externalSites.update)`.
+    public func externalSites_update(_ input: Operations.ExternalSites_update.Input) async throws -> Operations.ExternalSites_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ExternalSitesUpdate.id,
+            forOperation: Operations.ExternalSites_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites/{}",
@@ -17991,7 +17991,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.Ok.Body
+                    let body: Operations.ExternalSites_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18001,7 +18001,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18013,7 +18013,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.BadRequest.Body
+                    let body: Operations.ExternalSites_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18023,7 +18023,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18035,7 +18035,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.Unauthorized.Body
+                    let body: Operations.ExternalSites_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18045,7 +18045,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18057,7 +18057,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.Forbidden.Body
+                    let body: Operations.ExternalSites_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18067,7 +18067,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18079,7 +18079,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.NotFound.Body
+                    let body: Operations.ExternalSites_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18089,7 +18089,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18101,7 +18101,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.Conflict.Body
+                    let body: Operations.ExternalSites_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18111,7 +18111,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18123,7 +18123,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.ExternalSites_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18133,7 +18133,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18145,7 +18145,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesUpdate.Output.InternalServerError.Body
+                    let body: Operations.ExternalSites_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18155,7 +18155,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.ExternalSites_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18182,11 +18182,11 @@ public struct Client: APIProtocol {
     /// Manually trigger a scraping job for an external site. Requires admin privileges
     ///
     /// - Remark: HTTP `POST /external-sites/{site}/trigger`.
-    /// - Remark: Generated from `#/paths//external-sites/{site}/trigger/post(externalSitesTriggerJob)`.
-    public func externalSitesTriggerJob(_ input: Operations.ExternalSitesTriggerJob.Input) async throws -> Operations.ExternalSitesTriggerJob.Output {
+    /// - Remark: Generated from `#/paths//external-sites/{site}/trigger/post(externalSites.triggerJob)`.
+    public func externalSites_triggerJob(_ input: Operations.ExternalSites_triggerJob.Input) async throws -> Operations.ExternalSites_triggerJob.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ExternalSitesTriggerJob.id,
+            forOperation: Operations.ExternalSites_triggerJob.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites/{}/trigger",
@@ -18220,7 +18220,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.Ok.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18230,7 +18230,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.Ok.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18242,7 +18242,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.BadRequest.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18252,7 +18252,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18264,7 +18264,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.Unauthorized.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18274,7 +18274,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18286,7 +18286,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.Forbidden.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18296,7 +18296,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18308,7 +18308,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.NotFound.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18318,7 +18318,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.NotFound.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18330,7 +18330,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.Conflict.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18340,7 +18340,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.Conflict.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18352,7 +18352,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.ContentTooLarge.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18362,7 +18362,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18374,7 +18374,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesTriggerJob.Output.InternalServerError.Body
+                    let body: Operations.ExternalSites_triggerJob.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18384,7 +18384,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesTriggerJob.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.ExternalSites_triggerJob.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18411,11 +18411,11 @@ public struct Client: APIProtocol {
     /// Retrieve a configuration value for an external site. Returns default if not set. Requires admin privileges
     ///
     /// - Remark: HTTP `GET /external-sites/{site}/config/{key}`.
-    /// - Remark: Generated from `#/paths//external-sites/{site}/config/{key}/get(externalSitesConfigGet)`.
-    public func externalSitesConfigGet(_ input: Operations.ExternalSitesConfigGet.Input) async throws -> Operations.ExternalSitesConfigGet.Output {
+    /// - Remark: Generated from `#/paths//external-sites/{site}/config/{key}/get(externalSites.config.get)`.
+    public func externalSites_config_get(_ input: Operations.ExternalSites_config_get.Input) async throws -> Operations.ExternalSites_config_get.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ExternalSitesConfigGet.id,
+            forOperation: Operations.ExternalSites_config_get.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites/{}/config/{}",
@@ -18448,7 +18448,7 @@ public struct Client: APIProtocol {
                     return .ok(.init())
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigGet.Output.BadRequest.Body
+                    let body: Operations.ExternalSites_config_get.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18458,7 +18458,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigGet.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_get.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18470,7 +18470,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigGet.Output.Unauthorized.Body
+                    let body: Operations.ExternalSites_config_get.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18480,7 +18480,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigGet.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_get.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18492,7 +18492,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigGet.Output.Forbidden.Body
+                    let body: Operations.ExternalSites_config_get.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18502,7 +18502,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigGet.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_get.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18514,7 +18514,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigGet.Output.NotFound.Body
+                    let body: Operations.ExternalSites_config_get.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18524,7 +18524,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigGet.Output.NotFound.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_get.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18536,7 +18536,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigGet.Output.Conflict.Body
+                    let body: Operations.ExternalSites_config_get.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18546,7 +18546,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigGet.Output.Conflict.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_get.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18558,7 +18558,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigGet.Output.ContentTooLarge.Body
+                    let body: Operations.ExternalSites_config_get.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18568,7 +18568,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigGet.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_get.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18580,7 +18580,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigGet.Output.InternalServerError.Body
+                    let body: Operations.ExternalSites_config_get.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18590,7 +18590,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigGet.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_get.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18617,11 +18617,11 @@ public struct Client: APIProtocol {
     /// Set or update a configuration value for an external site. Requires admin privileges
     ///
     /// - Remark: HTTP `PUT /external-sites/{site}/config/{key}`.
-    /// - Remark: Generated from `#/paths//external-sites/{site}/config/{key}/put(externalSitesConfigSet)`.
-    public func externalSitesConfigSet(_ input: Operations.ExternalSitesConfigSet.Input) async throws -> Operations.ExternalSitesConfigSet.Output {
+    /// - Remark: Generated from `#/paths//external-sites/{site}/config/{key}/put(externalSites.config.set)`.
+    public func externalSites_config_set(_ input: Operations.ExternalSites_config_set.Input) async throws -> Operations.ExternalSites_config_set.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ExternalSitesConfigSet.id,
+            forOperation: Operations.ExternalSites_config_set.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites/{}/config/{}",
@@ -18656,7 +18656,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.Ok.Body
+                    let body: Operations.ExternalSites_config_set.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18678,7 +18678,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.BadRequest.Body
+                    let body: Operations.ExternalSites_config_set.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18688,7 +18688,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigSet.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_set.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18700,7 +18700,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.Unauthorized.Body
+                    let body: Operations.ExternalSites_config_set.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18710,7 +18710,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigSet.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_set.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18722,7 +18722,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.Forbidden.Body
+                    let body: Operations.ExternalSites_config_set.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18732,7 +18732,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigSet.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_set.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18744,7 +18744,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.NotFound.Body
+                    let body: Operations.ExternalSites_config_set.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18754,7 +18754,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigSet.Output.NotFound.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_set.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18766,7 +18766,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.Conflict.Body
+                    let body: Operations.ExternalSites_config_set.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18776,7 +18776,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigSet.Output.Conflict.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_set.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18788,7 +18788,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.ContentTooLarge.Body
+                    let body: Operations.ExternalSites_config_set.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18798,7 +18798,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigSet.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_set.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18810,7 +18810,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ExternalSitesConfigSet.Output.InternalServerError.Body
+                    let body: Operations.ExternalSites_config_set.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18820,7 +18820,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ExternalSitesConfigSet.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.ExternalSites_config_set.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18847,11 +18847,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific tasting flight using its public ID
     ///
     /// - Remark: HTTP `GET /flights/{flight}`.
-    /// - Remark: Generated from `#/paths//flights/{flight}/get(flightsDetails)`.
-    public func flightsDetails(_ input: Operations.FlightsDetails.Input) async throws -> Operations.FlightsDetails.Output {
+    /// - Remark: Generated from `#/paths//flights/{flight}/get(flights.details)`.
+    public func flights_details(_ input: Operations.Flights_details.Input) async throws -> Operations.Flights_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FlightsDetails.id,
+            forOperation: Operations.Flights_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/flights/{}",
@@ -18874,7 +18874,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.Ok.Body
+                    let body: Operations.Flights_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18884,7 +18884,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18896,7 +18896,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.BadRequest.Body
+                    let body: Operations.Flights_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18906,7 +18906,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18918,7 +18918,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.Unauthorized.Body
+                    let body: Operations.Flights_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18928,7 +18928,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18940,7 +18940,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.Forbidden.Body
+                    let body: Operations.Flights_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18950,7 +18950,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18962,7 +18962,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.NotFound.Body
+                    let body: Operations.Flights_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18972,7 +18972,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -18984,7 +18984,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.Conflict.Body
+                    let body: Operations.Flights_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -18994,7 +18994,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19006,7 +19006,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Flights_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19016,7 +19016,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19028,7 +19028,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDetails.Output.InternalServerError.Body
+                    let body: Operations.Flights_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19038,7 +19038,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Flights_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19065,11 +19065,11 @@ public struct Client: APIProtocol {
     /// Update flight information including name, description, and bottle list. Only the flight creator or moderator can update
     ///
     /// - Remark: HTTP `PATCH /flights/{flight}`.
-    /// - Remark: Generated from `#/paths//flights/{flight}/patch(flightsUpdate)`.
-    public func flightsUpdate(_ input: Operations.FlightsUpdate.Input) async throws -> Operations.FlightsUpdate.Output {
+    /// - Remark: Generated from `#/paths//flights/{flight}/patch(flights.update)`.
+    public func flights_update(_ input: Operations.Flights_update.Input) async throws -> Operations.Flights_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FlightsUpdate.id,
+            forOperation: Operations.Flights_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/flights/{}",
@@ -19103,7 +19103,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.Ok.Body
+                    let body: Operations.Flights_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19113,7 +19113,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19125,7 +19125,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.BadRequest.Body
+                    let body: Operations.Flights_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19135,7 +19135,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19147,7 +19147,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.Unauthorized.Body
+                    let body: Operations.Flights_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19157,7 +19157,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19169,7 +19169,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.Forbidden.Body
+                    let body: Operations.Flights_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19179,7 +19179,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19191,7 +19191,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.NotFound.Body
+                    let body: Operations.Flights_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19201,7 +19201,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19213,7 +19213,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.Conflict.Body
+                    let body: Operations.Flights_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19223,7 +19223,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19235,7 +19235,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Flights_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19245,7 +19245,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19257,7 +19257,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsUpdate.Output.InternalServerError.Body
+                    let body: Operations.Flights_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19267,7 +19267,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Flights_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19294,11 +19294,11 @@ public struct Client: APIProtocol {
     /// Delete a tasting flight. Requires admin privileges
     ///
     /// - Remark: HTTP `DELETE /flights/{flight}`.
-    /// - Remark: Generated from `#/paths//flights/{flight}/delete(flightsDelete)`.
-    public func flightsDelete(_ input: Operations.FlightsDelete.Input) async throws -> Operations.FlightsDelete.Output {
+    /// - Remark: Generated from `#/paths//flights/{flight}/delete(flights.delete)`.
+    public func flights_delete(_ input: Operations.Flights_delete.Input) async throws -> Operations.Flights_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FlightsDelete.id,
+            forOperation: Operations.Flights_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/flights/{}",
@@ -19332,7 +19332,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.Ok.Body
+                    let body: Operations.Flights_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19354,7 +19354,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.BadRequest.Body
+                    let body: Operations.Flights_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19364,7 +19364,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Flights_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19376,7 +19376,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.Unauthorized.Body
+                    let body: Operations.Flights_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19386,7 +19386,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Flights_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19398,7 +19398,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.Forbidden.Body
+                    let body: Operations.Flights_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19408,7 +19408,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Flights_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19420,7 +19420,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.NotFound.Body
+                    let body: Operations.Flights_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19430,7 +19430,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Flights_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19442,7 +19442,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.Conflict.Body
+                    let body: Operations.Flights_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19452,7 +19452,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Flights_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19464,7 +19464,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Flights_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19474,7 +19474,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Flights_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19486,7 +19486,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsDelete.Output.InternalServerError.Body
+                    let body: Operations.Flights_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19496,7 +19496,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Flights_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19523,11 +19523,11 @@ public struct Client: APIProtocol {
     /// Retrieve tasting flights with filtering by visibility and search. Respects user permissions for private flights
     ///
     /// - Remark: HTTP `GET /flights`.
-    /// - Remark: Generated from `#/paths//flights/get(flightsList)`.
-    public func flightsList(_ input: Operations.FlightsList.Input) async throws -> Operations.FlightsList.Output {
+    /// - Remark: Generated from `#/paths//flights/get(flights.list)`.
+    public func flights_list(_ input: Operations.Flights_list.Input) async throws -> Operations.Flights_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FlightsList.id,
+            forOperation: Operations.Flights_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/flights",
@@ -19583,7 +19583,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.Ok.Body
+                    let body: Operations.Flights_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19593,7 +19593,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19605,7 +19605,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.BadRequest.Body
+                    let body: Operations.Flights_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19615,7 +19615,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19627,7 +19627,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.Unauthorized.Body
+                    let body: Operations.Flights_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19637,7 +19637,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19649,7 +19649,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.Forbidden.Body
+                    let body: Operations.Flights_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19659,7 +19659,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19671,7 +19671,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.NotFound.Body
+                    let body: Operations.Flights_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19681,7 +19681,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19693,7 +19693,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.Conflict.Body
+                    let body: Operations.Flights_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19703,7 +19703,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19715,7 +19715,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.ContentTooLarge.Body
+                    let body: Operations.Flights_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19725,7 +19725,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19737,7 +19737,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsList.Output.InternalServerError.Body
+                    let body: Operations.Flights_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19747,7 +19747,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Flights_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19774,11 +19774,11 @@ public struct Client: APIProtocol {
     /// Create a new tasting flight with bottles and visibility settings
     ///
     /// - Remark: HTTP `POST /flights`.
-    /// - Remark: Generated from `#/paths//flights/post(flightsCreate)`.
-    public func flightsCreate(_ input: Operations.FlightsCreate.Input) async throws -> Operations.FlightsCreate.Output {
+    /// - Remark: Generated from `#/paths//flights/post(flights.create)`.
+    public func flights_create(_ input: Operations.Flights_create.Input) async throws -> Operations.Flights_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FlightsCreate.id,
+            forOperation: Operations.Flights_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/flights",
@@ -19808,7 +19808,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.Ok.Body
+                    let body: Operations.Flights_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19818,7 +19818,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19830,7 +19830,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.BadRequest.Body
+                    let body: Operations.Flights_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19840,7 +19840,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19852,7 +19852,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.Unauthorized.Body
+                    let body: Operations.Flights_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19862,7 +19862,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19874,7 +19874,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.Forbidden.Body
+                    let body: Operations.Flights_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19884,7 +19884,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19896,7 +19896,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.NotFound.Body
+                    let body: Operations.Flights_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19906,7 +19906,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19918,7 +19918,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.Conflict.Body
+                    let body: Operations.Flights_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19928,7 +19928,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19940,7 +19940,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Flights_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19950,7 +19950,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19962,7 +19962,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FlightsCreate.Output.InternalServerError.Body
+                    let body: Operations.Flights_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -19972,7 +19972,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FlightsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Flights_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -19999,11 +19999,11 @@ public struct Client: APIProtocol {
     /// Send a friend request to another user or accept a pending request. Creates mutual following relationship when accepted
     ///
     /// - Remark: HTTP `PUT /friends/{user}`.
-    /// - Remark: Generated from `#/paths//friends/{user}/put(friendsCreate)`.
-    public func friendsCreate(_ input: Operations.FriendsCreate.Input) async throws -> Operations.FriendsCreate.Output {
+    /// - Remark: Generated from `#/paths//friends/{user}/put(friends.create)`.
+    public func friends_create(_ input: Operations.Friends_create.Input) async throws -> Operations.Friends_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FriendsCreate.id,
+            forOperation: Operations.Friends_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/friends/{}",
@@ -20037,7 +20037,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.Ok.Body
+                    let body: Operations.Friends_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20047,7 +20047,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20059,7 +20059,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.BadRequest.Body
+                    let body: Operations.Friends_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20069,7 +20069,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20081,7 +20081,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.Unauthorized.Body
+                    let body: Operations.Friends_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20091,7 +20091,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20103,7 +20103,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.Forbidden.Body
+                    let body: Operations.Friends_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20113,7 +20113,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20125,7 +20125,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.NotFound.Body
+                    let body: Operations.Friends_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20135,7 +20135,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20147,7 +20147,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.Conflict.Body
+                    let body: Operations.Friends_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20157,7 +20157,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20169,7 +20169,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Friends_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20179,7 +20179,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20191,7 +20191,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsCreate.Output.InternalServerError.Body
+                    let body: Operations.Friends_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20201,7 +20201,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Friends_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20228,11 +20228,11 @@ public struct Client: APIProtocol {
     /// Remove a friend relationship and cancel any pending friend requests. Requires authentication
     ///
     /// - Remark: HTTP `DELETE /friends/{user}`.
-    /// - Remark: Generated from `#/paths//friends/{user}/delete(friendsDelete)`.
-    public func friendsDelete(_ input: Operations.FriendsDelete.Input) async throws -> Operations.FriendsDelete.Output {
+    /// - Remark: Generated from `#/paths//friends/{user}/delete(friends.delete)`.
+    public func friends_delete(_ input: Operations.Friends_delete.Input) async throws -> Operations.Friends_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FriendsDelete.id,
+            forOperation: Operations.Friends_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/friends/{}",
@@ -20266,7 +20266,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.Ok.Body
+                    let body: Operations.Friends_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20276,7 +20276,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.Ok.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20288,7 +20288,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.BadRequest.Body
+                    let body: Operations.Friends_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20298,7 +20298,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20310,7 +20310,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.Unauthorized.Body
+                    let body: Operations.Friends_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20320,7 +20320,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20332,7 +20332,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.Forbidden.Body
+                    let body: Operations.Friends_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20342,7 +20342,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20354,7 +20354,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.NotFound.Body
+                    let body: Operations.Friends_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20364,7 +20364,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20376,7 +20376,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.Conflict.Body
+                    let body: Operations.Friends_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20386,7 +20386,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20398,7 +20398,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Friends_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20408,7 +20408,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20420,7 +20420,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsDelete.Output.InternalServerError.Body
+                    let body: Operations.Friends_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20430,7 +20430,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Friends_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20457,11 +20457,11 @@ public struct Client: APIProtocol {
     /// Retrieve user's friend relationships with filtering by status (pending/active) and search support
     ///
     /// - Remark: HTTP `GET /friends`.
-    /// - Remark: Generated from `#/paths//friends/get(friendsList)`.
-    public func friendsList(_ input: Operations.FriendsList.Input) async throws -> Operations.FriendsList.Output {
+    /// - Remark: Generated from `#/paths//friends/get(friends.list)`.
+    public func friends_list(_ input: Operations.Friends_list.Input) async throws -> Operations.Friends_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.FriendsList.id,
+            forOperation: Operations.Friends_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/friends",
@@ -20510,7 +20510,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.Ok.Body
+                    let body: Operations.Friends_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20520,7 +20520,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20532,7 +20532,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.BadRequest.Body
+                    let body: Operations.Friends_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20542,7 +20542,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20554,7 +20554,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.Unauthorized.Body
+                    let body: Operations.Friends_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20564,7 +20564,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20576,7 +20576,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.Forbidden.Body
+                    let body: Operations.Friends_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20586,7 +20586,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20598,7 +20598,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.NotFound.Body
+                    let body: Operations.Friends_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20608,7 +20608,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20620,7 +20620,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.Conflict.Body
+                    let body: Operations.Friends_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20630,7 +20630,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20642,7 +20642,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.ContentTooLarge.Body
+                    let body: Operations.Friends_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20652,7 +20652,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20664,7 +20664,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.FriendsList.Output.InternalServerError.Body
+                    let body: Operations.Friends_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20674,7 +20674,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.FriendsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Friends_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20701,11 +20701,11 @@ public struct Client: APIProtocol {
     /// Retrieve distillers that are part of the Scotch Malt Whisky Society (SMWS) system
     ///
     /// - Remark: HTTP `GET /smws/distillers`.
-    /// - Remark: Generated from `#/paths//smws/distillers/get(smwsDistillerList)`.
-    public func smwsDistillerList(_ input: Operations.SmwsDistillerList.Input) async throws -> Operations.SmwsDistillerList.Output {
+    /// - Remark: Generated from `#/paths//smws/distillers/get(smws.distillerList)`.
+    public func smws_distillerList(_ input: Operations.Smws_distillerList.Input) async throws -> Operations.Smws_distillerList.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.SmwsDistillerList.id,
+            forOperation: Operations.Smws_distillerList.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/smws/distillers",
@@ -20726,7 +20726,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.Ok.Body
+                    let body: Operations.Smws_distillerList.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20736,7 +20736,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20748,7 +20748,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.BadRequest.Body
+                    let body: Operations.Smws_distillerList.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20758,7 +20758,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20770,7 +20770,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.Unauthorized.Body
+                    let body: Operations.Smws_distillerList.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20780,7 +20780,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20792,7 +20792,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.Forbidden.Body
+                    let body: Operations.Smws_distillerList.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20802,7 +20802,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20814,7 +20814,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.NotFound.Body
+                    let body: Operations.Smws_distillerList.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20824,7 +20824,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20836,7 +20836,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.Conflict.Body
+                    let body: Operations.Smws_distillerList.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20846,7 +20846,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20858,7 +20858,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.ContentTooLarge.Body
+                    let body: Operations.Smws_distillerList.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20868,7 +20868,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20880,7 +20880,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.SmwsDistillerList.Output.InternalServerError.Body
+                    let body: Operations.Smws_distillerList.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20890,7 +20890,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.SmwsDistillerList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Smws_distillerList.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20917,11 +20917,11 @@ public struct Client: APIProtocol {
     /// Get the count of user notifications with optional filtering by read status
     ///
     /// - Remark: HTTP `GET /notifications/count`.
-    /// - Remark: Generated from `#/paths//notifications/count/get(notificationsCount)`.
-    public func notificationsCount(_ input: Operations.NotificationsCount.Input) async throws -> Operations.NotificationsCount.Output {
+    /// - Remark: Generated from `#/paths//notifications/count/get(notifications.count)`.
+    public func notifications_count(_ input: Operations.Notifications_count.Input) async throws -> Operations.Notifications_count.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.NotificationsCount.id,
+            forOperation: Operations.Notifications_count.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/notifications/count",
@@ -20949,7 +20949,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.Ok.Body
+                    let body: Operations.Notifications_count.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20959,7 +20959,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.Ok.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20971,7 +20971,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.BadRequest.Body
+                    let body: Operations.Notifications_count.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -20981,7 +20981,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -20993,7 +20993,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.Unauthorized.Body
+                    let body: Operations.Notifications_count.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21003,7 +21003,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21015,7 +21015,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.Forbidden.Body
+                    let body: Operations.Notifications_count.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21025,7 +21025,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21037,7 +21037,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.NotFound.Body
+                    let body: Operations.Notifications_count.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21047,7 +21047,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21059,7 +21059,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.Conflict.Body
+                    let body: Operations.Notifications_count.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21069,7 +21069,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21081,7 +21081,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.ContentTooLarge.Body
+                    let body: Operations.Notifications_count.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21091,7 +21091,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21103,7 +21103,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsCount.Output.InternalServerError.Body
+                    let body: Operations.Notifications_count.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21113,7 +21113,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsCount.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Notifications_count.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21140,11 +21140,11 @@ public struct Client: APIProtocol {
     /// Update notification properties such as read status. Requires authentication and ownership
     ///
     /// - Remark: HTTP `PATCH /notifications/{notification}`.
-    /// - Remark: Generated from `#/paths//notifications/{notification}/patch(notificationsUpdate)`.
-    public func notificationsUpdate(_ input: Operations.NotificationsUpdate.Input) async throws -> Operations.NotificationsUpdate.Output {
+    /// - Remark: Generated from `#/paths//notifications/{notification}/patch(notifications.update)`.
+    public func notifications_update(_ input: Operations.Notifications_update.Input) async throws -> Operations.Notifications_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.NotificationsUpdate.id,
+            forOperation: Operations.Notifications_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/notifications/{}",
@@ -21178,7 +21178,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.Ok.Body
+                    let body: Operations.Notifications_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21188,7 +21188,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21200,7 +21200,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.BadRequest.Body
+                    let body: Operations.Notifications_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21210,7 +21210,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21222,7 +21222,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.Unauthorized.Body
+                    let body: Operations.Notifications_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21232,7 +21232,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21244,7 +21244,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.Forbidden.Body
+                    let body: Operations.Notifications_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21254,7 +21254,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21266,7 +21266,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.NotFound.Body
+                    let body: Operations.Notifications_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21276,7 +21276,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21288,7 +21288,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.Conflict.Body
+                    let body: Operations.Notifications_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21298,7 +21298,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21310,7 +21310,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Notifications_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21320,7 +21320,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21332,7 +21332,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsUpdate.Output.InternalServerError.Body
+                    let body: Operations.Notifications_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21342,7 +21342,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Notifications_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21369,11 +21369,11 @@ public struct Client: APIProtocol {
     /// Delete a notification. Requires authentication and ownership or admin privileges
     ///
     /// - Remark: HTTP `DELETE /notifications/{notification}`.
-    /// - Remark: Generated from `#/paths//notifications/{notification}/delete(notificationsDelete)`.
-    public func notificationsDelete(_ input: Operations.NotificationsDelete.Input) async throws -> Operations.NotificationsDelete.Output {
+    /// - Remark: Generated from `#/paths//notifications/{notification}/delete(notifications.delete)`.
+    public func notifications_delete(_ input: Operations.Notifications_delete.Input) async throws -> Operations.Notifications_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.NotificationsDelete.id,
+            forOperation: Operations.Notifications_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/notifications/{}",
@@ -21407,7 +21407,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.Ok.Body
+                    let body: Operations.Notifications_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21429,7 +21429,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.BadRequest.Body
+                    let body: Operations.Notifications_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21439,7 +21439,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Notifications_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21451,7 +21451,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.Unauthorized.Body
+                    let body: Operations.Notifications_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21461,7 +21461,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Notifications_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21473,7 +21473,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.Forbidden.Body
+                    let body: Operations.Notifications_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21483,7 +21483,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Notifications_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21495,7 +21495,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.NotFound.Body
+                    let body: Operations.Notifications_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21505,7 +21505,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Notifications_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21517,7 +21517,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.Conflict.Body
+                    let body: Operations.Notifications_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21527,7 +21527,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Notifications_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21539,7 +21539,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Notifications_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21549,7 +21549,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Notifications_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21561,7 +21561,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsDelete.Output.InternalServerError.Body
+                    let body: Operations.Notifications_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21571,7 +21571,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Notifications_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21598,11 +21598,11 @@ public struct Client: APIProtocol {
     /// Retrieve user notifications with filtering by read status and pagination support
     ///
     /// - Remark: HTTP `GET /notifications`.
-    /// - Remark: Generated from `#/paths//notifications/get(notificationsList)`.
-    public func notificationsList(_ input: Operations.NotificationsList.Input) async throws -> Operations.NotificationsList.Output {
+    /// - Remark: Generated from `#/paths//notifications/get(notifications.list)`.
+    public func notifications_list(_ input: Operations.Notifications_list.Input) async throws -> Operations.Notifications_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.NotificationsList.id,
+            forOperation: Operations.Notifications_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/notifications",
@@ -21644,7 +21644,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.Ok.Body
+                    let body: Operations.Notifications_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21654,7 +21654,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21666,7 +21666,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.BadRequest.Body
+                    let body: Operations.Notifications_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21676,7 +21676,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21688,7 +21688,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.Unauthorized.Body
+                    let body: Operations.Notifications_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21698,7 +21698,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21710,7 +21710,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.Forbidden.Body
+                    let body: Operations.Notifications_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21720,7 +21720,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21732,7 +21732,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.NotFound.Body
+                    let body: Operations.Notifications_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21742,7 +21742,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21754,7 +21754,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.Conflict.Body
+                    let body: Operations.Notifications_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21764,7 +21764,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21776,7 +21776,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.ContentTooLarge.Body
+                    let body: Operations.Notifications_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21786,7 +21786,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21798,7 +21798,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.NotificationsList.Output.InternalServerError.Body
+                    let body: Operations.Notifications_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21808,7 +21808,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.NotificationsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Notifications_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21835,11 +21835,11 @@ public struct Client: APIProtocol {
     /// Retrieve store prices with filtering by site, validity, and unknown bottles. Requires admin privileges
     ///
     /// - Remark: HTTP `GET /prices`.
-    /// - Remark: Generated from `#/paths//prices/get(pricesList)`.
-    public func pricesList(_ input: Operations.PricesList.Input) async throws -> Operations.PricesList.Output {
+    /// - Remark: Generated from `#/paths//prices/get(prices.list)`.
+    public func prices_list(_ input: Operations.Prices_list.Input) async throws -> Operations.Prices_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.PricesList.id,
+            forOperation: Operations.Prices_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/prices",
@@ -21902,7 +21902,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.Ok.Body
+                    let body: Operations.Prices_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21912,7 +21912,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21924,7 +21924,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.BadRequest.Body
+                    let body: Operations.Prices_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21934,7 +21934,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21946,7 +21946,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.Unauthorized.Body
+                    let body: Operations.Prices_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21956,7 +21956,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21968,7 +21968,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.Forbidden.Body
+                    let body: Operations.Prices_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -21978,7 +21978,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -21990,7 +21990,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.NotFound.Body
+                    let body: Operations.Prices_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22000,7 +22000,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22012,7 +22012,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.Conflict.Body
+                    let body: Operations.Prices_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22022,7 +22022,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22034,7 +22034,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.ContentTooLarge.Body
+                    let body: Operations.Prices_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22044,7 +22044,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22056,7 +22056,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesList.Output.InternalServerError.Body
+                    let body: Operations.Prices_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22066,7 +22066,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Prices_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22093,11 +22093,11 @@ public struct Client: APIProtocol {
     /// Update store price properties such as visibility. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /prices/{price}`.
-    /// - Remark: Generated from `#/paths//prices/{price}/patch(pricesUpdate)`.
-    public func pricesUpdate(_ input: Operations.PricesUpdate.Input) async throws -> Operations.PricesUpdate.Output {
+    /// - Remark: Generated from `#/paths//prices/{price}/patch(prices.update)`.
+    public func prices_update(_ input: Operations.Prices_update.Input) async throws -> Operations.Prices_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.PricesUpdate.id,
+            forOperation: Operations.Prices_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/prices/{}",
@@ -22131,7 +22131,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.Ok.Body
+                    let body: Operations.Prices_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22141,7 +22141,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22153,7 +22153,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.BadRequest.Body
+                    let body: Operations.Prices_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22163,7 +22163,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22175,7 +22175,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.Unauthorized.Body
+                    let body: Operations.Prices_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22185,7 +22185,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22197,7 +22197,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.Forbidden.Body
+                    let body: Operations.Prices_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22207,7 +22207,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22219,7 +22219,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.NotFound.Body
+                    let body: Operations.Prices_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22229,7 +22229,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22241,7 +22241,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.Conflict.Body
+                    let body: Operations.Prices_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22251,7 +22251,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22263,7 +22263,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Prices_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22273,7 +22273,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22285,7 +22285,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesUpdate.Output.InternalServerError.Body
+                    let body: Operations.Prices_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22295,7 +22295,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Prices_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22322,11 +22322,11 @@ public struct Client: APIProtocol {
     /// Bulk create or update store prices for an external site with automatic bottle matching and alias creation. Requires admin privileges
     ///
     /// - Remark: HTTP `POST /external-sites/{site}/prices`.
-    /// - Remark: Generated from `#/paths//external-sites/{site}/prices/post(pricesCreateBatch)`.
-    public func pricesCreateBatch(_ input: Operations.PricesCreateBatch.Input) async throws -> Operations.PricesCreateBatch.Output {
+    /// - Remark: Generated from `#/paths//external-sites/{site}/prices/post(prices.createBatch)`.
+    public func prices_createBatch(_ input: Operations.Prices_createBatch.Input) async throws -> Operations.Prices_createBatch.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.PricesCreateBatch.id,
+            forOperation: Operations.Prices_createBatch.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/external-sites/{}/prices",
@@ -22358,7 +22358,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.Ok.Body
+                    let body: Operations.Prices_createBatch.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22380,7 +22380,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.BadRequest.Body
+                    let body: Operations.Prices_createBatch.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22390,7 +22390,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesCreateBatch.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Prices_createBatch.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22402,7 +22402,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.Unauthorized.Body
+                    let body: Operations.Prices_createBatch.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22412,7 +22412,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesCreateBatch.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Prices_createBatch.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22424,7 +22424,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.Forbidden.Body
+                    let body: Operations.Prices_createBatch.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22434,7 +22434,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesCreateBatch.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Prices_createBatch.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22446,7 +22446,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.NotFound.Body
+                    let body: Operations.Prices_createBatch.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22456,7 +22456,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesCreateBatch.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Prices_createBatch.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22468,7 +22468,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.Conflict.Body
+                    let body: Operations.Prices_createBatch.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22478,7 +22478,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesCreateBatch.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Prices_createBatch.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22490,7 +22490,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.ContentTooLarge.Body
+                    let body: Operations.Prices_createBatch.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22500,7 +22500,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesCreateBatch.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Prices_createBatch.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22512,7 +22512,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesCreateBatch.Output.InternalServerError.Body
+                    let body: Operations.Prices_createBatch.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22522,7 +22522,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesCreateBatch.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Prices_createBatch.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22549,11 +22549,11 @@ public struct Client: APIProtocol {
     /// Retrieve significant bottle price changes from the past week with search and pagination support
     ///
     /// - Remark: HTTP `GET /price-changes`.
-    /// - Remark: Generated from `#/paths//price-changes/get(pricesChangeList)`.
-    public func pricesChangeList(_ input: Operations.PricesChangeList.Input) async throws -> Operations.PricesChangeList.Output {
+    /// - Remark: Generated from `#/paths//price-changes/get(prices.changeList)`.
+    public func prices_changeList(_ input: Operations.Prices_changeList.Input) async throws -> Operations.Prices_changeList.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.PricesChangeList.id,
+            forOperation: Operations.Prices_changeList.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/price-changes",
@@ -22595,7 +22595,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.Ok.Body
+                    let body: Operations.Prices_changeList.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22605,7 +22605,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22617,7 +22617,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.BadRequest.Body
+                    let body: Operations.Prices_changeList.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22627,7 +22627,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22639,7 +22639,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.Unauthorized.Body
+                    let body: Operations.Prices_changeList.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22649,7 +22649,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22661,7 +22661,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.Forbidden.Body
+                    let body: Operations.Prices_changeList.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22671,7 +22671,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22683,7 +22683,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.NotFound.Body
+                    let body: Operations.Prices_changeList.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22693,7 +22693,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22705,7 +22705,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.Conflict.Body
+                    let body: Operations.Prices_changeList.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22715,7 +22715,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22727,7 +22727,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.ContentTooLarge.Body
+                    let body: Operations.Prices_changeList.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22737,7 +22737,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22749,7 +22749,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.PricesChangeList.Output.InternalServerError.Body
+                    let body: Operations.Prices_changeList.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22759,7 +22759,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.PricesChangeList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Prices_changeList.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22786,11 +22786,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific region within a country using their slugs
     ///
     /// - Remark: HTTP `GET /countries/{country}/regions/{region}`.
-    /// - Remark: Generated from `#/paths//countries/{country}/regions/{region}/get(regionsDetails)`.
-    public func regionsDetails(_ input: Operations.RegionsDetails.Input) async throws -> Operations.RegionsDetails.Output {
+    /// - Remark: Generated from `#/paths//countries/{country}/regions/{region}/get(regions.details)`.
+    public func regions_details(_ input: Operations.Regions_details.Input) async throws -> Operations.Regions_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.RegionsDetails.id,
+            forOperation: Operations.Regions_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/{}/regions/{}",
@@ -22814,7 +22814,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.Ok.Body
+                    let body: Operations.Regions_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22824,7 +22824,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22836,7 +22836,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.BadRequest.Body
+                    let body: Operations.Regions_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22846,7 +22846,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22858,7 +22858,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.Unauthorized.Body
+                    let body: Operations.Regions_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22868,7 +22868,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22880,7 +22880,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.Forbidden.Body
+                    let body: Operations.Regions_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22890,7 +22890,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22902,7 +22902,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.NotFound.Body
+                    let body: Operations.Regions_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22912,7 +22912,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22924,7 +22924,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.Conflict.Body
+                    let body: Operations.Regions_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22934,7 +22934,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22946,7 +22946,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Regions_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22956,7 +22956,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -22968,7 +22968,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDetails.Output.InternalServerError.Body
+                    let body: Operations.Regions_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -22978,7 +22978,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Regions_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23005,11 +23005,11 @@ public struct Client: APIProtocol {
     /// Update region information including description. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /countries/{country}/regions/{region}`.
-    /// - Remark: Generated from `#/paths//countries/{country}/regions/{region}/patch(regionsUpdate)`.
-    public func regionsUpdate(_ input: Operations.RegionsUpdate.Input) async throws -> Operations.RegionsUpdate.Output {
+    /// - Remark: Generated from `#/paths//countries/{country}/regions/{region}/patch(regions.update)`.
+    public func regions_update(_ input: Operations.Regions_update.Input) async throws -> Operations.Regions_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.RegionsUpdate.id,
+            forOperation: Operations.Regions_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/{}/regions/{}",
@@ -23044,7 +23044,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.Ok.Body
+                    let body: Operations.Regions_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23054,7 +23054,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23066,7 +23066,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.BadRequest.Body
+                    let body: Operations.Regions_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23076,7 +23076,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23088,7 +23088,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.Unauthorized.Body
+                    let body: Operations.Regions_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23098,7 +23098,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23110,7 +23110,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.Forbidden.Body
+                    let body: Operations.Regions_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23120,7 +23120,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23132,7 +23132,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.NotFound.Body
+                    let body: Operations.Regions_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23142,7 +23142,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23154,7 +23154,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.Conflict.Body
+                    let body: Operations.Regions_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23164,7 +23164,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23176,7 +23176,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Regions_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23186,7 +23186,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23198,7 +23198,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsUpdate.Output.InternalServerError.Body
+                    let body: Operations.Regions_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23208,7 +23208,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Regions_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23235,11 +23235,11 @@ public struct Client: APIProtocol {
     /// Delete a region from a country. Requires admin privileges
     ///
     /// - Remark: HTTP `DELETE /countries/{country}/regions/{region}`.
-    /// - Remark: Generated from `#/paths//countries/{country}/regions/{region}/delete(regionsDelete)`.
-    public func regionsDelete(_ input: Operations.RegionsDelete.Input) async throws -> Operations.RegionsDelete.Output {
+    /// - Remark: Generated from `#/paths//countries/{country}/regions/{region}/delete(regions.delete)`.
+    public func regions_delete(_ input: Operations.Regions_delete.Input) async throws -> Operations.Regions_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.RegionsDelete.id,
+            forOperation: Operations.Regions_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/{}/regions/{}",
@@ -23274,7 +23274,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.Ok.Body
+                    let body: Operations.Regions_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23296,7 +23296,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.BadRequest.Body
+                    let body: Operations.Regions_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23306,7 +23306,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Regions_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23318,7 +23318,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.Unauthorized.Body
+                    let body: Operations.Regions_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23328,7 +23328,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Regions_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23340,7 +23340,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.Forbidden.Body
+                    let body: Operations.Regions_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23350,7 +23350,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Regions_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23362,7 +23362,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.NotFound.Body
+                    let body: Operations.Regions_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23372,7 +23372,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Regions_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23384,7 +23384,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.Conflict.Body
+                    let body: Operations.Regions_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23394,7 +23394,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Regions_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23406,7 +23406,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Regions_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23416,7 +23416,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Regions_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23428,7 +23428,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsDelete.Output.InternalServerError.Body
+                    let body: Operations.Regions_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23438,7 +23438,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Regions_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23465,11 +23465,11 @@ public struct Client: APIProtocol {
     /// Retrieve regions within a specific country with filtering by bottle counts and search support
     ///
     /// - Remark: HTTP `GET /countries/{country}/regions`.
-    /// - Remark: Generated from `#/paths//countries/{country}/regions/get(regionsList)`.
-    public func regionsList(_ input: Operations.RegionsList.Input) async throws -> Operations.RegionsList.Output {
+    /// - Remark: Generated from `#/paths//countries/{country}/regions/get(regions.list)`.
+    public func regions_list(_ input: Operations.Regions_list.Input) async throws -> Operations.Regions_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.RegionsList.id,
+            forOperation: Operations.Regions_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/{}/regions",
@@ -23527,7 +23527,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.Ok.Body
+                    let body: Operations.Regions_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23537,7 +23537,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23549,7 +23549,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.BadRequest.Body
+                    let body: Operations.Regions_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23559,7 +23559,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23571,7 +23571,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.Unauthorized.Body
+                    let body: Operations.Regions_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23581,7 +23581,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23593,7 +23593,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.Forbidden.Body
+                    let body: Operations.Regions_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23603,7 +23603,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23615,7 +23615,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.NotFound.Body
+                    let body: Operations.Regions_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23625,7 +23625,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23637,7 +23637,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.Conflict.Body
+                    let body: Operations.Regions_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23647,7 +23647,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23659,7 +23659,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.ContentTooLarge.Body
+                    let body: Operations.Regions_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23669,7 +23669,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23681,7 +23681,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsList.Output.InternalServerError.Body
+                    let body: Operations.Regions_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23691,7 +23691,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Regions_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23718,11 +23718,11 @@ public struct Client: APIProtocol {
     /// Create a new region within a country with automatic slug generation. Requires moderator privileges
     ///
     /// - Remark: HTTP `POST /countries/{country}/regions`.
-    /// - Remark: Generated from `#/paths//countries/{country}/regions/post(regionsCreate)`.
-    public func regionsCreate(_ input: Operations.RegionsCreate.Input) async throws -> Operations.RegionsCreate.Output {
+    /// - Remark: Generated from `#/paths//countries/{country}/regions/post(regions.create)`.
+    public func regions_create(_ input: Operations.Regions_create.Input) async throws -> Operations.Regions_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.RegionsCreate.id,
+            forOperation: Operations.Regions_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/countries/{}/regions",
@@ -23754,7 +23754,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.Ok.Body
+                    let body: Operations.Regions_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23764,7 +23764,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23776,7 +23776,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.BadRequest.Body
+                    let body: Operations.Regions_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23786,7 +23786,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23798,7 +23798,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.Unauthorized.Body
+                    let body: Operations.Regions_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23808,7 +23808,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23820,7 +23820,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.Forbidden.Body
+                    let body: Operations.Regions_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23830,7 +23830,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23842,7 +23842,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.NotFound.Body
+                    let body: Operations.Regions_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23852,7 +23852,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23864,7 +23864,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.Conflict.Body
+                    let body: Operations.Regions_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23874,7 +23874,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23886,7 +23886,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Regions_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23896,7 +23896,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23908,7 +23908,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.RegionsCreate.Output.InternalServerError.Body
+                    let body: Operations.Regions_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -23918,7 +23918,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.RegionsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Regions_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -23945,11 +23945,11 @@ public struct Client: APIProtocol {
     /// Retrieve reviews with filtering by site, bottle, and unknown status. Requires moderator privileges for full access
     ///
     /// - Remark: HTTP `GET /reviews`.
-    /// - Remark: Generated from `#/paths//reviews/get(reviewsList)`.
-    public func reviewsList(_ input: Operations.ReviewsList.Input) async throws -> Operations.ReviewsList.Output {
+    /// - Remark: Generated from `#/paths//reviews/get(reviews.list)`.
+    public func reviews_list(_ input: Operations.Reviews_list.Input) async throws -> Operations.Reviews_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ReviewsList.id,
+            forOperation: Operations.Reviews_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/reviews",
@@ -24012,7 +24012,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.Ok.Body
+                    let body: Operations.Reviews_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24022,7 +24022,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24034,7 +24034,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.BadRequest.Body
+                    let body: Operations.Reviews_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24044,7 +24044,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24056,7 +24056,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.Unauthorized.Body
+                    let body: Operations.Reviews_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24066,7 +24066,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24078,7 +24078,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.Forbidden.Body
+                    let body: Operations.Reviews_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24088,7 +24088,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24100,7 +24100,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.NotFound.Body
+                    let body: Operations.Reviews_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24110,7 +24110,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24122,7 +24122,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.Conflict.Body
+                    let body: Operations.Reviews_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24132,7 +24132,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24144,7 +24144,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.ContentTooLarge.Body
+                    let body: Operations.Reviews_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24154,7 +24154,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24166,7 +24166,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsList.Output.InternalServerError.Body
+                    let body: Operations.Reviews_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24176,7 +24176,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Reviews_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24203,11 +24203,11 @@ public struct Client: APIProtocol {
     /// Create a new review from external site data with automatic bottle matching and alias creation. Requires admin privileges
     ///
     /// - Remark: HTTP `POST /reviews`.
-    /// - Remark: Generated from `#/paths//reviews/post(reviewsCreate)`.
-    public func reviewsCreate(_ input: Operations.ReviewsCreate.Input) async throws -> Operations.ReviewsCreate.Output {
+    /// - Remark: Generated from `#/paths//reviews/post(reviews.create)`.
+    public func reviews_create(_ input: Operations.Reviews_create.Input) async throws -> Operations.Reviews_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ReviewsCreate.id,
+            forOperation: Operations.Reviews_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/reviews",
@@ -24237,7 +24237,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.Ok.Body
+                    let body: Operations.Reviews_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24247,7 +24247,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24259,7 +24259,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.BadRequest.Body
+                    let body: Operations.Reviews_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24269,7 +24269,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24281,7 +24281,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.Unauthorized.Body
+                    let body: Operations.Reviews_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24291,7 +24291,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24303,7 +24303,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.Forbidden.Body
+                    let body: Operations.Reviews_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24313,7 +24313,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24325,7 +24325,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.NotFound.Body
+                    let body: Operations.Reviews_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24335,7 +24335,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24347,7 +24347,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.Conflict.Body
+                    let body: Operations.Reviews_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24357,7 +24357,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24369,7 +24369,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Reviews_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24379,7 +24379,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24391,7 +24391,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsCreate.Output.InternalServerError.Body
+                    let body: Operations.Reviews_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24401,7 +24401,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Reviews_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24428,11 +24428,11 @@ public struct Client: APIProtocol {
     /// Update review properties such as visibility. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /reviews/{review}`.
-    /// - Remark: Generated from `#/paths//reviews/{review}/patch(reviewsUpdate)`.
-    public func reviewsUpdate(_ input: Operations.ReviewsUpdate.Input) async throws -> Operations.ReviewsUpdate.Output {
+    /// - Remark: Generated from `#/paths//reviews/{review}/patch(reviews.update)`.
+    public func reviews_update(_ input: Operations.Reviews_update.Input) async throws -> Operations.Reviews_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ReviewsUpdate.id,
+            forOperation: Operations.Reviews_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/reviews/{}",
@@ -24466,7 +24466,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.Ok.Body
+                    let body: Operations.Reviews_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24476,7 +24476,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24488,7 +24488,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.BadRequest.Body
+                    let body: Operations.Reviews_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24498,7 +24498,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24510,7 +24510,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.Unauthorized.Body
+                    let body: Operations.Reviews_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24520,7 +24520,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24532,7 +24532,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.Forbidden.Body
+                    let body: Operations.Reviews_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24542,7 +24542,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24554,7 +24554,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.NotFound.Body
+                    let body: Operations.Reviews_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24564,7 +24564,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24576,7 +24576,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.Conflict.Body
+                    let body: Operations.Reviews_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24586,7 +24586,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24598,7 +24598,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Reviews_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24608,7 +24608,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -24620,7 +24620,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ReviewsUpdate.Output.InternalServerError.Body
+                    let body: Operations.Reviews_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -24630,7 +24630,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ReviewsUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Reviews_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25326,11 +25326,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific tag by its name
     ///
     /// - Remark: HTTP `GET /tags/{tag}`.
-    /// - Remark: Generated from `#/paths//tags/{tag}/get(tagsDetails)`.
-    public func tagsDetails(_ input: Operations.TagsDetails.Input) async throws -> Operations.TagsDetails.Output {
+    /// - Remark: Generated from `#/paths//tags/{tag}/get(tags.details)`.
+    public func tags_details(_ input: Operations.Tags_details.Input) async throws -> Operations.Tags_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TagsDetails.id,
+            forOperation: Operations.Tags_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tags/{}",
@@ -25353,7 +25353,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.Ok.Body
+                    let body: Operations.Tags_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25363,7 +25363,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25375,7 +25375,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.BadRequest.Body
+                    let body: Operations.Tags_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25385,7 +25385,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25397,7 +25397,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.Unauthorized.Body
+                    let body: Operations.Tags_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25407,7 +25407,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25419,7 +25419,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.Forbidden.Body
+                    let body: Operations.Tags_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25429,7 +25429,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25441,7 +25441,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.NotFound.Body
+                    let body: Operations.Tags_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25451,7 +25451,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25463,7 +25463,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.Conflict.Body
+                    let body: Operations.Tags_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25473,7 +25473,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25485,7 +25485,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Tags_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25495,7 +25495,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25507,7 +25507,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsDetails.Output.InternalServerError.Body
+                    let body: Operations.Tags_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25517,7 +25517,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tags_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25544,11 +25544,11 @@ public struct Client: APIProtocol {
     /// Update tag properties including category, flavor profiles, and synonyms. Requires moderator privileges
     ///
     /// - Remark: HTTP `PATCH /tags/{tag}`.
-    /// - Remark: Generated from `#/paths//tags/{tag}/patch(tagsUpdate)`.
-    public func tagsUpdate(_ input: Operations.TagsUpdate.Input) async throws -> Operations.TagsUpdate.Output {
+    /// - Remark: Generated from `#/paths//tags/{tag}/patch(tags.update)`.
+    public func tags_update(_ input: Operations.Tags_update.Input) async throws -> Operations.Tags_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TagsUpdate.id,
+            forOperation: Operations.Tags_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tags/{}",
@@ -25582,7 +25582,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.Ok.Body
+                    let body: Operations.Tags_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25592,7 +25592,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25604,7 +25604,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.BadRequest.Body
+                    let body: Operations.Tags_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25614,7 +25614,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25626,7 +25626,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.Unauthorized.Body
+                    let body: Operations.Tags_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25636,7 +25636,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25648,7 +25648,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.Forbidden.Body
+                    let body: Operations.Tags_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25658,7 +25658,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25670,7 +25670,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.NotFound.Body
+                    let body: Operations.Tags_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25680,7 +25680,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25692,7 +25692,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.Conflict.Body
+                    let body: Operations.Tags_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25702,7 +25702,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25714,7 +25714,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Tags_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25724,7 +25724,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25736,7 +25736,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsUpdate.Output.InternalServerError.Body
+                    let body: Operations.Tags_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25746,7 +25746,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tags_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25773,11 +25773,11 @@ public struct Client: APIProtocol {
     /// Retrieve available tags with search and pagination support
     ///
     /// - Remark: HTTP `GET /tags`.
-    /// - Remark: Generated from `#/paths//tags/get(tagsList)`.
-    public func tagsList(_ input: Operations.TagsList.Input) async throws -> Operations.TagsList.Output {
+    /// - Remark: Generated from `#/paths//tags/get(tags.list)`.
+    public func tags_list(_ input: Operations.Tags_list.Input) async throws -> Operations.Tags_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TagsList.id,
+            forOperation: Operations.Tags_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tags",
@@ -25826,7 +25826,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.Ok.Body
+                    let body: Operations.Tags_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25836,7 +25836,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25848,7 +25848,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.BadRequest.Body
+                    let body: Operations.Tags_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25858,7 +25858,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25870,7 +25870,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.Unauthorized.Body
+                    let body: Operations.Tags_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25880,7 +25880,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25892,7 +25892,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.Forbidden.Body
+                    let body: Operations.Tags_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25902,7 +25902,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25914,7 +25914,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.NotFound.Body
+                    let body: Operations.Tags_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25924,7 +25924,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25936,7 +25936,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.Conflict.Body
+                    let body: Operations.Tags_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25946,7 +25946,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25958,7 +25958,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.ContentTooLarge.Body
+                    let body: Operations.Tags_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25968,7 +25968,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -25980,7 +25980,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsList.Output.InternalServerError.Body
+                    let body: Operations.Tags_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -25990,7 +25990,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tags_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26017,11 +26017,11 @@ public struct Client: APIProtocol {
     /// Create a new tag with synonyms, category, and flavor profiles. Requires moderator privileges
     ///
     /// - Remark: HTTP `POST /tags`.
-    /// - Remark: Generated from `#/paths//tags/post(tagsCreate)`.
-    public func tagsCreate(_ input: Operations.TagsCreate.Input) async throws -> Operations.TagsCreate.Output {
+    /// - Remark: Generated from `#/paths//tags/post(tags.create)`.
+    public func tags_create(_ input: Operations.Tags_create.Input) async throws -> Operations.Tags_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TagsCreate.id,
+            forOperation: Operations.Tags_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tags",
@@ -26051,7 +26051,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.Ok.Body
+                    let body: Operations.Tags_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26061,7 +26061,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26073,7 +26073,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.BadRequest.Body
+                    let body: Operations.Tags_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26083,7 +26083,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26095,7 +26095,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.Unauthorized.Body
+                    let body: Operations.Tags_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26105,7 +26105,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26117,7 +26117,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.Forbidden.Body
+                    let body: Operations.Tags_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26127,7 +26127,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26139,7 +26139,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.NotFound.Body
+                    let body: Operations.Tags_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26149,7 +26149,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26161,7 +26161,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.Conflict.Body
+                    let body: Operations.Tags_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26171,7 +26171,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26183,7 +26183,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Tags_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26193,7 +26193,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26205,7 +26205,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TagsCreate.Output.InternalServerError.Body
+                    let body: Operations.Tags_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26215,7 +26215,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TagsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tags_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26242,11 +26242,11 @@ public struct Client: APIProtocol {
     /// Retrieve detailed information about a specific tasting
     ///
     /// - Remark: HTTP `GET /tastings/{tasting}`.
-    /// - Remark: Generated from `#/paths//tastings/{tasting}/get(tastingsDetails)`.
-    public func tastingsDetails(_ input: Operations.TastingsDetails.Input) async throws -> Operations.TastingsDetails.Output {
+    /// - Remark: Generated from `#/paths//tastings/{tasting}/get(tastings.details)`.
+    public func tastings_details(_ input: Operations.Tastings_details.Input) async throws -> Operations.Tastings_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TastingsDetails.id,
+            forOperation: Operations.Tastings_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings/{}",
@@ -26269,7 +26269,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.Ok.Body
+                    let body: Operations.Tastings_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26279,7 +26279,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26291,7 +26291,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.BadRequest.Body
+                    let body: Operations.Tastings_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26301,7 +26301,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26313,7 +26313,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.Unauthorized.Body
+                    let body: Operations.Tastings_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26323,7 +26323,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26335,7 +26335,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.Forbidden.Body
+                    let body: Operations.Tastings_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26345,7 +26345,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26357,7 +26357,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.NotFound.Body
+                    let body: Operations.Tastings_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26367,7 +26367,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26379,7 +26379,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.Conflict.Body
+                    let body: Operations.Tastings_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26389,7 +26389,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26401,7 +26401,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Tastings_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26411,7 +26411,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26423,7 +26423,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDetails.Output.InternalServerError.Body
+                    let body: Operations.Tastings_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26433,7 +26433,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tastings_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26460,11 +26460,11 @@ public struct Client: APIProtocol {
     /// Update tasting information including notes, rating, tags, and friends. Only the tasting creator can update
     ///
     /// - Remark: HTTP `PATCH /tastings/{tasting}`.
-    /// - Remark: Generated from `#/paths//tastings/{tasting}/patch(tastingsUpdate)`.
-    public func tastingsUpdate(_ input: Operations.TastingsUpdate.Input) async throws -> Operations.TastingsUpdate.Output {
+    /// - Remark: Generated from `#/paths//tastings/{tasting}/patch(tastings.update)`.
+    public func tastings_update(_ input: Operations.Tastings_update.Input) async throws -> Operations.Tastings_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TastingsUpdate.id,
+            forOperation: Operations.Tastings_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings/{}",
@@ -26498,7 +26498,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.Ok.Body
+                    let body: Operations.Tastings_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26508,7 +26508,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26520,7 +26520,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.BadRequest.Body
+                    let body: Operations.Tastings_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26530,7 +26530,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26542,7 +26542,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.Unauthorized.Body
+                    let body: Operations.Tastings_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26552,7 +26552,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26564,7 +26564,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.Forbidden.Body
+                    let body: Operations.Tastings_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26574,7 +26574,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26586,7 +26586,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.NotFound.Body
+                    let body: Operations.Tastings_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26596,7 +26596,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26608,7 +26608,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.Conflict.Body
+                    let body: Operations.Tastings_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26618,7 +26618,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26630,7 +26630,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Tastings_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26640,7 +26640,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26652,7 +26652,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsUpdate.Output.InternalServerError.Body
+                    let body: Operations.Tastings_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26662,7 +26662,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tastings_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26689,11 +26689,11 @@ public struct Client: APIProtocol {
     /// Delete a tasting and update related statistics. Only the tasting creator or admin can delete
     ///
     /// - Remark: HTTP `DELETE /tastings/{tasting}`.
-    /// - Remark: Generated from `#/paths//tastings/{tasting}/delete(tastingsDelete)`.
-    public func tastingsDelete(_ input: Operations.TastingsDelete.Input) async throws -> Operations.TastingsDelete.Output {
+    /// - Remark: Generated from `#/paths//tastings/{tasting}/delete(tastings.delete)`.
+    public func tastings_delete(_ input: Operations.Tastings_delete.Input) async throws -> Operations.Tastings_delete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TastingsDelete.id,
+            forOperation: Operations.Tastings_delete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings/{}",
@@ -26727,7 +26727,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.Ok.Body
+                    let body: Operations.Tastings_delete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26749,7 +26749,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.BadRequest.Body
+                    let body: Operations.Tastings_delete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26759,7 +26759,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tastings_delete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26771,7 +26771,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.Unauthorized.Body
+                    let body: Operations.Tastings_delete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26781,7 +26781,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tastings_delete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26793,7 +26793,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.Forbidden.Body
+                    let body: Operations.Tastings_delete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26803,7 +26803,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tastings_delete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26815,7 +26815,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.NotFound.Body
+                    let body: Operations.Tastings_delete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26825,7 +26825,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tastings_delete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26837,7 +26837,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.Conflict.Body
+                    let body: Operations.Tastings_delete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26847,7 +26847,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tastings_delete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26859,7 +26859,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Tastings_delete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26869,7 +26869,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tastings_delete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26881,7 +26881,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsDelete.Output.InternalServerError.Body
+                    let body: Operations.Tastings_delete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26891,7 +26891,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tastings_delete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -26918,11 +26918,11 @@ public struct Client: APIProtocol {
     /// Retrieve tastings with filtering by bottle, entity, user, and privacy settings. Supports pagination
     ///
     /// - Remark: HTTP `GET /tastings`.
-    /// - Remark: Generated from `#/paths//tastings/get(tastingsList)`.
-    public func tastingsList(_ input: Operations.TastingsList.Input) async throws -> Operations.TastingsList.Output {
+    /// - Remark: Generated from `#/paths//tastings/get(tastings.list)`.
+    public func tastings_list(_ input: Operations.Tastings_list.Input) async throws -> Operations.Tastings_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TastingsList.id,
+            forOperation: Operations.Tastings_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings",
@@ -26985,7 +26985,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.Ok.Body
+                    let body: Operations.Tastings_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -26995,7 +26995,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27007,7 +27007,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.BadRequest.Body
+                    let body: Operations.Tastings_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27017,7 +27017,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27029,7 +27029,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.Unauthorized.Body
+                    let body: Operations.Tastings_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27039,7 +27039,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27051,7 +27051,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.Forbidden.Body
+                    let body: Operations.Tastings_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27061,7 +27061,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27073,7 +27073,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.NotFound.Body
+                    let body: Operations.Tastings_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27083,7 +27083,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27095,7 +27095,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.Conflict.Body
+                    let body: Operations.Tastings_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27105,7 +27105,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27117,7 +27117,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.ContentTooLarge.Body
+                    let body: Operations.Tastings_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27127,7 +27127,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27139,7 +27139,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsList.Output.InternalServerError.Body
+                    let body: Operations.Tastings_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27149,7 +27149,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tastings_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27176,11 +27176,11 @@ public struct Client: APIProtocol {
     /// Create a new tasting entry for a bottle with notes, rating, and optional metadata like flight and friends
     ///
     /// - Remark: HTTP `POST /tastings`.
-    /// - Remark: Generated from `#/paths//tastings/post(tastingsCreate)`.
-    public func tastingsCreate(_ input: Operations.TastingsCreate.Input) async throws -> Operations.TastingsCreate.Output {
+    /// - Remark: Generated from `#/paths//tastings/post(tastings.create)`.
+    public func tastings_create(_ input: Operations.Tastings_create.Input) async throws -> Operations.Tastings_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TastingsCreate.id,
+            forOperation: Operations.Tastings_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings",
@@ -27210,7 +27210,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.Ok.Body
+                    let body: Operations.Tastings_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27220,7 +27220,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27232,7 +27232,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.BadRequest.Body
+                    let body: Operations.Tastings_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27242,7 +27242,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27254,7 +27254,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.Unauthorized.Body
+                    let body: Operations.Tastings_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27264,7 +27264,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27276,7 +27276,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.Forbidden.Body
+                    let body: Operations.Tastings_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27286,7 +27286,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27298,7 +27298,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.NotFound.Body
+                    let body: Operations.Tastings_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27308,7 +27308,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27320,7 +27320,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.Conflict.Body
+                    let body: Operations.Tastings_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27330,7 +27330,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27342,7 +27342,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Tastings_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27352,7 +27352,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27364,7 +27364,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsCreate.Output.InternalServerError.Body
+                    let body: Operations.Tastings_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27374,7 +27374,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tastings_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27401,11 +27401,11 @@ public struct Client: APIProtocol {
     /// Upload and update the image for a tasting with automatic compression and resizing. Requires authentication and ownership or admin privileges
     ///
     /// - Remark: HTTP `POST /tastings/{tasting}/image`.
-    /// - Remark: Generated from `#/paths//tastings/{tasting}/image/post(tastingsImageUpdate)`.
-    public func tastingsImageUpdate(_ input: Operations.TastingsImageUpdate.Input) async throws -> Operations.TastingsImageUpdate.Output {
+    /// - Remark: Generated from `#/paths//tastings/{tasting}/image/post(tastings.imageUpdate)`.
+    public func tastings_imageUpdate(_ input: Operations.Tastings_imageUpdate.Input) async throws -> Operations.Tastings_imageUpdate.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TastingsImageUpdate.id,
+            forOperation: Operations.Tastings_imageUpdate.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings/{}/image",
@@ -27439,7 +27439,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.Ok.Body
+                    let body: Operations.Tastings_imageUpdate.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27449,7 +27449,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27461,7 +27461,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.BadRequest.Body
+                    let body: Operations.Tastings_imageUpdate.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27471,7 +27471,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27483,7 +27483,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.Unauthorized.Body
+                    let body: Operations.Tastings_imageUpdate.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27493,7 +27493,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27505,7 +27505,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.Forbidden.Body
+                    let body: Operations.Tastings_imageUpdate.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27515,7 +27515,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27527,7 +27527,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.NotFound.Body
+                    let body: Operations.Tastings_imageUpdate.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27537,7 +27537,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27549,7 +27549,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.Conflict.Body
+                    let body: Operations.Tastings_imageUpdate.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27559,7 +27559,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27571,7 +27571,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Tastings_imageUpdate.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27581,7 +27581,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27593,7 +27593,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageUpdate.Output.InternalServerError.Body
+                    let body: Operations.Tastings_imageUpdate.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27603,7 +27603,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tastings_imageUpdate.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27630,11 +27630,11 @@ public struct Client: APIProtocol {
     /// Remove the image from a tasting. Requires authentication and ownership or admin privileges
     ///
     /// - Remark: HTTP `DELETE /tastings/{tasting}/image`.
-    /// - Remark: Generated from `#/paths//tastings/{tasting}/image/delete(tastingsImageDelete)`.
-    public func tastingsImageDelete(_ input: Operations.TastingsImageDelete.Input) async throws -> Operations.TastingsImageDelete.Output {
+    /// - Remark: Generated from `#/paths//tastings/{tasting}/image/delete(tastings.imageDelete)`.
+    public func tastings_imageDelete(_ input: Operations.Tastings_imageDelete.Input) async throws -> Operations.Tastings_imageDelete.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.TastingsImageDelete.id,
+            forOperation: Operations.Tastings_imageDelete.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings/{}/image",
@@ -27668,7 +27668,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.Ok.Body
+                    let body: Operations.Tastings_imageDelete.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27690,7 +27690,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.BadRequest.Body
+                    let body: Operations.Tastings_imageDelete.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27700,7 +27700,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageDelete.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Tastings_imageDelete.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27712,7 +27712,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.Unauthorized.Body
+                    let body: Operations.Tastings_imageDelete.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27722,7 +27722,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageDelete.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Tastings_imageDelete.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27734,7 +27734,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.Forbidden.Body
+                    let body: Operations.Tastings_imageDelete.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27744,7 +27744,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageDelete.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Tastings_imageDelete.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27756,7 +27756,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.NotFound.Body
+                    let body: Operations.Tastings_imageDelete.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27766,7 +27766,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageDelete.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Tastings_imageDelete.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27778,7 +27778,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.Conflict.Body
+                    let body: Operations.Tastings_imageDelete.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27788,7 +27788,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageDelete.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Tastings_imageDelete.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27800,7 +27800,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.ContentTooLarge.Body
+                    let body: Operations.Tastings_imageDelete.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27810,7 +27810,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageDelete.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Tastings_imageDelete.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27822,7 +27822,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.TastingsImageDelete.Output.InternalServerError.Body
+                    let body: Operations.Tastings_imageDelete.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27832,7 +27832,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.TastingsImageDelete.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Tastings_imageDelete.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27859,11 +27859,11 @@ public struct Client: APIProtocol {
     /// Toast a tasting to show appreciation. Cannot toast your own tastings. Requires authentication
     ///
     /// - Remark: HTTP `POST /tastings/{tasting}/toast`.
-    /// - Remark: Generated from `#/paths//tastings/{tasting}/toast/post(toastsCreate)`.
-    public func toastsCreate(_ input: Operations.ToastsCreate.Input) async throws -> Operations.ToastsCreate.Output {
+    /// - Remark: Generated from `#/paths//tastings/{tasting}/toast/post(toasts.create)`.
+    public func toasts_create(_ input: Operations.Toasts_create.Input) async throws -> Operations.Toasts_create.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.ToastsCreate.id,
+            forOperation: Operations.Toasts_create.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/tastings/{}/toast",
@@ -27897,7 +27897,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.Ok.Body
+                    let body: Operations.Toasts_create.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27919,7 +27919,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.BadRequest.Body
+                    let body: Operations.Toasts_create.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27929,7 +27929,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ToastsCreate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Toasts_create.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27941,7 +27941,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.Unauthorized.Body
+                    let body: Operations.Toasts_create.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27951,7 +27951,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ToastsCreate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Toasts_create.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27963,7 +27963,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.Forbidden.Body
+                    let body: Operations.Toasts_create.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27973,7 +27973,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ToastsCreate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Toasts_create.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -27985,7 +27985,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.NotFound.Body
+                    let body: Operations.Toasts_create.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -27995,7 +27995,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ToastsCreate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Toasts_create.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28007,7 +28007,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.Conflict.Body
+                    let body: Operations.Toasts_create.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28017,7 +28017,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ToastsCreate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Toasts_create.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28029,7 +28029,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.ContentTooLarge.Body
+                    let body: Operations.Toasts_create.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28039,7 +28039,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ToastsCreate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Toasts_create.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28051,7 +28051,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.ToastsCreate.Output.InternalServerError.Body
+                    let body: Operations.Toasts_create.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28061,7 +28061,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.ToastsCreate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Toasts_create.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28088,11 +28088,11 @@ public struct Client: APIProtocol {
     /// Retrieve user profile information including statistics for tastings, bottles, and contributions
     ///
     /// - Remark: HTTP `GET /users/{user}`.
-    /// - Remark: Generated from `#/paths//users/{user}/get(usersDetails)`.
-    public func usersDetails(_ input: Operations.UsersDetails.Input) async throws -> Operations.UsersDetails.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/get(users.details)`.
+    public func users_details(_ input: Operations.Users_details.Input) async throws -> Operations.Users_details.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersDetails.id,
+            forOperation: Operations.Users_details.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}",
@@ -28115,7 +28115,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.Ok.Body
+                    let body: Operations.Users_details.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28125,7 +28125,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_details.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28137,7 +28137,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.BadRequest.Body
+                    let body: Operations.Users_details.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28147,7 +28147,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_details.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28159,7 +28159,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.Unauthorized.Body
+                    let body: Operations.Users_details.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28169,7 +28169,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_details.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28181,7 +28181,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.Forbidden.Body
+                    let body: Operations.Users_details.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28191,7 +28191,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_details.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28203,7 +28203,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.NotFound.Body
+                    let body: Operations.Users_details.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28213,7 +28213,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_details.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28225,7 +28225,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.Conflict.Body
+                    let body: Operations.Users_details.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28235,7 +28235,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_details.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28247,7 +28247,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.ContentTooLarge.Body
+                    let body: Operations.Users_details.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28257,7 +28257,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_details.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28269,7 +28269,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersDetails.Output.InternalServerError.Body
+                    let body: Operations.Users_details.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28279,7 +28279,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersDetails.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_details.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28306,11 +28306,11 @@ public struct Client: APIProtocol {
     /// Update user profile information including username, privacy settings, and admin status. Users can only edit their own profile unless they are admin
     ///
     /// - Remark: HTTP `PATCH /users/{user}`.
-    /// - Remark: Generated from `#/paths//users/{user}/patch(usersUpdate)`.
-    public func usersUpdate(_ input: Operations.UsersUpdate.Input) async throws -> Operations.UsersUpdate.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/patch(users.update)`.
+    public func users_update(_ input: Operations.Users_update.Input) async throws -> Operations.Users_update.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersUpdate.id,
+            forOperation: Operations.Users_update.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}",
@@ -28344,7 +28344,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.Ok.Body
+                    let body: Operations.Users_update.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28354,7 +28354,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_update.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28366,7 +28366,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.BadRequest.Body
+                    let body: Operations.Users_update.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28376,7 +28376,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_update.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28388,7 +28388,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.Unauthorized.Body
+                    let body: Operations.Users_update.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28398,7 +28398,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_update.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28410,7 +28410,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.Forbidden.Body
+                    let body: Operations.Users_update.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28420,7 +28420,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_update.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28432,7 +28432,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.NotFound.Body
+                    let body: Operations.Users_update.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28442,7 +28442,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_update.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28454,7 +28454,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.Conflict.Body
+                    let body: Operations.Users_update.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28464,7 +28464,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_update.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28476,7 +28476,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Users_update.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28486,7 +28486,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_update.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28498,7 +28498,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersUpdate.Output.InternalServerError.Body
+                    let body: Operations.Users_update.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28508,7 +28508,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_update.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28535,11 +28535,11 @@ public struct Client: APIProtocol {
     /// Search and list users with pagination support. Requires authentication
     ///
     /// - Remark: HTTP `GET /users`.
-    /// - Remark: Generated from `#/paths//users/get(usersList)`.
-    public func usersList(_ input: Operations.UsersList.Input) async throws -> Operations.UsersList.Output {
+    /// - Remark: Generated from `#/paths//users/get(users.list)`.
+    public func users_list(_ input: Operations.Users_list.Input) async throws -> Operations.Users_list.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersList.id,
+            forOperation: Operations.Users_list.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users",
@@ -28588,7 +28588,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.Ok.Body
+                    let body: Operations.Users_list.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28598,7 +28598,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_list.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28610,7 +28610,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.BadRequest.Body
+                    let body: Operations.Users_list.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28620,7 +28620,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_list.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28632,7 +28632,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.Unauthorized.Body
+                    let body: Operations.Users_list.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28642,7 +28642,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_list.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28654,7 +28654,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.Forbidden.Body
+                    let body: Operations.Users_list.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28664,7 +28664,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_list.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28676,7 +28676,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.NotFound.Body
+                    let body: Operations.Users_list.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28686,7 +28686,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_list.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28698,7 +28698,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.Conflict.Body
+                    let body: Operations.Users_list.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28708,7 +28708,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_list.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28720,7 +28720,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.ContentTooLarge.Body
+                    let body: Operations.Users_list.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28730,7 +28730,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_list.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28742,7 +28742,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersList.Output.InternalServerError.Body
+                    let body: Operations.Users_list.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28752,7 +28752,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_list.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28779,11 +28779,11 @@ public struct Client: APIProtocol {
     /// Upload and update a user's avatar image with automatic compression and resizing. Requires authentication and ownership or admin privileges
     ///
     /// - Remark: HTTP `POST /users/{user}/avatar`.
-    /// - Remark: Generated from `#/paths//users/{user}/avatar/post(usersAvatarUpdate)`.
-    public func usersAvatarUpdate(_ input: Operations.UsersAvatarUpdate.Input) async throws -> Operations.UsersAvatarUpdate.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/avatar/post(users.avatarUpdate)`.
+    public func users_avatarUpdate(_ input: Operations.Users_avatarUpdate.Input) async throws -> Operations.Users_avatarUpdate.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersAvatarUpdate.id,
+            forOperation: Operations.Users_avatarUpdate.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/avatar",
@@ -28817,7 +28817,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.Ok.Body
+                    let body: Operations.Users_avatarUpdate.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28827,7 +28827,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28839,7 +28839,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.BadRequest.Body
+                    let body: Operations.Users_avatarUpdate.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28849,7 +28849,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28861,7 +28861,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.Unauthorized.Body
+                    let body: Operations.Users_avatarUpdate.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28871,7 +28871,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28883,7 +28883,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.Forbidden.Body
+                    let body: Operations.Users_avatarUpdate.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28893,7 +28893,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28905,7 +28905,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.NotFound.Body
+                    let body: Operations.Users_avatarUpdate.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28915,7 +28915,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28927,7 +28927,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.Conflict.Body
+                    let body: Operations.Users_avatarUpdate.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28937,7 +28937,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28949,7 +28949,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.ContentTooLarge.Body
+                    let body: Operations.Users_avatarUpdate.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28959,7 +28959,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -28971,7 +28971,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersAvatarUpdate.Output.InternalServerError.Body
+                    let body: Operations.Users_avatarUpdate.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -28981,7 +28981,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersAvatarUpdate.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_avatarUpdate.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29008,11 +29008,11 @@ public struct Client: APIProtocol {
     /// Retrieve badges earned by a user with pagination support. Respects privacy settings
     ///
     /// - Remark: HTTP `GET /users/{user}/badges`.
-    /// - Remark: Generated from `#/paths//users/{user}/badges/get(usersBadgeList)`.
-    public func usersBadgeList(_ input: Operations.UsersBadgeList.Input) async throws -> Operations.UsersBadgeList.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/badges/get(users.badgeList)`.
+    public func users_badgeList(_ input: Operations.Users_badgeList.Input) async throws -> Operations.Users_badgeList.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersBadgeList.id,
+            forOperation: Operations.Users_badgeList.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/badges",
@@ -29049,7 +29049,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.Ok.Body
+                    let body: Operations.Users_badgeList.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29059,7 +29059,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29071,7 +29071,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.BadRequest.Body
+                    let body: Operations.Users_badgeList.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29081,7 +29081,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29093,7 +29093,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.Unauthorized.Body
+                    let body: Operations.Users_badgeList.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29103,7 +29103,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29115,7 +29115,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.Forbidden.Body
+                    let body: Operations.Users_badgeList.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29125,7 +29125,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29137,7 +29137,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.NotFound.Body
+                    let body: Operations.Users_badgeList.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29147,7 +29147,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29159,7 +29159,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.Conflict.Body
+                    let body: Operations.Users_badgeList.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29169,7 +29169,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29181,7 +29181,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.ContentTooLarge.Body
+                    let body: Operations.Users_badgeList.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29191,7 +29191,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29203,7 +29203,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersBadgeList.Output.InternalServerError.Body
+                    let body: Operations.Users_badgeList.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29213,7 +29213,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersBadgeList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_badgeList.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29240,11 +29240,11 @@ public struct Client: APIProtocol {
     /// Retrieve flavor profiles from bottles tasted by a user with counts and scores. Respects privacy settings
     ///
     /// - Remark: HTTP `GET /users/{user}/flavors`.
-    /// - Remark: Generated from `#/paths//users/{user}/flavors/get(usersFlavorList)`.
-    public func usersFlavorList(_ input: Operations.UsersFlavorList.Input) async throws -> Operations.UsersFlavorList.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/flavors/get(users.flavorList)`.
+    public func users_flavorList(_ input: Operations.Users_flavorList.Input) async throws -> Operations.Users_flavorList.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersFlavorList.id,
+            forOperation: Operations.Users_flavorList.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/flavors",
@@ -29267,7 +29267,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.Ok.Body
+                    let body: Operations.Users_flavorList.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29277,7 +29277,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29289,7 +29289,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.BadRequest.Body
+                    let body: Operations.Users_flavorList.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29299,7 +29299,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29311,7 +29311,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.Unauthorized.Body
+                    let body: Operations.Users_flavorList.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29321,7 +29321,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29333,7 +29333,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.Forbidden.Body
+                    let body: Operations.Users_flavorList.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29343,7 +29343,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29355,7 +29355,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.NotFound.Body
+                    let body: Operations.Users_flavorList.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29365,7 +29365,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29377,7 +29377,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.Conflict.Body
+                    let body: Operations.Users_flavorList.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29387,7 +29387,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29399,7 +29399,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.ContentTooLarge.Body
+                    let body: Operations.Users_flavorList.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29409,7 +29409,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29421,7 +29421,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersFlavorList.Output.InternalServerError.Body
+                    let body: Operations.Users_flavorList.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29431,7 +29431,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersFlavorList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_flavorList.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29458,11 +29458,11 @@ public struct Client: APIProtocol {
     /// Retrieve regions from bottles tasted by a user with tasting counts. Respects privacy settings
     ///
     /// - Remark: HTTP `GET /users/{user}/regions`.
-    /// - Remark: Generated from `#/paths//users/{user}/regions/get(usersRegionList)`.
-    public func usersRegionList(_ input: Operations.UsersRegionList.Input) async throws -> Operations.UsersRegionList.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/regions/get(users.regionList)`.
+    public func users_regionList(_ input: Operations.Users_regionList.Input) async throws -> Operations.Users_regionList.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersRegionList.id,
+            forOperation: Operations.Users_regionList.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/regions",
@@ -29485,7 +29485,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.Ok.Body
+                    let body: Operations.Users_regionList.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29495,7 +29495,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29507,7 +29507,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.BadRequest.Body
+                    let body: Operations.Users_regionList.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29517,7 +29517,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29529,7 +29529,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.Unauthorized.Body
+                    let body: Operations.Users_regionList.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29539,7 +29539,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29551,7 +29551,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.Forbidden.Body
+                    let body: Operations.Users_regionList.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29561,7 +29561,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29573,7 +29573,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.NotFound.Body
+                    let body: Operations.Users_regionList.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29583,7 +29583,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29595,7 +29595,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.Conflict.Body
+                    let body: Operations.Users_regionList.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29605,7 +29605,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29617,7 +29617,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.ContentTooLarge.Body
+                    let body: Operations.Users_regionList.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29627,7 +29627,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29639,7 +29639,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersRegionList.Output.InternalServerError.Body
+                    let body: Operations.Users_regionList.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29649,7 +29649,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersRegionList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_regionList.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29676,11 +29676,11 @@ public struct Client: APIProtocol {
     /// Retrieve tags used by a user in their tastings with usage counts. Respects privacy settings
     ///
     /// - Remark: HTTP `GET /users/{user}/tags`.
-    /// - Remark: Generated from `#/paths//users/{user}/tags/get(usersTagList)`.
-    public func usersTagList(_ input: Operations.UsersTagList.Input) async throws -> Operations.UsersTagList.Output {
+    /// - Remark: Generated from `#/paths//users/{user}/tags/get(users.tagList)`.
+    public func users_tagList(_ input: Operations.Users_tagList.Input) async throws -> Operations.Users_tagList.Output {
         try await client.send(
             input: input,
-            forOperation: Operations.UsersTagList.id,
+            forOperation: Operations.Users_tagList.id,
             serializer: { input in
                 let path = try converter.renderedPath(
                     template: "/users/{}/tags",
@@ -29703,7 +29703,7 @@ public struct Client: APIProtocol {
                 switch response.status.code {
                 case 200:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.Ok.Body
+                    let body: Operations.Users_tagList.Output.Ok.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29713,7 +29713,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.Ok.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.Ok.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29725,7 +29725,7 @@ public struct Client: APIProtocol {
                     return .ok(.init(body: body))
                 case 400:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.BadRequest.Body
+                    let body: Operations.Users_tagList.Output.BadRequest.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29735,7 +29735,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.BadRequest.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.BadRequest.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29747,7 +29747,7 @@ public struct Client: APIProtocol {
                     return .badRequest(.init(body: body))
                 case 401:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.Unauthorized.Body
+                    let body: Operations.Users_tagList.Output.Unauthorized.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29757,7 +29757,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.Unauthorized.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.Unauthorized.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29769,7 +29769,7 @@ public struct Client: APIProtocol {
                     return .unauthorized(.init(body: body))
                 case 403:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.Forbidden.Body
+                    let body: Operations.Users_tagList.Output.Forbidden.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29779,7 +29779,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.Forbidden.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.Forbidden.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29791,7 +29791,7 @@ public struct Client: APIProtocol {
                     return .forbidden(.init(body: body))
                 case 404:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.NotFound.Body
+                    let body: Operations.Users_tagList.Output.NotFound.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29801,7 +29801,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.NotFound.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.NotFound.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29813,7 +29813,7 @@ public struct Client: APIProtocol {
                     return .notFound(.init(body: body))
                 case 409:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.Conflict.Body
+                    let body: Operations.Users_tagList.Output.Conflict.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29823,7 +29823,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.Conflict.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.Conflict.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29835,7 +29835,7 @@ public struct Client: APIProtocol {
                     return .conflict(.init(body: body))
                 case 413:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.ContentTooLarge.Body
+                    let body: Operations.Users_tagList.Output.ContentTooLarge.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29845,7 +29845,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.ContentTooLarge.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.ContentTooLarge.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)
@@ -29857,7 +29857,7 @@ public struct Client: APIProtocol {
                     return .contentTooLarge(.init(body: body))
                 case 500:
                     let contentType = converter.extractContentTypeIfPresent(in: response.headerFields)
-                    let body: Operations.UsersTagList.Output.InternalServerError.Body
+                    let body: Operations.Users_tagList.Output.InternalServerError.Body
                     let chosenContentType = try converter.bestContentType(
                         received: contentType,
                         options: [
@@ -29867,7 +29867,7 @@ public struct Client: APIProtocol {
                     switch chosenContentType {
                     case "application/json":
                         body = try await converter.getResponseBodyAsJSON(
-                            Operations.UsersTagList.Output.InternalServerError.Body.JsonPayload.self,
+                            Operations.Users_tagList.Output.InternalServerError.Body.JsonPayload.self,
                             from: responseBody,
                             transforming: { value in
                                 .json(value)

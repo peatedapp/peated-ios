@@ -22,9 +22,9 @@ echo "🔧 Fixing nullable fields..."
 echo "🔧 Fixing parameter schemas..."
 ./fix-parameter-schemas.sh Sources/PeatedAPI/openapi.json
 
-# Fix operation names to Swift TitleCase
-echo "🔧 Fixing operation names to TitleCase..."
-./fix-operation-names.sh Sources/PeatedAPI/openapi.json
+# Note: Operation names are now properly camelCased on the server (as of 2025-08-02)
+# The fix-operation-names.sh script is no longer needed and has been retired.
+# Server now provides operationIDs like "authLogin", "bottlesList" etc.
 
 # Generate using swift-openapi-generator
 echo "🛠️  Generating API client..."
