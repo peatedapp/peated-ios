@@ -13,6 +13,7 @@ For comprehensive documentation see:
 - @docs/architecture/tech-stack.md - Technology choices
 - @docs/implementation/phases.md - Implementation roadmap
 - @docs/references/modern-swift.md - Swift best practices
+- @docs/testing/testing-strategy.md - Testing approach and patterns
 
 ## Architecture
 
@@ -110,6 +111,31 @@ struct LoginView: View {
 - KeychainAccess (4.2.0+) - Secure credential storage
 
 Note: We use manual OpenAPI generation, not the build plugin. See @../docs/openapi-workflow.md
+
+## OpenAPI Integration WARNINGS
+
+⚠️ **NEVER run the update-api.sh script without understanding the impact**
+- The script regenerates 70,000+ lines of code
+- All API types will change, potentially breaking existing code
+- Always commit current changes before running
+- Review the diff carefully - massive changes indicate API breaking changes
+
+⚠️ **Known OpenAPI Issues**
+- Swift OpenAPI Generator doesn't handle anyOf[type, null] patterns
+- We have preprocessing scripts that MUST run before generation
+- The generated code is committed to version control (not build-time generated)
+- Operation names may change with different naming strategies
+
+## Before Updating API
+1. Ensure all current work is committed
+2. Create a branch for API updates
+3. Run tests to establish baseline
+4. Only then run update-api.sh from the PeatedAPI directory
+
+⚠️ **NEVER use `git checkout -- .` or full reverts without explicit permission**
+- Always try targeted fixes first
+- Explain the issue before suggesting any revert
+- Work changes should be preserved, not discarded
 
 ## Performance
 

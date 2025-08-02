@@ -16,6 +16,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
   
   private let apiClient: APIClient
   private let keychain = KeychainService.shared
+  private let userRepository: UserRepository
   
   public var isAuthenticated: Bool {
     if case .authenticated = authState {
@@ -35,6 +36,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     self.apiClient = APIClient(
       serverURL: URL(string: "https://api.peated.com/v1")!
     )
+    self.userRepository = UserRepository(apiClient: apiClient)
   }
   
   // MARK: - Public Methods
@@ -46,42 +48,9 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         _ = try keychain.getToken()
         
         // Token is already configured via AuthMiddleware
-        let client = await apiClient.generatedClient
-        let response = try await client.auth_me()
-        
-        // Extract the user from the response
-        if case .ok(let okResponse) = response,
-           case .json(let jsonPayload) = okResponse.body {
-          var user = User(
-            id: jsonPayload.user.id,
-            email: jsonPayload.user.email,
-            username: jsonPayload.user.username,
-            verified: jsonPayload.user.verified,
-            admin: jsonPayload.user.admin,
-            mod: jsonPayload.user.mod
-          )
-          
-          // Fetch additional user details including stats
-          do {
-            let detailsResponse = try await client.users_details(
-              path: .init(user: .init(value1: jsonPayload.user.id))
-            )
-            
-            if case .ok(let detailsOk) = detailsResponse,
-               case .json(let detailsJson) = detailsOk.body {
-              user.tastingsCount = Int(detailsJson.stats.tastings)
-              user.bottlesCount = Int(detailsJson.stats.bottles)
-              user.collectedCount = Int(detailsJson.stats.collected)
-              user.contributionsCount = Int(detailsJson.stats.contributions)
-            }
-          } catch {
-            // Continue without stats if details fail
-            print("Failed to fetch user details: \(error)")
-          }
-          
-          print("AuthenticationManager: User authenticated - admin: \(user.admin), mod: \(user.mod)")
-          authState = .authenticated(user)
-        }
+        let user = try await userRepository.getCurrentUser()
+        print("AuthenticationManager: User authenticated - admin: \(user.admin), mod: \(user.mod)")
+        authState = .authenticated(user)
       } catch {
         // Token might be invalid
         authState = .unauthenticated
@@ -101,7 +70,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
       let client = await apiClient.generatedClient
       
       // Create the request body
-      let body = Operations.auth_login.Input.Body.json(
+      let body = Operations.Auth_login.Input.Body.json(
         .init(
           value1: .init(email: email, password: password)
         )
@@ -120,14 +89,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         
         // Convert API user to local User
         let apiUser = jsonPayload.user
-        var user = User(
-          id: apiUser.id,
-          email: apiUser.email,
-          username: apiUser.username,
-          verified: apiUser.verified,
-          admin: apiUser.admin,
-          mod: apiUser.mod
-        )
+        var user = User(from: apiUser)
         
         // Fetch additional user details including stats
         do {
@@ -187,7 +149,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         let client = await apiClient.generatedClient
         
         // Create the request body for Google auth (using idToken)
-        let body = Operations.auth_login.Input.Body.json(
+        let body = Operations.Auth_login.Input.Body.json(
           .init(
             value3: .init(idToken: idToken)
           )
@@ -206,14 +168,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
           
           // Convert API user to local User
           let apiUser = jsonPayload.user
-          var user = User(
-            id: apiUser.id,
-            email: apiUser.email,
-            username: apiUser.username,
-            verified: apiUser.verified,
-            admin: apiUser.admin ?? false,
-            mod: apiUser.mod ?? false
-          )
+          var user = User(from: apiUser)
           
           // Fetch additional user details including stats
           do {

@@ -14,9 +14,17 @@ curl -o Sources/PeatedAPI/openapi.json https://api.peated.com/spec.json
 echo "🔧 Fixing OpenAPI version..."
 sed -i '' 's/"openapi": "3.1.1"/"openapi": "3.1.0"/' Sources/PeatedAPI/openapi.json
 
-# Fix operationIds
-echo "🔧 Fixing operationIds..."
-sed -i '' 's/"operationId": "\([^"]*\)\.\([^"]*\)"/"operationId": "\1_\2"/g' Sources/PeatedAPI/openapi.json
+# Fix nullable fields (convert anyOf[type, null] to nullable: true)
+echo "🔧 Fixing nullable fields..."
+./fix-nullable-fields.sh Sources/PeatedAPI/openapi.json
+
+# Fix missing parameter schemas
+echo "🔧 Fixing parameter schemas..."
+./fix-parameter-schemas.sh Sources/PeatedAPI/openapi.json
+
+# Fix operation names to Swift TitleCase
+echo "🔧 Fixing operation names to TitleCase..."
+./fix-operation-names.sh Sources/PeatedAPI/openapi.json
 
 # Generate using swift-openapi-generator
 echo "🛠️  Generating API client..."
@@ -29,13 +37,11 @@ if command -v swift-openapi-generator &> /dev/null; then
         Sources/PeatedAPI/openapi.json
 else
     echo "⚠️  swift-openapi-generator not found. Using Swift package..."
-    # Temporarily add to Package.swift and run
-    cd ../PeatedCore
+    # Run from PeatedAPI package
     swift run swift-openapi-generator generate \
-        --config ../peated-api/Sources/PeatedAPI/openapi-generator-config.yaml \
-        --output-directory ../peated-api/Sources/PeatedAPI/Generated \
-        ../peated-api/Sources/PeatedAPI/openapi.json
-    cd ../peated-api
+        --config Sources/PeatedAPI/openapi-generator-config.yaml \
+        --output-directory Sources/PeatedAPI/Generated \
+        Sources/PeatedAPI/openapi.json
 fi
 
 echo "✅ API client updated successfully!"

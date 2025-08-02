@@ -12,6 +12,7 @@ For comprehensive documentation see:
 - @../docs/architecture/data-models.md - Data model design
 - @../docs/architecture/api-integration.md - API patterns
 - @../docs/offline/sync.md - Offline sync architecture
+- @../docs/testing/testing-strategy.md - Testing approach and patterns
 
 ## Architecture
 
@@ -39,6 +40,12 @@ For comprehensive documentation see:
 - Generated code uses `public` access modifier for external visibility
 - **Generated files ARE committed** to version control (production approach)
 - For complete workflow details see @../docs/openapi-workflow.md
+
+⚠️ **CRITICAL: API Update Warnings**
+- Running update-api.sh will regenerate ALL API types (70,000+ lines)
+- This WILL break existing code if the API has changed
+- Always work on a separate branch when updating API
+- The PeatedAPI package is separate to isolate these massive changes
 
 ## Testing
 

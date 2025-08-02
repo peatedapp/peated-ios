@@ -23,8 +23,7 @@ struct AppView: View {
                 // Main app content
                 TabView {
                     NavigationStack {
-                        Text("Feed")
-                            .navigationTitle("Activity")
+                        FeedView()
                     }
                     .tabItem {
                         Label("Activity", systemImage: "house.fill")

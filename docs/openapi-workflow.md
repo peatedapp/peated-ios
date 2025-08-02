@@ -1,5 +1,15 @@
 # OpenAPI Workflow
 
+## ⚠️ CRITICAL WARNING ⚠️
+
+**Updating the API client is a MAJOR operation that can break your entire codebase.**
+
+Before proceeding, understand that:
+- The update script will regenerate 70,000+ lines of code
+- ALL API types may change, breaking existing code throughout the app
+- You MUST be on a clean git branch with no uncommitted changes
+- Review all changes carefully - this is not a routine operation
+
 ## Overview
 
 Peated iOS uses [swift-openapi-generator](https://github.com/apple/swift-openapi-generator) to generate type-safe API client code from our OpenAPI specification. We use **manual generation** (not the build plugin) for better control and faster builds.
@@ -16,6 +26,17 @@ While Apple recommends using the build plugin, we chose manual generation becaus
 
 This approach is common in production iOS apps and aligns with industry best practices.
 
+## Pre-Update Checklist
+
+**STOP! Before running `update-api.sh`, verify:**
+
+- [ ] All current changes are committed (`git status` shows clean)
+- [ ] You're on a feature branch, not main
+- [ ] Current build is passing
+- [ ] Tests are passing
+- [ ] You understand what API changes are expected from backend team
+- [ ] You have time to fix potential breaking changes (this is NOT a 5-minute task)
+
 ## Updating API Bindings
 
 When the backend API changes, update the client code:
@@ -30,9 +51,28 @@ The script will:
 1. Download the latest OpenAPI spec from https://api.peated.com/v1/spec.json
 2. Validate the JSON is well-formed
 3. Convert OpenAPI 3.1.1 to 3.1.0 if needed (generator quirk)
-4. Generate new Client.swift and Types.swift
-5. Verify the project still builds
-6. Restore the backup if generation fails
+4. Fix nullable fields (anyOf patterns)
+5. Fix missing parameter schemas
+6. Generate new Client.swift and Types.swift
+7. Verify the project still builds
+8. Restore the backup if generation fails
+
+## Post-Update Verification
+
+**After running `update-api.sh`:**
+
+- [ ] Review git diff - are the changes expected?
+- [ ] Check file sizes - Types.swift should be ~12MB
+- [ ] Look for removed properties that were previously available
+- [ ] Verify nullable fields are properly handled
+- [ ] Check operation names haven't changed unexpectedly
+- [ ] Run full test suite
+- [ ] Test critical user flows in simulator:
+  - [ ] Login flow
+  - [ ] View feed
+  - [ ] Create tasting
+  - [ ] Search bottles
+- [ ] If types changed significantly, update your models
 
 ## Manual Process (if needed)
 
@@ -110,6 +150,70 @@ if case .ok(let okResponse) = response,
 3. **Underscore prefixes**: Reserved words get underscore prefixes:
    ```swift
    let isPrivate = user._private ?? false
+   ```
+
+## Error Recovery Guide
+
+### When API Updates Break Everything
+
+**Symptoms:**
+- Massive unexpected changes in Types.swift (diff shows thousands of changes)
+- Missing properties that were previously available
+- Type mismatches throughout the codebase
+- Build errors in seemingly unrelated files
+
+**Recovery Steps:**
+
+1. **Don't panic** - the old code is in git
+   ```bash
+   # View what changed
+   git diff --stat PeatedAPI/Sources/PeatedAPI/Generated/
+   
+   # If changes are wrong, revert
+   git checkout -- PeatedAPI/Sources/PeatedAPI/Generated/
+   ```
+
+2. **Check preprocessing scripts ran correctly:**
+   - Did `fix-nullable-fields.sh` process anyOf patterns?
+   - Did `fix-parameter-schemas.sh` add missing schemas?
+   - Check the console output from update-api.sh
+
+3. **Compare OpenAPI specs:**
+   ```bash
+   # Save current spec
+   cp PeatedAPI/Sources/PeatedAPI/openapi.json openapi-new.json
+   
+   # Revert to previous
+   git checkout -- PeatedAPI/Sources/PeatedAPI/openapi.json
+   
+   # Compare
+   diff openapi.json openapi-new.json | head -100
+   ```
+
+4. **Common fixes:**
+   - Nullable fields: Check for anyOf patterns that need preprocessing
+   - Operation names: May need to adjust namingStrategy in config
+   - Missing types: Ensure all schemas are properly referenced
+
+5. **If all else fails:**
+   
+   ⚠️ **NEVER do a full revert without explicit permission!**
+   
+   ```bash
+   # DO NOT RUN THIS WITHOUT ASKING:
+   # git checkout -- .  # ❌ FORBIDDEN without permission
+   
+   # Instead, try targeted fixes:
+   
+   # Try updating step by step
+   ./fix-nullable-fields.sh Sources/PeatedAPI/openapi.json
+   # Check if this helped
+   
+   ./fix-parameter-schemas.sh Sources/PeatedAPI/openapi.json
+   # Check again
+   
+   # If you need to revert specific files, ASK FIRST
+   # Explain what's broken and why reverting might help
    ```
 
 ## Troubleshooting

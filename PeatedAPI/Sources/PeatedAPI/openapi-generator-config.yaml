@@ -3,3 +3,4 @@ generate:
   - client
 
 accessModifier: public
+namingStrategy: idiomatic

@@ -14,9 +14,11 @@ let package = Package(
         )
     ],
     dependencies: [
-        // Runtime dependencies only - no generator
+        // Runtime dependencies
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.0")
+        .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.0"),
+        // Generator for development
+        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0")
     ],
     targets: [
         .target(
