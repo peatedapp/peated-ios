@@ -13,6 +13,7 @@ public enum APIError: LocalizedError {
   case serverError(Int, String?)
   case networkError(Error)
   case decodingError(Error)
+  case timeout
   
   public var errorDescription: String? {
     switch self {
@@ -32,6 +33,8 @@ public enum APIError: LocalizedError {
       return "Network error: \(error.localizedDescription)"
     case .decodingError:
       return "Unable to process response"
+    case .timeout:
+      return "Request timed out"
     }
   }
 }

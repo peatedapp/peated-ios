@@ -50,56 +50,6 @@ struct ToastView: View {
   }
 }
 
-// Toast modifier for easy use
-struct ToastModifier: ViewModifier {
-  @Binding var toast: ToastInfo?
-  
-  struct ToastInfo: Equatable {
-    let message: String
-    let type: ToastView.ToastType
-  }
-  
-  @State private var workItem: DispatchWorkItem?
-  
-  func body(content: Content) -> some View {
-    content
-      .overlay(
-        ZStack {
-          if let toast = toast {
-            VStack {
-              ToastView(message: toast.message, type: toast.type)
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .transition(.move(edge: .top).combined(with: .opacity))
-              
-              Spacer()
-            }
-          }
-        }
-        .animation(.spring(), value: toast)
-      )
-      .onChange(of: toast) { oldValue, newValue in
-        if newValue != nil {
-          // Cancel previous work item if any
-          workItem?.cancel()
-          
-          // Create new work item to dismiss toast after 3 seconds
-          let task = DispatchWorkItem {
-            toast = nil
-          }
-          workItem = task
-          
-          DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: task)
-        }
-      }
-  }
-}
-
-extension View {
-  func toast(_ toast: Binding<ToastModifier.ToastInfo?>) -> some View {
-    modifier(ToastModifier(toast: toast))
-  }
-}
 
 #Preview {
   VStack(spacing: 20) {

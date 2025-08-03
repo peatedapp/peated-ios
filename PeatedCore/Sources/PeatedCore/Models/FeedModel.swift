@@ -166,7 +166,6 @@ public class FeedModel {
         // IMPORTANT: Don't clear cache on error - preserve stale data
         // The UI should show the error while keeping existing content
       }
-      print("Failed to load feed (\(feedType)): \(error)")
     }
     
     if updateUI {
@@ -342,11 +341,10 @@ public class FeedModel {
   
   // MARK: - Toast Functionality
   
-  /// Toggle toast for a tasting with optimistic UI update
+  /// Toggle toast for a tasting with optimistic UI update and offline support
   public func toggleToast(for tastingId: String) async {
     // Find the tasting in current feed
     guard let tastingIndex = tastings.firstIndex(where: { $0.id == tastingId }) else {
-      print("Tasting not found in current feed: \(tastingId)")
       return
     }
     
@@ -389,10 +387,26 @@ public class FeedModel {
       }
     }
     
+    // Check network status
+    if !NetworkMonitor.shared.isConnected {
+      // Queue for offline sync
+      let operation = OfflineOperation.toggleToast(tastingId: tastingId, isToasted: newToastedState)
+      await OfflineQueueManager.shared.queueOperation(operation)
+      
+      // Show offline notification
+      ToastManager.shared.showInfo("Toast will sync when online")
+      return
+    }
+    
     // Perform actual API call in background
     Task {
       do {
         let actualToastedState = try await tastingRepository.toggleToast(tastingId: tastingId)
+        
+        // Show success toast notification
+        if actualToastedState {
+          ToastManager.shared.showSuccess("Cheers! 🥃")
+        }
         
         // Create the correct tasting state based on API response
         let correctTasting = TastingFeedItem(
@@ -434,32 +448,57 @@ public class FeedModel {
         }
         
       } catch {
-        // Revert optimistic update on error
-        await MainActor.run {
-          if let revertIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
-            tastings[revertIndex] = currentTasting
-            
-            // Also revert in all feed caches
-            for feedType in feedCaches.keys {
-              if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
-                feedCaches[feedType]?.tastings[cacheIndex] = currentTasting
+        // Check if it's a network error that should be queued
+        if isNetworkError(error) {
+          // Queue for offline sync
+          let operation = OfflineOperation.toggleToast(tastingId: tastingId, isToasted: newToastedState)
+          await OfflineQueueManager.shared.queueOperation(operation)
+          
+          ToastManager.shared.showWarning("Toast queued for sync")
+        } else {
+          // Revert optimistic update on error
+          await MainActor.run {
+            if let revertIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
+              tastings[revertIndex] = currentTasting
+              
+              // Also revert in all feed caches
+              for feedType in feedCaches.keys {
+                if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
+                  feedCaches[feedType]?.tastings[cacheIndex] = currentTasting
+                }
               }
             }
+            
+            // Don't set general error for toast failures - they're user-specific actions
+            // Show specific error message via ToastManager
+            if let apiError = error as? APIError,
+               case .requestFailed(let message) = apiError,
+               message == "Cannot toast this tasting" {
+              ToastManager.shared.showError("You can't toast your own tastings")
+            } else {
+              ToastManager.shared.showError("Failed to update toast")
+            }
           }
-          
-          // Don't set general error for toast failures - they're user-specific actions
-          // Show specific error message via ToastManager
-          if let apiError = error as? APIError,
-             case .requestFailed(let message) = apiError,
-             message == "Cannot toast this tasting" {
-            ToastManager.shared.showError("You can't toast your own tastings")
-          } else {
-            ToastManager.shared.showError("Failed to update toast")
-          }
-          
-          print("Failed to toggle toast for tasting \(tastingId): \(error)")
         }
       }
     }
+  }
+  
+  /// Checks if an error is network-related and should trigger offline queueing
+  private func isNetworkError(_ error: Error) -> Bool {
+    if error is URLError {
+      return true
+    }
+    
+    if let apiError = error as? APIError {
+      switch apiError {
+      case .networkError, .timeout:
+        return true
+      default:
+        return false
+      }
+    }
+    
+    return false
   }
 }

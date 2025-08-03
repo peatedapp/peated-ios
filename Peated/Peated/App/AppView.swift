@@ -21,38 +21,43 @@ struct AppView: View {
                 }
             } else if model.isAuthenticated {
                 // Main app content
-                TabView {
-                    NavigationStack {
-                        FeedView()
-                    }
-                    .tabItem {
-                        Label("Activity", systemImage: "house.fill")
-                    }
+                VStack(spacing: 0) {
+                    // Offline indicator at the top
+                    OfflineIndicator()
                     
-                    NavigationStack {
-                        Text("Search")
-                            .navigationTitle("Search")
+                    TabView {
+                        NavigationStack {
+                            FeedView()
+                        }
+                        .tabItem {
+                            Label("Activity", systemImage: "house.fill")
+                        }
+                        
+                        NavigationStack {
+                            Text("Search")
+                                .navigationTitle("Search")
+                        }
+                        .tabItem {
+                            Label("Search", systemImage: "magnifyingglass")
+                        }
+                        
+                        NavigationStack {
+                            Text("Library")
+                                .navigationTitle("My Library")
+                        }
+                        .tabItem {
+                            Label("Library", systemImage: "books.vertical.fill")
+                        }
+                        
+                        NavigationStack {
+                            ProfileView()
+                        }
+                        .tabItem {
+                            Label("Profile", systemImage: "person.fill")
+                        }
                     }
-                    .tabItem {
-                        Label("Search", systemImage: "magnifyingglass")
-                    }
-                    
-                    NavigationStack {
-                        Text("Library")
-                            .navigationTitle("My Library")
-                    }
-                    .tabItem {
-                        Label("Library", systemImage: "books.vertical.fill")
-                    }
-                    
-                    NavigationStack {
-                        ProfileView()
-                    }
-                    .tabItem {
-                        Label("Profile", systemImage: "person.fill")
-                    }
+                    .tint(.peatedGold)
                 }
-                .tint(.peatedGold)
             } else {
                 // Auth flow
                 NavigationStack {

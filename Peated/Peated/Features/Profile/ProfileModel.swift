@@ -28,7 +28,6 @@ class ProfileModel {
   }
   
   func loadUser() async {
-    print("🔄 ProfileModel.loadUser() called with userId: \(userId ?? "nil (current user)")")
     isLoading = true
     error = nil
     
@@ -37,31 +36,22 @@ class ProfileModel {
       do {
         if let userId = self.userId {
           // Load specific user from API
-          print("🔄 Loading specific user with ID: \(userId)")
           let loadedUser = try await self.userRepository.getUser(id: userId)
-          print("✅ Successfully loaded user: \(loadedUser.username)")
           
           // Load achievements for specific user
-          print("🔄 Loading achievements for user: \(userId)")
           let loadedAchievements = try await self.achievementsRepository.getUserBadges(userId: userId)
-          print("✅ Successfully loaded \(loadedAchievements.count) achievements")
           
           return (user: Optional(loadedUser), achievements: loadedAchievements, error: nil as Error?)
         } else {
           // Get the current user from auth manager
-          print("🔄 Loading current user from auth manager")
           let currentUser = await self.authManager.currentUser
-          print("✅ Current user: \(currentUser?.username ?? "nil")")
           
           // Fetch current user's achievements from the API
-          print("🔄 Loading current user's achievements")
           let loadedAchievements = try await self.achievementsRepository.getCurrentUserBadges()
-          print("✅ Successfully loaded \(loadedAchievements.count) achievements")
           
           return (user: currentUser, achievements: loadedAchievements, error: nil as Error?)
         }
       } catch {
-        print("❌ Failed to load user/achievements for userId: \(self.userId ?? "current"): \(error)")
         return (user: nil as User?, achievements: [] as [Achievement], error: error)
       }
     }.value
@@ -71,8 +61,6 @@ class ProfileModel {
     achievements = result.achievements
     error = result.error
     isLoading = false
-    
-    print("🏁 ProfileModel.loadUser() completed. User: \(user?.username ?? "nil"), Error: \(error?.localizedDescription ?? "none")")
   }
   
   func logout() async {

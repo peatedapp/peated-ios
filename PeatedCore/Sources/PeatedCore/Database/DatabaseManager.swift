@@ -44,6 +44,11 @@ public final class DatabaseManager: @unchecked Sendable {
       try setSchemaVersion(1)
     }
     
+    if currentVersion < 2 {
+      try addOfflineOperationsTables()
+      try setSchemaVersion(2)
+    }
+    
     // Add future migrations here
   }
   
@@ -138,6 +143,27 @@ public final class DatabaseManager: @unchecked Sendable {
       t.unique(Tables.Collection.userId, Tables.Collection.bottleId)
     })
   }
+  
+  /// Add offline operations tables
+  private func addOfflineOperationsTables() throws {
+    // Offline operations table
+    try db.run(Tables.offlineOperations.create(ifNotExists: true) { t in
+      t.column(Tables.OfflineOperations.id, primaryKey: true)
+      t.column(Tables.OfflineOperations.type)
+      t.column(Tables.OfflineOperations.payload)
+      t.column(Tables.OfflineOperations.createdAt)
+      t.column(Tables.OfflineOperations.retryCount)
+      t.column(Tables.OfflineOperations.lastAttemptAt)
+      t.column(Tables.OfflineOperations.status)
+      t.column(Tables.OfflineOperations.lastError)
+    })
+    
+    // Create index on status for faster queries
+    try db.run(Tables.offlineOperations.createIndex(
+      Tables.OfflineOperations.status,
+      ifNotExists: true
+    ))
+  }
 }
 
 // MARK: - Table Definitions
@@ -197,5 +223,18 @@ public struct Tables {
     nonisolated(unsafe) static let notes = Expression<String?>("notes")
     nonisolated(unsafe) static let createdAt = Expression<Date>("created_at")
     nonisolated(unsafe) static let updatedAt = Expression<Date>("updated_at")
+  }
+  
+  // Offline operations table
+  nonisolated(unsafe) public static let offlineOperations = Table("offline_operations")
+  public struct OfflineOperations {
+    nonisolated(unsafe) static let id = Expression<String>("id")
+    nonisolated(unsafe) static let type = Expression<String>("type")
+    nonisolated(unsafe) static let payload = Expression<Data>("payload")
+    nonisolated(unsafe) static let createdAt = Expression<Date>("created_at")
+    nonisolated(unsafe) static let retryCount = Expression<Int>("retry_count")
+    nonisolated(unsafe) static let lastAttemptAt = Expression<Date?>("last_attempt_at")
+    nonisolated(unsafe) static let status = Expression<String>("status")
+    nonisolated(unsafe) static let lastError = Expression<String?>("last_error")
   }
 }
