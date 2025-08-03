@@ -74,8 +74,8 @@ public enum APIResponseHelper {
 
 // MARK: - Response Extensions for Common Patterns
 
-extension Operations.Auth_login.Output {
-  public func extractPayload() throws -> Operations.Auth_login.Output.Ok.Body.JsonPayload {
+extension Operations.login.Output {
+  public func extractPayload() throws -> Operations.login.Output.Ok.Body.jsonPayload {
     switch self {
     case .ok(let okResponse):
       switch okResponse.body {
@@ -102,8 +102,8 @@ extension Operations.Auth_login.Output {
   }
 }
 
-extension Operations.Tastings_list.Output {
-  public func extractPayload() throws -> Operations.Tastings_list.Output.Ok.Body.JsonPayload {
+extension Operations.listTastings.Output {
+  public func extractPayload() throws -> Operations.listTastings.Output.Ok.Body.jsonPayload {
     switch self {
     case .ok(let okResponse):
       switch okResponse.body {
@@ -130,8 +130,8 @@ extension Operations.Tastings_list.Output {
   }
 }
 
-extension Operations.Users_badgeList.Output {
-  public func extractPayload() throws -> Operations.Users_badgeList.Output.Ok.Body.JsonPayload {
+extension Operations.listUserBadges.Output {
+  public func extractPayload() throws -> Operations.listUserBadges.Output.Ok.Body.jsonPayload {
     switch self {
     case .ok(let okResponse):
       switch okResponse.body {

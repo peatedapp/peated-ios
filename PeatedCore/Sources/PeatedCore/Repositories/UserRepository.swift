@@ -32,7 +32,7 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
   
   public func getCurrentUser() async throws -> User {
     let client = await self.client
-    let response = try await client.auth_me()
+    let response = try await client.getMe()
     
     switch response {
     case .ok(let okResponse):
@@ -42,7 +42,7 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
         
         // Fetch additional user details including stats
         do {
-          let detailsResponse = try await client.users_details(
+          let detailsResponse = try await client.getUser(
             path: .init(user: .init(value1: payload.user.id))
           )
           
@@ -70,20 +70,26 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
   }
   
   public func getUser(id: String) async throws -> User {
+    print("UserRepository.getUser called with id: \(id)")
     let client = await self.client
     
     // Create the user payload
-    let userPayload: Operations.Users_details.Input.Path.UserPayload
-    if let userId = Double(id) {
-      userPayload = .init(value1: userId)
+    let userPayload: Operations.getUser.Input.Path.userPayload
+    if let userId = Double(id), userId == floor(userId) {
+      // Convert to integer to avoid decimal URLs like /users/1.0
+      print("Using numeric ID: \(Int(userId))")
+      userPayload = .init(value1: Double(Int(userId)))
     } else {
       // Assume it's a username
+      print("Using username: \(id)")
       userPayload = .init(value3: id)
     }
     
-    let response = try await client.users_details(
+    print("Making API call to get user...")
+    let response = try await client.getUser(
       path: .init(user: userPayload)
     )
+    print("API call completed")
     
     switch response {
     case .ok(let okResponse):
@@ -97,6 +103,7 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
           admin: payload.admin ?? false,
           mod: payload.mod ?? false
         )
+        user.pictureUrl = payload.pictureUrl
         
         // Add stats
         user.tastingsCount = Int(payload.stats.tastings)
@@ -135,8 +142,8 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
       throw APIError.requestFailed("Invalid user ID")
     }
     
-    let response = try await client.friends_create(
-      path: .init(user: userId)
+    let response = try await client.addFriend(
+      .init(path: .init(user: userId))
     )
     
     switch response {
@@ -160,8 +167,8 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
       throw APIError.requestFailed("Invalid user ID")
     }
     
-    let response = try await client.friends_delete(
-      path: .init(user: userId)
+    let response = try await client.removeFriend(
+      .init(path: .init(user: userId))
     )
     
     switch response {

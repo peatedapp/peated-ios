@@ -18,7 +18,7 @@ public actor AchievementsRepository: AchievementsRepositoryProtocol, BaseReposit
     let client = await self.client
     
     // Create the request parameters
-    let userPayload: Operations.Users_badgeList.Input.Path.UserPayload
+    let userPayload: Operations.listUserBadges.Input.Path.userPayload
     if let userIdDouble = Double(userId) {
       // Use numeric ID
       userPayload = .init(value3: userIdDouble)
@@ -27,9 +27,9 @@ public actor AchievementsRepository: AchievementsRepositoryProtocol, BaseReposit
       userPayload = .init(value2: userId)
     }
     
-    let path = Operations.Users_badgeList.Input.Path(user: userPayload)
+    let path = Operations.listUserBadges.Input.Path(user: userPayload)
     
-    let response = try await client.users_badgeList(
+    let response = try await client.listUserBadges(
       path: path,
       query: .init(limit: 100) // Get up to 100 badges
     )
@@ -43,10 +43,10 @@ public actor AchievementsRepository: AchievementsRepositoryProtocol, BaseReposit
     let client = await self.client
     
     // Use "me" for current user
-    let userPayload = Operations.Users_badgeList.Input.Path.UserPayload(value2: "me")
-    let path = Operations.Users_badgeList.Input.Path(user: userPayload)
+    let userPayload = Operations.listUserBadges.Input.Path.userPayload(value2: "me")
+    let path = Operations.listUserBadges.Input.Path(user: userPayload)
     
-    let response = try await client.users_badgeList(
+    let response = try await client.listUserBadges(
       path: path,
       query: .init(limit: 100)
     )

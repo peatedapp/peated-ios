@@ -4,15 +4,17 @@ import PeatedCore
 struct FeedView: View {
   @State private var model = FeedModel()
   @State private var showingCreateTasting = false
+  @State private var navigationPath = NavigationPath()
   
   var body: some View {
-    VStack(spacing: 0) {
-      // Feed type picker
-      Picker("Feed Type", selection: $model.selectedFeedType) {
-        ForEach(FeedType.allCases, id: \.self) { feedType in
-          Text(feedType.displayName).tag(feedType)
+    NavigationStack(path: $navigationPath) {
+      VStack(spacing: 0) {
+        // Feed type picker
+        Picker("Feed Type", selection: $model.selectedFeedType) {
+          ForEach(FeedType.allCases, id: \.self) { feedType in
+            Text(feedType.displayName).tag(feedType)
+          }
         }
-      }
       .pickerStyle(.segmented)
       .padding(.horizontal)
       .padding(.vertical, 8)
@@ -27,6 +29,13 @@ struct FeedView: View {
         // Feed content
         if (model.isLoading || model.isSwitchingFeed) && model.tastings.isEmpty {
           LoadingView()
+        } else if model.isErrorWithNoData {
+          // Show error-specific empty state
+          ErrorEmptyView {
+            Task {
+              await model.refreshCurrentFeed()
+            }
+          }
         } else if model.tastings.isEmpty && !model.isLoading && !model.isSwitchingFeed {
           EmptyFeedView(feedType: model.selectedFeedType)
         } else {
@@ -37,16 +46,18 @@ struct FeedView: View {
                   TastingCard(
                     tasting: tasting,
                     onToast: {
-                      // TODO: Implement toast action
-                      print("Toast tasting: \(tasting.id)")
+                      Task {
+                        await model.toggleToast(for: tasting.id)
+                      }
                     },
                     onComment: {
                       // TODO: Navigate to comments
                       print("View comments for: \(tasting.id)")
                     },
                     onUserTap: {
-                      // TODO: Navigate to user profile
-                      print("View user: \(tasting.username)")
+                      // Navigate to user profile
+                      print("🧭 Navigating to user profile: \(tasting.userId) (username: \(tasting.username))")
+                      navigationPath.append(tasting.userId)
                     },
                     onBottleTap: {
                       // TODO: Navigate to bottle detail
@@ -96,11 +107,15 @@ struct FeedView: View {
           }
         }
         
-        if let error = model.error {
+        if model.error != nil && model.hasData {
           VStack {
-            ErrorBanner(error: error)
+            ErrorBanner(error: model.error!, isShowing: .init(
+              get: { model.error != nil },
+              set: { _ in model.error = nil }
+            ))
             Spacer()
           }
+          .animation(.easeInOut, value: model.error != nil)
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -113,6 +128,10 @@ struct FeedView: View {
     }
     .task {
       await model.loadFeed(refresh: true)
+    }
+    .navigationDestination(for: String.self) { userId in
+      ProfileView(userId: userId)
+    }
     }
   }
 }
@@ -133,51 +152,6 @@ struct LoadingView: View {
         }
       }
     }
-  }
-}
-
-struct SkeletonTastingCard: View {
-  var body: some View {
-    HStack(alignment: .top, spacing: 12) {
-      // Bottle image placeholder
-      RoundedRectangle(cornerRadius: 4)
-        .fill(Color.gray.opacity(0.2))
-        .frame(width: 48, height: 64)
-      
-      VStack(alignment: .leading, spacing: 6) {
-        // Bottle name
-        RoundedRectangle(cornerRadius: 4)
-          .fill(Color.gray.opacity(0.2))
-          .frame(width: 180, height: 14)
-        
-        // Brand
-        RoundedRectangle(cornerRadius: 4)
-          .fill(Color.gray.opacity(0.2))
-          .frame(width: 120, height: 12)
-        
-        // Rating
-        RoundedRectangle(cornerRadius: 4)
-          .fill(Color.gray.opacity(0.2))
-          .frame(width: 100, height: 12)
-        
-        // User info
-        HStack {
-          Circle()
-            .fill(Color.gray.opacity(0.2))
-            .frame(width: 20, height: 20)
-          
-          RoundedRectangle(cornerRadius: 4)
-            .fill(Color.gray.opacity(0.2))
-            .frame(width: 150, height: 12)
-        }
-        .padding(.top, 4)
-      }
-      
-      Spacer()
-    }
-    .padding(16)
-    .redacted(reason: .placeholder)
-    .shimmer()
   }
 }
 
@@ -259,26 +233,3 @@ struct EmptyFeedView: View {
   }
 }
 
-struct ErrorBanner: View {
-  let error: Error
-  
-  var body: some View {
-    VStack {
-      HStack {
-        Image(systemName: "exclamationmark.triangle.fill")
-          .foregroundColor(.white)
-        
-        Text(error.localizedDescription)
-          .font(.subheadline)
-          .foregroundColor(.white)
-          .lineLimit(2)
-        
-        Spacer()
-      }
-      .padding()
-      .background(Color.red)
-      
-      Spacer()
-    }
-  }
-}

@@ -76,19 +76,6 @@ struct TastingCard: View {
           }
           .lineLimit(1)
           
-          // Serving style
-          if let servingStyle = tasting.servingStyle {
-            HStack {
-              Text(servingStyle.capitalized)
-                .font(.system(size: 11))
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 2)
-                .background(Color.gray.opacity(0.1))
-                .clipShape(Capsule())
-              Spacer()
-            }
-          }
           
           // Notes
           if let notes = tasting.notes, !notes.isEmpty {
@@ -139,16 +126,28 @@ struct TastingCard: View {
             .padding(.top, 8)
           }
           
-          // User info and actions
-          HStack(spacing: 12) {
-            // User
-            HStack(spacing: 6) {
-              if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
-                AsyncImage(url: url) { image in
-                  image
-                    .resizable()
-                    .scaledToFill()
-                } placeholder: {
+          // User info and timestamp
+          VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 0) {
+              // Tappable user info area
+              HStack(spacing: 6) {
+                if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
+                  AsyncImage(url: url) { image in
+                    image
+                      .resizable()
+                      .scaledToFill()
+                  } placeholder: {
+                    Circle()
+                      .fill(Color.gray.opacity(0.2))
+                      .overlay(
+                        Image(systemName: "person.fill")
+                          .font(.system(size: 10))
+                          .foregroundColor(.gray.opacity(0.5))
+                      )
+                  }
+                  .frame(width: 20, height: 20)
+                  .clipShape(Circle())
+                } else {
                   Circle()
                     .fill(Color.gray.opacity(0.2))
                     .overlay(
@@ -156,82 +155,73 @@ struct TastingCard: View {
                         .font(.system(size: 10))
                         .foregroundColor(.gray.opacity(0.5))
                     )
+                    .frame(width: 20, height: 20)
                 }
-                .frame(width: 20, height: 20)
-                .clipShape(Circle())
-              } else {
-                Circle()
-                  .fill(Color.gray.opacity(0.2))
-                  .overlay(
-                    Image(systemName: "person.fill")
-                      .font(.system(size: 10))
-                      .foregroundColor(.gray.opacity(0.5))
-                  )
-                  .frame(width: 20, height: 20)
-              }
-              
-              Text(tasting.username)
-                .font(.system(size: 13))
-                .foregroundColor(.secondary)
-              
-              Text("•")
-                .font(.system(size: 13))
-                .foregroundColor(.secondary.opacity(0.5))
-              
-              Text(tasting.timeAgo)
-                .font(.system(size: 13))
-                .foregroundColor(.secondary)
-            }
-            .onTapGesture {
-              onUserTap()
-            }
-            
-            // Friends who also tasted
-            if !tasting.friendUsernames.isEmpty {
-              HStack(spacing: 4) {
-                Text("with")
+                
+                Text(tasting.username)
                   .font(.system(size: 13))
                   .foregroundColor(.secondary)
                 
-                ForEach(Array(tasting.friendUsernames.prefix(2)), id: \.self) { friend in
+                Text("•")
+                  .font(.system(size: 13))
+                  .foregroundColor(.secondary.opacity(0.5))
+                
+                Text(tasting.timeAgo)
+                  .font(.system(size: 13))
+                  .foregroundColor(.secondary)
+              }
+              .contentShape(Rectangle()) // Make entire area tappable
+              .onTapGesture {
+                onUserTap()
+              }
+              
+              Spacer()
+              
+              // Actions (not tappable for user navigation)
+              HStack(spacing: 16) {
+                Button(action: onToast) {
+                  HStack(spacing: 4) {
+                    Image(systemName: tasting.hasToasted ? "hands.clap.fill" : "hands.clap")
+                      .font(.system(size: 14))
+                    Text("\(tasting.toastCount)")
+                      .font(.system(size: 13))
+                  }
+                  .foregroundColor(tasting.hasToasted ? .peatedGold : .secondary)
+                }
+                .buttonStyle(.plain)
+                
+                Button(action: onComment) {
+                  HStack(spacing: 4) {
+                    Image(systemName: "bubble.left")
+                      .font(.system(size: 14))
+                    Text("\(tasting.commentCount)")
+                      .font(.system(size: 13))
+                  }
+                  .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+              }
+            }
+            
+            // Friends who also tasted - on separate line
+            if !tasting.friendUsernames.isEmpty {
+              HStack(spacing: 4) {
+                Image(systemName: "person.2.fill")
+                  .font(.system(size: 11))
+                  .foregroundColor(.secondary)
+                
+                ForEach(Array(tasting.friendUsernames.prefix(3)), id: \.self) { friend in
                   Text("@\(friend)")
                     .font(.system(size: 13))
                     .foregroundColor(.peatedGold)
                 }
                 
-                if tasting.friendUsernames.count > 2 {
-                  Text("+\(tasting.friendUsernames.count - 2)")
+                if tasting.friendUsernames.count > 3 {
+                  Text("and \(tasting.friendUsernames.count - 3) more")
                     .font(.system(size: 13))
                     .foregroundColor(.secondary)
                 }
               }
-            }
-            
-            Spacer()
-            
-            // Actions
-            HStack(spacing: 16) {
-              Button(action: onToast) {
-                HStack(spacing: 4) {
-                  Image(systemName: tasting.hasToasted ? "hands.clap.fill" : "hands.clap")
-                    .font(.system(size: 14))
-                  Text("\(tasting.toastCount)")
-                    .font(.system(size: 13))
-                }
-                .foregroundColor(tasting.hasToasted ? .peatedGold : .secondary)
-              }
-              .buttonStyle(.plain)
-              
-              Button(action: onComment) {
-                HStack(spacing: 4) {
-                  Image(systemName: "bubble.left")
-                    .font(.system(size: 14))
-                  Text("\(tasting.commentCount)")
-                    .font(.system(size: 13))
-                }
-                .foregroundColor(.secondary)
-              }
-              .buttonStyle(.plain)
             }
           }
           .padding(.top, 8)

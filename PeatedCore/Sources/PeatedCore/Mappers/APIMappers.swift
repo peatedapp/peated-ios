@@ -4,7 +4,7 @@ import PeatedAPI
 // MARK: - User Mapping
 
 extension User {
-  init(from apiUser: Operations.Auth_me.Output.Ok.Body.JsonPayload.UserPayload) {
+  init(from apiUser: Operations.getMe.Output.Ok.Body.jsonPayload.userPayload) {
     self.init(
       id: apiUser.id,
       email: apiUser.email,
@@ -13,9 +13,10 @@ extension User {
       admin: apiUser.admin,
       mod: apiUser.mod
     )
+    self.pictureUrl = apiUser.pictureUrl
   }
   
-  init(from apiUser: Operations.Auth_login.Output.Ok.Body.JsonPayload.UserPayload) {
+  init(from apiUser: Operations.login.Output.Ok.Body.jsonPayload.userPayload) {
     self.init(
       id: apiUser.id,
       email: apiUser.email,
@@ -24,13 +25,14 @@ extension User {
       admin: apiUser.admin,
       mod: apiUser.mod
     )
+    self.pictureUrl = apiUser.pictureUrl
   }
 }
 
 // MARK: - Tasting Mapping
 
 extension TastingFeedItem {
-  static func from(_ apiTasting: Operations.Tastings_list.Output.Ok.Body.JsonPayload.ResultsPayloadPayload) -> TastingFeedItem {
+  static func from(_ apiTasting: Operations.listTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload) -> TastingFeedItem {
     let apiUser = apiTasting.createdBy
     let apiBottle = apiTasting.bottle
     
@@ -86,7 +88,7 @@ extension TastingFeedItem {
 // MARK: - Achievement Mapping
 
 extension Achievement {
-  init(from badgeResult: Operations.Users_badgeList.Output.Ok.Body.JsonPayload.ResultsPayloadPayload) {
+  init(from badgeResult: Operations.listUserBadges.Output.Ok.Body.jsonPayload.resultsPayloadPayload) {
     let badge = badgeResult.badge
     self.init(
       id: String(Int(badge.id)),
@@ -101,7 +103,7 @@ extension Achievement {
 // MARK: - Bottle Mapping
 
 extension Bottle {
-  init(from apiBottle: Operations.Bottles_details.Output.Ok.Body.JsonPayload) {
+  init(from apiBottle: Operations.getBottle.Output.Ok.Body.jsonPayload) {
     let category: String? = apiBottle.category?.value as? String
     
     self.init(

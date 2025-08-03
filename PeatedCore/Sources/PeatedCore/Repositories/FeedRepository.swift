@@ -32,7 +32,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     let client = await self.client
     
     // Build the query parameters
-    var query = Operations.Tastings_list.Input.Query()
+    var query = Operations.listTastings.Input.Query()
     query.limit = Double(limit)
     
     if let cursor = cursor {
@@ -49,27 +49,27 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
         throw APIError.requestFailed("Not authenticated")
       }
       // Use the userPayload union type
-      query.user = Operations.Tastings_list.Input.Query.UserPayload(value1: Double(userId))
+      query.user = Operations.listTastings.Input.Query.userPayload(value1: Double(userId))
     case .global:
       // No additional filtering for global feed
       break
     }
     
-    let response = try await client.tastings_list(query: query)
+    let response = try await client.listTastings(query: query)
     let payload = try response.extractPayload()
     
     let tastings = payload.results.map { TastingFeedItem.from($0) }
     
-    // Calculate cursor for next page
+    // Use the cursor from the API response
     let nextCursor: String?
-    if let lastTasting = tastings.last {
-      nextCursor = String(Int(lastTasting.createdAt.timeIntervalSince1970))
+    if let apiCursor = payload.rel.nextCursor {
+      nextCursor = String(Int(apiCursor))
     } else {
       nextCursor = nil
     }
     
-    // Check if there are more results
-    let hasMore = tastings.count == limit
+    // Check if there are more results based on cursor presence
+    let hasMore = nextCursor != nil
     
     return FeedPage(
       tastings: tastings,

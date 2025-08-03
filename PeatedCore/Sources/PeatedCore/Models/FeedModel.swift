@@ -21,7 +21,7 @@ public class FeedModel {
   public private(set) var tastings: [TastingFeedItem] = []
   public private(set) var isLoading = false
   public private(set) var isSwitchingFeed = false
-  public private(set) var error: Error?
+  public var error: Error?
   public private(set) var hasMore = true
   public var selectedFeedType: FeedType = .friends
   
@@ -57,8 +57,11 @@ public class FeedModel {
   private static let maxCacheSizeBytes = 10 * 1024 * 1024 // 10MB total
   private static let maxItemsPerFeed = 500 // Reasonable limit per feed type
   
-  public init(feedRepository: FeedRepository? = nil) {
+  private let tastingRepository: TastingRepository
+  
+  public init(feedRepository: FeedRepository? = nil, tastingRepository: TastingRepository? = nil) {
     self.feedRepository = feedRepository ?? FeedRepository()
+    self.tastingRepository = tastingRepository ?? TastingRepository()
   }
   
   // Note: We don't need explicit deinit cleanup because:
@@ -160,6 +163,8 @@ public class FeedModel {
       
       if updateUI {
         self.error = error
+        // IMPORTANT: Don't clear cache on error - preserve stale data
+        // The UI should show the error while keeping existing content
       }
       print("Failed to load feed (\(feedType)): \(error)")
     }
@@ -221,12 +226,17 @@ public class FeedModel {
   }
   
   public func loadMoreIfNeeded(currentItem: TastingFeedItem) async {
-    guard let lastItem = tastings.last,
-          lastItem.id == currentItem.id,
-          hasMore,
-          !isLoading else { return }
+    guard hasMore, !isLoading else { return }
     
-    await loadFeed(refresh: false)
+    // Find the index of current item
+    guard let currentIndex = tastings.firstIndex(where: { $0.id == currentItem.id }) else { return }
+    
+    // Trigger loading when user reaches 3rd item from the end
+    let triggerIndex = max(0, tastings.count - 3)
+    
+    if currentIndex >= triggerIndex {
+      await loadFeed(refresh: false)
+    }
   }
   
   public func refreshCurrentFeed() async {
@@ -234,15 +244,15 @@ public class FeedModel {
     backgroundRefreshTasks[selectedFeedType]?.cancel()
     backgroundRefreshTasks[selectedFeedType] = nil
     
-    // Clear current cache for this feed type to force fresh data
-    feedCaches[selectedFeedType] = nil
+    // Don't clear cache here - preserve it in case refresh fails
+    // Cache will be replaced only after successful refresh
     
-    // Reset state
+    // Reset pagination state for fresh load
     cursor = nil
     hasMore = true
     error = nil
     
-    // Load fresh data
+    // Load fresh data (cache will be updated on success)
     await loadFeed(refresh: true)
   }
   
@@ -313,5 +323,143 @@ public class FeedModel {
     let totalBytes = feedCaches.values.reduce(0) { $0 + $1.memorySizeBytes }
     let feedCounts = feedCaches.mapValues { $0.tastings.count }
     return (totalBytes, feedCounts)
+  }
+  
+  /// Check if we have any data (cached or current) for the selected feed
+  public var hasData: Bool {
+    !tastings.isEmpty || feedCaches[selectedFeedType]?.tastings.isEmpty == false
+  }
+  
+  /// Check if we're in an error state with no data to show
+  public var isErrorWithNoData: Bool {
+    error != nil && tastings.isEmpty
+  }
+  
+  /// Clear the error state
+  public func clearError() {
+    error = nil
+  }
+  
+  // MARK: - Toast Functionality
+  
+  /// Toggle toast for a tasting with optimistic UI update
+  public func toggleToast(for tastingId: String) async {
+    // Find the tasting in current feed
+    guard let tastingIndex = tastings.firstIndex(where: { $0.id == tastingId }) else {
+      print("Tasting not found in current feed: \(tastingId)")
+      return
+    }
+    
+    let currentTasting = tastings[tastingIndex]
+    let newToastedState = !currentTasting.hasToasted
+    let newToastCount = newToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1)
+    
+    // Create updated tasting for optimistic update
+    let updatedTasting = TastingFeedItem(
+      id: currentTasting.id,
+      rating: currentTasting.rating,
+      notes: currentTasting.notes,
+      servingStyle: currentTasting.servingStyle,
+      imageUrl: currentTasting.imageUrl,
+      createdAt: currentTasting.createdAt,
+      userId: currentTasting.userId,
+      username: currentTasting.username,
+      userDisplayName: currentTasting.userDisplayName,
+      userAvatarUrl: currentTasting.userAvatarUrl,
+      bottleId: currentTasting.bottleId,
+      bottleName: currentTasting.bottleName,
+      bottleBrandName: currentTasting.bottleBrandName,
+      bottleCategory: currentTasting.bottleCategory,
+      bottleImageUrl: currentTasting.bottleImageUrl,
+      toastCount: newToastCount,
+      commentCount: currentTasting.commentCount,
+      hasToasted: newToastedState,
+      tags: currentTasting.tags,
+      location: currentTasting.location,
+      friendUsernames: currentTasting.friendUsernames
+    )
+    
+    // Optimistic update - immediately update UI
+    tastings[tastingIndex] = updatedTasting
+    
+    // Also update all feed caches that contain this tasting
+    for feedType in feedCaches.keys {
+      if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
+        feedCaches[feedType]?.tastings[cacheIndex] = updatedTasting
+      }
+    }
+    
+    // Perform actual API call in background
+    Task {
+      do {
+        let actualToastedState = try await tastingRepository.toggleToast(tastingId: tastingId)
+        
+        // Create the correct tasting state based on API response
+        let correctTasting = TastingFeedItem(
+          id: currentTasting.id,
+          rating: currentTasting.rating,
+          notes: currentTasting.notes,
+          servingStyle: currentTasting.servingStyle,
+          imageUrl: currentTasting.imageUrl,
+          createdAt: currentTasting.createdAt,
+          userId: currentTasting.userId,
+          username: currentTasting.username,
+          userDisplayName: currentTasting.userDisplayName,
+          userAvatarUrl: currentTasting.userAvatarUrl,
+          bottleId: currentTasting.bottleId,
+          bottleName: currentTasting.bottleName,
+          bottleBrandName: currentTasting.bottleBrandName,
+          bottleCategory: currentTasting.bottleCategory,
+          bottleImageUrl: currentTasting.bottleImageUrl,
+          toastCount: actualToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1),
+          commentCount: currentTasting.commentCount,
+          hasToasted: actualToastedState,
+          tags: currentTasting.tags,
+          location: currentTasting.location,
+          friendUsernames: currentTasting.friendUsernames
+        )
+        
+        // Update UI with correct state if needed
+        await MainActor.run {
+          if let currentIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
+            tastings[currentIndex] = correctTasting
+            
+            // Also update all feed caches
+            for feedType in feedCaches.keys {
+              if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
+                feedCaches[feedType]?.tastings[cacheIndex] = correctTasting
+              }
+            }
+          }
+        }
+        
+      } catch {
+        // Revert optimistic update on error
+        await MainActor.run {
+          if let revertIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
+            tastings[revertIndex] = currentTasting
+            
+            // Also revert in all feed caches
+            for feedType in feedCaches.keys {
+              if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
+                feedCaches[feedType]?.tastings[cacheIndex] = currentTasting
+              }
+            }
+          }
+          
+          // Don't set general error for toast failures - they're user-specific actions
+          // Show specific error message via ToastManager
+          if let apiError = error as? APIError,
+             case .requestFailed(let message) = apiError,
+             message == "Cannot toast this tasting" {
+            ToastManager.shared.showError("You can't toast your own tastings")
+          } else {
+            ToastManager.shared.showError("Failed to update toast")
+          }
+          
+          print("Failed to toggle toast for tasting \(tastingId): \(error)")
+        }
+      }
+    }
   }
 }

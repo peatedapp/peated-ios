@@ -45,7 +45,9 @@ struct AppView: View {
                         Label("Library", systemImage: "books.vertical.fill")
                     }
                     
-                    ProfileView()
+                    NavigationStack {
+                        ProfileView()
+                    }
                     .tabItem {
                         Label("Profile", systemImage: "person.fill")
                     }
@@ -63,6 +65,7 @@ struct AppView: View {
         .task {
             await model.checkAuthStatus()
         }
+        .withToastContainer() // Add toast container at root level
     }
 }
 

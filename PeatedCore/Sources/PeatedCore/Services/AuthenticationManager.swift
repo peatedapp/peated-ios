@@ -70,13 +70,13 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
       let client = await apiClient.generatedClient
       
       // Create the request body
-      let body = Operations.Auth_login.Input.Body.json(
+      let body = Operations.login.Input.Body.json(
         .init(
           value1: .init(email: email, password: password)
         )
       )
       
-      let response = try await client.auth_login(body: body)
+      let response = try await client.login(body: body)
       
       // Extract the successful response
       if case .ok(let okResponse) = response,
@@ -93,7 +93,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         
         // Fetch additional user details including stats
         do {
-          let detailsResponse = try await client.users_details(
+          let detailsResponse = try await client.getUser(
             path: .init(user: .init(value1: apiUser.id))
           )
           
@@ -149,13 +149,13 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         let client = await apiClient.generatedClient
         
         // Create the request body for Google auth (using idToken)
-        let body = Operations.Auth_login.Input.Body.json(
+        let body = Operations.login.Input.Body.json(
           .init(
             value3: .init(idToken: idToken)
           )
         )
         
-        let response = try await client.auth_login(body: body)
+        let response = try await client.login(body: body)
         
         // Extract the successful response
         if case .ok(let okResponse) = response,
@@ -172,7 +172,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
           
           // Fetch additional user details including stats
           do {
-            let detailsResponse = try await client.users_details(
+            let detailsResponse = try await client.getUser(
               path: .init(user: .init(value1: apiUser.id))
             )
             

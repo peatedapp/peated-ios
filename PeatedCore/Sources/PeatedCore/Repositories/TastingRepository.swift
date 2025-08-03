@@ -50,7 +50,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
       throw APIError.requestFailed("Invalid tasting ID")
     }
     
-    let response = try await client.tastings_details(
+    let response = try await client.getTasting(
       path: .init(tasting: tastingId)
     )
     
@@ -103,7 +103,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
     }
     
     // Build the request body
-    let body = Operations.Tastings_create.Input.Body.json(
+    let body = Operations.createTasting.Input.Body.json(
       .init(
         notes: input.notes,
         bottle: bottleId,
@@ -120,7 +120,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
       )
     )
     
-    let response = try await client.tastings_create(body: body)
+    let response = try await client.createTasting(body: body)
     
     switch response {
     case .ok(let createdResponse):
@@ -173,7 +173,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
       throw APIError.requestFailed("Invalid tasting ID")
     }
     
-    let response = try await client.tastings_delete(
+    let response = try await client.deleteTasting(
       path: .init(tasting: tastingId)
     )
     
@@ -199,7 +199,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
     }
     
     // First, check if already toasted
-    let detailsResponse = try await client.tastings_details(
+    let detailsResponse = try await client.getTasting(
       path: .init(tasting: id)
     )
     
@@ -216,8 +216,8 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
       return false
     } else {
       // Add toast
-      let response = try await client.toasts_create(
-        path: .init(tasting: id)
+      let response = try await client.createToast(
+        .init(path: .init(tasting: id))
       )
       
       switch response {

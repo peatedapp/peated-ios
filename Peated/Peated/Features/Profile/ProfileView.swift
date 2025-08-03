@@ -2,51 +2,98 @@ import SwiftUI
 import PeatedCore
 
 struct ProfileView: View {
-  @State private var model = ProfileModel()
+  let userId: String?
+  
+  @State private var model: ProfileModel
+  @State private var feedModel = FeedModel()
   @State private var showingLogoutAlert = false
   @State private var selectedTab = 0
   
+  init(userId: String? = nil) {
+    self.userId = userId
+    self._model = State(initialValue: ProfileModel(userId: userId))
+  }
+  
   var body: some View {
-    NavigationStack {
-      ScrollView {
-        VStack(spacing: 0) {
-          // Profile header
-          profileHeader
+    Group {
+      if model.error != nil && model.user == nil {
+        // Error state for user profile loading
+        VStack(spacing: 20) {
+          Image(systemName: "exclamationmark.triangle")
+            .font(.system(size: 60))
+            .foregroundColor(.yellow)
           
-          // Stats section
-          statsSection
+          Text("Unable to load profile")
+            .font(.title2)
+            .fontWeight(.semibold)
+          
+          Text("This user profile could not be loaded.")
+            .font(.subheadline)
+            .foregroundColor(.secondary)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 40)
+          
+          Button(action: {
+            Task {
+              await model.loadUser()
+            }
+          }) {
+            Text("Try Again")
+              .fontWeight(.medium)
+              .foregroundColor(.white)
+              .padding(.horizontal, 24)
+              .padding(.vertical, 12)
+              .background(Color.peatedGold)
+              .cornerRadius(25)
+          }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .navigationTitle("Profile")
+        .navigationBarTitleDisplayMode(.inline)
+      } else {
+        ScrollView {
+          VStack(spacing: 0) {
+            // Profile header
+            profileHeader
+            
+            // Stats section
+            statsSection
+              .padding(.horizontal)
+              .padding(.vertical, 20)
+            
+            // Badges section
+            if !model.achievements.isEmpty {
+              badgesSection
+                .padding(.bottom, 20)
+            }
+            
+            // Tab selection
+            Picker("Content", selection: $selectedTab) {
+              Text("Activity").tag(0)
+              Text("Favorites").tag(1)
+            }
+            .pickerStyle(.segmented)
             .padding(.horizontal)
-            .padding(.vertical, 20)
-          
-          // Badges section
-          if !model.achievements.isEmpty {
-            badgesSection
-              .padding(.bottom, 20)
-          }
-          
-          // Tab selection
-          Picker("Content", selection: $selectedTab) {
-            Text("Activity").tag(0)
-            Text("Favorites").tag(1)
-          }
-          .pickerStyle(.segmented)
-          .padding(.horizontal)
-          .padding(.bottom, 16)
-          
-          // Tab content
-          Group {
-            if selectedTab == 0 {
-              activitySection
-            } else {
-              favoritesSection
+            .padding(.bottom, 16)
+            
+            // Tab content
+            Group {
+              if selectedTab == 0 {
+                activitySection
+              } else {
+                favoritesSection
+                  .padding(.horizontal)
+              }
             }
           }
-          .padding(.horizontal)
         }
+        .navigationTitle("Profile")
+        .navigationBarTitleDisplayMode(.inline)
       }
-      .navigationTitle("Profile")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
+    }
+    .toolbar {
+      // Only show logout button for current user
+      if userId == nil {
         ToolbarItem(placement: .navigationBarTrailing) {
           Button(action: {
             showingLogoutAlert = true
@@ -56,19 +103,32 @@ struct ProfileView: View {
           }
         }
       }
-      .alert("Sign Out", isPresented: $showingLogoutAlert) {
-        Button("Cancel", role: .cancel) { }
-        Button("Sign Out", role: .destructive) {
-          Task {
-            await model.logout()
-          }
-        }
-      } message: {
-        Text("Are you sure you want to sign out?")
-      }
     }
-    .task {
+    .alert("Sign Out", isPresented: $showingLogoutAlert) {
+      Button("Cancel", role: .cancel) { }
+      Button("Sign Out", role: .destructive) {
+        Task {
+          await model.logout()
+        }
+      }
+    } message: {
+      Text("Are you sure you want to sign out?")
+    }
+    .task(id: userId) {
       await model.loadUser()
+      
+      // Only load feed if user loaded successfully
+      if model.user != nil {
+        // For the current user, use personal feed
+        // For other users, we need to filter the global feed by user (not ideal but API limitation)
+        if userId == nil {
+          feedModel.selectedFeedType = .personal
+        } else {
+          // TODO: When API supports filtering by user, update this
+          feedModel.selectedFeedType = .global
+        }
+        await feedModel.loadFeed(refresh: true)
+      }
     }
   }
   
@@ -229,11 +289,85 @@ struct ProfileView: View {
     VStack(alignment: .leading, spacing: 16) {
       Text("Recent Activity")
         .font(.headline)
+        .padding(.horizontal)
       
-      Text("No recent activity")
-        .foregroundColor(.secondary)
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.vertical, 40)
+      // Reuse the feed content from FeedView
+      if feedModel.isLoading && feedModel.tastings.isEmpty {
+        // Loading state
+        VStack(spacing: 0) {
+          ForEach(0..<3) { index in
+            VStack(spacing: 0) {
+              SkeletonTastingCard()
+              
+              if index < 2 {
+                Divider()
+                  .background(Color.gray.opacity(0.2))
+              }
+            }
+          }
+        }
+        .padding(.horizontal)
+      } else if feedModel.error != nil && feedModel.tastings.isEmpty {
+        // Error state with no data
+        Text("Unable to load activity")
+          .foregroundColor(.secondary)
+          .frame(maxWidth: .infinity, alignment: .center)
+          .padding(.vertical, 40)
+          .padding(.horizontal)
+      } else if feedModel.tastings.isEmpty {
+        // Empty state
+        Text("No tastings yet")
+          .foregroundColor(.secondary)
+          .frame(maxWidth: .infinity, alignment: .center)
+          .padding(.vertical, 40)
+          .padding(.horizontal)
+      } else {
+        // Show tastings
+        VStack(spacing: 0) {
+          ForEach(feedModel.tastings.prefix(5)) { tasting in
+            VStack(spacing: 0) {
+              TastingCard(
+                tasting: tasting,
+                onToast: {
+                  Task {
+                    await feedModel.toggleToast(for: tasting.id)
+                  }
+                },
+                onComment: {
+                  print("View comments for: \(tasting.id)")
+                },
+                onUserTap: {
+                  // Don't navigate to self if it's the same user
+                  if tasting.userId != model.user?.id {
+                    // TODO: Navigate to user profile
+                    print("Navigate to user: \(tasting.userId)")
+                  }
+                },
+                onBottleTap: {
+                  print("View bottle: \(tasting.bottleId)")
+                }
+              )
+              
+              Divider()
+                .background(Color.gray.opacity(0.2))
+            }
+          }
+          
+          // Show more button if there are more than 5 tastings
+          if feedModel.tastings.count > 5 {
+            Button(action: {
+              // TODO: Navigate to full activity view
+            }) {
+              Text("View All Activity")
+                .font(.subheadline)
+                .fontWeight(.medium)
+                .foregroundColor(.peatedGold)
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+            }
+          }
+        }
+      }
     }
   }
   

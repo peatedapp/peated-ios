@@ -20,7 +20,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
   public func searchBottles(query: String, limit: Int = 20) async throws -> [Bottle] {
     let client = await self.client
     
-    let response = try await client.bottles_list(
+    let response = try await client.listBottles(
       query: .init(
         query: query,
         limit: Double(limit)
@@ -65,7 +65,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
       throw APIError.requestFailed("Invalid bottle ID")
     }
     
-    let response = try await client.bottles_details(
+    let response = try await client.getBottle(
       path: .init(bottle: bottleId)
     )
     
