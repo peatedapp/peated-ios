@@ -151,8 +151,8 @@ public extension Notification.Name {
 
 public extension UserDefaults {
   /// Keys for network-related user preferences
-  enum NetworkKeys {
-    static let loadImagesOnCellular = "com.peated.loadImagesOnCellular"
-    static let syncOnCellular = "com.peated.syncOnCellular"
+  public enum NetworkKeys {
+    public static let loadImagesOnCellular = "com.peated.loadImagesOnCellular"
+    public static let syncOnCellular = "com.peated.syncOnCellular"
   }
 }

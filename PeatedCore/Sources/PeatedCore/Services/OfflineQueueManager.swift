@@ -197,14 +197,15 @@ public class OfflineQueueManager {
     switch operation.type {
     case .createTasting:
       let payload = try JSONDecoder().decode(CreateTastingPayload.self, from: operation.payload)
-      _ = try await tastingRepository.createTasting(
+      let input = CreateTastingInput(
         bottleId: payload.bottleId,
         rating: payload.rating,
         notes: payload.notes,
         servingStyle: payload.servingStyle,
         tags: payload.tags,
-        imageUrl: nil // TODO: Handle image upload separately
+        location: payload.location?.name
       )
+      _ = try await tastingRepository.createTasting(input)
       
     case .toggleToast:
       let payload = try JSONDecoder().decode(ToggleToastPayload.self, from: operation.payload)
@@ -218,9 +219,9 @@ public class OfflineQueueManager {
     case .followUser, .unfollowUser:
       let payload = try JSONDecoder().decode(FollowUserPayload.self, from: operation.payload)
       if operation.type == .followUser {
-        try await userRepository.followUser(userId: payload.userId)
+        try await userRepository.followUser(id: payload.userId)
       } else {
-        try await userRepository.unfollowUser(userId: payload.userId)
+        try await userRepository.unfollowUser(id: payload.userId)
       }
       
     case .updateTasting, .deleteTasting, .deleteComment, .updateProfile, .uploadImage:

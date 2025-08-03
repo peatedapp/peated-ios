@@ -15,6 +15,11 @@ public enum FeedType: String, CaseIterable, Sendable {
   }
 }
 
+// Helper class to hold the observer outside of the actor
+private final class ObserverHolder: @unchecked Sendable {
+  var observer: NSObjectProtocol?
+}
+
 @Observable
 @MainActor
 public class FeedModel {
@@ -27,9 +32,13 @@ public class FeedModel {
   
   private var cursor: String?
   private let feedRepository: FeedRepository
+  private let cacheManager = CacheManager.shared
   
   // Track background refresh tasks to prevent race conditions
   private var backgroundRefreshTasks: [FeedType: Task<Void, Never>] = [:]
+  
+  // Store the observer in a class to avoid actor isolation issues
+  private let observerHolder = ObserverHolder()
   
   // Cache for each feed type
   private struct FeedCache {
@@ -46,7 +55,6 @@ public class FeedModel {
     
     var memorySizeBytes: Int {
       // Rough estimate: each TastingFeedItem is ~500 bytes on average
-      // (includes strings, dates, optional values, etc.)
       return tastings.count * 500
     }
   }
@@ -54,14 +62,46 @@ public class FeedModel {
   private var feedCaches: [FeedType: FeedCache] = [:]
   
   // Memory management constants
-  private static let maxCacheSizeBytes = 10 * 1024 * 1024 // 10MB total
-  private static let maxItemsPerFeed = 500 // Reasonable limit per feed type
+  private let maxCacheSizeBytes = 10 * 1024 * 1024 // 10MB total
+  private let maxItemsPerFeed = 500 // Reasonable limit per feed type
   
   private let tastingRepository: TastingRepository
   
   public init(feedRepository: FeedRepository? = nil, tastingRepository: TastingRepository? = nil) {
     self.feedRepository = feedRepository ?? FeedRepository()
     self.tastingRepository = tastingRepository ?? TastingRepository()
+    
+    // Set up notification observer after initialization
+    Task { @MainActor in
+      self.setupNotificationObserver()
+    }
+  }
+  
+  deinit {
+    if let observer = observerHolder.observer {
+      NotificationCenter.default.removeObserver(observer)
+    }
+  }
+  
+  private func setupNotificationObserver() {
+    observerHolder.observer = NotificationCenter.default.addObserver(
+      forName: .feedDataRefreshed,
+      object: nil,
+      queue: .main
+    ) { [weak self] _ in
+      Task { @MainActor in
+        guard let self else { return }
+        // Extract feedType from notification userInfo in a safe way
+        await self.handleFeedRefreshNotification()
+      }
+    }
+  }
+  
+  private func handleFeedRefreshNotification() async {
+    // This method is called on MainActor, so we can safely access properties
+    // Note: We can't access the notification userInfo here due to Sendable constraints
+    // Instead, we'll just reload if it's the current feed
+    await reloadFromCache()
   }
   
   // Note: We don't need explicit deinit cleanup because:
@@ -255,6 +295,18 @@ public class FeedModel {
     await loadFeed(refresh: true)
   }
   
+  /// Reloads data from cache for the current feed type
+  private func reloadFromCache() async {
+    guard let cache = feedCaches[selectedFeedType], !cache.tastings.isEmpty else {
+      return
+    }
+    
+    // Update UI with cached data
+    tastings = cache.tastings
+    cursor = cache.cursor
+    hasMore = cache.hasMore
+  }
+  
   // MARK: - Memory Management
   
   /// Enforces memory limits on a single feed cache
@@ -262,9 +314,9 @@ public class FeedModel {
     var limitedCache = cache
     
     // Limit by number of items first (most important for performance)
-    if limitedCache.tastings.count > Self.maxItemsPerFeed {
+    if limitedCache.tastings.count > maxItemsPerFeed {
       // Keep the most recent items (preserve chronological order)
-      limitedCache.tastings = Array(limitedCache.tastings.suffix(Self.maxItemsPerFeed))
+      limitedCache.tastings = Array(limitedCache.tastings.suffix(maxItemsPerFeed))
       
       // When we truncate, we might not have more items even if the original response said we did
       // This is a conservative approach to prevent endless pagination loops
@@ -280,7 +332,7 @@ public class FeedModel {
   private func performGlobalCacheCleanupIfNeeded() {
     let totalMemoryUsage = feedCaches.values.reduce(0) { $0 + $1.memorySizeBytes }
     
-    guard totalMemoryUsage > Self.maxCacheSizeBytes else { return }
+    guard totalMemoryUsage > maxCacheSizeBytes else { return }
     
     // Strategy: Remove oldest caches first, but preserve current feed
     let sortedCaches = feedCaches
@@ -295,7 +347,7 @@ public class FeedModel {
     // Remove caches until we're under the limit
     var currentMemoryUsage = totalMemoryUsage
     for (feedType, cache) in sortedCaches {
-      guard currentMemoryUsage > Self.maxCacheSizeBytes else { break }
+      guard currentMemoryUsage > maxCacheSizeBytes else { break }
       
       feedCaches.removeValue(forKey: feedType)
       currentMemoryUsage -= cache.memorySizeBytes
@@ -304,7 +356,7 @@ public class FeedModel {
     }
     
     // If we're still over the limit, truncate the current feed cache
-    if currentMemoryUsage > Self.maxCacheSizeBytes,
+    if currentMemoryUsage > maxCacheSizeBytes,
        var currentCache = feedCaches[selectedFeedType],
        currentCache.tastings.count > 50 { // Keep at least 50 items
       

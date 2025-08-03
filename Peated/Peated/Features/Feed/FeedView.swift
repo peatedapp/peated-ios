@@ -6,6 +6,13 @@ struct FeedView: View {
   @State private var showingCreateTasting = false
   @State private var navigationPath = NavigationPath()
   
+  // Navigation destination types
+  enum NavigationDestination: Hashable {
+    case userProfile(userId: String)
+    case tastingDetail(tastingId: String)
+    case bottleDetail(bottleId: String)
+  }
+  
   var body: some View {
     NavigationStack(path: $navigationPath) {
       VStack(spacing: 0) {
@@ -51,17 +58,16 @@ struct FeedView: View {
                       }
                     },
                     onComment: {
-                      // TODO: Navigate to comments
-                      print("View comments for: \(tasting.id)")
+                      // Navigate to tasting detail
+                      navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
                     },
                     onUserTap: {
                       // Navigate to user profile
-                      print("🧭 Navigating to user profile: \(tasting.userId) (username: \(tasting.username))")
-                      navigationPath.append(tasting.userId)
+                      navigationPath.append(NavigationDestination.userProfile(userId: tasting.userId))
                     },
                     onBottleTap: {
-                      // TODO: Navigate to bottle detail
-                      print("View bottle: \(tasting.bottleId)")
+                      // Navigate to tasting detail (not bottle detail)
+                      navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
                     }
                   )
                   
@@ -129,8 +135,16 @@ struct FeedView: View {
     .task {
       await model.loadFeed(refresh: true)
     }
-    .navigationDestination(for: String.self) { userId in
-      ProfileView(userId: userId)
+    .navigationDestination(for: NavigationDestination.self) { destination in
+      switch destination {
+      case .userProfile(let userId):
+        ProfileView(userId: userId)
+      case .tastingDetail(let tastingId):
+        TastingDetailView(tastingId: tastingId)
+      case .bottleDetail(let bottleId):
+        // TODO: Implement BottleDetailView
+        Text("Bottle Detail: \(bottleId)")
+      }
     }
     }
   }

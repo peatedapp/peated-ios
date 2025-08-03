@@ -49,6 +49,11 @@ public final class DatabaseManager: @unchecked Sendable {
       try setSchemaVersion(2)
     }
     
+    if currentVersion < 3 {
+      try setupCacheTables()
+      try setSchemaVersion(3)
+    }
+    
     // Add future migrations here
   }
   

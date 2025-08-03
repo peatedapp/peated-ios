@@ -1,4 +1,5 @@
 import Foundation
+import PeatedAPI
 
 /// Represents detailed tasting information including comments and toasts
 public struct TastingDetail: Identifiable, Equatable {
@@ -85,8 +86,8 @@ extension TastingDetail {
     self.commentCount = feedItem.commentCount
     self.hasToasted = feedItem.hasToasted
     self.tags = feedItem.tags
-    self.location = feedItem.location.map { loc in
-      Location(name: loc.name, latitude: loc.latitude, longitude: loc.longitude)
+    self.location = feedItem.location.map { locName in
+      Location(name: locName, latitude: nil, longitude: nil)
     }
     self.comments = []
     self.toasts = []
@@ -97,43 +98,9 @@ extension TastingDetail {
 
 extension TastingDetail {
   /// Creates a TastingDetail from API response
-  public init?(from apiTasting: Components.Schemas.Tasting?) {
-    guard let apiTasting = apiTasting,
-          let id = apiTasting.id,
-          let bottle = apiTasting.bottle,
-          let bottleName = bottle.name,
-          let brand = bottle.brand,
-          let brandName = brand?.name,
-          let createdBy = apiTasting.created_by,
-          let username = createdBy.username,
-          let userId = createdBy.id.map({ String(Int($0)) }),
-          let createdAt = apiTasting.created_at else {
-      return nil
-    }
-    
-    self.init(
-      id: String(id),
-      rating: apiTasting.rating ?? 0,
-      notes: apiTasting.notes,
-      servingStyle: apiTasting.serving_style,
-      imageUrl: apiTasting.image?.src,
-      createdAt: Date(timeIntervalSince1970: TimeInterval(createdAt)),
-      userId: userId,
-      username: username,
-      userDisplayName: createdBy.display_name,
-      userAvatarUrl: createdBy.picture_url,
-      bottleId: String(bottle.id ?? 0),
-      bottleName: bottleName,
-      bottleBrandName: brandName,
-      bottleCategory: bottle.category,
-      bottleImageUrl: bottle.photos?.first?.src,
-      toastCount: apiTasting.toasts ?? 0,
-      commentCount: apiTasting.comments ?? 0,
-      hasToasted: apiTasting.toasted_by_me ?? false,
-      tags: apiTasting.tags ?? [],
-      location: nil, // TODO: Map location when API provides it
-      comments: [], // Will be populated separately
-      toasts: [] // Will be populated separately
-    )
+  public init?(from apiTasting: Operations.getTasting.Output.Ok.Body.jsonPayload?) {
+    // TODO: Implement proper API response mapping when the API structure is clearer
+    // For now, we'll use the feedItem conversion in the view
+    return nil
   }
 }

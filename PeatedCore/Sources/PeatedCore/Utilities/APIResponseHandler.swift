@@ -14,6 +14,7 @@ public enum APIError: LocalizedError {
   case networkError(Error)
   case decodingError(Error)
   case timeout
+  case notImplemented
   
   public var errorDescription: String? {
     switch self {
@@ -35,6 +36,8 @@ public enum APIError: LocalizedError {
       return "Unable to process response"
     case .timeout:
       return "Request timed out"
+    case .notImplemented:
+      return "This feature is not yet implemented"
     }
   }
 }

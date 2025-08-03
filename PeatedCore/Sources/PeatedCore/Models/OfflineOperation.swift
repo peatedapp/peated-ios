@@ -1,7 +1,7 @@
 import Foundation
 
 /// Represents an operation that needs to be synced when network connectivity is available
-public struct OfflineOperation: Codable, Identifiable {
+public struct OfflineOperation: Codable, Identifiable, Sendable {
   /// Unique identifier for the operation
   public let id: String
   
@@ -27,7 +27,7 @@ public struct OfflineOperation: Codable, Identifiable {
   public var lastError: String?
   
   /// Types of operations that can be queued for offline sync
-  public enum OperationType: String, Codable, CaseIterable {
+  public enum OperationType: String, Codable, CaseIterable, Sendable {
     case createTasting
     case updateTasting
     case deleteTasting
@@ -57,7 +57,7 @@ public struct OfflineOperation: Codable, Identifiable {
   }
   
   /// Status of the offline operation
-  public enum OperationStatus: String, Codable {
+  public enum OperationStatus: String, Codable, Sendable {
     case pending
     case inProgress
     case failed
@@ -106,7 +106,7 @@ public struct OfflineOperation: Codable, Identifiable {
 // MARK: - Operation Payloads
 
 /// Payload for creating a tasting
-public struct CreateTastingPayload: Codable {
+public struct CreateTastingPayload: Codable, Sendable {
   public let bottleId: String
   public let rating: Double
   public let notes: String?
@@ -115,7 +115,7 @@ public struct CreateTastingPayload: Codable {
   public let imageData: Data?
   public let location: Location?
   
-  public struct Location: Codable {
+  public struct Location: Codable, Sendable {
     public let name: String
     public let latitude: Double?
     public let longitude: Double?
@@ -123,19 +123,19 @@ public struct CreateTastingPayload: Codable {
 }
 
 /// Payload for toggling toast
-public struct ToggleToastPayload: Codable {
+public struct ToggleToastPayload: Codable, Sendable {
   public let tastingId: String
   public let isToasted: Bool
 }
 
 /// Payload for adding a comment
-public struct AddCommentPayload: Codable {
+public struct AddCommentPayload: Codable, Sendable {
   public let tastingId: String
   public let text: String
 }
 
 /// Payload for following/unfollowing user
-public struct FollowUserPayload: Codable {
+public struct FollowUserPayload: Codable, Sendable {
   public let userId: String
   public let isFollowing: Bool
 }

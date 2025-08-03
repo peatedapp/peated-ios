@@ -44,7 +44,7 @@ class ProfileModel {
           return (user: Optional(loadedUser), achievements: loadedAchievements, error: nil as Error?)
         } else {
           // Get the current user from auth manager
-          let currentUser = await self.authManager.currentUser
+          let currentUser = self.authManager.currentUser
           
           // Fetch current user's achievements from the API
           let loadedAchievements = try await self.achievementsRepository.getCurrentUserBadges()

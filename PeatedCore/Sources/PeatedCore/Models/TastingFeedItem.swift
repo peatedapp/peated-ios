@@ -1,6 +1,6 @@
 import Foundation
 
-public struct TastingFeedItem: Identifiable, Equatable, Sendable {
+public struct TastingFeedItem: Identifiable, Equatable, Sendable, Codable {
   public let id: String
   public let rating: Double
   public let notes: String?

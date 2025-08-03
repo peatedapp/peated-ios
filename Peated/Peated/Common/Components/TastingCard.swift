@@ -4,9 +4,9 @@ import PeatedCore
 struct TastingCard: View {
   let tasting: TastingFeedItem
   let onToast: () -> Void
-  let onComment: () -> Void
+  let onComment: () -> Void // Used for navigating to tasting detail
   let onUserTap: () -> Void
-  let onBottleTap: () -> Void
+  let onBottleTap: () -> Void // Also navigates to tasting detail
   
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -124,6 +124,9 @@ struct TastingCard: View {
               }
             }
             .padding(.top, 8)
+            .onTapGesture {
+              onComment() // Navigate to detail when tapping photo
+            }
           }
           
           // User info and timestamp
@@ -161,19 +164,24 @@ struct TastingCard: View {
                 Text(tasting.username)
                   .font(.system(size: 13))
                   .foregroundColor(.secondary)
-                
-                Text("•")
-                  .font(.system(size: 13))
-                  .foregroundColor(.secondary.opacity(0.5))
-                
-                Text(tasting.timeAgo)
-                  .font(.system(size: 13))
-                  .foregroundColor(.secondary)
               }
-              .contentShape(Rectangle()) // Make entire area tappable
+              .contentShape(Rectangle()) // Make user area tappable
               .onTapGesture {
                 onUserTap()
               }
+              
+              Text(" • ")
+                .font(.system(size: 13))
+                .foregroundColor(.secondary.opacity(0.5))
+              
+              // Separate timestamp as tappable area
+              Text(tasting.timeAgo)
+                .font(.system(size: 13))
+                .foregroundColor(.secondary)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                  onComment() // Navigate to detail when tapping timestamp
+                }
               
               Spacer()
               

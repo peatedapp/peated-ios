@@ -17,7 +17,7 @@ extension DatabaseManager {
       Tables.OfflineOperations.lastError <- operation.lastError
     )
     
-    try db.run(insert)
+    try connection.run(insert)
   }
   
   /// Updates an existing offline operation
@@ -31,18 +31,18 @@ extension DatabaseManager {
       Tables.OfflineOperations.lastError <- operation.lastError
     )
     
-    try db.run(update)
+    try connection.run(update)
   }
   
   /// Deletes an offline operation by ID
   public func deleteOfflineOperation(_ id: String) async throws {
     let operation = Tables.offlineOperations.filter(Tables.OfflineOperations.id == id)
-    try db.run(operation.delete())
+    try connection.run(operation.delete())
   }
   
   /// Deletes all offline operations
   public func deleteAllOfflineOperations() async throws {
-    try db.run(Tables.offlineOperations.delete())
+    try connection.run(Tables.offlineOperations.delete())
   }
   
   /// Gets all pending operations
@@ -51,7 +51,7 @@ extension DatabaseManager {
       .filter(Tables.OfflineOperations.status != OfflineOperation.OperationStatus.completed.rawValue)
       .order(Tables.OfflineOperations.createdAt.asc)
     
-    let rows = try db.prepare(query)
+    let rows = try connection.prepare(query)
     
     return try rows.map { row in
       OfflineOperation(
@@ -73,7 +73,7 @@ extension DatabaseManager {
       .filter(Tables.OfflineOperations.status == status.rawValue)
       .order(Tables.OfflineOperations.createdAt.asc)
     
-    let rows = try db.prepare(query)
+    let rows = try connection.prepare(query)
     
     return try rows.map { row in
       OfflineOperation(
@@ -91,7 +91,7 @@ extension DatabaseManager {
   
   /// Counts operations by status
   public func countOperationsByStatus(_ status: OfflineOperation.OperationStatus) async throws -> Int {
-    let count = try db.scalar(
+    let count = try connection.scalar(
       Tables.offlineOperations
         .filter(Tables.OfflineOperations.status == status.rawValue)
         .count
@@ -111,7 +111,7 @@ extension DatabaseManager {
         Tables.OfflineOperations.lastError <- "Operation expired"
       )
     
-    try db.run(update)
+    try connection.run(update)
   }
 }
 
