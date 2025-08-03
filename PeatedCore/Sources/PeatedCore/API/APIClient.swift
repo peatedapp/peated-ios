@@ -15,14 +15,15 @@ public actor APIClient {
             dateTranscoder: CustomDateTranscoder()
         )
         
-        // Add auth middleware
+        // Add middleware stack
         let authMiddleware = AuthMiddleware()
+        let loggingMiddleware = LoggingMiddleware()
         
         self.client = Client(
             serverURL: serverURL,
             configuration: runtimeConfiguration,
             transport: transport,
-            middlewares: [authMiddleware]
+            middlewares: [loggingMiddleware, authMiddleware]
         )
     }
     

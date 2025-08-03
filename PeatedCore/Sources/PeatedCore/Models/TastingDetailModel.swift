@@ -107,13 +107,11 @@ public class TastingDetailModel {
   
   /// Loads comments for the tasting
   public func loadComments() async {
-    print("TastingDetailModel: Loading comments for tasting \(tastingId)")
     commentState = .loading
     
     do {
       // Use the actual listComments API endpoint
       let client = await apiClient.generatedClient
-      print("TastingDetailModel: Making API call to listComments with tasting ID: \(tastingId)")
       let response = try await client.listComments(
         .init(
           query: .init(
@@ -125,12 +123,9 @@ public class TastingDetailModel {
       
       guard case .ok(let okResponse) = response,
             case .json(let payload) = okResponse.body else {
-        print("TastingDetailModel: Invalid response from listComments API")
         commentState = .error("Failed to load comments")
         return
       }
-      
-      print("TastingDetailModel: Successfully got \(payload.results.count) comments from API")
       
       // Map API comments to our Comment model
       let comments = payload.results.map { apiComment in
@@ -156,7 +151,6 @@ public class TastingDetailModel {
       }
       
     } catch {
-      print("TastingDetailModel: Failed to load comments for tasting \(tastingId): \(error)")
       commentState = .error("Failed to load comments")
       // Don't fail the whole view, just show error for comments
     }
