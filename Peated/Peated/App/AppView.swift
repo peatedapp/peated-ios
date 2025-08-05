@@ -26,12 +26,10 @@ struct AppView: View {
                     OfflineIndicator()
                     
                     TabView {
-                        NavigationStack {
-                            FeedView()
-                        }
-                        .tabItem {
-                            Label("Activity", systemImage: "house.fill")
-                        }
+                        FeedView()
+                            .tabItem {
+                                Label("Activity", systemImage: "house.fill")
+                            }
                         
                         NavigationStack {
                             Text("Search")
@@ -49,12 +47,10 @@ struct AppView: View {
                             Label("Library", systemImage: "books.vertical.fill")
                         }
                         
-                        NavigationStack {
-                            ProfileView()
-                        }
-                        .tabItem {
-                            Label("Profile", systemImage: "person.fill")
-                        }
+                        ProfileView()
+                            .tabItem {
+                                Label("Profile", systemImage: "person.fill")
+                            }
                     }
                     .tint(.peatedGold)
                 }

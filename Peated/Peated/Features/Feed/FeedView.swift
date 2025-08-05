@@ -50,7 +50,7 @@ struct FeedView: View {
             LazyVStack(spacing: 0) {
               ForEach(model.tastings) { tasting in
                 VStack(spacing: 0) {
-                  TastingCard(
+                  TastingFeedCard(
                     tasting: tasting,
                     onToast: {
                       Task {
@@ -125,29 +125,41 @@ struct FeedView: View {
         }
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    .navigationTitle("Activity")
-    .navigationBarTitleDisplayMode(.inline)
-    .sheet(isPresented: $showingCreateTasting) {
-      // TODO: Present create tasting flow
-      Text("Create Tasting")
-    }
-    .task {
-      await model.loadFeed(refresh: true)
-    }
-    .navigationDestination(for: NavigationDestination.self) { destination in
-      switch destination {
-      case .userProfile(let userId):
-        ProfileView(userId: userId)
-      case .tastingDetail(let tastingId):
-        TastingDetailView(tastingId: tastingId)
-      case .bottleDetail(let bottleId):
-        // TODO: Implement BottleDetailView
-        Text("Bottle Detail: \(bottleId)")
+      .navigationTitle("Activity")
+      .navigationBarTitleDisplayMode(.inline)
+      .sheet(isPresented: $showingCreateTasting) {
+        CreateTastingFlow()
+      }
+      .task {
+        await model.loadFeed(refresh: true)
+      }
+      .navigationDestination(for: NavigationDestination.self) { destination in
+        switch destination {
+        case .userProfile(let userId):
+          ProfileView(
+            userId: userId,
+            onNavigateToProfile: { userId in
+              navigationPath.append(NavigationDestination.userProfile(userId: userId))
+            },
+            onNavigateToTasting: { tastingId in
+              navigationPath.append(NavigationDestination.tastingDetail(tastingId: tastingId))
+            }
+          )
+        case .tastingDetail(let tastingId):
+          TastingDetailView(
+            tastingId: tastingId,
+            onNavigateToProfile: { userId in
+              navigationPath.append(NavigationDestination.userProfile(userId: userId))
+            }
+          )
+        case .bottleDetail(let bottleId):
+          // TODO: Implement BottleDetailView
+          Text("Bottle Detail: \(bottleId)")
+        }
       }
     }
-    }
   }
+}
 }
 
 struct LoadingView: View {

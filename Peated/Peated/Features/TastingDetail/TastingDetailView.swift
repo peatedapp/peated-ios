@@ -3,6 +3,8 @@ import PeatedCore
 
 struct TastingDetailView: View {
   let tastingId: String
+  let onNavigateToProfile: ((String) -> Void)?
+  
   @State private var model: TastingDetailModel
   @State private var commentText = ""
   @State private var showingToastList = false
@@ -10,8 +12,9 @@ struct TastingDetailView: View {
   @FocusState private var isCommentFieldFocused: Bool
   @Environment(\.dismiss) private var dismiss
   
-  init(tastingId: String) {
+  init(tastingId: String, onNavigateToProfile: ((String) -> Void)? = nil) {
     self.tastingId = tastingId
+    self.onNavigateToProfile = onNavigateToProfile
     self._model = State(initialValue: TastingDetailModel(tastingId: tastingId))
   }
   
@@ -122,11 +125,25 @@ struct TastingDetailView: View {
     VStack(spacing: 0) {
       ScrollView {
         VStack(alignment: .leading, spacing: 0) {
-          // Full tasting card
-          TastingDetailCard(tasting: tasting) {
-            await model.toggleToast()
-          }
-          .padding()
+          // Full tasting card using the feed card design
+          TastingFeedCard(
+            tasting: tasting.toFeedItem(),
+            onToast: {
+              Task {
+                await model.toggleToast()
+              }
+            },
+            onComment: {
+              // Focus comment field
+              isCommentFieldFocused = true
+            },
+            onUserTap: {
+              onNavigateToProfile?(tasting.userId)
+            },
+            onBottleTap: {
+              // Already on tasting detail, do nothing
+            }
+          )
           
           Divider()
             .padding(.vertical, 16)
@@ -266,7 +283,7 @@ struct TastingDetailView: View {
               comment: comment,
               isOP: comment.userId == tasting.userId,
               onProfile: { userId in
-                // TODO: Navigate to profile
+                onNavigateToProfile?(userId)
               },
               onDelete: comment.userId == AuthenticationManager.shared.currentUser?.id ? {
                 Task {
@@ -398,6 +415,7 @@ struct TastingDetailView: View {
 struct TastingDetailCard: View {
   let tasting: TastingDetail
   let onToast: () async -> Void
+  let onUserTap: () -> Void
   
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -536,6 +554,10 @@ struct TastingDetailCard: View {
               .font(.peatedCaption)
               .foregroundColor(.peatedTextSecondary)
           }
+        }
+        .contentShape(Rectangle())
+        .onTapGesture {
+          onUserTap()
         }
         
         Spacer()

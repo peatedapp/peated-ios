@@ -11,46 +11,9 @@ struct TastingCard: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
       // Main content
-      HStack(alignment: .top, spacing: 12) {
-        // Bottle image
-        if let imageUrl = tasting.bottleImageUrl, let url = URL(string: imageUrl) {
-          AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-              image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-            case .failure(_), .empty:
-              Image(systemName: "wineglass")
-                .font(.system(size: 20))
-                .foregroundColor(.gray.opacity(0.5))
-            @unknown default:
-              ProgressView()
-            }
-          }
-          .frame(width: 48, height: 64)
-          .background(Color.gray.opacity(0.1))
-          .clipShape(RoundedRectangle(cornerRadius: 4))
-          .onTapGesture {
-            onBottleTap()
-          }
-        } else {
-          RoundedRectangle(cornerRadius: 4)
-            .fill(Color.gray.opacity(0.1))
-            .frame(width: 48, height: 64)
-            .overlay(
-              Image(systemName: "wineglass")
-                .font(.system(size: 20))
-                .foregroundColor(.gray.opacity(0.5))
-            )
-            .onTapGesture {
-              onBottleTap()
-            }
-        }
-        
-        VStack(alignment: .leading, spacing: 4) {
-          // Bottle name
-          Text(tasting.bottleName)
+      VStack(alignment: .leading, spacing: 4) {
+        // Bottle name
+        Text(tasting.bottleName)
             .font(.system(size: 15, weight: .medium))
             .foregroundColor(.primary)
             .lineLimit(1)
@@ -233,7 +196,6 @@ struct TastingCard: View {
             }
           }
           .padding(.top, 8)
-        }
       }
       .padding(16)
     }

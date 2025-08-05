@@ -92,6 +92,33 @@ extension TastingDetail {
     self.comments = []
     self.toasts = []
   }
+  
+  /// Converts TastingDetail to TastingFeedItem for use in feed card views
+  public func toFeedItem() -> TastingFeedItem {
+    TastingFeedItem(
+      id: id,
+      rating: rating,
+      notes: notes,
+      servingStyle: servingStyle,
+      imageUrl: imageUrl,
+      createdAt: createdAt,
+      userId: userId,
+      username: username,
+      userDisplayName: userDisplayName,
+      userAvatarUrl: userAvatarUrl,
+      bottleId: bottleId,
+      bottleName: bottleName,
+      bottleBrandName: bottleBrandName,
+      bottleCategory: bottleCategory,
+      bottleImageUrl: bottleImageUrl,
+      toastCount: toastCount,
+      commentCount: commentCount,
+      hasToasted: hasToasted,
+      tags: tags,
+      location: location?.name,
+      friendUsernames: []
+    )
+  }
 }
 
 // MARK: - API Response Mapping

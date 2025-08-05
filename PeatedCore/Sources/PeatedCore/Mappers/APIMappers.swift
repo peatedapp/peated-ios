@@ -94,7 +94,7 @@ extension Achievement {
       id: String(Int(badge.id)),
       name: badge.name,
       level: Int(badgeResult.level),
-      imageUrl: nil,
+      imageUrl: badge.imageUrl,
       unlockedAt: nil
     )
   }

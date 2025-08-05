@@ -3,16 +3,21 @@ import PeatedCore
 
 struct ProfileView: View {
   let userId: String?
+  let onNavigateToProfile: ((String) -> Void)?
+  let onNavigateToTasting: ((String) -> Void)?
   
   @State private var model: ProfileModel
   @State private var feedModel = FeedModel()
   @State private var showingLogoutAlert = false
   @State private var selectedTab = 0
   
-  init(userId: String? = nil) {
+  init(userId: String? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToTasting: ((String) -> Void)? = nil) {
     self.userId = userId
+    self.onNavigateToProfile = onNavigateToProfile
+    self.onNavigateToTasting = onNavigateToTasting
     self._model = State(initialValue: ProfileModel(userId: userId))
   }
+  
   
   var body: some View {
     Group {
@@ -219,9 +224,6 @@ struct ProfileView: View {
       Divider()
         .frame(height: 40)
       StatView(title: "Collected", value: model.user?.collectedCount ?? 0)
-      Divider()
-        .frame(height: 40)
-      StatView(title: "Contributions", value: model.user?.contributionsCount ?? 0)
     }
     .padding(.vertical, 16)
     .background(Color(.systemGray6))
@@ -235,35 +237,42 @@ struct ProfileView: View {
         .padding(.horizontal)
       
       ScrollView(.horizontal, showsIndicators: false) {
-        HStack(spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
           ForEach(model.achievements) { achievement in
             VStack(spacing: 6) {
               // Badge icon with proper styling
-              ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                  .fill(Color.orange.opacity(0.15))
-                  .frame(width: 80, height: 80)
-                
-                VStack(spacing: 2) {
-                  Image(systemName: achievementIcon(for: achievement.name))
-                    .font(.title)
-                    .foregroundColor(.orange)
+              VStack(spacing: 8) {
+                ZStack {
+                  RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.orange.opacity(0.15))
+                    .frame(width: 80, height: 80)
                   
-                  if achievement.level > 0 {
-                    Text("\(achievement.level)")
-                      .font(.caption2)
-                      .fontWeight(.bold)
+                  // Use imageUrl if available, otherwise fallback to SF Symbol
+                  if let imageUrl = achievement.imageUrl, !imageUrl.isEmpty {
+                    AsyncImage(url: URL(string: imageUrl)) { image in
+                      image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipped()
+                    } placeholder: {
+                      ProgressView()
+                        .frame(width: 80, height: 80)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                  } else {
+                    Image(systemName: achievementIcon(for: achievement.name))
+                      .font(.system(size: 40))
                       .foregroundColor(.orange)
                   }
                 }
+                
+                // Show level instead of name
+                Text("Level \(achievement.level)")
+                  .font(.caption)
+                  .fontWeight(.semibold)
+                  .foregroundColor(.primary)
               }
-              
-              Text(achievement.name)
-                .font(.caption)
-                .fontWeight(.medium)
-                .multilineTextAlignment(.center)
-                .frame(width: 80)
-                .lineLimit(2)
             }
           }
         }
@@ -287,10 +296,6 @@ struct ProfileView: View {
   
   private var activitySection: some View {
     VStack(alignment: .leading, spacing: 16) {
-      Text("Recent Activity")
-        .font(.headline)
-        .padding(.horizontal)
-      
       // Reuse the feed content from FeedView
       if feedModel.isLoading && feedModel.tastings.isEmpty {
         // Loading state
@@ -326,7 +331,7 @@ struct ProfileView: View {
         VStack(spacing: 0) {
           ForEach(feedModel.tastings.prefix(5)) { tasting in
             VStack(spacing: 0) {
-              TastingCard(
+              UnifiedTastingListItem(
                 tasting: tasting,
                 onToast: {
                   Task {
@@ -334,17 +339,16 @@ struct ProfileView: View {
                   }
                 },
                 onComment: {
-                  print("View comments for: \(tasting.id)")
+                  onNavigateToTasting?(tasting.id)
                 },
                 onUserTap: {
                   // Don't navigate to self if it's the same user
                   if tasting.userId != model.user?.id {
-                    // TODO: Navigate to user profile
-                    print("Navigate to user: \(tasting.userId)")
+                    onNavigateToProfile?(tasting.userId)
                   }
                 },
                 onBottleTap: {
-                  print("View bottle: \(tasting.bottleId)")
+                  onNavigateToTasting?(tasting.id)
                 }
               )
               
