@@ -30,28 +30,39 @@ struct RatingNotesStep: View {
                             .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
                         
-                        // Star Rating
-                        HStack(spacing: 8) {
-                            ForEach(1...5, id: \.self) { star in
-                                Button(action: {
-                                    withAnimation(.spring(response: 0.3)) {
-                                        viewModel.rating = Double(star)
-                                    }
-                                    // Haptic feedback
-                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                }) {
-                                    Image(systemName: star <= Int(viewModel.rating) ? "star.fill" : "star")
-                                        .font(.system(size: 32))
-                                        .foregroundColor(star <= Int(viewModel.rating) ? .yellow : .gray)
-                                }
-                                .scaleEffect(star <= Int(viewModel.rating) ? 1.1 : 1.0)
-                                .animation(.spring(response: 0.3), value: viewModel.rating)
-                            }
+                        // Pass/Sip/Savor Rating
+                        HStack(spacing: 12) {
+                            // Pass button
+                            RatingButton(
+                                title: "Pass",
+                                emoji: "👎",
+                                value: -1,
+                                selectedValue: $viewModel.rating,
+                                color: .red
+                            )
+                            
+                            // Sip button
+                            RatingButton(
+                                title: "Sip",
+                                emoji: "👍",
+                                value: 1,
+                                selectedValue: $viewModel.rating,
+                                color: .blue
+                            )
+                            
+                            // Savor button
+                            RatingButton(
+                                title: "Savor",
+                                emoji: "👍👍",
+                                value: 2,
+                                selectedValue: $viewModel.rating,
+                                color: .green
+                            )
                         }
                         .frame(maxWidth: .infinity)
                         
                         // Rating description
-                        if viewModel.rating > 0 {
+                        if viewModel.rating != 0 {
                             Text(ratingDescription)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
@@ -154,16 +165,12 @@ struct RatingNotesStep: View {
     
     private var ratingDescription: String {
         switch Int(viewModel.rating) {
+        case -1:
+            return "Pass - Not to your taste"
         case 1:
-            return "Poor - Wouldn't recommend"
+            return "Sip - Worth trying, decent dram"
         case 2:
-            return "Fair - Below average"
-        case 3:
-            return "Good - Average whisky"
-        case 4:
-            return "Very Good - Would drink again"
-        case 5:
-            return "Excellent - Outstanding whisky"
+            return "Savor - Exceptional, highly recommended"
         default:
             return ""
         }
@@ -275,6 +282,48 @@ struct FlavorTagButton: View {
                                 .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
                         )
                 )
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.05 : 1.0)
+    }
+}
+
+// MARK: - Rating Button
+struct RatingButton: View {
+    let title: String
+    let emoji: String
+    let value: Double
+    @Binding var selectedValue: Double
+    let color: Color
+    
+    private var isSelected: Bool {
+        selectedValue == value
+    }
+    
+    var body: some View {
+        Button(action: {
+            withAnimation(.spring(response: 0.3)) {
+                selectedValue = selectedValue == value ? 0 : value
+            }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }) {
+            VStack(spacing: 8) {
+                Text(emoji)
+                    .font(.system(size: 36))
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 80)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(isSelected ? color.opacity(0.2) : Color(.secondarySystemBackground))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(isSelected ? color : Color.clear, lineWidth: 2)
+                    )
+            )
         }
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.05 : 1.0)

@@ -71,6 +71,25 @@ struct UnifiedTastingCard: View {
         }
         
         Spacer()
+        
+        // Rating icon (right-aligned)
+        if tasting.rating != 0 {
+          if Int(tasting.rating) == 2 {
+            // Show two thumbs up for Savor
+            HStack(spacing: 2) {
+              Image(systemName: "hand.thumbsup")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+              Image(systemName: "hand.thumbsup")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+            }
+          } else {
+            Image(systemName: getRatingIcon(tasting.rating))
+              .font(.system(size: 14))
+              .foregroundColor(.secondary)
+          }
+        }
       }
       
       // Notes (truncated for feed)
@@ -290,6 +309,25 @@ struct UnifiedTastingListItem: View {
         }
         
         Spacer()
+        
+        // Rating icon (right-aligned)
+        if tasting.rating != 0 {
+          if Int(tasting.rating) == 2 {
+            // Show two thumbs up for Savor
+            HStack(spacing: 2) {
+              Image(systemName: "hand.thumbsup")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+              Image(systemName: "hand.thumbsup")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+            }
+          } else {
+            Image(systemName: getRatingIcon(tasting.rating))
+              .font(.system(size: 14))
+              .foregroundColor(.secondary)
+          }
+        }
       }
       
       // Notes (truncated for feed)
@@ -434,5 +472,17 @@ struct UnifiedTastingListItem: View {
     }
     .padding()
     .background(Color(.systemBackground))
+  }
+}
+
+// MARK: - Helper Functions
+private func getRatingIcon(_ rating: Double) -> String {
+  switch Int(rating) {
+  case -1:
+    return "hand.thumbsdown"
+  case 1:
+    return "hand.thumbsup"
+  default:
+    return "star"
   }
 }

@@ -60,6 +60,25 @@ struct TastingFeedCard: View {
         .buttonStyle(PlainButtonStyle())
         
         Spacer()
+        
+        // Rating icon (right-aligned)
+        if tasting.rating != 0 {
+          if Int(tasting.rating) == 2 {
+            // Show two thumbs up for Savor
+            HStack(spacing: 2) {
+              Image(systemName: "hand.thumbsup")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+              Image(systemName: "hand.thumbsup")
+                .font(.system(size: 14))
+                .foregroundColor(.secondary)
+            }
+          } else {
+            Image(systemName: getRatingIcon(tasting.rating))
+              .font(.system(size: 14))
+              .foregroundColor(.secondary)
+          }
+        }
       }
       
       // Bottle info card-within-card
@@ -119,11 +138,11 @@ struct TastingFeedCard: View {
         Spacer()
       }
       .padding(12)
-      .background(Color.peatedSurfaceLight)
+      .background(Color.peatedSurfaceLight.opacity(0.6))
       .cornerRadius(10)
       .overlay(
         RoundedRectangle(cornerRadius: 10)
-          .stroke(Color.peatedBorder.opacity(0.5), lineWidth: 1)
+          .stroke(Color.peatedBorder.opacity(0.3), lineWidth: 1)
       )
       .contentShape(Rectangle())
       .onTapGesture {
@@ -239,5 +258,17 @@ struct TastingFeedCard: View {
         ImageViewer(imageUrl: imageUrl, isPresented: $showingImageViewer)
       }
     }
+  }
+}
+
+// MARK: - Helper Functions
+private func getRatingIcon(_ rating: Double) -> String {
+  switch Int(rating) {
+  case -1:
+    return "hand.thumbsdown"
+  case 1:
+    return "hand.thumbsup"
+  default:
+    return "star"
   }
 }

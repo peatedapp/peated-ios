@@ -61,7 +61,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         // Map to TastingFeedItem
         return TastingFeedItem(
           id: String(Int(payload.id)),
-          rating: payload.rating ?? 0.0,
+          rating: extractRating(from: payload.rating),
           notes: payload.notes,
           servingStyle: payload.servingStyle?.value as? String,
           imageUrl: payload.imageUrl,
@@ -107,7 +107,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
       .init(
         notes: input.notes,
         bottle: bottleId,
-        rating: input.rating,
+        rating: Operations.createTasting.Input.Body.jsonPayload.makeRating(RatingValue(rawValue: Int(input.rating)) ?? .none),
         tags: input.tags.isEmpty ? nil : input.tags,
         servingStyle: input.servingStyle.flatMap { style in
           switch style {
@@ -133,7 +133,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         
         return TastingFeedItem(
           id: String(Int(tasting.id)),
-          rating: tasting.rating ?? 0.0,
+          rating: extractRating(from: tasting.rating),
           notes: tasting.notes,
           servingStyle: tasting.servingStyle?.value as? String,
           imageUrl: tasting.imageUrl,

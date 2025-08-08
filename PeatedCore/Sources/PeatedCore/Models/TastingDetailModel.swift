@@ -72,7 +72,7 @@ public class TastingDetailModel {
       // Map the API response to TastingDetail
       let detail = TastingDetail(
         id: String(Int(payload.id)),
-        rating: payload.rating ?? 0.0,
+        rating: extractRating(from: payload.rating),
         notes: payload.notes,
         servingStyle: payload.servingStyle?.value as? String,
         imageUrl: payload.imageUrl,

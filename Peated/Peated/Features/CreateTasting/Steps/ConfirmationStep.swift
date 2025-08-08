@@ -98,10 +98,9 @@ struct TastingPreviewCard: View {
                         .fontWeight(.medium)
                     
                     HStack {
-                        RatingView(rating: viewModel.rating, size: 16)
-                        Text("\(Int(viewModel.rating)) stars")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        Text(getRatingDisplay(viewModel.rating))
+                            .font(.body)
+                            .fontWeight(.medium)
                     }
                 }
                 
@@ -437,5 +436,19 @@ struct FlowLayout: Layout {
     private struct Row {
         var subviews: [LayoutSubview] = []
         var maxHeight: CGFloat = 0
+    }
+}
+
+// MARK: - Helper Functions
+private func getRatingDisplay(_ rating: Double) -> String {
+    switch Int(rating) {
+    case -1:
+        return "👎 Pass"
+    case 1:
+        return "👍 Sip"
+    case 2:
+        return "👍👍 Savor"
+    default:
+        return "No rating"
     }
 }

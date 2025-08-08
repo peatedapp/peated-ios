@@ -40,7 +40,7 @@ class CreateTastingViewModel: ObservableObject {
     
     var hasUnsavedChanges: Bool {
         selectedBottle != nil || 
-        rating > 0 || 
+        rating != 0 || 
         !notes.isEmpty || 
         !photos.isEmpty
     }
@@ -65,17 +65,14 @@ class CreateTastingViewModel: ObservableObject {
                 uploadedPhotoIds = try await uploadPhotos()
             }
             
-            // Create tasting
+            // Create tasting using PeatedCore's CreateTastingInput
             let input = CreateTastingInput(
-                bottle: selectedBottle!,
+                bottleId: selectedBottle!.id,
                 rating: rating,
                 notes: notes.isEmpty ? nil : notes,
+                servingStyle: servingStyle?.rawValue,
                 tags: Array(selectedTags),
-                servingStyle: servingStyle,
-                location: isDrinkingAtHome ? nil : selectedLocation,
-                taggedFriends: taggedFriends,
-                imageIds: uploadedPhotoIds,
-                isPublic: isPublic
+                location: selectedLocation?.name
             )
             
             let tasting = try await repository.createTasting(input)
@@ -99,7 +96,7 @@ class CreateTastingViewModel: ObservableObject {
         return []
     }
     
-    private func postToSocialMedia(_ tasting: Tasting) async {
+    private func postToSocialMedia(_ tasting: TastingFeedItem) async {
         // TODO: Implementation for social sharing
     }
 }
@@ -120,18 +117,6 @@ public enum ServingStyle: String, CaseIterable {
     }
 }
 
-struct CreateTastingInput {
-    let bottle: Bottle
-    let rating: Double
-    let notes: String?
-    let tags: [String]
-    let servingStyle: ServingStyle?
-    let location: Location?
-    let taggedFriends: [User]
-    let imageIds: [String]
-    let isPublic: Bool
-}
-
 // Temporary placeholder types until we have the actual models
 public struct Location: Identifiable {
     public let id: String
@@ -146,33 +131,3 @@ public struct Location: Identifiable {
 }
 
 // User type is already defined in PeatedCore
-
-struct Tasting {
-    let id: String
-    let bottleId: String
-    let rating: Double
-    let notes: String?
-    let createdAt: Date
-}
-
-// Temporary placeholder for repository
-class TastingRepository {
-    private let apiClient: APIClient
-    
-    init(apiClient: APIClient) {
-        self.apiClient = apiClient
-    }
-    
-    func createTasting(_ input: CreateTastingInput) async throws -> Tasting {
-        // TODO: Implement actual API call when available
-        try await Task.sleep(for: .seconds(1)) // Simulate network delay
-        
-        return Tasting(
-            id: UUID().uuidString,
-            bottleId: input.bottle.id,
-            rating: input.rating,
-            notes: input.notes,
-            createdAt: Date()
-        )
-    }
-}

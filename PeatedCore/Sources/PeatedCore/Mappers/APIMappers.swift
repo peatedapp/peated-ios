@@ -38,7 +38,7 @@ extension TastingFeedItem {
     
     // Extract all values first
     let id = String(Int(apiTasting.id))
-    let rating = apiTasting.rating ?? 0.0
+    let rating = extractRating(from: apiTasting.rating)
     let notes = apiTasting.notes
     let servingStyle: String? = apiTasting.servingStyle?.value as? String
     let imageUrl: String? = apiTasting.imageUrl

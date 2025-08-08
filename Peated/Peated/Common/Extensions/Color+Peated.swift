@@ -9,6 +9,7 @@ extension Color {
   static let peatedBackground = Color(hex: "#020617")     // Main background (slate-950)
   static let peatedSurface = Color(hex: "#0f172a")        // Elevated surfaces (slate-900)
   static let peatedSurfaceLight = Color(hex: "#1e293b")   // Cards, cells (slate-800)
+  static let peatedSurfaceSubtle = Color(hex: "#2d3748")  // Subtle card backgrounds (slate-700 with opacity)
   
   // Border Colors
   static let peatedBorder = Color(hex: "#334155")         // Default borders (slate-700)

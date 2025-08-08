@@ -159,7 +159,7 @@ struct CreateTastingFlow: View {
         case 1:
             return viewModel.selectedBottle != nil
         case 2:
-            return viewModel.rating > 0
+            return viewModel.rating != 0
         case 3:
             return true // Location is optional
         case 4:
