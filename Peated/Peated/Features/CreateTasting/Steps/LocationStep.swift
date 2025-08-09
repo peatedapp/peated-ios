@@ -4,13 +4,12 @@ import PeatedCore
 
 struct LocationStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
+    @StateObject private var locationService = LocationService()
     @State private var searchText = ""
     @State private var searchResults: [Location] = []
-    @State private var currentLocation: Location?
-    @State private var isLoadingLocation = false
+    @State private var currentLocationInfo: Location?
+    @State private var searchTask: Task<Void, Never>?
     @FocusState private var isSearchFocused: Bool
-    
-    private let locationManager = CLLocationManager()
     
     var body: some View {
         ScrollView {
@@ -63,11 +62,11 @@ struct LocationStep: View {
                     // Current Location Button
                     if !viewModel.isDrinkingAtHome {
                         CurrentLocationButton(
-                            isLoading: isLoadingLocation,
-                            currentLocation: currentLocation,
-                            isSelected: viewModel.selectedLocation?.id == currentLocation?.id,
+                            isLoading: locationService.isLoadingLocation,
+                            currentLocation: currentLocationInfo,
+                            isSelected: viewModel.selectedLocation?.id == currentLocationInfo?.id,
                             onTap: {
-                                if let location = currentLocation {
+                                if let location = currentLocationInfo {
                                     selectLocation(location)
                                 } else {
                                     requestCurrentLocation()
@@ -113,7 +112,26 @@ struct LocationStep: View {
         }
         .scrollDismissesKeyboard(.interactively)
         .onAppear {
-            requestLocationPermission()
+            locationService.requestLocationPermission()
+        }
+        .onChange(of: searchText) { _, newValue in
+            // Cancel previous search task
+            searchTask?.cancel()
+            
+            // Start new search with debounce
+            searchTask = Task {
+                try? await Task.sleep(nanoseconds: 500_000_000) // 500ms debounce
+                if !Task.isCancelled {
+                    await searchLocations()
+                }
+            }
+        }
+        .onChange(of: locationService.currentLocation) { _, newLocation in
+            if let location = newLocation {
+                Task {
+                    currentLocationInfo = await locationService.reverseGeocodeLocation(location)
+                }
+            }
         }
     }
     
@@ -128,29 +146,8 @@ struct LocationStep: View {
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
     
-    private func requestLocationPermission() {
-        switch locationManager.authorizationStatus {
-        case .notDetermined:
-            locationManager.requestWhenInUseAuthorization()
-        case .authorizedWhenInUse, .authorizedAlways:
-            requestCurrentLocation()
-        default:
-            break
-        }
-    }
-    
     private func requestCurrentLocation() {
-        isLoadingLocation = true
-        
-        // TODO: Implement actual location fetching
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            isLoadingLocation = false
-            currentLocation = Location(
-                id: "current",
-                name: "Current Location",
-                address: "123 Main St, City, State"
-            )
-        }
+        locationService.requestCurrentLocation()
     }
     
     private func searchLocations() async {
@@ -159,14 +156,13 @@ struct LocationStep: View {
             return
         }
         
-        // TODO: Implement location search
-        try? await Task.sleep(nanoseconds: 500_000_000) // 500ms delay
+        // Use MapKit to search for places
+        let results = await locationService.searchPlaces(query: searchText)
         
-        searchResults = [
-            Location(id: "1", name: "The Whisky Bar", address: "456 Oak St, City, State"),
-            Location(id: "2", name: "Local Pub", address: "789 Pine Ave, City, State"),
-            Location(id: "3", name: "Distillery Tasting Room", address: "321 Elm Rd, City, State")
-        ]
+        // Update on main thread
+        await MainActor.run {
+            searchResults = results
+        }
     }
 }
 

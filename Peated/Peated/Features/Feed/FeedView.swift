@@ -5,6 +5,7 @@ struct FeedView: View {
   @State private var model = FeedModel()
   @State private var showingCreateTasting = false
   @State private var navigationPath = NavigationPath()
+  @State private var showingSuccessToast = false
   
   // Navigation destination types
   enum NavigationDestination: Hashable {
@@ -102,7 +103,7 @@ struct FeedView: View {
               Image(systemName: "plus")
                 .font(.title2)
                 .fontWeight(.semibold)
-                .foregroundColor(.white)
+                .foregroundColor(.black)
                 .frame(width: 56, height: 56)
                 .background(Color.peatedGold)
                 .clipShape(Circle())
@@ -128,8 +129,14 @@ struct FeedView: View {
       .navigationTitle("Activity")
       .navigationBarTitleDisplayMode(.inline)
       .sheet(isPresented: $showingCreateTasting) {
-        CreateTastingFlow()
-          .interactiveDismissDisabled()
+        CreateTastingFlow(onSuccess: {
+          // Show success toast and refresh feed
+          showingSuccessToast = true
+          Task {
+            await model.refreshCurrentFeed()
+          }
+        })
+        .interactiveDismissDisabled()
       }
       .task {
         await model.loadFeed(refresh: true)
@@ -159,6 +166,12 @@ struct FeedView: View {
         }
       }
     }
+    .toast(
+      isShowing: $showingSuccessToast,
+      message: "Tasting created successfully!",
+      type: .success,
+      duration: 3.0
+    )
   }
 }
 }

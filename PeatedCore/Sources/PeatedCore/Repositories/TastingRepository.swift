@@ -15,6 +15,7 @@ public struct CreateTastingInput: Sendable {
   public let servingStyle: String?
   public let tags: [String]
   public let location: String?
+  public let color: Int?
   
   public init(
     bottleId: String,
@@ -22,7 +23,8 @@ public struct CreateTastingInput: Sendable {
     notes: String? = nil,
     servingStyle: String? = nil,
     tags: [String] = [],
-    location: String? = nil
+    location: String? = nil,
+    color: Int? = nil
   ) {
     self.bottleId = bottleId
     self.rating = rating
@@ -30,6 +32,7 @@ public struct CreateTastingInput: Sendable {
     self.servingStyle = servingStyle
     self.tags = tags
     self.location = location
+    self.color = color
   }
 }
 
@@ -109,6 +112,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         bottle: bottleId,
         rating: Operations.createTasting.Input.Body.jsonPayload.makeRating(RatingValue(rawValue: Int(input.rating)) ?? .none),
         tags: input.tags.isEmpty ? nil : input.tags,
+        color: input.color.flatMap { Double($0) },
         servingStyle: input.servingStyle.flatMap { style in
           switch style {
           case "neat": return OpenAPIRuntime.OpenAPIValueContainer("neat")

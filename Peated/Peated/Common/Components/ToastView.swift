@@ -51,6 +51,57 @@ struct ToastView: View {
 }
 
 
+// Toast modifier for easy usage
+struct ToastModifier: ViewModifier {
+  @Binding var isShowing: Bool
+  let message: String
+  let type: ToastView.ToastType
+  let duration: TimeInterval
+  
+  func body(content: Content) -> some View {
+    ZStack {
+      content
+      
+      if isShowing {
+        VStack {
+          ToastView(message: message, type: type)
+            .padding(.horizontal)
+            .transition(.asymmetric(
+              insertion: .move(edge: .top).combined(with: .opacity),
+              removal: .move(edge: .top).combined(with: .opacity)
+            ))
+            .onAppear {
+              DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                  isShowing = false
+                }
+              }
+            }
+          
+          Spacer()
+        }
+        .padding(.top, 50) // Account for status bar
+      }
+    }
+  }
+}
+
+extension View {
+  func toast(
+    isShowing: Binding<Bool>,
+    message: String,
+    type: ToastView.ToastType = .info,
+    duration: TimeInterval = 3.0
+  ) -> some View {
+    modifier(ToastModifier(
+      isShowing: isShowing,
+      message: message,
+      type: type,
+      duration: duration
+    ))
+  }
+}
+
 #Preview {
   VStack(spacing: 20) {
     ToastView(message: "You can't toast your own tastings", type: .error)

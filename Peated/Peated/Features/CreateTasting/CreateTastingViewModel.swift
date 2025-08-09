@@ -51,32 +51,20 @@ class CreateTastingViewModel: ObservableObject {
     
     private let tastingRepository: TastingRepository
     private let bottleRepository: BottleRepository
+    private let imageUploadService: ImageUploadService
     
-    init(tastingRepository: TastingRepository? = nil, bottleRepository: BottleRepository? = nil) {
+    init(
+        tastingRepository: TastingRepository? = nil,
+        bottleRepository: BottleRepository? = nil,
+        imageUploadService: ImageUploadService? = nil
+    ) {
         // Create shared API client
         let apiClient = APIClient(
             serverURL: URL(string: "https://api.peated.com/v1")!
         )
         self.tastingRepository = tastingRepository ?? TastingRepository(apiClient: apiClient)
         self.bottleRepository = bottleRepository ?? BottleRepository(apiClient: apiClient)
-        
-        // DEBUG: Add test bottle to bypass search issue
-        #if DEBUG
-        self.selectedBottle = Bottle(
-            id: "test-123",
-            name: "Lagavulin 16-year-old",
-            fullName: "Lagavulin 16-year-old",
-            brand: Brand(id: "1", name: "Lagavulin"),
-            category: "Single Malt",
-            caskStrength: false,
-            singleCask: false,
-            statedAge: 16,
-            imageUrl: nil,
-            abv: 43.0,
-            avgRating: 4.5,
-            totalRatings: 100
-        )
-        #endif
+        self.imageUploadService = imageUploadService ?? ImageUploadService(apiClient: apiClient)
     }
     
     func submitTasting() async {
@@ -84,22 +72,37 @@ class CreateTastingViewModel: ObservableObject {
         showingError = false
         
         do {
-            // Upload photos first
-            if !photos.isEmpty {
-                uploadedPhotoIds = try await uploadPhotos()
-            }
-            
-            // Create tasting using PeatedCore's CreateTastingInput
+            // Create tasting first
             let input = CreateTastingInput(
                 bottleId: selectedBottle!.id,
                 rating: rating,
                 notes: notes.isEmpty ? nil : notes,
                 servingStyle: servingStyle?.rawValue,
                 tags: Array(selectedTags),
-                location: selectedLocation?.name
+                location: selectedLocation?.name,
+                color: color
             )
             
             let tasting = try await tastingRepository.createTasting(input)
+            
+            // Upload photos after tasting is created
+            if !photos.isEmpty {
+                // Convert UIImages to compressed data
+                let imageDataArray = photos.compactMap { image in
+                    image.compressedForUpload(maxSizeKB: 1024)
+                }
+                
+                if !imageDataArray.isEmpty {
+                    // Upload images to the created tasting
+                    let uploadedUrls = try await imageUploadService.uploadTastingImages(
+                        tastingId: tasting.id,
+                        images: imageDataArray
+                    )
+                    uploadedPhotoIds = uploadedUrls
+                    
+                    print("Successfully uploaded \(uploadedUrls.count) photos")
+                }
+            }
             
             // Post to social media if requested
             if postToFacebook || postToTwitter {
@@ -134,14 +137,80 @@ class CreateTastingViewModel: ObservableObject {
     }
     
     func loadRecentBottles() async {
-        // TODO: Implement fetching user's recent bottles
-        // For now, we'll leave this empty
-        recentBottles = []
-    }
-    
-    private func uploadPhotos() async throws -> [String] {
-        // TODO: Implementation for photo upload
-        return []
+        // Get the authenticated user's recent tastings
+        // and extract unique bottles from them
+        
+        // For now, let's simulate with some mock data
+        // In a real implementation, this would fetch from the user's tasting history
+        
+        // Mock implementation - replace with actual API call
+        DispatchQueue.main.async { [weak self] in
+            self?.recentBottles = [
+                Bottle(
+                    id: "recent-1",
+                    name: "Ardbeg 10",
+                    fullName: "Ardbeg 10 Year Old",
+                    brand: Brand(id: "ardbeg", name: "Ardbeg"),
+                    category: "Single Malt",
+                    caskStrength: false,
+                    singleCask: false,
+                    statedAge: 10,
+                    imageUrl: nil,
+                    abv: 46.0,
+                    avgRating: 4.3,
+                    totalRatings: 1250
+                ),
+                Bottle(
+                    id: "recent-2",
+                    name: "Highland Park 12",
+                    fullName: "Highland Park 12 Year Old",
+                    brand: Brand(id: "hp", name: "Highland Park"),
+                    category: "Single Malt",
+                    caskStrength: false,
+                    singleCask: false,
+                    statedAge: 12,
+                    imageUrl: nil,
+                    abv: 40.0,
+                    avgRating: 4.1,
+                    totalRatings: 890
+                ),
+                Bottle(
+                    id: "recent-3",
+                    name: "Glenfiddich 15",
+                    fullName: "Glenfiddich 15 Year Old Solera",
+                    brand: Brand(id: "glenfiddich", name: "Glenfiddich"),
+                    category: "Single Malt",
+                    caskStrength: false,
+                    singleCask: false,
+                    statedAge: 15,
+                    imageUrl: nil,
+                    abv: 40.0,
+                    avgRating: 4.0,
+                    totalRatings: 2100
+                )
+            ]
+        }
+        
+        // TODO: When API is ready, implement like this:
+        // do {
+        //     let userTastings = try await tastingRepository.getUserTastings(limit: 10)
+        //     let uniqueBottles = Dictionary(grouping: userTastings, by: { $0.bottleId })
+        //         .compactMap { $0.value.first }
+        //         .map { tasting in
+        //             Bottle(
+        //                 id: tasting.bottleId,
+        //                 name: tasting.bottleName,
+        //                 fullName: tasting.bottleName,
+        //                 brand: Brand(id: "", name: tasting.bottleBrandName),
+        //                 category: tasting.bottleCategory,
+        //                 // ... other properties
+        //             )
+        //         }
+        //     recentBottles = Array(uniqueBottles.prefix(5))
+        // } catch {
+        //     print("Failed to load recent bottles: \(error)")
+        //     recentBottles = []
+        // }
     }
     
     private func postToSocialMedia(_ tasting: TastingFeedItem) async {

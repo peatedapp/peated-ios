@@ -75,5 +75,13 @@
 	</array>
 	<key>UIUserInterfaceStyle</key>
 	<string>Dark</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Peated uses your location to help you find and check in at nearby bars, restaurants, and distilleries.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Peated needs camera access to scan bottle barcodes and take photos of your tastings.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Peated needs access to your photo library to add photos to your tastings.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Peated needs permission to save tasting photos to your photo library.</string>
 </dict>
 </plist>

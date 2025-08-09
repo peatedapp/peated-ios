@@ -3,16 +3,18 @@ import PeatedCore
 
 struct CreateTastingFlow: View {
     @StateObject private var viewModel = CreateTastingViewModel()
-    @State private var currentStep = 2  // DEBUG: Skip to rating step
+    @State private var currentStep = 1  // Start at bottle selection
     @Environment(\.dismiss) private var dismiss
     
     // Pre-filled data (optional)
     let preselectedBottle: Bottle?
     let preselectedLocation: Location?
+    let onSuccess: (() -> Void)?
     
-    init(preselectedBottle: Bottle? = nil, preselectedLocation: Location? = nil) {
+    init(preselectedBottle: Bottle? = nil, preselectedLocation: Location? = nil, onSuccess: (() -> Void)? = nil) {
         self.preselectedBottle = preselectedBottle
         self.preselectedLocation = preselectedLocation
+        self.onSuccess = onSuccess
     }
     
     var body: some View {
@@ -200,7 +202,8 @@ struct CreateTastingFlow: View {
             await viewModel.submitTasting()
             if viewModel.submissionSuccessful {
                 dismiss()
-                // TODO: Show success toast
+                // Call the success callback to show toast in parent view
+                onSuccess?()
             }
         }
     }
