@@ -234,7 +234,7 @@ struct CurrentLocationButton: View {
                     } else {
                         Image(systemName: "location.fill")
                             .font(.title2)
-                            .foregroundColor(isSelected ? .white : .accentColor)
+                            .foregroundColor(isSelected ? .black : .accentColor)
                     }
                 }
                 .frame(width: 32)
@@ -243,17 +243,17 @@ struct CurrentLocationButton: View {
                     Text(currentLocation?.name ?? "Use Current Location")
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .white : .primary)
+                        .foregroundColor(isSelected ? .black : .primary)
                     
                     if let address = currentLocation?.address {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+                            .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
                             .lineLimit(2)
                     } else if !isLoading {
                         Text("Tap to find nearby places")
                             .font(.caption)
-                            .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+                            .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
                     }
                 }
                 
@@ -262,7 +262,7 @@ struct CurrentLocationButton: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                 }
             }
             .padding()
@@ -350,19 +350,19 @@ struct LocationRow: View {
             HStack(spacing: 12) {
                 Image(systemName: "mappin.circle.fill")
                     .font(.title2)
-                    .foregroundColor(isSelected ? .white : .accentColor)
+                    .foregroundColor(isSelected ? .black : .accentColor)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(location.name)
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .white : .primary)
+                        .foregroundColor(isSelected ? .black : .primary)
                         .lineLimit(1)
                     
                     if let address = location.address {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+                            .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
                             .lineLimit(2)
                     }
                 }
@@ -372,7 +372,7 @@ struct LocationRow: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                 }
             }
             .padding()

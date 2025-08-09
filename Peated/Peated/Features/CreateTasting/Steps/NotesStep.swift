@@ -88,21 +88,24 @@ struct NotesStep: View {
                 
                 // Notes Section
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Tasting Notes")
-                        .font(.headline)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Tasting Notes")
+                            .font(.headline)
+                        
+                        Text("What did you taste? (Optional)")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
                     
-                    Text("What did you taste? (Optional)")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                    
+                    // Full-width TextEditor
                     ZStack(alignment: .topLeading) {
                         TextEditor(text: $viewModel.notes)
                             .focused($isNotesFocused)
                             .scrollContentBackground(.hidden)  // Hide the default background
-                            .padding(12)  // Internal padding for text
+                            .padding(16)  // Internal padding for text
                             .background(
                                 Color(.systemGray6)  // Very subtle background - almost imperceptible
-                                    .cornerRadius(12)  // Soft rounded corners
                             )
                             .frame(minHeight: 200)
                             .overlay(
@@ -112,7 +115,7 @@ struct NotesStep: View {
                                         Text("Describe the aroma, taste, and finish...")
                                             .foregroundColor(.secondary)
                                             .padding(.top, 20)  // Adjusted for internal padding
-                                            .padding(.leading, 17)  // Adjusted for internal padding
+                                            .padding(.leading, 20)  // Adjusted for internal padding
                                             .allowsHitTesting(false)
                                     }
                                 },
@@ -127,6 +130,7 @@ struct NotesStep: View {
                             .font(.caption)
                             .foregroundColor(viewModel.notes.count > 500 ? .red : .secondary)
                     }
+                    .padding(.horizontal)
                     
                     // Quick suggestions
                     VStack(alignment: .leading, spacing: 8) {
@@ -149,8 +153,8 @@ struct NotesStep: View {
                         .padding(.leading, 8)
                     }
                     .padding(.top, 12)
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
             }
             .padding(.bottom, 100) // Space for navigation buttons
         }
