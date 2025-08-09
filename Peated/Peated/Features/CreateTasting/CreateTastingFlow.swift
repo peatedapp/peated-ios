@@ -3,7 +3,7 @@ import PeatedCore
 
 struct CreateTastingFlow: View {
     @StateObject private var viewModel = CreateTastingViewModel()
-    @State private var currentStep = 1
+    @State private var currentStep = 2  // DEBUG: Skip to rating step
     @Environment(\.dismiss) private var dismiss
     
     // Pre-filled data (optional)
@@ -19,29 +19,38 @@ struct CreateTastingFlow: View {
         NavigationStack {
             VStack(spacing: 0) {
                 // Progress indicator
-                ProgressBar(currentStep: currentStep, totalSteps: 5)
+                ProgressBar(currentStep: currentStep, totalSteps: 6)
                     .padding(.horizontal)
                     .padding(.top, 8)
                 
                 // Step content
                 TabView(selection: $currentStep) {
-                    BottleSelectionStep(viewModel: viewModel)
-                        .tag(1)
+                    BottleSelectionStep(viewModel: viewModel) {
+                        // Automatically advance to step 2 when bottle is selected
+                        withAnimation {
+                            currentStep = 2
+                        }
+                    }
+                    .tag(1)
                     
-                    RatingNotesStep(viewModel: viewModel)
+                    RatingServingStep(viewModel: viewModel)
                         .tag(2)
                     
-                    LocationStep(viewModel: viewModel)
+                    NotesStep(viewModel: viewModel)
                         .tag(3)
                     
-                    PhotosStep(viewModel: viewModel)
+                    LocationStep(viewModel: viewModel)
                         .tag(4)
                     
-                    ConfirmationStep(viewModel: viewModel)
+                    PhotosStep(viewModel: viewModel)
                         .tag(5)
+                    
+                    ConfirmationStep(viewModel: viewModel)
+                        .tag(6)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: currentStep)
+                .ignoresSafeArea(.keyboard)
                 
                 // Navigation buttons
                 navigationButtons
@@ -54,7 +63,7 @@ struct CreateTastingFlow: View {
                         alignment: .top
                     )
             }
-            .navigationTitle("Check In")
+            .navigationTitle("Add Tasting")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -64,13 +73,13 @@ struct CreateTastingFlow: View {
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Text("\(currentStep)/5")
+                    Text("\(currentStep)/6")
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
             }
             .interactiveDismissDisabled(viewModel.hasUnsavedChanges)
-            .alert("Discard Check-In?", isPresented: $viewModel.showingCancelAlert) {
+            .alert("Discard Tasting?", isPresented: $viewModel.showingCancelAlert) {
                 Button("Discard", role: .destructive) {
                     dismiss()
                 }
@@ -107,7 +116,7 @@ struct CreateTastingFlow: View {
             
             Spacer()
             
-            if currentStep < 5 {
+            if currentStep < 6 {
                 Button(action: nextStep) {
                     HStack {
                         Text("Continue")
@@ -116,7 +125,7 @@ struct CreateTastingFlow: View {
                     }
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)  // Changed from .white to .black
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                     .background(
@@ -131,7 +140,7 @@ struct CreateTastingFlow: View {
                     Group {
                         if viewModel.isSubmitting {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                .progressViewStyle(CircularProgressViewStyle(tint: .black))  // Changed from .white to .black
                         } else {
                             HStack {
                                 Image(systemName: "checkmark.circle.fill")
@@ -141,7 +150,7 @@ struct CreateTastingFlow: View {
                     }
                     .font(.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(.white)
+                    .foregroundColor(.black)  // Changed from .white to .black
                     .frame(minWidth: 120)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
@@ -159,12 +168,14 @@ struct CreateTastingFlow: View {
         case 1:
             return viewModel.selectedBottle != nil
         case 2:
-            return viewModel.rating != 0
+            return true // Rating is optional
         case 3:
-            return true // Location is optional
+            return true // Notes and flavors are optional
         case 4:
-            return true // Photos are optional
+            return true // Location is optional
         case 5:
+            return true // Photos are optional
+        case 6:
             return !viewModel.isSubmitting
         default:
             return false

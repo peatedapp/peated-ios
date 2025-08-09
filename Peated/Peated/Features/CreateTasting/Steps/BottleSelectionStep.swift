@@ -5,12 +5,10 @@ import PeatedCore
 struct BottleSelectionStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
     @State private var searchText = ""
-    @State private var isSearching = false
-    @State private var searchResults: [Bottle] = []
-    @State private var recentBottles: [Bottle] = []
     @State private var showingScanner = false
     @State private var showingManualEntry = false
     @FocusState private var isSearchFocused: Bool
+    var onBottleSelected: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -28,21 +26,21 @@ struct BottleSelectionStep: View {
                         searchBar
                         
                         // Barcode scanner button
-                        if !isSearching {
+                        if !viewModel.isSearching && searchText.isEmpty {
                             scanBarcodeButton
                         }
                     }
                     .padding(.horizontal)
                     
                     // Content based on state
-                    if isSearching && !searchText.isEmpty {
+                    if viewModel.isSearching || !searchText.isEmpty {
                         searchResultsSection
-                    } else if !isSearching {
+                    } else {
                         recentBottlesSection
                     }
                     
                     // Can't find bottle link
-                    if !isSearching || (isSearching && searchResults.isEmpty && !searchText.isEmpty) {
+                    if !viewModel.isSearching || (viewModel.isSearching && viewModel.searchResults.isEmpty && !searchText.isEmpty) {
                         cantFindBottleSection
                             .padding(.horizontal)
                             .padding(.vertical)
@@ -76,13 +74,16 @@ struct BottleSelectionStep: View {
             
             TextField("Search for a bottle...", text: $searchText)
                 .textFieldStyle(.plain)
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
+                .submitLabel(.search)
                 .focused($isSearchFocused)
                 .onSubmit {
                     Task { await searchBottles() }
                 }
                 .onChange(of: searchText) { _, newValue in
                     if newValue.isEmpty {
-                        searchResults = []
+                        viewModel.searchResults = []
                     } else {
                         searchBottlesDebounced(newValue)
                     }
@@ -91,7 +92,7 @@ struct BottleSelectionStep: View {
             if !searchText.isEmpty {
                 Button(action: {
                     searchText = ""
-                    searchResults = []
+                    viewModel.searchResults = []
                     isSearchFocused = false
                 }) {
                     Image(systemName: "xmark.circle.fill")
@@ -106,11 +107,6 @@ struct BottleSelectionStep: View {
             RoundedRectangle(cornerRadius: 10)
                 .stroke(isSearchFocused ? Color.accentColor : Color.clear, lineWidth: 2)
         )
-        .onChange(of: isSearchFocused) { _, focused in
-            withAnimation {
-                isSearching = focused
-            }
-        }
     }
     
     // MARK: - Scan Barcode Button
@@ -143,7 +139,20 @@ struct BottleSelectionStep: View {
                 .foregroundColor(.secondary)
                 .padding(.horizontal)
             
-            if searchResults.isEmpty && searchText.count > 2 {
+            if viewModel.isSearching {
+                // Loading state
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1.2)
+                    
+                    Text("Searching...")
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 40)
+            } else if viewModel.searchResults.isEmpty && searchText.count > 2 {
                 VStack(spacing: 16) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 40))
@@ -160,7 +169,7 @@ struct BottleSelectionStep: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 40)
             } else {
-                ForEach(searchResults) { bottle in
+                ForEach(viewModel.searchResults) { bottle in
                     BottleSearchRow(
                         bottle: bottle,
                         isSelected: viewModel.selectedBottle?.id == bottle.id,
@@ -177,14 +186,14 @@ struct BottleSelectionStep: View {
     // MARK: - Recent Bottles
     @ViewBuilder
     private var recentBottlesSection: some View {
-        if !recentBottles.isEmpty {
+        if !viewModel.recentBottles.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Recent Bottles")
                     .font(.headline)
                     .foregroundColor(.secondary)
                     .padding(.horizontal)
                 
-                ForEach(recentBottles) { bottle in
+                ForEach(viewModel.recentBottles) { bottle in
                     RecentBottleRow(
                         bottle: bottle,
                         lastTasting: getLastTasting(for: bottle),
@@ -234,6 +243,9 @@ struct BottleSelectionStep: View {
         
         // Haptic feedback
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        
+        // Automatically advance to next step
+        onBottleSelected?()
     }
     
     private func searchBottlesDebounced(_ query: String) {
@@ -247,13 +259,11 @@ struct BottleSelectionStep: View {
     }
     
     private func searchBottles() async {
-        // TODO: Implement bottle search
-        searchResults = []
+        await viewModel.searchBottles(query: searchText)
     }
     
     private func loadRecentBottles() async {
-        // TODO: Load user's recent bottles
-        recentBottles = []
+        await viewModel.loadRecentBottles()
     }
     
     private func checkCameraPermissionAndScan() {
@@ -314,15 +324,19 @@ struct BottleSearchRow: View {
                 .frame(width: 50, height: 70)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(bottle.name)
+                    Text(bottle.fullName)
                         .font(.body)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                         .lineLimit(1)
                     
+                    Text(bottle.brandName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
                     HStack(spacing: 4) {
                         if let category = bottle.category {
-                            Text(category)
+                            Text(category.capitalized)
                         }
                         
                         if let abv = bottle.abv {
@@ -332,14 +346,16 @@ struct BottleSearchRow: View {
                     .font(.caption)
                     .foregroundColor(.secondary)
                     
-                    HStack(spacing: 4) {
-                        RatingView(rating: bottle.avgRating, size: 12)
-                        Text(String(format: "%.1f", bottle.avgRating))
-                            .font(.caption)
-                            .foregroundColor(.primary)
-                        Text("(\(bottle.totalRatings))")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    if bottle.totalRatings > 0 {
+                        HStack(spacing: 4) {
+                            RatingView(rating: bottle.avgRating, size: 12)
+                            Text(String(format: "%.1f", bottle.avgRating))
+                                .font(.caption)
+                                .foregroundColor(.primary)
+                            Text("(\(bottle.totalRatings))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
                 
@@ -391,11 +407,15 @@ struct RecentBottleRow: View {
                 .frame(width: 50, height: 70)
                 
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(bottle.name)
+                    Text(bottle.fullName)
                         .font(.body)
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                         .lineLimit(1)
+                    
+                    Text(bottle.brandName)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                     
                     if let tasting = lastTasting {
                         HStack(spacing: 4) {

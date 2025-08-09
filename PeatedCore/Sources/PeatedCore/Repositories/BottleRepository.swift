@@ -43,7 +43,11 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             category: apiBottle.category?.value as? String,
             caskStrength: apiBottle.caskStrength ?? false,
             singleCask: apiBottle.singleCask ?? false,
-            statedAge: apiBottle.statedAge.map { Int($0) }
+            statedAge: apiBottle.statedAge.map { Int($0) },
+            imageUrl: apiBottle.imageUrl,
+            abv: apiBottle.abv,
+            avgRating: 0.0,  // Not available in list endpoint
+            totalRatings: 0   // Not available in list endpoint
           )
         }
       }

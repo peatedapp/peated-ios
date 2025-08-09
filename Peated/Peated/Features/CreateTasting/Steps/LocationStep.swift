@@ -180,18 +180,18 @@ struct HomeLocationButton: View {
             HStack(spacing: 16) {
                 Image(systemName: "house.fill")
                     .font(.title2)
-                    .foregroundColor(isSelected ? .white : .accentColor)
+                    .foregroundColor(isSelected ? .black : .accentColor)
                     .frame(width: 32)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("At Home")
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .white : .primary)
+                        .foregroundColor(isSelected ? .black : .primary)
                     
                     Text("Private tasting")
                         .font(.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+                        .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
                 }
                 
                 Spacer()
@@ -199,7 +199,7 @@ struct HomeLocationButton: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                 }
             }
             .padding()

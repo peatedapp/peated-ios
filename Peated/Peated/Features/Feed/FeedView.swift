@@ -129,6 +129,7 @@ struct FeedView: View {
       .navigationBarTitleDisplayMode(.inline)
       .sheet(isPresented: $showingCreateTasting) {
         CreateTastingFlow()
+          .interactiveDismissDisabled()
       }
       .task {
         await model.loadFeed(refresh: true)

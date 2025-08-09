@@ -10,12 +10,16 @@ class CreateTastingViewModel: ObservableObject {
     // Step 1: Bottle
     @Published var selectedBottle: Bottle?
     @Published var bottleSearchText = ""
+    @Published var searchResults: [Bottle] = []
+    @Published var isSearching = false
+    @Published var recentBottles: [Bottle] = []
     
     // Step 2: Rating & Notes
     @Published var rating: Double = 0
     @Published var notes = ""
     @Published var selectedTags: Set<String> = []
     @Published var servingStyle: ServingStyle?
+    @Published var color: Int? = nil
     
     // Step 3: Location
     @Published var selectedLocation: Location?
@@ -45,14 +49,34 @@ class CreateTastingViewModel: ObservableObject {
         !photos.isEmpty
     }
     
-    private let repository: TastingRepository
+    private let tastingRepository: TastingRepository
+    private let bottleRepository: BottleRepository
     
-    init(repository: TastingRepository? = nil) {
-        // Create API client
+    init(tastingRepository: TastingRepository? = nil, bottleRepository: BottleRepository? = nil) {
+        // Create shared API client
         let apiClient = APIClient(
             serverURL: URL(string: "https://api.peated.com/v1")!
         )
-        self.repository = repository ?? TastingRepository(apiClient: apiClient)
+        self.tastingRepository = tastingRepository ?? TastingRepository(apiClient: apiClient)
+        self.bottleRepository = bottleRepository ?? BottleRepository(apiClient: apiClient)
+        
+        // DEBUG: Add test bottle to bypass search issue
+        #if DEBUG
+        self.selectedBottle = Bottle(
+            id: "test-123",
+            name: "Lagavulin 16-year-old",
+            fullName: "Lagavulin 16-year-old",
+            brand: Brand(id: "1", name: "Lagavulin"),
+            category: "Single Malt",
+            caskStrength: false,
+            singleCask: false,
+            statedAge: 16,
+            imageUrl: nil,
+            abv: 43.0,
+            avgRating: 4.5,
+            totalRatings: 100
+        )
+        #endif
     }
     
     func submitTasting() async {
@@ -75,7 +99,7 @@ class CreateTastingViewModel: ObservableObject {
                 location: selectedLocation?.name
             )
             
-            let tasting = try await repository.createTasting(input)
+            let tasting = try await tastingRepository.createTasting(input)
             
             // Post to social media if requested
             if postToFacebook || postToTwitter {
@@ -89,6 +113,30 @@ class CreateTastingViewModel: ObservableObject {
         }
         
         isSubmitting = false
+    }
+    
+    func searchBottles(query: String) async {
+        guard !query.isEmpty else {
+            searchResults = []
+            return
+        }
+        
+        isSearching = true
+        
+        do {
+            searchResults = try await bottleRepository.searchBottles(query: query, limit: 20)
+        } catch {
+            // Silently fail search, just show no results
+            searchResults = []
+        }
+        
+        isSearching = false
+    }
+    
+    func loadRecentBottles() async {
+        // TODO: Implement fetching user's recent bottles
+        // For now, we'll leave this empty
+        recentBottles = []
     }
     
     private func uploadPhotos() async throws -> [String] {
