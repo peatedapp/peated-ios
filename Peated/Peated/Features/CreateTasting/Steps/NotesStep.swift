@@ -8,7 +8,7 @@ struct NotesStep: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 32) {
+            VStack(alignment: .leading, spacing: 0) {
                 // Header
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Add tasting notes")
@@ -23,6 +23,7 @@ struct NotesStep: View {
                 }
                 .padding(.horizontal)
                 .padding(.top)
+                .padding(.bottom, 32)
                 
                 // Flavor Profile Section
                 VStack(alignment: .leading, spacing: 12) {
@@ -53,6 +54,10 @@ struct NotesStep: View {
                         .padding()
                         .background(Color(.secondarySystemBackground))
                         .cornerRadius(12)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color(.separator), lineWidth: 1)
+                        )
                     }
                     .buttonStyle(.plain)
                     
@@ -85,6 +90,7 @@ struct NotesStep: View {
                     }
                 }
                 .padding(.horizontal)
+                .padding(.bottom, 32)
                 
                 // Notes Section
                 VStack(alignment: .leading, spacing: 12) {
@@ -98,15 +104,12 @@ struct NotesStep: View {
                     }
                     .padding(.horizontal)
                     
-                    // Full-width TextEditor
+                    // TextEditor styled like photo buttons
                     ZStack(alignment: .topLeading) {
                         TextEditor(text: $viewModel.notes)
                             .focused($isNotesFocused)
                             .scrollContentBackground(.hidden)  // Hide the default background
-                            .padding(16)  // Internal padding for text
-                            .background(
-                                Color(.systemGray6)  // Very subtle background - almost imperceptible
-                            )
+                            .padding(12)  // Internal padding for text
                             .frame(minHeight: 200)
                             .overlay(
                                 // Placeholder text
@@ -115,13 +118,20 @@ struct NotesStep: View {
                                         Text("Describe the aroma, taste, and finish...")
                                             .foregroundColor(.secondary)
                                             .padding(.top, 20)  // Adjusted for internal padding
-                                            .padding(.leading, 20)  // Adjusted for internal padding
+                                            .padding(.leading, 17)  // Adjusted for internal padding
                                             .allowsHitTesting(false)
                                     }
                                 },
                                 alignment: .topLeading
                             )
                     }
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(12)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(.separator), lineWidth: 1)
+                    )
+                    .padding(.horizontal)
                     
                     // Character count
                     HStack {
