@@ -59,7 +59,7 @@ struct WhiskyColorPicker: View {
                         Text("?")
                             .font(.title3)
                             .fontWeight(.semibold)
-                            .frame(width: 44, height: selectedColor == -1 ? 56 : 44)
+                            .frame(width: 44, height: 44)
                             .background(
                                 RoundedRectangle(cornerRadius: 8)
                                     .fill(Color(.tertiarySystemBackground))
@@ -69,6 +69,7 @@ struct WhiskyColorPicker: View {
                                                    lineWidth: selectedColor == -1 ? 2 : 1)
                                     )
                             )
+                            .scaleEffect(selectedColor == -1 ? 1.1 : 1.0)
                     }
                     .buttonStyle(.plain)
                     
@@ -80,16 +81,18 @@ struct WhiskyColorPicker: View {
                         }) {
                             RoundedRectangle(cornerRadius: 8)
                                 .fill(Color(hex: colorData.hex))
-                                .frame(width: 44, height: selectedColor == colorData.value ? 56 : 44)
+                                .frame(width: 44, height: 44)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(selectedColor == colorData.value ? Color.accentColor : Color(.separator).opacity(0.3), 
                                                lineWidth: selectedColor == colorData.value ? 2 : 1)
                                 )
+                                .scaleEffect(selectedColor == colorData.value ? 1.1 : 1.0)
                         }
                         .buttonStyle(.plain)
                     }
                 }
+                .frame(height: 56) // Fixed height container to prevent shifts
                 .padding(.vertical, 4)
             }
         }

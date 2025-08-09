@@ -255,18 +255,18 @@ struct PrivacyOption: View {
             HStack(spacing: 12) {
                 Image(systemName: icon)
                     .font(.title3)
-                    .foregroundColor(isSelected ? .white : .accentColor)
+                    .foregroundColor(isSelected ? .black : .accentColor)
                     .frame(width: 24)
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .white : .primary)
+                        .foregroundColor(isSelected ? .black : .primary)
                     
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundColor(isSelected ? .white.opacity(0.8) : .secondary)
+                        .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
                 }
                 
                 Spacer()
@@ -274,7 +274,7 @@ struct PrivacyOption: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.white)
+                        .foregroundColor(.black)
                 }
             }
             .padding()

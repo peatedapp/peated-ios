@@ -198,12 +198,12 @@ struct ServingStyleButton: View {
             VStack(spacing: 8) {
                 Image(systemName: iconName)
                     .font(.title2)
-                    .foregroundColor(isSelected ? .white : .accentColor)
+                    .foregroundColor(isSelected ? .black : .accentColor)
                 
                 Text(style.displayName)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .white : .primary)
+                    .foregroundColor(isSelected ? .black : .primary)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
@@ -271,7 +271,7 @@ struct FlavorTagButton: View {
             Text(tag)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(isSelected ? .white : .primary)
+                .foregroundColor(isSelected ? .black : .primary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(

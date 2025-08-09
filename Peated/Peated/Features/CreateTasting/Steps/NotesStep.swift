@@ -142,28 +142,62 @@ struct NotesStep: View {
                     }
                     .padding(.horizontal)
                     
-                    // Quick suggestions
-                    VStack(alignment: .leading, spacing: 8) {
+                    // Quick suggestions styled like photo tips
+                    VStack(alignment: .leading, spacing: 12) {
                         Text("Need inspiration?")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .font(.headline)
                         
                         Text("Consider describing:")
-                            .font(.caption)
+                            .font(.subheadline)
                             .foregroundColor(.secondary)
                         
-                        VStack(alignment: .leading, spacing: 4) {
-                            Label("The nose/aroma", systemImage: "wind")
-                            Label("Initial taste", systemImage: "mouth")
-                            Label("The finish", systemImage: "timer")
-                            Label("How it compares to others", systemImage: "arrow.left.arrow.right")
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(spacing: 12) {
+                                Image(systemName: "wind")
+                                    .font(.caption)
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 20)
+                                Text("The nose/aroma")
+                                    .font(.caption)
+                                    .foregroundColor(.primary)
+                            }
+                            
+                            HStack(spacing: 12) {
+                                Image(systemName: "mouth")
+                                    .font(.caption)
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 20)
+                                Text("Initial taste")
+                                    .font(.caption)
+                                    .foregroundColor(.primary)
+                            }
+                            
+                            HStack(spacing: 12) {
+                                Image(systemName: "timer")
+                                    .font(.caption)
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 20)
+                                Text("The finish")
+                                    .font(.caption)
+                                    .foregroundColor(.primary)
+                            }
+                            
+                            HStack(spacing: 12) {
+                                Image(systemName: "arrow.left.arrow.right")
+                                    .font(.caption)
+                                    .foregroundColor(.accentColor)
+                                    .frame(width: 20)
+                                Text("How it compares to others")
+                                    .font(.caption)
+                                    .foregroundColor(.primary)
+                            }
                         }
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.leading, 8)
                     }
-                    .padding(.top, 12)
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(12)
                     .padding(.horizontal)
+                    .padding(.top, 12)
                 }
             }
             .padding(.bottom, 100) // Space for navigation buttons
