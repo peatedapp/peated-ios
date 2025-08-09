@@ -10,6 +10,8 @@ struct ProfileView: View {
   @State private var feedModel = FeedModel()
   @State private var showingLogoutAlert = false
   @State private var selectedTab = 0
+  @State private var showingDeveloperSettings = false
+  @State private var settingsTapCount = 0
   
   init(userId: String? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToTasting: ((String) -> Void)? = nil) {
     self.userId = userId
@@ -119,6 +121,9 @@ struct ProfileView: View {
     } message: {
       Text("Are you sure you want to sign out?")
     }
+    .sheet(isPresented: $showingDeveloperSettings) {
+      DeveloperSettingsView()
+    }
     .task(id: userId) {
       await model.loadUser()
       
@@ -176,6 +181,10 @@ struct ProfileView: View {
         Text(model.user?.email ?? "")
           .font(.subheadline)
           .foregroundColor(.secondary)
+      }
+      .onTapGesture(count: 5) {
+        // Secret 5-tap gesture to show developer settings
+        showingDeveloperSettings = true
       }
       
       // Role badges

@@ -1,7 +1,9 @@
 import SwiftUI
+import PeatedCore
 
 struct AppView: View {
     @State private var model = AppModel()
+    @State private var showingDeveloperSettings = false
     
     var body: some View {
         Group {
@@ -67,6 +69,14 @@ struct AppView: View {
             await model.checkAuthStatus()
         }
         .withToastContainer() // Add toast container at root level
+        #if DEBUG
+        .onShake {
+            showingDeveloperSettings = true
+        }
+        .sheet(isPresented: $showingDeveloperSettings) {
+            DeveloperSettingsView()
+        }
+        #endif
     }
 }
 

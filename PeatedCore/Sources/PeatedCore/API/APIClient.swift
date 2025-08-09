@@ -4,10 +4,14 @@ import HTTPTypes
 
 /// Main API client for Peated
 public actor APIClient {
-    private let client: Client
+    private var client: Client
     private let transport: URLSessionTransport
+    private var currentServerURL: URL
     
-    public init(serverURL: URL, configuration: URLSessionTransport.Configuration = .init()) {
+    public init(serverURL: URL? = nil, configuration: URLSessionTransport.Configuration = .init()) {
+        // Use provided URL or default production
+        self.currentServerURL = serverURL ?? URL(string: "https://api.peated.com/v1")!
+        
         self.transport = URLSessionTransport(configuration: configuration)
         
         // Configure date transcoding to handle various date formats
@@ -20,7 +24,28 @@ public actor APIClient {
         let loggingMiddleware = LoggingMiddleware()
         
         self.client = Client(
-            serverURL: serverURL,
+            serverURL: currentServerURL,
+            configuration: runtimeConfiguration,
+            transport: transport,
+            middlewares: [loggingMiddleware, authMiddleware]
+        )
+    }
+    
+    /// Update the server URL dynamically
+    public func updateServerURL(_ url: URL) {
+        guard url != currentServerURL else { return }
+        
+        currentServerURL = url
+        
+        let runtimeConfiguration = OpenAPIRuntime.Configuration(
+            dateTranscoder: CustomDateTranscoder()
+        )
+        
+        let authMiddleware = AuthMiddleware()
+        let loggingMiddleware = LoggingMiddleware()
+        
+        self.client = Client(
+            serverURL: url,
             configuration: runtimeConfiguration,
             transport: transport,
             middlewares: [loggingMiddleware, authMiddleware]
