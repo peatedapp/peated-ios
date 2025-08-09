@@ -400,6 +400,7 @@
 				CODE_SIGN_ENTITLEMENTS = Peated/Peated.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 87528L5SLE;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Configuration/Info.plist;
@@ -439,6 +440,7 @@
 				CODE_SIGN_ENTITLEMENTS = Peated/Peated.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 87528L5SLE;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Configuration/Info.plist;
