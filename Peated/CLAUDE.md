@@ -8,6 +8,14 @@
 - Follow Apple Human Interface Guidelines for iOS app design
 - Use SF Symbols for iconography throughout the app
 
+## App Tone & Language
+
+- **Keep it casual**: This is for casual whisky enthusiasts, not professional sommeliers
+- Avoid overly formal terminology like "Private Tasting" - users are often just chilling at home
+- Use friendly, approachable language: "Just for you" instead of "Private", "At home" instead of "Home location"
+- Remember this is social and fun, not a professional tasting notebook
+- **No emojis in UI**: Use SF Symbols icons consistently, not emoji characters (e.g., use "hand.thumbsup" icon, not 👍 emoji)
+
 For comprehensive documentation see:
 - @docs/architecture/overview.md - System architecture
 - @docs/architecture/tech-stack.md - Technology choices

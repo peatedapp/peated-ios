@@ -85,22 +85,22 @@ class CreateTastingViewModel: ObservableObject {
             
             let tasting = try await tastingRepository.createTasting(input)
             
-            // Upload photos after tasting is created
-            if !photos.isEmpty {
-                // Convert UIImages to compressed data
-                let imageDataArray = photos.compactMap { image in
-                    image.compressedForUpload(maxSizeKB: 1024)
-                }
-                
-                if !imageDataArray.isEmpty {
-                    // Upload images to the created tasting
-                    let uploadedUrls = try await imageUploadService.uploadTastingImages(
-                        tastingId: tasting.id,
-                        images: imageDataArray
-                    )
-                    uploadedPhotoIds = uploadedUrls
-                    
-                    print("Successfully uploaded \(uploadedUrls.count) photos")
+            // Upload photo as part of the tasting (only support one photo for now)
+            if let firstPhoto = photos.first {
+                // Convert UIImage to compressed data
+                if let imageData = firstPhoto.compressedForUpload(maxSizeKB: 1024) {
+                    do {
+                        // Upload the image to the created tasting
+                        let imageUrl = try await imageUploadService.uploadTastingImage(
+                            tastingId: tasting.id,
+                            image: imageData
+                        )
+                        uploadedPhotoIds = [imageUrl]
+                        print("Successfully uploaded photo: \(imageUrl)")
+                    } catch {
+                        // Don't fail the entire submission if photo upload fails
+                        print("Failed to upload photo: \(error)")
+                    }
                 }
             }
             
@@ -137,80 +137,9 @@ class CreateTastingViewModel: ObservableObject {
     }
     
     func loadRecentBottles() async {
-        // Get the authenticated user's recent tastings
-        // and extract unique bottles from them
-        
-        // For now, let's simulate with some mock data
-        // In a real implementation, this would fetch from the user's tasting history
-        
-        // Mock implementation - replace with actual API call
-        DispatchQueue.main.async { [weak self] in
-            self?.recentBottles = [
-                Bottle(
-                    id: "recent-1",
-                    name: "Ardbeg 10",
-                    fullName: "Ardbeg 10 Year Old",
-                    brand: Brand(id: "ardbeg", name: "Ardbeg"),
-                    category: "Single Malt",
-                    caskStrength: false,
-                    singleCask: false,
-                    statedAge: 10,
-                    imageUrl: nil,
-                    abv: 46.0,
-                    avgRating: 4.3,
-                    totalRatings: 1250
-                ),
-                Bottle(
-                    id: "recent-2",
-                    name: "Highland Park 12",
-                    fullName: "Highland Park 12 Year Old",
-                    brand: Brand(id: "hp", name: "Highland Park"),
-                    category: "Single Malt",
-                    caskStrength: false,
-                    singleCask: false,
-                    statedAge: 12,
-                    imageUrl: nil,
-                    abv: 40.0,
-                    avgRating: 4.1,
-                    totalRatings: 890
-                ),
-                Bottle(
-                    id: "recent-3",
-                    name: "Glenfiddich 15",
-                    fullName: "Glenfiddich 15 Year Old Solera",
-                    brand: Brand(id: "glenfiddich", name: "Glenfiddich"),
-                    category: "Single Malt",
-                    caskStrength: false,
-                    singleCask: false,
-                    statedAge: 15,
-                    imageUrl: nil,
-                    abv: 40.0,
-                    avgRating: 4.0,
-                    totalRatings: 2100
-                )
-            ]
-        }
-        
-        // TODO: When API is ready, implement like this:
-        // do {
-        //     let userTastings = try await tastingRepository.getUserTastings(limit: 10)
-        //     let uniqueBottles = Dictionary(grouping: userTastings, by: { $0.bottleId })
-        //         .compactMap { $0.value.first }
-        //         .map { tasting in
-        //             Bottle(
-        //                 id: tasting.bottleId,
-        //                 name: tasting.bottleName,
-        //                 fullName: tasting.bottleName,
-        //                 brand: Brand(id: "", name: tasting.bottleBrandName),
-        //                 category: tasting.bottleCategory,
-        //                 // ... other properties
-        //             )
-        //         }
-        //     recentBottles = Array(uniqueBottles.prefix(5))
-        // } catch {
-        //     print("Failed to load recent bottles: \(error)")
-        //     recentBottles = []
-        // }
+        // TODO: Implement fetching user's recent bottles from their tasting history
+        // For now, leave empty - users should use search to find bottles
+        recentBottles = []
     }
     
     private func postToSocialMedia(_ tasting: TastingFeedItem) async {

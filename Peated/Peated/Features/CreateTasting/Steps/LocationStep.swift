@@ -16,11 +16,11 @@ struct LocationStep: View {
             VStack(alignment: .leading, spacing: 24) {
                 // Header
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("Where are you drinking?")
+                    Text("Where are you sipping?")
                         .font(.title2)
                         .fontWeight(.bold)
                     
-                    Text("Adding location helps others discover great places")
+                    Text("Help others discover great spots")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -60,50 +60,48 @@ struct LocationStep: View {
                     .padding(.horizontal)
                     
                     // Current Location Button
-                    if !viewModel.isDrinkingAtHome {
-                        CurrentLocationButton(
-                            isLoading: locationService.isLoadingLocation,
-                            currentLocation: currentLocationInfo,
-                            isSelected: viewModel.selectedLocation?.id == currentLocationInfo?.id,
-                            onTap: {
-                                if let location = currentLocationInfo {
-                                    selectLocation(location)
-                                } else {
-                                    requestCurrentLocation()
+                    CurrentLocationButton(
+                        isLoading: locationService.isLoadingLocation,
+                        currentLocation: currentLocationInfo,
+                        isSelected: viewModel.selectedLocation?.id == currentLocationInfo?.id,
+                        onTap: {
+                            if let location = currentLocationInfo {
+                                selectLocation(location)
+                            } else {
+                                requestCurrentLocation()
+                            }
+                        }
+                    )
+                    
+                    // Search Bar
+                    LocationSearchBar(
+                        searchText: $searchText,
+                        isSearchFocused: $isSearchFocused,
+                        onSearch: {
+                            Task { await searchLocations() }
+                        }
+                    )
+                    
+                    // Search Results
+                    if !searchResults.isEmpty {
+                        LocationSearchResults(
+                            results: searchResults,
+                            selectedLocationId: viewModel.selectedLocation?.id,
+                            onLocationSelected: selectLocation
+                        )
+                    }
+                    
+                    // Selected Location Display
+                    if let selectedLocation = viewModel.selectedLocation,
+                       !viewModel.isDrinkingAtHome {
+                        SelectedLocationView(
+                            location: selectedLocation,
+                            onRemove: {
+                                withAnimation {
+                                    viewModel.selectedLocation = nil
                                 }
                             }
                         )
-                        
-                        // Search Bar
-                        LocationSearchBar(
-                            searchText: $searchText,
-                            isSearchFocused: $isSearchFocused,
-                            onSearch: {
-                                Task { await searchLocations() }
-                            }
-                        )
-                        
-                        // Search Results
-                        if !searchResults.isEmpty {
-                            LocationSearchResults(
-                                results: searchResults,
-                                selectedLocationId: viewModel.selectedLocation?.id,
-                                onLocationSelected: selectLocation
-                            )
-                        }
-                        
-                        // Selected Location Display
-                        if let selectedLocation = viewModel.selectedLocation,
-                           !viewModel.isDrinkingAtHome {
-                            SelectedLocationView(
-                                location: selectedLocation,
-                                onRemove: {
-                                    withAnimation {
-                                        viewModel.selectedLocation = nil
-                                    }
-                                }
-                            )
-                        }
                     }
                 }
                 .padding(.horizontal)
@@ -185,7 +183,7 @@ struct HomeLocationButton: View {
                         .fontWeight(.medium)
                         .foregroundColor(isSelected ? .black : .primary)
                     
-                    Text("Private tasting")
+                    Text("Just chilling")
                         .font(.caption)
                         .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
                 }

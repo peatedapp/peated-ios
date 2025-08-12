@@ -28,15 +28,17 @@ public actor ImageUploadService: ImageUploadServiceProtocol {
     // Get the generated client
     let client = await apiClient.generatedClient
     
-    // Convert image data to base64
-    let base64String = image.base64EncodedString()
+    // Convert image data to base64 and wrap in OpenAPIValueContainer
+    let base64String = "data:image/jpeg;base64," + image.base64EncodedString()
     
-    // Create the request  
+    // Create the request with image data as base64  
     let response = try await client.updateTastingImage(
-      path: .init(tasting: tastingIdDouble),
-      body: .json(.init(
-        file: OpenAPIValueContainer(stringLiteral: base64String)
-      ))
+      .init(
+        path: .init(tasting: tastingIdDouble),
+        body: .json(.init(
+          file: .init(stringLiteral: base64String)
+        ))
+      )
     )
     
     switch response {

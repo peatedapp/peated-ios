@@ -127,7 +127,7 @@ struct TastingFeedCard: View {
                 .font(.system(size: 14))
                 .foregroundColor(.secondary.opacity(0.5))
               
-              Text(category.capitalized)
+              Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
                 .font(.system(size: 14))
                 .foregroundColor(.secondary)
                 .lineLimit(1)

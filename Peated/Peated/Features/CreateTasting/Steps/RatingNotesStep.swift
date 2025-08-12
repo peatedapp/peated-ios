@@ -35,7 +35,7 @@ struct RatingNotesStep: View {
                             // Pass button
                             RatingButton(
                                 title: "Pass",
-                                emoji: "👎",
+                                iconName: "hand.thumbsdown.fill",
                                 value: -1,
                                 selectedValue: $viewModel.rating,
                                 color: .red
@@ -44,7 +44,7 @@ struct RatingNotesStep: View {
                             // Sip button
                             RatingButton(
                                 title: "Sip",
-                                emoji: "👍",
+                                iconName: "hand.thumbsup.fill",
                                 value: 1,
                                 selectedValue: $viewModel.rating,
                                 color: .blue
@@ -53,7 +53,7 @@ struct RatingNotesStep: View {
                             // Savor button
                             RatingButton(
                                 title: "Savor",
-                                emoji: "👍👍",
+                                iconName: "hands.sparkles.fill",
                                 value: 2,
                                 selectedValue: $viewModel.rating,
                                 color: .green
@@ -291,7 +291,7 @@ struct FlavorTagButton: View {
 // MARK: - Rating Button
 struct RatingButton: View {
     let title: String
-    let emoji: String
+    let iconName: String
     let value: Double
     @Binding var selectedValue: Double
     let color: Color
@@ -308,8 +308,21 @@ struct RatingButton: View {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
         }) {
             VStack(spacing: 8) {
-                Text(emoji)
-                    .font(.system(size: 36))
+                if value == 2 {
+                    // Show two thumbs up for Savor
+                    HStack(spacing: 2) {
+                        Image(systemName: "hand.thumbsup.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(isSelected ? color : .secondary)
+                        Image(systemName: "hand.thumbsup.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(isSelected ? color : .secondary)
+                    }
+                } else {
+                    Image(systemName: iconName)
+                        .font(.system(size: 28))
+                        .foregroundColor(isSelected ? color : .secondary)
+                }
                 Text(title)
                     .font(.caption)
                     .fontWeight(.semibold)
