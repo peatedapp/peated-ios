@@ -13,10 +13,10 @@ struct TastingFeedCard: View {
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
       // User header
-      HStack(spacing: 10) {
+      HStack(spacing: DesignSystem.Spacing.medium) {
         // User avatar and username (clickable for profile)
         Button(action: onUserTap) {
-          HStack(spacing: 10) {
+          HStack(spacing: DesignSystem.Spacing.medium) {
             // User avatar
             if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
               AsyncImage(url: url) { image in
@@ -27,34 +27,34 @@ struct TastingFeedCard: View {
                 Circle()
                   .fill(Color.gray.opacity(0.2))
               }
-              .frame(width: 32, height: 32)
+              .frame(width: DesignSystem.ImageSize.avatar.width, height: DesignSystem.ImageSize.avatar.height)
               .clipShape(Circle())
             } else {
               Circle()
                 .fill(Color.gray.opacity(0.2))
                 .overlay(
                   Image(systemName: "person.fill")
-                    .font(.system(size: 14))
+                    .font(.system(size: DesignSystem.FontSize.avatar))
                     .foregroundColor(.gray.opacity(0.5))
                 )
-                .frame(width: 32, height: 32)
+                .frame(width: DesignSystem.ImageSize.avatar.width, height: DesignSystem.ImageSize.avatar.height)
             }
             
             Text(tasting.username)
-              .font(.system(size: 14, weight: .medium))
+              .font(.system(size: DesignSystem.FontSize.body, weight: .medium))
               .foregroundColor(.primary)
           }
         }
         .buttonStyle(PlainButtonStyle())
         
         Text("•")
-          .font(.system(size: 14))
+          .font(.system(size: DesignSystem.FontSize.body))
           .foregroundColor(.secondary.opacity(0.5))
         
         // Time (clickable for tasting detail)
         Button(action: onBottleTap) {
           Text(tasting.timeAgo)
-            .font(.system(size: 14))
+            .font(.system(size: DesignSystem.FontSize.body))
             .foregroundColor(.secondary)
         }
         .buttonStyle(PlainButtonStyle())
@@ -67,22 +67,22 @@ struct TastingFeedCard: View {
             // Show two thumbs up for Savor
             HStack(spacing: 2) {
               Image(systemName: "hand.thumbsup")
-                .font(.system(size: 14))
+                .font(.system(size: DesignSystem.FontSize.body))
                 .foregroundColor(.secondary)
               Image(systemName: "hand.thumbsup")
                 .font(.system(size: 14))
                 .foregroundColor(.secondary)
             }
           } else {
-            Image(systemName: getRatingIcon(tasting.rating))
-              .font(.system(size: 14))
+            Image(systemName: DesignSystem.ratingIcon(for: tasting.rating))
+              .font(.system(size: DesignSystem.FontSize.body))
               .foregroundColor(.secondary)
           }
         }
       }
       
       // Bottle info card-within-card
-      HStack(spacing: 12) {
+      HStack(spacing: DesignSystem.Spacing.medium) {
         // Bottle image or icon
         if let bottleImageUrl = tasting.bottleImageUrl, let url = URL(string: bottleImageUrl) {
           AsyncImage(url: url) { phase in
@@ -93,42 +93,42 @@ struct TastingFeedCard: View {
                 .aspectRatio(contentMode: .fit)
             case .failure, .empty:
               Image(systemName: "wineglass")
-                .font(.system(size: 18))
-                .foregroundColor(.peatedGold.opacity(0.8))
+                .font(.system(size: DesignSystem.FontSize.headline))
+                .foregroundColor(.peatedGold.opacity(DesignSystem.Opacity.strong))
             @unknown default:
               ProgressView()
                 .scaleEffect(0.5)
             }
           }
-          .frame(width: 28, height: 36)
+          .frame(width: DesignSystem.ImageSize.bottleThumb.width, height: DesignSystem.ImageSize.bottleThumb.height)
         } else {
           Image(systemName: "wineglass")
             .font(.system(size: 18))
             .foregroundColor(.peatedGold.opacity(0.8))
-            .frame(width: 28, height: 36)
+            .frame(width: DesignSystem.ImageSize.bottleThumb.width, height: DesignSystem.ImageSize.bottleThumb.height)
         }
         
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
           // Bottle name
           Text(tasting.bottleName)
-            .font(.system(size: 16, weight: .semibold))
+            .font(.system(size: DesignSystem.FontSize.title, weight: .semibold))
             .foregroundColor(.primary)
             .lineLimit(1)
           
           // Distillery • Category on one line
-          HStack(spacing: 4) {
+          HStack(spacing: DesignSystem.Spacing.xSmall) {
             Text(tasting.bottleBrandName)
-              .font(.system(size: 14))
+              .font(.system(size: DesignSystem.FontSize.body))
               .foregroundColor(.secondary)
               .lineLimit(1)
             
             if let category = tasting.bottleCategory {
               Text("•")
-                .font(.system(size: 14))
+                .font(.system(size: DesignSystem.FontSize.body))
                 .foregroundColor(.secondary.opacity(0.5))
               
               Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                .font(.system(size: 14))
+                .font(.system(size: DesignSystem.FontSize.body))
                 .foregroundColor(.secondary)
                 .lineLimit(1)
             }
@@ -137,12 +137,12 @@ struct TastingFeedCard: View {
         
         Spacer()
       }
-      .padding(12)
-      .background(Color.peatedSurfaceLight.opacity(0.6))
-      .cornerRadius(10)
+      .padding(DesignSystem.Spacing.medium)
+      .background(Color.peatedSurfaceLight.opacity(DesignSystem.Opacity.semiOpaque))
+      .cornerRadius(DesignSystem.CornerRadius.medium)
       .overlay(
-        RoundedRectangle(cornerRadius: 10)
-          .stroke(Color.peatedBorder.opacity(0.3), lineWidth: 1)
+        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+          .stroke(Color.peatedBorder.opacity(DesignSystem.Opacity.light), lineWidth: DesignSystem.Border.thin)
       )
       .contentShape(Rectangle())
       .onTapGesture {
@@ -152,8 +152,8 @@ struct TastingFeedCard: View {
       // Notes
       if let notes = tasting.notes, !notes.isEmpty {
         Text(notes)
-          .font(.system(size: 14))
-          .foregroundColor(.primary.opacity(0.9))
+          .font(.system(size: DesignSystem.FontSize.body))
+          .foregroundColor(.primary.opacity(DesignSystem.Opacity.almostFull))
           .lineLimit(3)
           .multilineTextAlignment(.leading)
       }
@@ -161,15 +161,10 @@ struct TastingFeedCard: View {
       // Tags
       if !tasting.tags.isEmpty {
         ScrollView(.horizontal, showsIndicators: false) {
-          HStack(spacing: 8) {
+          HStack(spacing: DesignSystem.Spacing.small) {
             ForEach(tasting.tags, id: \.self) { tag in
               Text("#\(tag)")
-                .font(.system(size: 12))
-                .foregroundColor(.peatedGold)
-                .padding(.horizontal, 10)
-                .padding(.vertical, 5)
-                .background(Color.peatedGold.opacity(0.1))
-                .clipShape(Capsule())
+                .tagStyle()
             }
           }
         }
@@ -183,9 +178,9 @@ struct TastingFeedCard: View {
             image
               .resizable()
               .aspectRatio(contentMode: .fill)
-              .frame(maxHeight: 200)
+              .frame(maxHeight: DesignSystem.ImageSize.photoMax)
               .clipped()
-              .clipShape(RoundedRectangle(cornerRadius: 12))
+              .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large))
               .contentShape(Rectangle())
               .onTapGesture {
                 showingImageViewer = true
@@ -194,21 +189,21 @@ struct TastingFeedCard: View {
             EmptyView()
           @unknown default:
             ProgressView()
-              .frame(height: 200)
+              .frame(height: DesignSystem.ImageSize.photoMax)
           }
         }
       }
       
       // Actions bar
-      HStack(spacing: 24) {
+      HStack(spacing: DesignSystem.Spacing.xxLarge) {
         // Toast button
         Button(action: onToast) {
-          HStack(spacing: 6) {
+          HStack(spacing: DesignSystem.Spacing.small - 2) {
             Image(systemName: tasting.hasToasted ? "hands.clap.fill" : "hands.clap")
-              .font(.system(size: 16))
+              .font(.system(size: DesignSystem.FontSize.icon))
             if tasting.toastCount > 0 {
               Text("\(tasting.toastCount)")
-                .font(.system(size: 14))
+                .font(.system(size: DesignSystem.FontSize.body))
             }
           }
           .foregroundColor(tasting.hasToasted ? .peatedGold : .secondary)
@@ -216,12 +211,12 @@ struct TastingFeedCard: View {
         
         // Comment button
         Button(action: onComment) {
-          HStack(spacing: 6) {
+          HStack(spacing: DesignSystem.Spacing.small - 2) {
             Image(systemName: "bubble.left")
-              .font(.system(size: 16))
+              .font(.system(size: DesignSystem.FontSize.icon))
             if tasting.commentCount > 0 {
               Text("\(tasting.commentCount)")
-                .font(.system(size: 14))
+                .font(.system(size: DesignSystem.FontSize.body))
             }
           }
           .foregroundColor(.secondary)
@@ -232,26 +227,26 @@ struct TastingFeedCard: View {
       
       // Friends who also tasted
       if !tasting.friendUsernames.isEmpty {
-        HStack(spacing: 4) {
+        HStack(spacing: DesignSystem.Spacing.xSmall) {
           Image(systemName: "person.2.fill")
-            .font(.system(size: 11))
+            .font(.system(size: DesignSystem.FontSize.caption))
             .foregroundColor(.secondary)
           
           ForEach(Array(tasting.friendUsernames.prefix(3)), id: \.self) { friend in
             Text("@\(friend)")
-              .font(.system(size: 12))
+              .font(.system(size: DesignSystem.FontSize.small))
               .foregroundColor(.peatedGold)
           }
           
           if tasting.friendUsernames.count > 3 {
             Text("and \(tasting.friendUsernames.count - 3) more")
-              .font(.system(size: 12))
+              .font(.system(size: DesignSystem.FontSize.small))
               .foregroundColor(.secondary)
           }
         }
       }
     }
-    .padding(16)
+    .padding(DesignSystem.Spacing.cardPadding)
     .background(Color(.systemBackground))
     .fullScreenCover(isPresented: $showingImageViewer) {
       if let imageUrl = tasting.imageUrl {
@@ -261,14 +256,3 @@ struct TastingFeedCard: View {
   }
 }
 
-// MARK: - Helper Functions
-private func getRatingIcon(_ rating: Double) -> String {
-  switch Int(rating) {
-  case -1:
-    return "hand.thumbsdown"
-  case 1:
-    return "hand.thumbsup"
-  default:
-    return "star"
-  }
-}

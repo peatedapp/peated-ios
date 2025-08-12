@@ -110,8 +110,8 @@ struct TastingPreviewCard: View {
                                         .aspectRatio(contentMode: .fit)
                                 case .failure, .empty:
                                     Image(systemName: "wineglass")
-                                        .font(.system(size: 18))
-                                        .foregroundColor(.peatedGold.opacity(0.8))
+                                        .font(.system(size: DesignSystem.FontSize.headline))
+                                        .foregroundColor(.peatedGold.opacity(DesignSystem.Opacity.strong))
                                 @unknown default:
                                     ProgressView()
                                         .scaleEffect(0.5)
@@ -120,8 +120,8 @@ struct TastingPreviewCard: View {
                             .frame(width: 28, height: 36)
                         } else {
                             Image(systemName: "wineglass")
-                                .font(.system(size: 18))
-                                .foregroundColor(.peatedGold.opacity(0.8))
+                                .font(.system(size: DesignSystem.FontSize.headline))
+                                .foregroundColor(.peatedGold.opacity(DesignSystem.Opacity.strong))
                                 .frame(width: 28, height: 36)
                         }
                         

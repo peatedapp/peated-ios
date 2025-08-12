@@ -170,9 +170,10 @@ struct BottleSelectionStep: View {
                 .padding(.vertical, 40)
             } else {
                 ForEach(viewModel.searchResults) { bottle in
-                    BottleSearchRow(
+                    BottleRow(
                         bottle: bottle,
                         isSelected: viewModel.selectedBottle?.id == bottle.id,
+                        subtitle: .rating,
                         onTap: {
                             selectBottle(bottle)
                         }
@@ -194,10 +195,10 @@ struct BottleSelectionStep: View {
                     .padding(.horizontal)
                 
                 ForEach(viewModel.recentBottles) { bottle in
-                    RecentBottleRow(
+                    BottleRow(
                         bottle: bottle,
-                        lastTasting: getLastTasting(for: bottle),
                         isSelected: viewModel.selectedBottle?.id == bottle.id,
+                        subtitle: getLastTasting(for: bottle).map { .lastTasting($0) },
                         onTap: {
                             selectBottle(bottle)
                         }
@@ -285,11 +286,16 @@ struct BottleSelectionStep: View {
     }
     
     private func handleBarcodeScanned(_ barcode: String) {
-        // TODO: Look up bottle by barcode
         Task {
             // Search for bottle by barcode
-            // If found, select it
-            // If not found, show not found message
+            searchText = barcode
+            await viewModel.searchBottles(query: barcode)
+            
+            // If we found exactly one result, select it automatically
+            if viewModel.searchResults.count == 1,
+               let bottle = viewModel.searchResults.first {
+                selectBottle(bottle)
+            }
         }
     }
     
@@ -299,240 +305,5 @@ struct BottleSelectionStep: View {
     }
 }
 
-// MARK: - Bottle Search Row
-struct BottleSearchRow: View {
-    let bottle: Bottle
-    let isSelected: Bool
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
-            // Match TastingFeedCard's bottle info card-within-card style
-            HStack(spacing: 12) {
-                // Bottle image - matching TastingFeedCard's 28x36 size
-                if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        case .failure, .empty:
-                            Image(systemName: "wineglass")
-                                .font(.system(size: 18))
-                                .foregroundColor(.peatedGold.opacity(0.8))
-                        @unknown default:
-                            ProgressView()
-                                .scaleEffect(0.5)
-                        }
-                    }
-                    .frame(width: 28, height: 36)
-                } else {
-                    Image(systemName: "wineglass")
-                        .font(.system(size: 18))
-                        .foregroundColor(.peatedGold.opacity(0.8))
-                        .frame(width: 28, height: 36)
-                }
-                
-                VStack(alignment: .leading, spacing: 3) {
-                    // Bottle name with proper truncation
-                    Text(bottle.fullName)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                    
-                    // Brand • Category on one line
-                    HStack(spacing: 4) {
-                        Text(bottle.brandName)
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .layoutPriority(1)
-                        
-                        if let category = bottle.category {
-                            Text("•")
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary.opacity(0.5))
-                            
-                            Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
-                    }
-                    
-                    // Rating if available
-                    if bottle.totalRatings > 0 {
-                        HStack(spacing: 4) {
-                            ForEach(1...5, id: \.self) { star in
-                                Image(systemName: star <= Int(bottle.avgRating.rounded()) ? "star.fill" : "star")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.yellow)
-                            }
-                            Text(String(format: "%.1f", bottle.avgRating))
-                                .font(.system(size: 12))
-                                .foregroundColor(.secondary)
-                            Text("(\(bottle.totalRatings))")
-                                .font(.system(size: 12))
-                                .foregroundColor(.secondary.opacity(0.7))
-                        }
-                    }
-                }
-                
-                Spacer(minLength: 8)
-                
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.peatedGold)
-                        .font(.system(size: 20))
-                }
-            }
-            .padding(12)
-            .background(Color.peatedSurfaceLight.opacity(0.6))
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color.peatedGold : Color.peatedBorder.opacity(0.3), lineWidth: isSelected ? 2 : 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
 
-// MARK: - Recent Bottle Row
-struct RecentBottleRow: View {
-    let bottle: Bottle
-    let lastTasting: TastingFeedItem?
-    let isSelected: Bool
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
-            // Match TastingFeedCard's bottle info card-within-card style
-            HStack(spacing: 12) {
-                // Bottle image - matching TastingFeedCard's 28x36 size
-                if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
-                    AsyncImage(url: url) { phase in
-                        switch phase {
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                        case .failure, .empty:
-                            Image(systemName: "wineglass")
-                                .font(.system(size: 18))
-                                .foregroundColor(.peatedGold.opacity(0.8))
-                        @unknown default:
-                            ProgressView()
-                                .scaleEffect(0.5)
-                        }
-                    }
-                    .frame(width: 28, height: 36)
-                } else {
-                    Image(systemName: "wineglass")
-                        .font(.system(size: 18))
-                        .foregroundColor(.peatedGold.opacity(0.8))
-                        .frame(width: 28, height: 36)
-                }
-                
-                VStack(alignment: .leading, spacing: 3) {
-                    // Bottle name with proper truncation
-                    Text(bottle.fullName)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.primary)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
-                    
-                    // Brand • Category on one line
-                    HStack(spacing: 4) {
-                        Text(bottle.brandName)
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .layoutPriority(1)
-                        
-                        if let category = bottle.category {
-                            Text("•")
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary.opacity(0.5))
-                            
-                            Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
-                    }
-                    
-                    // Last tasting info
-                    if let tasting = lastTasting {
-                        HStack(spacing: 4) {
-                            // Show rating icon based on value
-                            if Int(tasting.rating) == 2 {
-                                // Two thumbs up for Savor
-                                HStack(spacing: 2) {
-                                    Image(systemName: "hand.thumbsup")
-                                        .font(.system(size: 10))
-                                        .foregroundColor(.secondary)
-                                    Image(systemName: "hand.thumbsup")
-                                        .font(.system(size: 10))
-                                        .foregroundColor(.secondary)
-                                }
-                            } else if Int(tasting.rating) == 1 {
-                                Image(systemName: "hand.thumbsup")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.secondary)
-                            } else if Int(tasting.rating) == -1 {
-                                Image(systemName: "hand.thumbsdown")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.secondary)
-                            }
-                            
-                            Text("Last: \(tasting.timeAgo)")
-                                .font(.system(size: 12))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
-                
-                Spacer(minLength: 8)
-                
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.peatedGold)
-                        .font(.system(size: 20))
-                }
-            }
-            .padding(12)
-            .background(Color.peatedSurfaceLight.opacity(0.6))
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(isSelected ? Color.peatedGold : Color.peatedBorder.opacity(0.3), lineWidth: isSelected ? 2 : 1)
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Placeholder Views (TODO: Implement)
-struct BarcodeScannerView: View {
-    let onBarcodeScanned: (String) -> Void
-    
-    var body: some View {
-        Text("Barcode Scanner")
-            .navigationTitle("Scan Barcode")
-    }
-}
-
-struct ManualBottleEntryView: View {
-    let onBottleCreated: (Bottle) -> Void
-    
-    var body: some View {
-        Text("Manual Bottle Entry")
-            .navigationTitle("Add Bottle")
-    }
-}
 
