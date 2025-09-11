@@ -17,14 +17,18 @@ We use Apple's [swift-openapi-generator](https://github.com/apple/swift-openapi-
 To update the API client with the latest API changes:
 
 ```bash
-# Run the update script
-./Scripts/update-api-client.sh
+# Preferred entry point from repo root
+./Scripts/update-api.sh
+
+# Or from the package directory
+cd PeatedAPI && ./update-api.sh
 ```
 
-This script will:
+The script will:
 1. Download the latest OpenAPI spec from `https://api.peated.com/spec.json`
-2. Generate the API client using swift-openapi-generator
-3. Build the PeatedAPI target to ensure everything compiles
+2. Normalize and preprocess the spec (version/nullable/parameter schemas)
+3. Generate the client using swift-openapi-generator into `PeatedAPI/Sources/PeatedAPI/Generated/`
+4. Build the PeatedAPI target to ensure everything compiles
 
 ### Manual Update Process
 
@@ -32,10 +36,14 @@ If you need to update manually:
 
 ```bash
 # Download the OpenAPI spec
-curl -o Sources/PeatedAPI/openapi.json https://api.peated.com/spec.json
+curl -o PeatedAPI/Sources/PeatedAPI/openapi.json https://api.peated.com/spec.json
 
-# Generate the client
-swift build --target PeatedAPI
+# Generate the client (manual fallback)
+cd PeatedAPI
+swift run swift-openapi-generator generate \
+  --config Sources/PeatedAPI/openapi-generator-config.yaml \
+  --output-directory Sources/PeatedAPI/Generated \
+  Sources/PeatedAPI/openapi.json
 ```
 
 ## Authentication
