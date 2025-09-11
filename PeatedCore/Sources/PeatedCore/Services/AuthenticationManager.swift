@@ -56,6 +56,17 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         authState = .unauthenticated
       }
     } else {
+      // Attempt to restore a previous Google session and exchange for API token
+      do {
+        let restoredUser = try await GIDSignIn.sharedInstance.restorePreviousSignIn()
+        if let idToken = restoredUser.idToken?.tokenString {
+          let user = try await exchangeGoogleIDTokenForSession(idToken: idToken)
+          authState = .authenticated(user)
+          return
+        }
+      } catch {
+        // Ignore restore failures; fall through to unauthenticated
+      }
       authState = .unauthenticated
     }
   }
@@ -146,58 +157,14 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
       
       // Use ID token (Google's recommended iOS backend auth approach)
       if let idToken = result.user.idToken?.tokenString {
-        let client = await apiClient.generatedClient
-        
-        // Create the request body for Google auth (using idToken)
-        let body = Operations.login.Input.Body.json(
-          .init(
-            value3: .init(idToken: idToken)
-          )
-        )
-        
-        let response = try await client.login(body: body)
-        
-        // Extract the successful response
-        if case .ok(let okResponse) = response,
-           case .json(let jsonPayload) = okResponse.body {
-          
-          // Save tokens
-          if let accessToken = jsonPayload.accessToken {
-            try keychain.saveToken(accessToken)
-          }
-          
-          // Convert API user to local User
-          let apiUser = jsonPayload.user
-          var user = User(from: apiUser)
-          
-          // Fetch additional user details including stats
-          do {
-            let detailsResponse = try await client.getUser(
-              path: .init(user: .init(value1: apiUser.id))
-            )
-            
-            if case .ok(let detailsOk) = detailsResponse,
-               case .json(let detailsJson) = detailsOk.body {
-              user.tastingsCount = Int(detailsJson.stats.tastings)
-              user.bottlesCount = Int(detailsJson.stats.bottles)
-              user.collectedCount = Int(detailsJson.stats.collected)
-              user.contributionsCount = Int(detailsJson.stats.contributions)
-            }
-          } catch {
-            // Continue without stats if details fail
-            print("Failed to fetch user details: \(error)")
-          }
-          
-          // Update auth state
-          authState = .authenticated(user)
-          isLoading = false
-          return user
-        } else {
-          throw AuthError.invalidResponse
-        }
+        let user = try await exchangeGoogleIDTokenForSession(idToken: idToken)
+        // Update auth state
+        authState = .authenticated(user)
+        isLoading = false
+        return user
       } else {
         isLoading = false
-        throw AuthError.noServerAuthCode
+        throw AuthError.noIDToken
       }
     } catch {
       self.error = error
@@ -253,17 +220,62 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
 
 public enum AuthError: LocalizedError {
   case noPresentingViewController
-  case noServerAuthCode
+  case noIDToken
   case invalidResponse
   
   public var errorDescription: String? {
     switch self {
     case .noPresentingViewController:
       return "Unable to present sign-in view"
-    case .noServerAuthCode:
-      return "Failed to get authorization code from Google"
+    case .noIDToken:
+      return "Failed to get ID token from Google"
     case .invalidResponse:
       return "Invalid response from server"
+    }
+  }
+}
+
+// MARK: - Private helpers
+
+extension AuthenticationManager {
+  private func exchangeGoogleIDTokenForSession(idToken: String) async throws -> User {
+    let client = await apiClient.generatedClient
+    // Create the request body for Google auth (using idToken)
+    let body = Operations.login.Input.Body.json(
+      .init(
+        value3: .init(idToken: idToken)
+      )
+    )
+    let response = try await client.login(body: body)
+    // Extract the successful response
+    if case .ok(let okResponse) = response,
+       case .json(let jsonPayload) = okResponse.body {
+      // Save tokens
+      if let accessToken = jsonPayload.accessToken {
+        try keychain.saveToken(accessToken)
+      }
+      // Convert API user to local User
+      let apiUser = jsonPayload.user
+      var user = User(from: apiUser)
+      // Fetch additional user details including stats
+      do {
+        let detailsResponse = try await client.getUser(
+          path: .init(user: .init(value1: apiUser.id))
+        )
+        if case .ok(let detailsOk) = detailsResponse,
+           case .json(let detailsJson) = detailsOk.body {
+          user.tastingsCount = Int(detailsJson.stats.tastings)
+          user.bottlesCount = Int(detailsJson.stats.bottles)
+          user.collectedCount = Int(detailsJson.stats.collected)
+          user.contributionsCount = Int(detailsJson.stats.contributions)
+        }
+      } catch {
+        // Continue without stats if details fail
+        print("Failed to fetch user details: \(error)")
+      }
+      return user
+    } else {
+      throw AuthError.invalidResponse
     }
   }
 }

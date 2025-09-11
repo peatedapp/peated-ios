@@ -20,7 +20,10 @@ struct PeatedApp: App {
     }
     
     private func setupGoogleSignIn() {
-        // Google Sign-In is configured in Info.plist
-        // No additional setup needed here
+        // Prefer explicit configuration to avoid plist drift
+        if let clientID = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String,
+           !clientID.isEmpty {
+            GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
+        }
     }
 }

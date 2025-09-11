@@ -49,10 +49,14 @@ struct AppView: View {
                             Label("Library", systemImage: "books.vertical.fill")
                         }
                         
-                        ProfileView()
-                            .tabItem {
-                                Label("Profile", systemImage: "person.fill")
-                            }
+                        NavigationStack {
+                            ProfileView()
+                                .navigationTitle("Profile")
+                                .navigationBarTitleDisplayMode(.inline)
+                        }
+                        .tabItem {
+                            Label("Profile", systemImage: "person.fill")
+                          }
                     }
                     .tint(.peatedGold)
                 }
@@ -79,4 +83,3 @@ struct AppView: View {
         #endif
     }
 }
-

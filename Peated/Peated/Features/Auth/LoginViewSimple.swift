@@ -1,5 +1,6 @@
 import SwiftUI
 import PeatedCore
+import GoogleSignIn
 
 // Simple login view that directly updates app state
 struct LoginViewSimple: View {
@@ -78,7 +79,20 @@ struct LoginViewSimple: View {
       .scrollDismissesKeyboard(.interactively)
     }
     .navigationBarHidden(true)
-    .alert("Sign In Failed", isPresented: .constant(error != nil)) {
+    .alert(
+      "Sign In Failed",
+      isPresented: Binding(
+        get: {
+          if let e = error {
+            return !e.lowercased().contains("cancel")
+          }
+          return false
+        },
+        set: { newValue in
+          if !newValue { error = nil }
+        }
+      )
+    ) {
       Button("OK") { error = nil }
     } message: {
       Text(error ?? "An error occurred")
@@ -111,19 +125,24 @@ struct LoginViewSimple: View {
   private var googleSignInButton: some View {
     Button(action: handleGoogleSignIn) {
       HStack(spacing: 12) {
-        Text("G")
-          .font(.system(size: 20, weight: .bold, design: .serif))
+        Image(systemName: "g.circle.fill")
+          .font(.system(size: 20, weight: .semibold))
           .foregroundColor(.peatedBackground)
-        
-        Text("Sign in with Google")
-          .font(.peatedBody)
-          .fontWeight(.semibold)
-          .foregroundColor(.peatedBackground)
+        if isLoading {
+          ProgressView()
+            .progressViewStyle(CircularProgressViewStyle(tint: .peatedBackground))
+        } else {
+          Text("Continue with Google")
+            .font(.peatedBody)
+            .fontWeight(.semibold)
+            .foregroundColor(.peatedBackground)
+        }
       }
       .frame(maxWidth: .infinity)
       .padding(.vertical, 16)
-      .background(Color.peatedGold)
+      .background(isLoading ? Color.peatedGold.opacity(0.6) : Color.peatedGold)
       .cornerRadius(12)
+      .animation(.easeInOut(duration: 0.1), value: isLoading)
     }
     .disabled(isLoading)
   }
@@ -287,10 +306,29 @@ struct LoginViewSimple: View {
         }
       } catch {
         await MainActor.run {
-          self.error = error.localizedDescription
+          // Ignore user-cancelled sign-in; no alert needed
+          if !isGoogleCancel(error) {
+            self.error = error.localizedDescription
+          }
           isLoading = false
         }
       }
     }
+  }
+
+  private func isGoogleCancel(_ error: Error) -> Bool {
+    let ns = error as NSError
+    let message = error.localizedDescription.lowercased()
+    // GoogleSignIn SDK cancellation (domain often contains com.google, code -5)
+    if ns.domain.contains("com.google") && (ns.code == -5 || message.contains("cancel")) {
+      return true
+    }
+    // ASWebAuthenticationSession user cancel
+    if (ns.domain.contains("AuthenticationServices") || ns.domain.contains("WebAuthenticationSession")) && (ns.code == 1 || ns.code == 1001) {
+      return true
+    }
+    // Fallback: message contains cancel
+    if message.contains("cancel") { return true }
+    return false
   }
 }
