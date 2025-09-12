@@ -4,6 +4,7 @@ import PeatedCore
 struct TastingDetailView: View {
   let tastingId: String
   let onNavigateToProfile: ((String) -> Void)?
+  let onNavigateToBottle: ((String) -> Void)?
   
   @State private var model: TastingDetailModel
   @State private var commentText = ""
@@ -12,9 +13,10 @@ struct TastingDetailView: View {
   @FocusState private var isCommentFieldFocused: Bool
   @Environment(\.dismiss) private var dismiss
   
-  init(tastingId: String, onNavigateToProfile: ((String) -> Void)? = nil) {
+  init(tastingId: String, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToBottle: ((String) -> Void)? = nil) {
     self.tastingId = tastingId
     self.onNavigateToProfile = onNavigateToProfile
+    self.onNavigateToBottle = onNavigateToBottle
     self._model = State(initialValue: TastingDetailModel(tastingId: tastingId))
   }
   
@@ -141,7 +143,8 @@ struct TastingDetailView: View {
               onNavigateToProfile?(tasting.userId)
             },
             onBottleTap: {
-              // Already on tasting detail, do nothing
+              // Navigate to bottle detail
+              onNavigateToBottle?(tasting.bottleId)
             }
           )
           

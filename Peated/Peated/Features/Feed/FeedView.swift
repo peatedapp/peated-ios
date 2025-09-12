@@ -158,11 +158,13 @@ struct FeedView: View {
             tastingId: tastingId,
             onNavigateToProfile: { userId in
               navigationPath.append(NavigationDestination.userProfile(userId: userId))
+            },
+            onNavigateToBottle: { bottleId in
+              navigationPath.append(NavigationDestination.bottleDetail(bottleId: bottleId))
             }
           )
         case .bottleDetail(let bottleId):
-          // TODO: Implement BottleDetailView
-          Text("Bottle Detail: \(bottleId)")
+          BottleDetailView(bottleId: bottleId, bottleName: nil)
         }
       }
     }
