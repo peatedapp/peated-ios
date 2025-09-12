@@ -137,3 +137,6 @@ Temporary Items
 
 # Xcode Injection
 *.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved
+
+# agent stuff idk
+.derived_data

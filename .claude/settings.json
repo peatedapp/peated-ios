@@ -24,6 +24,8 @@
       "mcp__XcodeBuildMCP__list_sims",
       "mcp__XcodeBuildMCP__boot_sim",
       "mcp__XcodeBuildMCP__open_sim",
+      "mcp__XcodeBuildMCP__build_run_sim",
+      "mcp__XcodeBuildMCP__build_sim",
       "mcp__XcodeBuildMCP__build_run_sim_id_proj",
       "mcp__XcodeBuildMCP__build_run_sim_name_proj",
       "mcp__XcodeBuildMCP__screenshot",
@@ -34,6 +36,7 @@
       "mcp__XcodeBuildMCP__tap",
       "mcp__XcodeBuildMCP__swipe",
       "mcp__XcodeBuildMCP__button",
+      "mcp__XcodeBuildMCP__gesture".
       "mcp__XcodeBuildMCP__type_text",
       "mcp__XcodeBuildMCP__key_press",
       "mcp__XcodeBuildMCP__long_press",
