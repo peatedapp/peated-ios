@@ -8,6 +8,7 @@ struct BottleDetailView: View {
   @State private var model: BottleDetailModel
   @State private var showingCreateTasting = false
   @State private var showingShareSheet = false
+  @State private var isDescriptionExpanded = false
   
   init(bottleId: String, bottleName: String? = nil) {
     self.bottleId = bottleId
@@ -27,15 +28,9 @@ struct BottleDetailView: View {
       }
     }
     .navigationBarTitleDisplayMode(.inline)
-    .toolbar {
-      ToolbarItem(placement: .navigationBarTrailing) {
-        Menu {
-          Button(action: { showingShareSheet = true }) {
-            Label("Share", systemImage: "square.and.arrow.up")
-          }
-        } label: {
-          Image(systemName: "ellipsis.circle")
-        }
+    .sheet(isPresented: $showingShareSheet) {
+      if let bottle = model.bottle {
+        ShareSheet(activityItems: [URL(string: "https://peated.com/bottles/\(bottleId)")!])
       }
     }
     .task {
@@ -88,33 +83,31 @@ struct BottleDetailView: View {
   private func loadedView(_ bottle: Bottle) -> some View {
     ScrollView {
       VStack(spacing: 0) {
-        // Hero section
+        // Hero section with bottle image and name
         heroSection(bottle)
         
-        // Action buttons
-        actionButtons(bottle)
-          .padding(.horizontal)
+        // Stats and about sections
+        aboutSection(bottle)
           .padding(.vertical, 20)
         
-        Divider()
-          .padding(.vertical, 8)
+        // Action button
+        actionButtons(bottle)
+          .padding(.horizontal)
+          .padding(.bottom, 20)
         
-        // Content sections
-        VStack(spacing: 24) {
-          // About section - placeholder for now
-          aboutSection(bottle)
-          
-          // Recent activity
-          if !model.recentTastings.isEmpty {
-            recentActivitySection
-          }
-          
-          // Similar bottles
-          if !model.similarBottles.isEmpty {
-            similarBottlesSection
-          }
+        // Recent activity
+        if !model.recentTastings.isEmpty {
+          Divider()
+            .padding(.bottom, 20)
+          recentActivitySection
         }
-        .padding(.vertical, 16)
+        
+        // Similar bottles
+        if !model.similarBottles.isEmpty {
+          Divider()
+            .padding(.vertical, 20)
+          similarBottlesSection
+        }
       }
     }
     .refreshable {
@@ -126,105 +119,65 @@ struct BottleDetailView: View {
   @ViewBuilder
   private func heroSection(_ bottle: Bottle) -> some View {
     VStack(spacing: 16) {
-      // Bottle image
-      if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
-        AsyncImage(url: url) { phase in
-          switch phase {
-          case .success(let image):
-            image
-              .resizable()
-              .aspectRatio(contentMode: .fit)
-          case .failure, .empty:
-            Image(systemName: "wineglass")
-              .font(.system(size: 60))
-              .foregroundColor(.secondary)
-          @unknown default:
-            ProgressView()
-              .scaleEffect(0.5)
+      // Bottle image or placeholder (similar to EntityDetailView)
+      ZStack {
+        Circle()
+          .fill(Color.peatedSurfaceLight)
+          .frame(width: 100, height: 100)
+        
+        if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
+          AsyncImage(url: url) { phase in
+            switch phase {
+            case .success(let image):
+              image
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 100, height: 100)
+                .clipShape(Circle())
+            case .failure, .empty:
+              Image(systemName: "wineglass")
+                .font(.system(size: 40))
+                .foregroundColor(.gray.opacity(0.5))
+            @unknown default:
+              ProgressView()
+            }
           }
+        } else {
+          Image(systemName: "wineglass")
+            .font(.system(size: 40))
+            .foregroundColor(.gray.opacity(0.5))
         }
-        .frame(height: 300)
-      } else {
-        Image(systemName: "wineglass")
-          .font(.system(size: 60))
-          .foregroundColor(.secondary)
-          .frame(height: 300)
       }
       
-      // Bottle info
-      VStack(spacing: 12) {
+      // Bottle name and brand
+      VStack(spacing: 4) {
         Text(bottle.fullName)
-          .font(.title)
-          .fontWeight(.bold)
+          .font(.title2)
+          .fontWeight(.semibold)
+          .foregroundColor(.primary)
           .multilineTextAlignment(.center)
         
         Button(action: {
           // TODO: Navigate to brand/entity detail
         }) {
-          Text(bottle.brandName)
-            .font(.body)
-            .foregroundColor(.peatedGold)
+          HStack(spacing: 4) {
+            Image(systemName: "building.2")
+              .font(.system(size: 10))
+            Text(bottle.brandName)
+          }
+          .font(.system(size: DesignSystem.FontSize.small))
+          .foregroundColor(.secondary)
         }
-        
-        // Rating
-        if bottle.totalRatings > 0 {
-          HStack(spacing: 8) {
-            HStack(spacing: 4) {
-              ForEach(1...5, id: \.self) { star in
-                Image(systemName: star <= Int(bottle.avgRating.rounded()) ? "star.fill" : "star")
-                  .font(.system(size: 16))
-                  .foregroundColor(.yellow)
-              }
-            }
-            
-            Text(String(format: "%.1f", bottle.avgRating))
-              .font(.title3)
-              .fontWeight(.semibold)
-            
-            Text("(\(bottle.totalRatings) ratings)")
-              .font(.body)
-              .foregroundColor(.secondary)
-          }
-        }
-        
-        // Metadata
-        HStack(spacing: 12) {
-          if let category = bottle.category {
-            Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-              .font(.caption)
-              .padding(.horizontal, 12)
-              .padding(.vertical, 6)
-              .background(Color(.secondarySystemBackground))
-              .cornerRadius(12)
-          }
-          
-          if let abv = bottle.abv {
-            Text("\(abv, specifier: "%.1f")% ABV")
-              .font(.caption)
-              .padding(.horizontal, 12)
-              .padding(.vertical, 6)
-              .background(Color(.secondarySystemBackground))
-              .cornerRadius(12)
-          }
-          
-          if let age = bottle.statedAge {
-            Text("\(age) Year")
-              .font(.caption)
-              .padding(.horizontal, 12)
-              .padding(.vertical, 6)
-              .background(Color(.secondarySystemBackground))
-              .cornerRadius(12)
-          }
-        }
+        .buttonStyle(.plain)
       }
-      .padding(.horizontal)
     }
+    .padding(.top, 20)
   }
   
   // MARK: - Action Buttons
   @ViewBuilder
   private func actionButtons(_ bottle: Bottle) -> some View {
-    VStack(spacing: 12) {
+    HStack(spacing: 12) {
       // Primary CTA
       Button(action: { showingCreateTasting = true }) {
         Label("Record Tasting", systemImage: "plus.circle.fill")
@@ -236,54 +189,177 @@ struct BottleDetailView: View {
           .background(Color.peatedGold)
           .cornerRadius(12)
       }
+      
+      // Share button
+      Button(action: { showingShareSheet = true }) {
+        Image(systemName: "square.and.arrow.up")
+          .font(.system(size: 20))
+          .fontWeight(.medium)
+          .foregroundColor(.white)
+          .frame(width: 50, height: 50)
+          .background(Color.gray.opacity(0.3))
+          .cornerRadius(12)
+      }
     }
   }
   
   // MARK: - About Section
   @ViewBuilder
   private func aboutSection(_ bottle: Bottle) -> some View {
-    VStack(alignment: .leading, spacing: 12) {
-      Text("Details")
-        .font(.headline)
+    VStack(spacing: 20) {
+      // Stats section (similar to EntityDetailView)
+      statsSection(bottle)
         .padding(.horizontal)
       
-      VStack(alignment: .leading, spacing: 8) {
+      // Description section if available
+      if let description = bottle.description, !description.isEmpty {
+        descriptionSection(bottle)
+          .padding(.horizontal)
+      }
+      
+      // Bottle characteristics if present
+      if bottle.caskStrength || bottle.singleCask {
+        characteristicsSection(bottle)
+          .padding(.horizontal)
+      }
+    }
+  }
+  
+  // MARK: - Stats Section
+  @ViewBuilder
+  private func statsSection(_ bottle: Bottle) -> some View {
+    HStack(spacing: 0) {
+      // Category
+      if let category = bottle.category {
+        VStack(spacing: 8) {
+          Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
+            .font(.system(size: DesignSystem.FontSize.small))
+            .fontWeight(.semibold)
+            .lineLimit(1)
+          Text("Category")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+      }
+      
+      if bottle.category != nil && (bottle.abv != nil || bottle.statedAge != nil) {
+        Divider()
+          .frame(height: 40)
+          .background(Color.gray.opacity(0.3))
+      }
+      
+      // ABV
+      if let abv = bottle.abv {
+        VStack(spacing: 8) {
+          Text("\(abv, specifier: "%.1f")%")
+            .font(.title2)
+            .fontWeight(.bold)
+          Text("ABV")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+      }
+      
+      if bottle.abv != nil && bottle.statedAge != nil {
+        Divider()
+          .frame(height: 40)
+          .background(Color.gray.opacity(0.3))
+      }
+      
+      // Age
+      if let age = bottle.statedAge {
+        VStack(spacing: 8) {
+          Text("\(age)")
+            .font(.title2)
+            .fontWeight(.bold)
+          Text("Years")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+      }
+      
+      // Rating if exists
+      if bottle.totalRatings > 0 && (bottle.category == nil && bottle.abv == nil && bottle.statedAge == nil) {
+        VStack(spacing: 8) {
+          HStack(spacing: 4) {
+            Image(systemName: "star.fill")
+              .font(.system(size: 14))
+              .foregroundColor(.peatedGold)
+            Text(String(format: "%.1f", bottle.avgRating))
+              .font(.title2)
+              .fontWeight(.bold)
+          }
+          Text("\(bottle.totalRatings) ratings")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+        .frame(maxWidth: .infinity)
+      }
+    }
+    .padding(.vertical, 12)
+    .background(Color.peatedSurfaceLight.opacity(0.5))
+    .cornerRadius(DesignSystem.CornerRadius.medium)
+  }
+  
+  // MARK: - Description Section
+  @ViewBuilder
+  private func descriptionSection(_ bottle: Bottle) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("ABOUT")
+        .font(.system(size: DesignSystem.FontSize.small))
+        .fontWeight(.semibold)
+        .foregroundColor(.secondary)
+      
+      VStack(alignment: .leading, spacing: 4) {
+        Text(bottle.description ?? "")
+          .font(.system(size: DesignSystem.FontSize.body))
+          .foregroundColor(.primary)
+          .lineLimit(isDescriptionExpanded ? nil : 3)
+          .fixedSize(horizontal: false, vertical: true)
+        
+        // Only show button if text is long enough to be truncated
+        if let description = bottle.description, description.count > 150 {
+          Button(action: {
+            withAnimation(.easeInOut(duration: 0.2)) {
+              isDescriptionExpanded.toggle()
+            }
+          }) {
+            Text(isDescriptionExpanded ? "Show less" : "Read more")
+              .font(.system(size: DesignSystem.FontSize.small))
+              .fontWeight(.medium)
+              .foregroundColor(.peatedGold)
+          }
+          .padding(.top, 2)
+        }
+      }
+    }
+  }
+  
+  // MARK: - Characteristics Section
+  @ViewBuilder
+  private func characteristicsSection(_ bottle: Bottle) -> some View {
+    VStack(alignment: .leading, spacing: 8) {
+      Text("CHARACTERISTICS")
+        .font(.system(size: DesignSystem.FontSize.small))
+        .fontWeight(.semibold)
+        .foregroundColor(.secondary)
+      
+      HStack(spacing: 12) {
         if bottle.caskStrength {
           Label("Cask Strength", systemImage: "checkmark.circle.fill")
-            .font(.body)
+            .font(.system(size: DesignSystem.FontSize.small))
             .foregroundColor(.green)
         }
         
         if bottle.singleCask {
           Label("Single Cask", systemImage: "checkmark.circle.fill")
-            .font(.body)
+            .font(.system(size: DesignSystem.FontSize.small))
             .foregroundColor(.green)
         }
-        
-        if let category = bottle.category {
-          HStack {
-            Text("Category:")
-              .font(.body)
-              .foregroundColor(.secondary)
-            Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-              .font(.body)
-          }
-        }
-        
-        if let abv = bottle.abv {
-          HStack {
-            Text("ABV:")
-              .font(.body)
-              .foregroundColor(.secondary)
-            Text("\(abv, specifier: "%.1f")%")
-              .font(.body)
-          }
-        }
       }
-      .padding()
-      .background(Color(.secondarySystemBackground))
-      .cornerRadius(12)
-      .padding(.horizontal)
     }
   }
   
@@ -447,4 +523,15 @@ struct SimilarBottleCard: View {
     .background(Color(.secondarySystemBackground))
     .cornerRadius(12)
   }
+}
+
+// MARK: - ShareSheet
+struct ShareSheet: UIViewControllerRepresentable {
+  let activityItems: [Any]
+  
+  func makeUIViewController(context: Context) -> UIActivityViewController {
+    UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+  }
+  
+  func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }

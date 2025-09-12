@@ -16,6 +16,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
   public let fullName: String
   public let brand: Brand
   public let category: String?
+  public let description: String?
   public let caskStrength: Bool
   public let singleCask: Bool
   public let statedAge: Int?
@@ -35,6 +36,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
     fullName: String,
     brand: Brand,
     category: String? = nil,
+    description: String? = nil,
     caskStrength: Bool = false,
     singleCask: Bool = false,
     statedAge: Int? = nil,
@@ -48,6 +50,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
     self.fullName = fullName
     self.brand = brand
     self.category = category
+    self.description = description
     self.caskStrength = caskStrength
     self.singleCask = singleCask
     self.statedAge = statedAge

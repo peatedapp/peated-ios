@@ -107,6 +107,24 @@ struct DeveloperSettingsView: View {
                     }
                 }
                 
+                Section("Quick Navigation") {
+                    NavigationLink(destination: BottleDetailView(bottleId: "1", bottleName: "Lagavulin 16")) {
+                        Label("Sample Bottle (Lagavulin 16)", systemImage: "wineglass")
+                    }
+                    
+                    NavigationLink(destination: TastingDetailView(
+                        tastingId: "1",
+                        onNavigateToProfile: { _ in },
+                        onNavigateToBottle: { _ in }
+                    )) {
+                        Label("Sample Tasting", systemImage: "pencil.and.list.clipboard")
+                    }
+                    
+                    NavigationLink(destination: EntityDetailView(entityId: "1", entityName: "Lagavulin Distillery")) {
+                        Label("Sample Entity (Lagavulin Distillery)", systemImage: "building.2")
+                    }
+                }
+                
                 Section {
                     Button(role: .destructive) {
                         showingResetConfirmation = true

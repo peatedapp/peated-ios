@@ -10,8 +10,7 @@ struct ProfileView: View {
   @State private var feedModel = FeedModel()
   @State private var showingLogoutAlert = false
   @State private var selectedTab = 0
-  @State private var showingDeveloperSettings = false
-  @State private var settingsTapCount = 0
+  @State private var showingSettings = false
   
   init(userId: String? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToTasting: ((String) -> Void)? = nil) {
     self.userId = userId
@@ -99,30 +98,20 @@ struct ProfileView: View {
       }
     }
     .toolbar {
-      // Only show logout button for current user
+      // Only show settings for current user
       if userId == nil {
         ToolbarItem(placement: .navigationBarTrailing) {
           Button(action: {
-            showingLogoutAlert = true
+            showingSettings = true
           }) {
-            Image(systemName: "rectangle.portrait.and.arrow.right")
-              .foregroundColor(.red)
+            Image(systemName: "gearshape")
+              .foregroundColor(.primary)
           }
         }
       }
     }
-    .alert("Sign Out", isPresented: $showingLogoutAlert) {
-      Button("Cancel", role: .cancel) { }
-      Button("Sign Out", role: .destructive) {
-        Task {
-          await model.logout()
-        }
-      }
-    } message: {
-      Text("Are you sure you want to sign out?")
-    }
-    .sheet(isPresented: $showingDeveloperSettings) {
-      DeveloperSettingsView()
+    .sheet(isPresented: $showingSettings) {
+      SettingsView()
     }
     .task(id: userId) {
       await model.loadUser()
@@ -181,10 +170,6 @@ struct ProfileView: View {
         Text(model.user?.email ?? "")
           .font(.subheadline)
           .foregroundColor(.secondary)
-      }
-      .onTapGesture(count: 5) {
-        // Secret 5-tap gesture to show developer settings
-        showingDeveloperSettings = true
       }
       
       // Role badges
