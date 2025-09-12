@@ -31,18 +31,26 @@ struct OfflineIndicator: View {
         .font(.system(size: 14, weight: .medium))
         .foregroundColor(.white)
       
-      Text("You're offline")
-        .font(.peatedCaption)
-        .fontWeight(.medium)
-        .foregroundColor(.white)
+      VStack(alignment: .leading, spacing: 0) {
+        Text("You're offline")
+          .font(.peatedCaption)
+          .fontWeight(.semibold)
+          .foregroundColor(.white)
+        Text("Changes will sync automatically when you're back online.")
+          .font(.peatedCaption)
+          .foregroundColor(.white.opacity(0.9))
+      }
       
       if queueManager.pendingCount > 0 {
-        Text("•")
-          .foregroundColor(.white.opacity(0.6))
-        
+        Spacer(minLength: 8)
         Text("\(queueManager.pendingCount) pending")
           .font(.peatedCaption)
-          .foregroundColor(.white.opacity(0.8))
+          .fontWeight(.medium)
+          .foregroundColor(.white)
+          .padding(.horizontal, 8)
+          .padding(.vertical, 2)
+          .background(Color.white.opacity(0.18))
+          .cornerRadius(6)
       }
       
       Spacer()
@@ -62,7 +70,7 @@ struct OfflineIndicator: View {
         .progressViewStyle(CircularProgressViewStyle(tint: .white))
         .scaleEffect(0.7)
       
-      Text("Syncing \(queueManager.pendingCount) changes...")
+      Text("Back online — syncing \(queueManager.pendingCount) changes…")
         .font(.peatedCaption)
         .fontWeight(.medium)
         .foregroundColor(.white)

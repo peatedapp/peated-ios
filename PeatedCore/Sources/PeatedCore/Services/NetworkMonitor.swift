@@ -41,6 +41,7 @@ public class NetworkMonitor {
   
   // Private properties
   private let monitor = NWPathMonitor()
+  private var lastStatus: NWPath.Status = .requiresConnection
   private let queue = DispatchQueue(label: "com.peated.networkmonitor", qos: .utility)
   
   /// Private initializer to enforce singleton pattern
@@ -53,35 +54,51 @@ public class NetworkMonitor {
     monitor.pathUpdateHandler = { [weak self] path in
       Task { @MainActor in
         guard let self = self else { return }
-        
-        // Update connectivity status
-        self.isConnected = path.status == .satisfied
-        self.isExpensive = path.isExpensive
-        self.isConstrained = path.isConstrained
-        
-        // Determine connection type
-        if path.usesInterfaceType(.wifi) {
-          self.connectionType = .wifi
-        } else if path.usesInterfaceType(.cellular) {
-          self.connectionType = .cellular
-        } else if path.usesInterfaceType(.wiredEthernet) {
-          self.connectionType = .wiredEthernet
-        } else {
-          self.connectionType = .unknown
-        }
-        
-        // Log network status change for debugging
-        print("NetworkMonitor: Status changed - connected: \(self.isConnected), type: \(self.connectionType)")
-        
-        // Notify offline queue to process pending operations when connectivity is restored
-        if path.status == .satisfied {
-          await OfflineQueueManager.shared.processPendingOperations()
-        }
+        self.apply(path)
       }
     }
-    
+
     // Start monitoring on background queue
     monitor.start(queue: queue)
+
+    // Apply initial state immediately (avoids stale UI on launch or simulator)
+    Task { @MainActor in
+      self.apply(self.monitor.currentPath)
+    }
+  }
+
+  /// Apply NWPath values to observable properties and trigger side effects
+  @MainActor
+  private func apply(_ path: NWPath) {
+    let becameOnline = lastStatus != .satisfied && path.status == .satisfied
+    lastStatus = path.status
+
+    // Update connectivity status
+    self.isConnected = path.status == .satisfied
+    self.isExpensive = path.isExpensive
+    self.isConstrained = path.isConstrained
+
+    // Determine connection type
+    if path.usesInterfaceType(.wifi) {
+      self.connectionType = .wifi
+    } else if path.usesInterfaceType(.cellular) {
+      self.connectionType = .cellular
+    } else if path.usesInterfaceType(.wiredEthernet) {
+      self.connectionType = .wiredEthernet
+    } else {
+      self.connectionType = .unknown
+    }
+
+    // Log network status change for debugging
+    print("NetworkMonitor: Status changed - connected: \(self.isConnected), type: \(self.connectionType)")
+
+    // Broadcast change for any listeners
+    NotificationCenter.default.post(name: .networkStatusChanged, object: nil)
+
+    // Kick the offline queue when we regain connectivity
+    if becameOnline {
+      Task { await OfflineQueueManager.shared.processPendingOperations() }
+    }
   }
   
   /// Stops network monitoring (useful for testing)

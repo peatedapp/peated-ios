@@ -34,8 +34,7 @@ struct AppView: View {
                             }
                         
                         NavigationStack {
-                            Text("Search")
-                                .navigationTitle("Search")
+                            SearchView()
                         }
                         .tabItem {
                             Label("Search", systemImage: "magnifyingglass")
