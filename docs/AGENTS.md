@@ -36,6 +36,13 @@
 ## Verifying Changes with xcodebuildmcp
 - Goal: Use MCP tools to build, install, launch, and interact with the app to validate a change end‑to‑end.
 
+- Prefer fewer tool calls (saves context)
+  - When you just need to build and launch in the simulator, prefer a single call:
+    - `xcodebuildmcp__build_run_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+  - If you need only the build artifact (no launch yet), use:
+    - `xcodebuildmcp__build_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+  - Use the multi‑step flow (build → get path → install → launch) only when you specifically need that control (e.g., inspecting bundle ID, reinstalling between runs, or launching with custom args/log capture).
+
 - Overview of tools (you don’t need every one on each run)
   - `xcodebuildmcp__list_schemes`, `xcodebuildmcp__list_sims`: discover what you can target.
   - `xcodebuildmcp__build_sim`: compile for a specific simulator.
@@ -49,6 +56,8 @@
 // Use the default "iPhone 16 Pro" simulator when possible.
 
 - Typical verification workflow
+  0) Quick path (build + run in one call)
+     - `xcodebuildmcp__build_run_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
   1) Prefer simulator name
      - Use: `simulatorName: 'iPhone 16 Pro'` (latest iOS)
      - Or: `xcodebuildmcp__list_sims({})` → copy a UUID if you must pin.

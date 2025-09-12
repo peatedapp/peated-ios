@@ -1,28 +1,17 @@
-# Repository Guidelines (PeatedCore package)
+# PeatedCore (Swift Package) — Hard Rules
 
-## Scope & Contents
-- Applies only to `PeatedCore/`; root AGENTS.md also applies.
-- Purpose: core models, domain logic, and utilities shared across the app.
-- Layout: `Sources/` (code), `Tests/` (XCTest)
-
-## Build & Test
-- Build: `swift build`
-- Test: `swift test`
+## Scope
+- Applies to `PeatedCore/` (models, utilities, business logic). Some agents do not cascade AGENTS.md; this file restates critical rules.
 
 ## Hard Rules
-- No UIKit/SwiftUI and no platform UI frameworks.
-- No networking, persistence, or OS-specific side effects; keep code deterministic.
-- Must not depend on `Peated` (app) or `PeatedAPI` (no cross-package dependency).
+- Pure package: no UI frameworks (no SwiftUI/UIKit) and no imports from the app target.
+- Favor protocols + dependency injection for testability.
+- Add tests with any new logic or fixes.
 
-## Meta
-- Role: business/domain layer; reusable and testable in isolation.
-- Tests should avoid time/network flakiness; prefer pure units.
+## Build & Test
+- From `PeatedCore/`: `swift build` / `swift test`.
+- Tests live under `PeatedCore/Tests` and should not rely on real network calls.
 
-## Change Management
-- Internal-only: compatibility can be broken at any time.
-- When breaking, update all dependents (app/tests) in the same PR.
-- Keep changes purposeful; include a brief migration note in the PR.
-
-## Docs
-- Docs guide: @docs/AGENTS.md
-- Design and data flows: @docs/design/architecture, @docs/design/data, @docs/design/offline
+## References
+- Testing strategy: @docs/how-to/testing-strategy.md
+- Architecture overview: @docs/design/architecture/overview.md

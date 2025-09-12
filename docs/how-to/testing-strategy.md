@@ -21,6 +21,16 @@ Tips:
 - If multiple devices exist with similar names, remove extras in Xcode > Settings > Platforms > Simulators, or via `xcrun simctl delete`.
 - In CI, pin the destination by name (as above) rather than by UUID.
 
+## Context‑Efficient Simulator Runs (MCP)
+
+When verifying changes in the simulator via MCP tools, prefer fewer calls to reduce context usage and keep runs simple:
+
+- Build + Run in one step:
+  - `xcodebuildmcp__build_run_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+- Build only (no launch yet):
+  - `xcodebuildmcp__build_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+- Use the multi‑step flow (build → get path → install → launch) only when you need extra control (e.g., inspecting bundle ID, reinstalling between runs, passing custom args, or setting up log capture).
+
 ## Testing Philosophy
 
 - **Test Pyramid**: Heavy unit tests, moderate integration tests, light UI tests

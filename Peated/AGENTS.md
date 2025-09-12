@@ -1,32 +1,27 @@
-# Repository Guidelines (Peated app)
+# Peated iOS App — Hard Rules
 
-## Scope & Contents
-- Applies only to the `Peated/` app module; root AGENTS.md also applies.
-- Xcode project: `Peated.xcodeproj`
-- Source: `Peated/Peated/`
-- Config: `Configuration/`; CI helpers: `ci_scripts/`
-- Tests: `PeatedTests/` (unit), `PeatedUITests/` (UI)
-
-## Build & Test
-- Open project: `open Peated.xcodeproj`
-- Build: `xcodebuild -project Peated.xcodeproj -scheme Peated build`
-- Test (standard simulator):
-  - `xcodebuild -project Peated.xcodeproj -scheme Peated -destination 'platform=iOS Simulator,name=iPhone 16 Pro' test`
-  - Use this destination consistently to avoid duplicate simulators.
+## Scope
+- Applies to `Peated/` (the iOS app target). Some agents do not cascade AGENTS.md; this file restates critical rules.
 
 ## Hard Rules
-- UI-only module: no business logic, persistence, or networking here.
-- All network access goes through `PeatedAPI`; all shared logic/models live in `PeatedCore`.
-- The app must not be imported by any package; keep boundaries one-directional (app -> packages).
+- UI lives here; packages must not import app UI or depend on the app target.
+- App may depend on `PeatedCore/` and `PeatedAPI/`; never the other way around.
+- Tests for the app live in `PeatedTests/` and `PeatedUITests/` only.
+- Never commit secrets/tokens.
 
-## Meta
-- Role: composition root, navigation, and presentation. Non-UI code belongs in packages.
-- Snapshot/UI tests live in `PeatedUITests/`.
+## Build & Run
+- Project/scheme: `Peated/Peated.xcodeproj` / `Peated`.
+- Standard simulator device: `iPhone 16 Pro` (latest iOS).
+- Prefer single‑call MCP flows to save context:
+  - Build + Run: `xcodebuildmcp__build_run_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+  - Build only: `xcodebuildmcp__build_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+- Use multi‑step (build → install → launch) only when extra control is needed (custom args, log capture, explicit reinstall).
 
-## Docs
-- Docs guide: @docs/AGENTS.md
-- Architecture/UI patterns: @docs/design/architecture, @docs/design/components, @docs/design/screens
-- Platform setup: @docs/how-to/google-signin-setup.md, @docs/how-to/fix-url-scheme.md
+## Testing
+- UI tests: use a single simulator — `iPhone 16 Pro`.
+- Add tests with new logic/fixes; avoid real network calls.
 
-## PRs
-- Keep PRs focused; include screenshots for UI changes. Link issues; describe behavior changes and testing.
+## References
+- Testing strategy: @docs/how-to/testing-strategy.md
+- Google Sign‑In setup: @docs/how-to/google-signin-setup.md
+- URL scheme fixes: @docs/how-to/fix-url-scheme.md
