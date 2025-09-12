@@ -10,7 +10,9 @@
 ## Build & Test
 - Open project: `open Peated.xcodeproj`
 - Build: `xcodebuild -project Peated.xcodeproj -scheme Peated build`
-- Test: `xcodebuild -project Peated.xcodeproj -scheme Peated test`
+- Test (standard simulator):
+  - `xcodebuild -project Peated.xcodeproj -scheme Peated -destination 'platform=iOS Simulator,name=iPhone 16 Pro' test`
+  - Use this destination consistently to avoid duplicate simulators.
 
 ## Hard Rules
 - UI-only module: no business logic, persistence, or networking here.

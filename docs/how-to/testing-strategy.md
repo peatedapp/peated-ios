@@ -4,6 +4,23 @@
 
 This document outlines the testing approach for Peated iOS, focusing on the unique challenges of testing iOS applications with caching, async operations, and SwiftUI views.
 
+## Standard Simulator Device
+
+To avoid duplicate simulators and ensure consistent screenshots and logs, always use the same simulator when running the app or UI tests:
+
+- Recommended device: `iPhone 16 Pro`
+- OS: Latest installed iOS runtime
+
+Examples:
+
+- Build and run: `xcodebuild -project Peated/Peated.xcodeproj -scheme Peated -destination 'platform=iOS Simulator,name=iPhone 16 Pro'`
+- Test: `xcodebuild test -project Peated/Peated.xcodeproj -scheme Peated -destination 'platform=iOS Simulator,name=iPhone 16 Pro'`
+
+Tips:
+- Don’t create custom devices; rely on the default “iPhone 16 Pro” provided by Xcode.
+- If multiple devices exist with similar names, remove extras in Xcode > Settings > Platforms > Simulators, or via `xcrun simctl delete`.
+- In CI, pin the destination by name (as above) rather than by UUID.
+
 ## Testing Philosophy
 
 - **Test Pyramid**: Heavy unit tests, moderate integration tests, light UI tests
@@ -571,8 +588,8 @@ swift test --filter tag:performance
 # Run tests with coverage
 swift test --enable-code-coverage
 
-# Run UI tests
-xcodebuild test -project Peated.xcodeproj -scheme Peated -destination 'platform=iOS Simulator,name=iPhone 16'
+# Run UI tests (standard simulator)
+xcodebuild test -project Peated.xcodeproj -scheme Peated -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
 ```
 
 ### CI/CD Integration
@@ -586,7 +603,7 @@ xcodebuild test -project Peated.xcodeproj -scheme Peated -destination 'platform=
     xcodebuild test \
       -project Peated.xcodeproj \
       -scheme Peated \
-      -destination 'platform=iOS Simulator,name=iPhone 16' \
+      -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
       -resultBundlePath TestResults.xcresult
 
 - name: Check Test Coverage

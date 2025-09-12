@@ -45,17 +45,23 @@
   - `xcodebuildmcp__tap` / `xcodebuildmcp__gesture` / `xcodebuildmcp__screenshot`: interact and capture evidence.
   - `xcodebuildmcp__launch_app_logs_sim`: observe app logs during verification.
 
+// Consistency tip: Prefer a single simulator name to avoid duplicates.
+// Use the default "iPhone 16 Pro" simulator when possible.
+
 - Typical verification workflow
-  1) Choose a simulator UUID
-     - `xcodebuildmcp__list_sims({})` → copy a recent iPhone simulator UUID.
+  1) Prefer simulator name
+     - Use: `simulatorName: 'iPhone 16 Pro'` (latest iOS)
+     - Or: `xcodebuildmcp__list_sims({})` → copy a UUID if you must pin.
   2) Build for that simulator
-     - `xcodebuildmcp__build_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorId: "<SIM_UUID>" })`
+     - By name: `xcodebuildmcp__build_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+     - By UUID: `xcodebuildmcp__build_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorId: "<SIM_UUID>" })`
   3) Resolve app path and bundle id
      - `xcodebuildmcp__get_sim_app_path({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", platform: "iOS Simulator", simulatorId: "<SIM_UUID>" })`
      - `xcodebuildmcp__get_app_bundle_id({ appPath: "<APP_PATH>" })`
   4) Install + launch
      - `xcodebuildmcp__install_app_sim({ simulatorUuid: "<SIM_UUID>", appPath: "<APP_PATH>" })`
-     - `xcodebuildmcp__launch_app_sim({ simulatorUuid: "<SIM_UUID>", bundleId: "<BUNDLE_ID>" })`
+     - By name: `xcodebuildmcp__launch_app_sim({ simulatorName: "iPhone 16 Pro", bundleId: "<BUNDLE_ID>" })`
+     - By UUID: `xcodebuildmcp__launch_app_sim({ simulatorUuid: "<SIM_UUID>", bundleId: "<BUNDLE_ID>" })`
   5) Drive the UI with coordinates from the tree
      - `xcodebuildmcp__describe_ui({ simulatorUuid: "<SIM_UUID>" })`
      - Find an element’s frame; tap its center: `x = frame.x + frame.width/2`, `y = frame.y + frame.height/2`.

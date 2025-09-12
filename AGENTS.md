@@ -20,8 +20,13 @@
 ## Build, Test, and Development Commands
 - Open Xcode: `open Peated/Peated.xcodeproj`
 - Build/Test app: `xcodebuild -project Peated/Peated.xcodeproj -scheme Peated build|test`
+- UI tests: use a single simulator to avoid duplicates — `-destination 'platform=iOS Simulator,name=iPhone 16 Pro'`
 - Build/Test packages: from package dir, `swift build` / `swift test`
 - Regenerate API types: `./Scripts/update-api.sh` (or `PeatedAPI/update-api.sh`)
+
+### Standard Simulator Device
+- Always target `iPhone 16 Pro` (latest iOS) for simulator builds/tests to keep a consistent environment and avoid duplicate devices.
+- CI examples and local commands should pin by name (not UUID) unless otherwise required.
 
 ## Coding Style & Naming Conventions
 - Swift; 4 spaces; prefer `private`/`fileprivate`.

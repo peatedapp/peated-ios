@@ -56,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8B020C2C2E3C820C00B01704 /* PeatedCore in Frameworks */,
+					8B020C2C2E3C820C00B01704 /* PeatedCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +117,7 @@
 			);
 			name = Peated;
 			packageProductDependencies = (
-				8B020C2B2E3C820C00B01704 /* PeatedCore */,
+					8B020C2B2E3C820C00B01704 /* PeatedCore */,
 			);
 			productName = Peated;
 			productReference = 8B03013C2E3C777E00860A10 /* Peated.app */;
@@ -203,6 +203,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				8B020C2A2E3C820C00B01704 /* XCLocalSwiftPackageReference "../PeatedCore" */,
+				8B9F00032FB0000000000001 /* XCRemoteSwiftPackageReference "https://github.com/google/GoogleSignIn-iOS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 8B03013D2E3C777E00860A10 /* Products */;
@@ -611,6 +612,9 @@
 			relativePath = ../PeatedCore;
 		};
 /* End XCLocalSwiftPackageReference section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+/* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
 		8B020C2B2E3C820C00B01704 /* PeatedCore */ = {
