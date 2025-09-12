@@ -3,12 +3,30 @@ import PeatedCore
 
 struct TastingFeedCard: View {
   let tasting: TastingFeedItem
+  let showBottle: Bool
   let onToast: () -> Void
   let onComment: () -> Void
   let onUserTap: () -> Void
   let onBottleTap: () -> Void
   
   @State private var showingImageViewer = false
+  
+  // Default initializer with bottle shown
+  init(
+    tasting: TastingFeedItem,
+    showBottle: Bool = true,
+    onToast: @escaping () -> Void,
+    onComment: @escaping () -> Void,
+    onUserTap: @escaping () -> Void,
+    onBottleTap: @escaping () -> Void
+  ) {
+    self.tasting = tasting
+    self.showBottle = showBottle
+    self.onToast = onToast
+    self.onComment = onComment
+    self.onUserTap = onUserTap
+    self.onBottleTap = onBottleTap
+  }
   
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
@@ -81,8 +99,9 @@ struct TastingFeedCard: View {
         }
       }
       
-      // Bottle info card-within-card
-      HStack(spacing: DesignSystem.Spacing.medium) {
+      // Bottle info card-within-card (only show if showBottle is true)
+      if showBottle {
+        HStack(spacing: DesignSystem.Spacing.medium) {
         // Bottle image or icon
         if let bottleImageUrl = tasting.bottleImageUrl, let url = URL(string: bottleImageUrl) {
           AsyncImage(url: url) { phase in
@@ -147,6 +166,7 @@ struct TastingFeedCard: View {
       .contentShape(Rectangle())
       .onTapGesture {
         onBottleTap()
+      }
       }
       
       // Notes

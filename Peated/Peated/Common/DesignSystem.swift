@@ -7,8 +7,12 @@ enum DesignSystem {
     static let caption: CGFloat = 11
     static let small: CGFloat = 12
     static let body: CGFloat = 14
+    static let medium: CGFloat = 15
     static let title: CGFloat = 16
+    static let large: CGFloat = 17
     static let headline: CGFloat = 18
+    static let xLarge: CGFloat = 20
+    static let xxLarge: CGFloat = 22
     static let largeTitle: CGFloat = 24
     static let avatar: CGFloat = 14
     static let icon: CGFloat = 16

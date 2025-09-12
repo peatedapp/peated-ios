@@ -4,6 +4,7 @@ import PeatedAPI
 public protocol FeedRepositoryProtocol {
   func getFeed(type: FeedType, cursor: String?, limit: Int) async throws -> FeedPage
   func refreshFeed(type: FeedType) async throws -> FeedPage
+  func getBottleTastings(bottleId: String, cursor: String?, limit: Int) async throws -> FeedPage
 }
 
 public struct FeedPage: Sendable {
@@ -81,5 +82,83 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
   public func refreshFeed(type: FeedType) async throws -> FeedPage {
     // For refresh, we always start from the beginning
     return try await getFeed(type: type, cursor: nil, limit: 20)
+  }
+  
+  public func getEntityTastings(entityId: String, cursor: String? = nil, limit: Int = 20) async throws -> FeedPage {
+    let client = await self.client
+    
+    guard let entityIdDouble = Double(entityId) else {
+      throw APIError.requestFailed("Invalid entity ID")
+    }
+    
+    // Create the query
+    var query = Operations.listTastings.Input.Query()
+    query.entity = entityIdDouble
+    query.limit = Double(limit)
+    
+    if let cursor = cursor {
+      query.cursor = Double(cursor)
+    }
+    
+    let response = try await client.listTastings(query: query)
+    let payload = try response.extractPayload()
+    
+    let tastings = payload.results.map { TastingFeedItem.from($0) }
+    
+    // Use the cursor from the API response
+    let nextCursor: String?
+    if let apiCursor = payload.rel.nextCursor {
+      nextCursor = String(Int(apiCursor))
+    } else {
+      nextCursor = nil
+    }
+    
+    // Check if there are more results based on cursor presence
+    let hasMore = nextCursor != nil
+    
+    return FeedPage(
+      tastings: tastings,
+      cursor: nextCursor,
+      hasMore: hasMore
+    )
+  }
+  
+  public func getBottleTastings(bottleId: String, cursor: String?, limit: Int = 20) async throws -> FeedPage {
+    let client = await self.client
+    
+    guard let bottleIdDouble = Double(bottleId) else {
+      throw APIError.requestFailed("Invalid bottle ID")
+    }
+    
+    // Build the query parameters
+    var query = Operations.listTastings.Input.Query()
+    query.bottle = bottleIdDouble
+    query.limit = Double(limit)
+    
+    if let cursor = cursor {
+      query.cursor = Double(cursor)
+    }
+    
+    let response = try await client.listTastings(query: query)
+    let payload = try response.extractPayload()
+    
+    let tastings = payload.results.map { TastingFeedItem.from($0) }
+    
+    // Use the cursor from the API response
+    let nextCursor: String?
+    if let apiCursor = payload.rel.nextCursor {
+      nextCursor = String(Int(apiCursor))
+    } else {
+      nextCursor = nil
+    }
+    
+    // Check if there are more results based on cursor presence
+    let hasMore = nextCursor != nil
+    
+    return FeedPage(
+      tastings: tastings,
+      cursor: nextCursor,
+      hasMore: hasMore
+    )
   }
 }

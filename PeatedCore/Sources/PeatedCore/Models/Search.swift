@@ -39,3 +39,13 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
     self.bottle = bottle
   }
 }
+
+extension SearchResultType {
+  public var sectionTitle: String {
+    switch self {
+    case .bottle: return "BOTTLES"
+    case .entity: return "BRANDS & DISTILLERIES"
+    case .user: return "USERS"
+    }
+  }
+}

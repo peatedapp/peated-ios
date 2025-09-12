@@ -74,8 +74,8 @@ struct BottleRow: View {
           Text(bottle.fullName)
             .font(.system(size: DesignSystem.FontSize.title, weight: .semibold))
             .foregroundColor(.primary)
-            .lineLimit(1)
-            .truncationMode(.tail)
+            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
           
           // Brand • Category on one line
           HStack(spacing: DesignSystem.Spacing.xSmall) {
