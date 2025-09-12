@@ -101,6 +101,7 @@ struct SearchView: View {
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
       .animation(.easeInOut(duration: 0.2), value: model.isSearching)
+      .navigationBarHidden(true)
     }
   }
 
