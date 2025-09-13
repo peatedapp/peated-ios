@@ -401,7 +401,7 @@ struct BottleDetailView: View {
                 // No-op since we're already on the bottle page
               }
             )
-            .padding(.horizontal)
+            // Avoid extra inset; TastingFeedCard already pads horizontally
             
             // Add divider between items
             if tasting != model.recentTastings.prefix(3).last {
