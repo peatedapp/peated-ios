@@ -117,8 +117,11 @@ struct EntityDetailView: View {
       // Entity Name and Type
       VStack(spacing: 4) {
         Text(entity.name)
-          .headlineStyle()
-          .lineLimit(1)
+          .font(.peatedDisplaySerif)
+          .foregroundColor(.text)
+          .multilineTextAlignment(.center)
+          .lineLimit(2)
+          .fixedSize(horizontal: false, vertical: true)
           .minimumScaleFactor(0.98)
           .padding(.horizontal)
         

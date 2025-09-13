@@ -166,8 +166,12 @@ struct ProfileView: View {
       
       // Username and email
       VStack(spacing: 4) {
-        Text("@\(model.user?.username ?? "Loading...")")
-          .headlineStyle()
+        Text(model.user?.username ?? "Loading...")
+          .font(.peatedDisplaySerif)
+          .foregroundColor(.text)
+          .multilineTextAlignment(.center)
+          .lineLimit(2)
+          .fixedSize(horizontal: false, vertical: true)
       }
       
       // Role badges

@@ -377,8 +377,10 @@ struct TastingDetailCard: View {
         
         VStack(alignment: .leading, spacing: 4) {
           Text(tasting.bottleName)
-            .headlineStyle()
-            .lineLimit(1)
+            .font(.peatedDisplaySerif)
+            .foregroundColor(.text)
+            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
             .minimumScaleFactor(0.98)
           
           HStack(spacing: 4) {

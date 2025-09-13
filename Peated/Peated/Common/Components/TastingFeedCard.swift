@@ -100,9 +100,9 @@ struct TastingFeedCard: View {
       if showBottle {
         Button(action: onBottleTap) {
           VStack(alignment: .leading, spacing: 6) {
-            // Bottle name - serif font
+            // Bottle name - unified serif display style
             Text(tasting.bottleName)
-              .font(.system(size: 24, weight: .regular, design: .serif))
+              .font(.peatedDisplaySerif)
               .foregroundColor(.text)
               .lineLimit(2)
             

@@ -352,7 +352,7 @@ struct SearchView: View {
       if result.type == .bottle, let bottle = result.bottle {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
           Text(bottle.fullName)
-            .font(.system(size: DesignSystem.FontSize.title, weight: .semibold))
+            .font(.system(size: DesignSystem.FontSize.title, weight: .semibold, design: .serif))
             .foregroundColor(.text)
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)

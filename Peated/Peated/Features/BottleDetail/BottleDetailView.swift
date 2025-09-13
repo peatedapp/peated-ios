@@ -156,8 +156,10 @@ struct BottleDetailView: View {
       // Bottle name and brand
       VStack(spacing: 4) {
         Text(bottle.fullName)
-          .headlineStyle()
-          .lineLimit(1)
+          .font(.peatedDisplaySerif)
+          .foregroundColor(.text)
+          .lineLimit(2)
+          .fixedSize(horizontal: false, vertical: true)
           .minimumScaleFactor(0.98)
           .multilineTextAlignment(.center)
           .padding(.horizontal)

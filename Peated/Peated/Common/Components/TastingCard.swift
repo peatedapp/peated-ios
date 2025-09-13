@@ -14,8 +14,10 @@ struct TastingCard: View {
       VStack(alignment: .leading, spacing: 4) {
         // Bottle name
         Text(tasting.bottleName)
-            .headlineStyle()
-            .lineLimit(1)
+            .font(.peatedDisplaySerif)
+            .foregroundColor(.text)
+            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
             .onTapGesture {
               onBottleTap()
             }

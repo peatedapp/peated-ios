@@ -14,6 +14,10 @@ extension Font {
   static let peatedCaption = Font.system(size: 12, weight: .regular)
   static let peatedCaption2 = Font.system(size: 11, weight: .regular)
 
+  // Display/Title styles using a serif design for prominent names (e.g., bottles)
+  static let peatedDisplaySerif = Font.system(size: 24, weight: .regular, design: .serif)
+  static let peatedHeadlineSerif = Font.system(size: 17, weight: .semibold, design: .serif)
+
   // Single semantic title for screen headers (Profile/Bottle/Entity)
   static let titlePrimary = Font.system(size: 22, weight: .semibold, design: .default)
 

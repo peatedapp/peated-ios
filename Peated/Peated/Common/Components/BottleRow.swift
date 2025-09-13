@@ -72,7 +72,7 @@ struct BottleRow: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
           // Bottle name with proper truncation
           Text(bottle.fullName)
-            .font(.system(size: DesignSystem.FontSize.title, weight: .semibold))
+            .font(.system(size: DesignSystem.FontSize.title, weight: .semibold, design: .serif))
             .foregroundColor(.text)
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)

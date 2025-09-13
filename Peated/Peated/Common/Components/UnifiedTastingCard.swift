@@ -45,8 +45,10 @@ struct UnifiedTastingCard: View {
         
         VStack(alignment: .leading, spacing: 4) {
           Text(tasting.bottleName)
-            .headlineStyle()
-            .lineLimit(1)
+            .font(.peatedDisplaySerif)
+            .foregroundColor(.text)
+            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
             .onTapGesture {
               onBottleTap()
             }
@@ -282,9 +284,10 @@ struct UnifiedTastingListItem: View {
         
         VStack(alignment: .leading, spacing: 4) {
           Text(tasting.bottleName)
-            .font(.peatedHeadline)
+            .font(.peatedDisplaySerif)
             .foregroundColor(.text)
-            .lineLimit(1)
+            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
             .onTapGesture {
               onBottleTap()
             }
