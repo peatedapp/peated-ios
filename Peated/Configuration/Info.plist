@@ -85,5 +85,9 @@
 	<string>Peated needs access to your photo library to add photos to your tastings.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Peated needs permission to save tasting photos to your photo library.</string>
+    
+    <!-- Export Compliance: declare no non-exempt encryption usage -->
+    <key>ITSAppUsesNonExemptEncryption</key>
+    <false/>
 </dict>
 </plist>
