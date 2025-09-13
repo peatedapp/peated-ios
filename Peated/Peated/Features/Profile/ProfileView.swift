@@ -81,7 +81,7 @@ struct ProfileView: View {
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
-            .padding(.bottom, 16)
+            .padding(.bottom, 8)
             
             // Tab content
             Group {
@@ -291,7 +291,7 @@ struct ProfileView: View {
   }
   
   private var activitySection: some View {
-    VStack(alignment: .leading, spacing: 16) {
+    VStack(alignment: .leading, spacing: 8) {
       // Reuse the feed content from FeedView
       if feedModel.isLoading && feedModel.tastings.isEmpty {
         // Loading state
