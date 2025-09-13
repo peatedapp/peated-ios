@@ -56,18 +56,18 @@ struct EntityDetailView: View {
             }
           }
         }
-        .background(Color.peatedBackground)
+        .background(Color.background)
       case .error(let error):
         VStack(spacing: 16) {
           Image(systemName: "exclamationmark.triangle")
             .font(.system(size: 48))
-            .foregroundColor(.orange)
+            .foregroundColor(.warning)
           Text("Failed to load entity")
             .font(.title3)
             .fontWeight(.semibold)
           Text(error.localizedDescription)
             .font(.footnote)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
             .multilineTextAlignment(.center)
           Button("Retry") {
             Task {
@@ -94,7 +94,7 @@ struct EntityDetailView: View {
       // Entity Image or Placeholder
       ZStack {
         Circle()
-          .fill(Color.peatedSurfaceLight)
+          .fill(Color.surface)
           .frame(width: 100, height: 100)
         
         if let imageUrl = entity.imageUrl {
@@ -110,32 +110,33 @@ struct EntityDetailView: View {
         } else {
           Image(systemName: entity.type == .distillery ? "building.2" : "tag")
             .font(.system(size: 40))
-            .foregroundColor(.gray.opacity(0.5))
+            .foregroundColor(.textSecondary.opacity(0.5))
         }
       }
       
       // Entity Name and Type
       VStack(spacing: 4) {
         Text(entity.name)
-          .font(.title2)
-          .fontWeight(.semibold)
-          .foregroundColor(.primary)
+          .headlineStyle()
+          .lineLimit(1)
+          .minimumScaleFactor(0.98)
+          .padding(.horizontal)
         
         HStack(spacing: 8) {
           Label(entity.type.displayName, systemImage: entity.type == .distillery ? "building.2" : "tag")
             .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
           
           if let country = entity.country {
             Text("•")
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
             HStack(spacing: 4) {
               Image(systemName: "location")
                 .font(.system(size: 10))
               Text(country)
             }
             .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
           }
         }
       }
@@ -155,13 +156,13 @@ struct EntityDetailView: View {
           .fontWeight(.bold)
         Text("Bottles")
           .font(.caption)
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
       }
       .frame(maxWidth: .infinity)
       
       Divider()
         .frame(height: 40)
-        .background(Color.gray.opacity(0.3))
+        .background(Color.border.opacity(0.3))
       
       // Tastings stat
       VStack(spacing: 8) {
@@ -170,14 +171,14 @@ struct EntityDetailView: View {
           .fontWeight(.bold)
         Text("Tastings")
           .font(.caption)
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
       }
       .frame(maxWidth: .infinity)
       
       if let region = entity.region {
         Divider()
           .frame(height: 40)
-          .background(Color.gray.opacity(0.3))
+          .background(Color.border.opacity(0.3))
         
         // Region
         VStack(spacing: 8) {
@@ -187,13 +188,13 @@ struct EntityDetailView: View {
             .lineLimit(1)
           Text("Region")
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
         }
         .frame(maxWidth: .infinity)
       }
     }
     .padding(.vertical, 12)
-    .background(Color.peatedSurfaceLight.opacity(0.5))
+    .background(Color.surface.opacity(0.5))
     .cornerRadius(DesignSystem.CornerRadius.medium)
   }
   
@@ -205,12 +206,12 @@ struct EntityDetailView: View {
       Text("ABOUT")
         .font(.system(size: DesignSystem.FontSize.small))
         .fontWeight(.semibold)
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
       
       VStack(alignment: .leading, spacing: 4) {
         Text(entity.description ?? "")
           .font(.system(size: DesignSystem.FontSize.body))
-          .foregroundColor(.primary)
+          .foregroundColor(.text)
           .lineLimit(isDescriptionExpanded ? nil : 3)
           .fixedSize(horizontal: false, vertical: true)
         
@@ -224,7 +225,7 @@ struct EntityDetailView: View {
             Text(isDescriptionExpanded ? "Show less" : "Read more")
               .font(.system(size: DesignSystem.FontSize.small))
               .fontWeight(.medium)
-              .foregroundColor(.peatedGold)
+              .foregroundColor(.brand)
           }
           .padding(.top, 2)
         }
@@ -246,7 +247,7 @@ struct EntityDetailView: View {
               
               if index < 2 {
                 Divider()
-                  .background(Color.gray.opacity(0.2))
+                  .background(Color.border.opacity(0.2))
               }
             }
           }
@@ -258,25 +259,15 @@ struct EntityDetailView: View {
           .frame(maxWidth: .infinity, alignment: .center)
           .padding(.vertical, 40)
       } else {
-        // Show tastings using the list item style
-        VStack(spacing: 0) {
-          ForEach(model.recentTastings) { tasting in
-            VStack(spacing: 0) {
-              UnifiedTastingListItem(
-                tasting: tasting,
-                onToast: { /* TODO: Implement toasting */ },
-                onComment: { /* TODO: Implement comments */ },
-                onUserTap: { /* TODO: Navigate to user profile */ },
-                onBottleTap: { /* TODO: Navigate to bottle */ }
-              )
-              
-              if tasting.id != model.recentTastings.last?.id {
-                Divider()
-                  .background(Color.gray.opacity(0.2))
-              }
-            }
-          }
-        }
+        // Show tastings using unified feed card design
+        ActivityList(
+          tastings: model.recentTastings,
+          showBottle: true,
+          onToast: { _ in /* TODO: Implement toasting */ },
+          onComment: { _ in /* TODO: Implement comments */ },
+          onUserTap: { _ in /* TODO: Navigate to user profile */ },
+          onBottleTap: { _ in /* TODO: Navigate to bottle */ }
+        )
       }
     }
   }
@@ -291,15 +282,15 @@ struct EntityDetailView: View {
         ForEach(0..<3) { _ in
           HStack(spacing: 12) {
             RoundedRectangle(cornerRadius: 8)
-              .fill(Color.gray.opacity(0.3))
+              .fill(Color.border.opacity(0.3))
               .frame(width: 60, height: 80)
             
             VStack(alignment: .leading, spacing: 4) {
               RoundedRectangle(cornerRadius: 4)
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.border.opacity(0.3))
                 .frame(width: 150, height: 16)
               RoundedRectangle(cornerRadius: 4)
-                .fill(Color.gray.opacity(0.3))
+                .fill(Color.border.opacity(0.3))
                 .frame(width: 100, height: 12)
             }
             
@@ -324,7 +315,7 @@ struct EntityDetailView: View {
               // Bottle Image
               ZStack {
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                  .fill(Color.gray.opacity(0.1))
+                  .fill(Color.border.opacity(0.1))
                   .aspectRatio(0.7, contentMode: .fit)
                 
                 if let imageUrl = bottle.imageUrl {
@@ -338,7 +329,7 @@ struct EntityDetailView: View {
                 } else {
                   Image(systemName: "wineglass")
                     .font(.system(size: 30))
-                    .foregroundColor(.gray.opacity(0.3))
+                    .foregroundColor(.textSecondary.opacity(0.3))
                 }
               }
               
@@ -353,7 +344,7 @@ struct EntityDetailView: View {
                 if let category = bottle.category {
                   Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
                     .font(.system(size: DesignSystem.FontSize.caption))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
                     .lineLimit(1)
                 }
                 
@@ -361,15 +352,15 @@ struct EntityDetailView: View {
                   HStack(spacing: 4) {
                     Image(systemName: "star.fill")
                       .font(.system(size: 10))
-                      .foregroundColor(.peatedGold)
+                      .foregroundColor(.brand)
                     
                     Text(String(format: "%.1f", bottle.avgRating))
                       .font(.system(size: DesignSystem.FontSize.caption))
-                      .foregroundColor(.primary)
+                      .foregroundColor(.text)
                     
                     Text("(\(bottle.totalRatings))")
                       .font(.system(size: DesignSystem.FontSize.caption))
-                      .foregroundColor(.secondary)
+                      .foregroundColor(.textSecondary)
                   }
                 }
               }

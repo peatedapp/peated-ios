@@ -18,6 +18,7 @@ struct BottleSelectionStep: View {
                     Text("What are you drinking?")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(.text)
                         .padding(.horizontal)
                         .padding(.top)
                     
@@ -49,7 +50,9 @@ struct BottleSelectionStep: View {
                 .padding(.bottom, 100) // Space for navigation buttons
             }
             .scrollDismissesKeyboard(.interactively)
+            .background(Color.background)
         }
+        .background(Color.background)
         .sheet(isPresented: $showingScanner) {
             BarcodeScannerView { barcode in
                 handleBarcodeScanned(barcode)
@@ -70,10 +73,11 @@ struct BottleSelectionStep: View {
     private var searchBar: some View {
         HStack {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             
             TextField("Search for a bottle...", text: $searchText)
                 .textFieldStyle(.plain)
+                .foregroundColor(.text)
                 .autocapitalization(.none)
                 .disableAutocorrection(true)
                 .submitLabel(.search)
@@ -96,16 +100,16 @@ struct BottleSelectionStep: View {
                     isSearchFocused = false
                 }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
         }
         .padding(12)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(10)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isSearchFocused ? Color.accentColor : Color.clear, lineWidth: 2)
+                .stroke(isSearchFocused ? Color.brand : Color.clear, lineWidth: 2)
         )
     }
     
@@ -122,10 +126,10 @@ struct BottleSelectionStep: View {
                     .font(.body)
                     .fontWeight(.medium)
             }
-            .foregroundColor(.accentColor)
+            .foregroundColor(.brand)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(Color.accentColor.opacity(0.1))
+            .background(Color.brand.opacity(0.1))
             .cornerRadius(10)
         }
     }
@@ -136,7 +140,7 @@ struct BottleSelectionStep: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Search Results")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
                 .padding(.horizontal)
             
             if viewModel.isSearching {
@@ -148,7 +152,7 @@ struct BottleSelectionStep: View {
                     
                     Text("Searching...")
                         .font(.body)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 40)
@@ -156,15 +160,15 @@ struct BottleSelectionStep: View {
                 VStack(spacing: 16) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 40))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                     
                     Text("No bottles found")
                         .font(.body)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                     
                     Text("Try a different search or add it manually")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 40)
@@ -191,7 +195,7 @@ struct BottleSelectionStep: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("Recent Bottles")
                     .font(.headline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
                     .padding(.horizontal)
                 
                 ForEach(viewModel.recentBottles) { bottle in
@@ -215,7 +219,7 @@ struct BottleSelectionStep: View {
         VStack(spacing: 8) {
             Text("Can't find your bottle?")
                 .font(.body)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             
             Button(action: {
                 showingManualEntry = true
@@ -226,12 +230,12 @@ struct BottleSelectionStep: View {
                         .font(.caption)
                 }
                 .font(.body)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.brand)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(12)
     }
     
@@ -304,6 +308,5 @@ struct BottleSelectionStep: View {
         nil
     }
 }
-
 
 

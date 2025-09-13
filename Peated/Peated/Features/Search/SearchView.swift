@@ -127,6 +127,7 @@ struct SearchView: View {
         content
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+      .background(Color.background)
       .animation(.easeInOut(duration: 0.2), value: model.isSearching)
       .navigationBarHidden(true)
       .navigationDestination(for: SearchDestination.self) { destination in
@@ -145,7 +146,7 @@ struct SearchView: View {
   private var searchBar: some View {
     HStack(spacing: 12) {
       HStack {
-        Image(systemName: "magnifyingglass").foregroundColor(.secondary)
+        Image(systemName: "magnifyingglass").foregroundColor(.textSecondary)
         TextField("Search bottles, brands, users", text: $model.searchText)
           .textFieldStyle(.plain)
           .focused($focused)
@@ -158,13 +159,17 @@ struct SearchView: View {
             model.searchText = ""
             model.clear()
           }) {
-            Image(systemName: "xmark.circle.fill").foregroundColor(.secondary)
+            Image(systemName: "xmark.circle.fill").foregroundColor(.textSecondary)
           }
         }
       }
       .padding(.horizontal, 12)
       .padding(.vertical, 10)
-      .background(Color(.secondarySystemBackground))
+      .background(Color.surface)
+      .overlay(
+        RoundedRectangle(cornerRadius: 10)
+          .stroke(Color.border, lineWidth: 1)
+      )
       .cornerRadius(10)
 
       if model.isSearching {
@@ -213,7 +218,7 @@ struct SearchView: View {
         Spacer()
         Button("Clear") { model.clearAllRecent() }
           .font(.caption)
-          .foregroundColor(.accentColor)
+          .foregroundColor(.brand)
       }
       .padding(.horizontal)
 
@@ -226,10 +231,10 @@ struct SearchView: View {
             HStack(alignment: .center, spacing: 12) {
               Image(systemName: "clock.arrow.circlepath")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
               
               Text(query)
-                .foregroundColor(.primary)
+                .foregroundColor(.text)
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -237,7 +242,7 @@ struct SearchView: View {
               Button(action: { model.removeRecent(query) }) {
                 Image(systemName: "xmark")
                   .font(.caption)
-                  .foregroundColor(.secondary)
+                  .foregroundColor(.textSecondary)
               }
             }
             .padding(.horizontal)
@@ -248,7 +253,11 @@ struct SearchView: View {
           }
         }
       }
-      .background(Color(.secondarySystemBackground))
+      .background(Color.surface)
+      .overlay(
+        RoundedRectangle(cornerRadius: 12)
+          .stroke(Color.border.opacity(0.3), lineWidth: 1)
+      )
       .cornerRadius(12)
       .padding(.horizontal)
     }
@@ -289,7 +298,7 @@ struct SearchView: View {
     VStack(alignment: .leading, spacing: 12) {
       Text(type.sectionTitle)
         .font(.headline)
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
         .padding(.horizontal)
       
       VStack(spacing: 0) {
@@ -303,7 +312,11 @@ struct SearchView: View {
           }
         }
       }
-      .background(Color(.secondarySystemBackground))
+      .background(Color.surface)
+      .overlay(
+        RoundedRectangle(cornerRadius: 12)
+          .stroke(Color.border.opacity(0.3), lineWidth: 1)
+      )
       .cornerRadius(12)
       .padding(.horizontal)
     }
@@ -320,18 +333,18 @@ struct SearchView: View {
             BottleImage(imageUrl: bottle.imageUrl)
               .frame(width: DesignSystem.ImageSize.bottleThumb.width, height: DesignSystem.ImageSize.bottleThumb.height)
           } else {
-            Image(systemName: "wineglass").font(.title2).foregroundColor(.secondary)
+            Image(systemName: "wineglass").font(.title2).foregroundColor(.textSecondary)
               .frame(width: 44, height: 44)
-              .background(Color(.tertiarySystemBackground))
+              .background(Color.surfaceSubtle)
               .cornerRadius(8)
           }
         case .entity:
-          Image(systemName: "building.2").font(.title2).foregroundColor(.secondary)
+          Image(systemName: "building.2").font(.title2).foregroundColor(.textSecondary)
             .frame(width: 44, height: 44)
-            .background(Color(.tertiarySystemBackground))
+            .background(Color.surfaceSubtle)
             .cornerRadius(8)
         case .user:
-          Image(systemName: "person.crop.circle").font(.title2).foregroundColor(.secondary)
+          Image(systemName: "person.crop.circle").font(.title2).foregroundColor(.textSecondary)
             .frame(width: 44, height: 44)
         }
       }
@@ -340,30 +353,30 @@ struct SearchView: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
           Text(bottle.fullName)
             .font(.system(size: DesignSystem.FontSize.title, weight: .semibold))
-            .foregroundColor(.primary)
+            .foregroundColor(.text)
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)
           HStack(spacing: DesignSystem.Spacing.xSmall) {
             Text(bottle.brandName)
               .font(.system(size: DesignSystem.FontSize.body))
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
               .lineLimit(1)
               .truncationMode(.tail)
             if let category = bottle.category {
-              Text("•").foregroundColor(.secondary.opacity(0.5))
+              Text("•").foregroundColor(.textMuted)
               Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
                 .font(.system(size: DesignSystem.FontSize.body))
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             }
           }
         }
         Spacer(minLength: DesignSystem.Spacing.small)
-        Image(systemName: "chevron.right").font(.caption).foregroundColor(.secondary)
+        Image(systemName: "chevron.right").font(.caption).foregroundColor(.textSecondary)
       } else if result.type == .user {
         VStack(alignment: .leading, spacing: 4) {
-          Text(result.name).font(.body).foregroundColor(.primary)
+          Text(result.name).font(.body).foregroundColor(.text)
           if let subtitle = result.subtitle, !subtitle.isEmpty {
-            Text(subtitle).font(.subheadline).foregroundColor(.secondary)
+            Text(subtitle).font(.subheadline).foregroundColor(.textSecondary)
           }
         }
         Spacer()
@@ -373,10 +386,10 @@ struct SearchView: View {
           if isFollowing {
             Text("Following")
               .font(.caption)
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
               .padding(.horizontal, 8)
               .padding(.vertical, 4)
-              .background(Color(.tertiarySystemBackground))
+              .background(Color.surfaceSubtle)
               .cornerRadius(8)
           } else {
             Button("Follow") {
@@ -384,24 +397,24 @@ struct SearchView: View {
             }
             .font(.caption)
             .fontWeight(.medium)
-            .foregroundColor(.accentColor)
+            .foregroundColor(.brand)
             .padding(.horizontal, 12)
             .padding(.vertical, 4)
-            .background(Color.accentColor.opacity(0.1))
+            .background(Color.brand.opacity(0.1))
             .cornerRadius(12)
           }
         } else {
-          Image(systemName: "chevron.right").font(.caption).foregroundColor(.secondary)
+          Image(systemName: "chevron.right").font(.caption).foregroundColor(.textSecondary)
         }
       } else {
         VStack(alignment: .leading, spacing: 4) {
-          Text(result.name).font(.body).foregroundColor(.primary)
+          Text(result.name).font(.body).foregroundColor(.text)
           if let subtitle = result.subtitle, !subtitle.isEmpty {
-            Text(subtitle).font(.subheadline).foregroundColor(.secondary)
+            Text(subtitle).font(.subheadline).foregroundColor(.textSecondary)
           }
         }
         Spacer()
-        Image(systemName: "chevron.right").font(.caption).foregroundColor(.secondary)
+        Image(systemName: "chevron.right").font(.caption).foregroundColor(.textSecondary)
       }
     }
     .padding(.horizontal)
@@ -412,10 +425,10 @@ struct SearchView: View {
     VStack(spacing: 16) {
       ForEach(0..<5, id: \.self) { _ in
         HStack(spacing: 12) {
-          RoundedRectangle(cornerRadius: 8).fill(Color.gray.opacity(0.3)).frame(width: 44, height: 44)
+          RoundedRectangle(cornerRadius: 8).fill(Color.border.opacity(0.3)).frame(width: 44, height: 44)
           VStack(alignment: .leading, spacing: 4) {
-            RoundedRectangle(cornerRadius: 4).fill(Color.gray.opacity(0.3)).frame(width: 150, height: 16)
-            RoundedRectangle(cornerRadius: 4).fill(Color.gray.opacity(0.3)).frame(width: 100, height: 12)
+            RoundedRectangle(cornerRadius: 4).fill(Color.border.opacity(0.3)).frame(width: 150, height: 16)
+            RoundedRectangle(cornerRadius: 4).fill(Color.border.opacity(0.3)).frame(width: 100, height: 12)
           }
           Spacer()
         }
@@ -428,9 +441,9 @@ struct SearchView: View {
 
   private var noResultsView: some View {
     VStack(spacing: 16) {
-      Image(systemName: "magnifyingglass").font(.system(size: 50)).foregroundColor(.secondary)
+      Image(systemName: "magnifyingglass").font(.system(size: 50)).foregroundColor(.textSecondary)
       Text("No results for \"\(model.searchText)\"").font(.title3).fontWeight(.semibold)
-      Text("Try searching for something else").font(.body).foregroundColor(.secondary)
+      Text("Try searching for something else").font(.body).foregroundColor(.textSecondary)
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -438,9 +451,9 @@ struct SearchView: View {
 
   private func errorView(_ message: String) -> some View {
     VStack(spacing: 8) {
-      Image(systemName: "exclamationmark.triangle").foregroundColor(.orange)
+      Image(systemName: "exclamationmark.triangle").foregroundColor(.warning)
       Text("Search failed").font(.headline)
-      Text(message).font(.footnote).foregroundColor(.secondary)
+      Text(message).font(.footnote).foregroundColor(.textSecondary)
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -463,7 +476,11 @@ struct SearchView: View {
           }
         }
       }
-      .background(Color(.secondarySystemBackground))
+      .background(Color.surface)
+      .overlay(
+        RoundedRectangle(cornerRadius: 12)
+          .stroke(Color.border.opacity(0.3), lineWidth: 1)
+      )
       .cornerRadius(12)
       .padding(.horizontal)
     }
@@ -486,7 +503,11 @@ struct SearchView: View {
           }
         }
       }
-      .background(Color(.secondarySystemBackground))
+      .background(Color.surface)
+      .overlay(
+        RoundedRectangle(cornerRadius: 12)
+          .stroke(Color.border.opacity(0.3), lineWidth: 1)
+      )
       .cornerRadius(12)
       .padding(.horizontal)
     }
@@ -500,7 +521,7 @@ struct SearchView: View {
       VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
         Text(bottle.fullName)
           .font(.system(size: DesignSystem.FontSize.body, weight: .medium))
-          .foregroundColor(.primary)
+          .foregroundColor(.text)
           .lineLimit(2)
           .fixedSize(horizontal: false, vertical: true)
         
@@ -508,18 +529,18 @@ struct SearchView: View {
           if let category = bottle.category {
             Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
               .font(.system(size: DesignSystem.FontSize.small))
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
           }
           
           if bottle.totalRatings > 0 {
-            Text("•").foregroundColor(.secondary.opacity(0.5))
+            Text("•").foregroundColor(.textMuted)
             HStack(spacing: 2) {
               Image(systemName: "star.fill")
                 .font(.system(size: DesignSystem.FontSize.tiny))
                 .foregroundColor(.yellow)
               Text(String(format: "%.1f", bottle.avgRating))
                 .font(.system(size: DesignSystem.FontSize.small))
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             }
           }
         }
@@ -529,7 +550,7 @@ struct SearchView: View {
       
       Image(systemName: "chevron.right")
         .font(.caption)
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
     }
     .padding(.horizontal)
     .padding(.vertical, 12)

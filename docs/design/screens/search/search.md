@@ -133,7 +133,7 @@ struct SearchScreen: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(10)
             
             if isSearching {
@@ -187,7 +187,7 @@ struct SearchScreen: View {
                     model.clearRecentSearches()
                 }
                 .font(.caption)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.brand)
             }
             .padding(.horizontal)
             
@@ -226,7 +226,7 @@ struct SearchScreen: View {
                     }
                 }
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .padding(.horizontal)
         }
@@ -298,7 +298,7 @@ struct SearchScreen: View {
                     }
                 }
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .padding(.horizontal)
         }
@@ -332,7 +332,7 @@ struct SearchScreen: View {
                         .font(.title2)
                         .foregroundColor(.secondary)
                         .frame(width: 44, height: 44)
-                        .background(Color(.tertiarySystemBackground))
+                        .background(Color.surfaceSubtle)
                         .cornerRadius(8)
                     
                 case .user:
@@ -397,10 +397,10 @@ struct SearchScreen: View {
                         }
                         .font(.caption)
                         .fontWeight(.medium)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 4)
-                        .background(Color.accentColor.opacity(0.1))
+                        .background(Color.brand.opacity(0.1))
                         .cornerRadius(12)
                     }
                 }

@@ -181,7 +181,7 @@ struct ConfirmationStep: View {
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.surface)
                     .cornerRadius(8)
             }
             
@@ -234,7 +234,7 @@ struct ConfirmationStep: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(16)
     }
     
@@ -278,7 +278,7 @@ struct ConfirmationStep: View {
                     HStack(spacing: 8) {
                         Image(systemName: icon)
                             .font(.body)
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.brand)
                         
                         Text(title)
                             .font(.body)
@@ -295,15 +295,15 @@ struct ConfirmationStep: View {
                 
                 Image(systemName: selectedPrivacy == option ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
-                    .foregroundColor(selectedPrivacy == option ? .accentColor : .secondary)
+                    .foregroundColor(selectedPrivacy == option ? .brand : .secondary)
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(.secondarySystemBackground))
+                    .fill(Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(selectedPrivacy == option ? Color.accentColor : Color.clear, lineWidth: 2)
+                            .stroke(selectedPrivacy == option ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -392,7 +392,7 @@ struct ConfirmationStep: View {
                     .buttonStyle(.borderedProminent)
                 }
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
             }
         }
@@ -476,7 +476,7 @@ struct CheckboxToggleStyle: ToggleStyle {
         }) {
             HStack {
                 Image(systemName: configuration.isOn ? "checkmark.square.fill" : "square")
-                    .foregroundColor(configuration.isOn ? .accentColor : .secondary)
+                    .foregroundColor(configuration.isOn ? .brand : .secondary)
                     .font(.title3)
                 
                 configuration.label

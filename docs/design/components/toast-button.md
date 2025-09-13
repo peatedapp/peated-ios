@@ -52,7 +52,7 @@ ToastButton(
 ToastButton(
     count: tasting.toastCount,
     hasToasted: tasting.hasToasted,
-    activeColor: .orange,
+    activeColor: .brand,
     onTap: { /* ... */ }
 )
 ```
@@ -69,7 +69,7 @@ struct ToastButton: View {
     var style: ToastButtonStyle = .standard
     var size: ToastButtonSize = .medium
     var activeColor: Color = .toastGold
-    var inactiveColor: Color = .secondary
+    var inactiveColor: Color = .textSecondary
     var isEnabled: Bool = true
     var showCount: Bool = true
     var onTap: () -> Void
@@ -137,19 +137,19 @@ struct ToastButton: View {
             if showCount {
                 Text("\(count)")
                     .font(.system(size: fontSize, weight: .medium))
-                    .foregroundColor(.primary)
+                    .foregroundColor(.text)
                     .contentTransition(.numericText())
                 
                 Text("Toasts")
                     .font(.system(size: fontSize))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
             }
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.systemBackground))
+                .fill(Color.surface)
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
                         .stroke(hasToasted ? activeColor : Color.clear, lineWidth: 1)

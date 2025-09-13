@@ -128,7 +128,7 @@ struct LocationStep: View {
                 HStack {
                     Image(systemName: "house.fill")
                         .font(.title3)
-                        .foregroundColor(viewModel.isDrinkingAtHome ? .white : .accentColor)
+                        .foregroundColor(viewModel.isDrinkingAtHome ? .white : .brand)
                     
                     Text("Drinking at Home")
                         .font(.body)
@@ -145,7 +145,7 @@ struct LocationStep: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(viewModel.isDrinkingAtHome ? Color.accentColor : Color(.secondarySystemBackground))
+                        .fill(viewModel.isDrinkingAtHome ? Color.brand : Color.surface)
                 )
             }
             .buttonStyle(.plain)
@@ -170,7 +170,7 @@ struct LocationStep: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .fill(Color(.tertiarySystemBackground))
+                            .fill(Color.surfaceSubtle)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 12)
                                     .stroke(Color(.separator), lineWidth: 1)
@@ -218,7 +218,7 @@ struct LocationStep: View {
                 HStack {
                     Image(systemName: "person.2.fill")
                         .font(.title3)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                     
                     Text(viewModel.taggedFriends.isEmpty ? "Tag friends..." : "Add more friends...")
                         .font(.body)
@@ -233,12 +233,12 @@ struct LocationStep: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.accentColor)
+                            .background(Color.brand)
                             .clipShape(Capsule())
                     }
                 }
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
             }
             .buttonStyle(.plain)
@@ -284,7 +284,7 @@ struct LocationStep: View {
                             }
                         }
                     }
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.surface)
                     .cornerRadius(12)
                     .padding(.horizontal)
                 }
@@ -367,7 +367,7 @@ struct FriendPickerView: View {
                     }
                 }
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .padding()
                 
                 // Friends list
@@ -468,7 +468,7 @@ struct FriendRow: View {
                 Spacer()
                 
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .accentColor : .secondary)
+                    .foregroundColor(isSelected ? .brand : .secondary)
                     .font(.title3)
             }
             .padding(.vertical, 4)

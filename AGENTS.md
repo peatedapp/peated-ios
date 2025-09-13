@@ -24,6 +24,14 @@
 - Build/Test packages: from package dir, `swift build` / `swift test`
 - Regenerate API types: `./Scripts/update-api.sh` (or `PeatedAPI/update-api.sh`)
 
+## Mandatory Change Verification (MCP + xcodebuildmcp)
+- ALWAYS verify changes upon completion using the MCP build utilities from xcodebuildmcp per our testing guidelines.
+- Standard target: `projectPath: "Peated/Peated.xcodeproj"`, `scheme: "Peated"`, `simulatorName: "iPhone 16 Pro"`.
+- Preferred quick path (build + run):
+  - `xcodebuildmcp__build_run_sim({ projectPath: "Peated/Peated.xcodeproj", scheme: "Peated", simulatorName: "iPhone 16 Pro", useLatestOS: true })`
+- When you need finer control, follow: build → get app path → install → launch → describe UI → interact (tap/gesture) → screenshot/logs.
+- See detailed steps and examples in @docs/AGENTS.md ("Verifying Changes with xcodebuildmcp").
+
 ### Standard Simulator Device
 - Always target `iPhone 16 Pro` (latest iOS) for simulator builds/tests to keep a consistent environment and avoid duplicate devices.
 - CI examples and local commands should pin by name (not UUID) unless otherwise required.

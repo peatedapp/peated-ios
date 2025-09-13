@@ -148,10 +148,10 @@ struct OfflineIndicator: View {
                 Text("You're offline")
                     .font(.peatedCaption)
             }
-            .foregroundColor(.white)
+            .foregroundColor(.onStatus)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(Color.red)
+            .background(Color.danger)
             .clipShape(Capsule())
             .transition(.move(edge: .top).combined(with: .opacity))
         }

@@ -348,9 +348,9 @@ struct InAppNotificationView: View {
         var color: Color {
             switch self {
             case .toast: return .yellow
-            case .comment: return .blue
-            case .follow: return .green
-            case .achievement: return .purple
+            case .comment: return .info
+            case .follow: return .success
+            case .achievement: return .brand
             }
         }
     }
@@ -368,7 +368,7 @@ struct InAppNotificationView: View {
                 
                 Text(message)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
                     .lineLimit(2)
             }
             
@@ -377,8 +377,8 @@ struct InAppNotificationView: View {
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 16)
-                .fill(Color(.systemBackground))
-                .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
+                .fill(Color.surface)
+                .shadow(color: Color.overlaySoft, radius: 10, y: 5)
         )
         .padding(.horizontal)
         .offset(y: offset)

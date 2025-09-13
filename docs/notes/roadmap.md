@@ -100,7 +100,7 @@ struct VoiceNoteRecorder: View {
             Button(action: toggleRecording) {
                 Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
                     .font(.system(size: 64))
-                    .foregroundColor(isRecording ? .red : .accentColor)
+                    .foregroundColor(isRecording ? .red : .brand)
             }
             
             // Transcription option

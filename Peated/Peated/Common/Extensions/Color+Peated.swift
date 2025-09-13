@@ -1,30 +1,43 @@
 import SwiftUI
 
+// Semantic tokens resolve through the current AppTheme.
 extension Color {
-  // Brand Colors
-  static let peatedGold = Color(hex: "#fbbf24")          // Primary accent, toasts, ratings
-  static let peatedGoldDark = Color(hex: "#f59e0b")      // Darker variant for pressed states
-  
-  // Background Colors (Dark Theme)
-  static let peatedBackground = Color(hex: "#020617")     // Main background (slate-950)
-  static let peatedSurface = Color(hex: "#0f172a")        // Elevated surfaces (slate-900)
-  static let peatedSurfaceLight = Color(hex: "#1e293b")   // Cards, cells (slate-800)
-  static let peatedSurfaceSubtle = Color(hex: "#2d3748")  // Subtle card backgrounds (slate-700 with opacity)
-  
-  // Border Colors
-  static let peatedBorder = Color(hex: "#334155")         // Default borders (slate-700)
-  static let peatedBorderLight = Color(hex: "#475569")    // Hover/focus borders (slate-600)
-  
-  // Text Colors
-  static let peatedTextPrimary = Color.white
-  static let peatedTextSecondary = Color.white.opacity(0.7)
-  static let peatedTextMuted = Color.white.opacity(0.5)
-  
-  // Semantic Colors
-  static let peatedSuccess = Color(hex: "#10b981")        // Green for success
-  static let peatedError = Color(hex: "#ef4444")          // Red for errors
-  static let peatedWarning = Color(hex: "#f59e0b")        // Amber for warnings
-  static let peatedInfo = Color(hex: "#3b82f6")           // Blue for info
+  // Brand
+  static var brand: Color { ThemeProvider.current.brand }
+  static var brandEmphasis: Color { ThemeProvider.current.brandEmphasis }
+  static var onBrand: Color { ThemeProvider.current.onBrand }
+  // Surfaces
+  static var background: Color { ThemeProvider.current.background }
+  static var surface: Color { ThemeProvider.current.surface }
+  static var surfaceSubtle: Color { ThemeProvider.current.surfaceSubtle }
+  static var border: Color { ThemeProvider.current.border }
+  // Text
+  static var text: Color { ThemeProvider.current.text }
+  static var textSecondary: Color { ThemeProvider.current.textSecondary }
+  static var textMuted: Color { ThemeProvider.current.textMuted }
+  static var onSurface: Color { ThemeProvider.current.onSurface }
+  // Overlays
+  static var overlaySoft: Color { ThemeProvider.current.overlaySoft }
+  static var overlay: Color { ThemeProvider.current.overlay }
+  static var overlayStrong: Color { ThemeProvider.current.overlayStrong }
+  // Status
+  static var success: Color { ThemeProvider.current.success }
+  static var warning: Color { ThemeProvider.current.warning }
+  static var danger: Color { ThemeProvider.current.danger }
+  static var info: Color { ThemeProvider.current.info }
+  static var onStatus: Color { ThemeProvider.current.onStatus }
+
+  // Domain accents (Flavor categories)
+  static var flavorSweet: Color { ThemeProvider.current.flavorSweet }
+  static var flavorFruity: Color { ThemeProvider.current.flavorFruity }
+  static var flavorSpicy: Color { ThemeProvider.current.flavorSpicy }
+  static var flavorWoody: Color { ThemeProvider.current.flavorWoody }
+  static var flavorSmoky: Color { ThemeProvider.current.flavorSmoky }
+  static var flavorFloral: Color { ThemeProvider.current.flavorFloral }
+  static var flavorNutty: Color { ThemeProvider.current.flavorNutty }
+  static var flavorOther: Color { ThemeProvider.current.flavorOther }
+
+  // No legacy aliases are kept; use semantic tokens above.
 }
 
 // Helper extension for hex colors

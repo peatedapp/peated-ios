@@ -19,10 +19,11 @@ struct LocationStep: View {
                     Text("Where are you sipping?")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(.text)
                     
                     Text("Help others discover great spots")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
                 .padding(.horizontal)
                 .padding(.top)
@@ -50,7 +51,7 @@ struct LocationStep: View {
                         
                         Text("OR")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                             .padding(.horizontal, 8)
                         
                         Rectangle()
@@ -108,6 +109,7 @@ struct LocationStep: View {
             }
             .padding(.bottom, 100) // Space for navigation buttons
         }
+        .background(Color.background)
         .scrollDismissesKeyboard(.interactively)
         .onAppear {
             locationService.requestLocationPermission()
@@ -174,18 +176,18 @@ struct HomeLocationButton: View {
             HStack(spacing: 16) {
                 Image(systemName: "house.fill")
                     .font(.title2)
-                    .foregroundColor(isSelected ? .black : .accentColor)
+                    .foregroundColor(isSelected ? .text : .brand)
                     .frame(width: 32)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("At Home")
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .black : .primary)
+                        .foregroundColor(isSelected ? .text : .text)
                     
                     Text("Just chilling")
                         .font(.caption)
-                        .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
+                        .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
                 }
                 
                 Spacer()
@@ -193,16 +195,16 @@ struct HomeLocationButton: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.black)
+                        .foregroundColor(.text)
                 }
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -223,12 +225,12 @@ struct CurrentLocationButton: View {
                 Group {
                     if isLoading {
                         ProgressView()
-                            .progressViewStyle(CircularProgressViewStyle(tint: .accentColor))
+                            .progressViewStyle(CircularProgressViewStyle(tint: .brand))
                             .scaleEffect(0.8)
                     } else {
                         Image(systemName: "location.fill")
                             .font(.title2)
-                            .foregroundColor(isSelected ? .black : .accentColor)
+                            .foregroundColor(isSelected ? .text : .brand)
                     }
                 }
                 .frame(width: 32)
@@ -237,17 +239,17 @@ struct CurrentLocationButton: View {
                     Text(currentLocation?.name ?? "Use Current Location")
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .black : .primary)
+                        .foregroundColor(isSelected ? .text : .text)
                     
                     if let address = currentLocation?.address {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
+                            .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
                             .lineLimit(2)
                     } else if !isLoading {
                         Text("Tap to find nearby places")
                             .font(.caption)
-                            .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
+                            .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
                     }
                 }
                 
@@ -256,16 +258,16 @@ struct CurrentLocationButton: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.black)
+                        .foregroundColor(.text)
                 }
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -283,10 +285,11 @@ struct LocationSearchBar: View {
     var body: some View {
         HStack {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             
             TextField("Search for a place...", text: $searchText)
                 .textFieldStyle(.plain)
+                .foregroundColor(.text)
                 .focused($isSearchFocused)
                 .onSubmit(onSearch)
             
@@ -296,16 +299,16 @@ struct LocationSearchBar: View {
                     isSearchFocused = false
                 }) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
         }
         .padding(12)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(10)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isSearchFocused ? Color.accentColor : Color.clear, lineWidth: 2)
+                .stroke(isSearchFocused ? Color.brand : Color.clear, lineWidth: 2)
         )
     }
 }
@@ -320,7 +323,7 @@ struct LocationSearchResults: View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Search Results")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             
             ForEach(results) { location in
                 LocationRow(
@@ -344,19 +347,19 @@ struct LocationRow: View {
             HStack(spacing: 12) {
                 Image(systemName: "mappin.circle.fill")
                     .font(.title2)
-                    .foregroundColor(isSelected ? .black : .accentColor)
+                    .foregroundColor(isSelected ? .text : .brand)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(location.name)
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .black : .primary)
+                        .foregroundColor(isSelected ? .text : .text)
                         .lineLimit(1)
                     
                     if let address = location.address {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(isSelected ? .black.opacity(0.7) : .secondary)
+                            .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
                             .lineLimit(2)
                     }
                 }
@@ -366,16 +369,16 @@ struct LocationRow: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.black)
+                        .foregroundColor(.text)
                 }
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -392,7 +395,7 @@ struct SelectedLocationView: View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Selected Location")
                 .font(.headline)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
@@ -403,7 +406,7 @@ struct SelectedLocationView: View {
                     if let address = location.address {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                 }
                 
@@ -411,15 +414,15 @@ struct SelectedLocationView: View {
                 
                 Button(action: onRemove) {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
             .padding()
-            .background(Color.accentColor.opacity(0.1))
+            .background(Color.brand.opacity(0.1))
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.accentColor, lineWidth: 1)
+                    .stroke(Color.brand, lineWidth: 1)
             )
         }
     }

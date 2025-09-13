@@ -197,7 +197,7 @@ struct PhotosStep: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 350)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.surface)
                     .cornerRadius(16)
                     .overlay(
                         RoundedRectangle(cornerRadius: 16)
@@ -221,7 +221,7 @@ struct PhotosStep: View {
                 VStack(spacing: 8) {
                     Image(systemName: "camera.fill")
                         .font(.title2)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                     
                     Text("Take Photo")
                         .font(.caption)
@@ -230,7 +230,7 @@ struct PhotosStep: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
             }
             .buttonStyle(.plain)
@@ -241,7 +241,7 @@ struct PhotosStep: View {
                 VStack(spacing: 8) {
                     Image(systemName: "photo.on.rectangle")
                         .font(.title2)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                     
                     Text("Choose from Library")
                         .font(.caption)
@@ -250,7 +250,7 @@ struct PhotosStep: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
             }
             .buttonStyle(.plain)
@@ -266,10 +266,10 @@ struct PhotosStep: View {
             Text("Change Photo")
                 .font(.body)
                 .fontWeight(.medium)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.brand)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
-                .background(Color.accentColor.opacity(0.1))
+                .background(Color.brand.opacity(0.1))
                 .cornerRadius(12)
         }
     }
@@ -291,7 +291,7 @@ struct PhotosStep: View {
             }
         }
         .padding()
-        .background(Color(.tertiarySystemBackground))
+        .background(Color.surfaceSubtle)
         .cornerRadius(12)
     }
     

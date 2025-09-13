@@ -107,9 +107,9 @@ struct TastingCard: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
         }
-        .background(Color(.systemBackground))
+        .background(Color.surface)
         .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 4, y: 2)
+        .shadow(color: Color.overlaySoft, radius: 4, y: 2)
     }
     
     // MARK: - Header Section
@@ -129,11 +129,11 @@ struct TastingCard: View {
                 HStack(spacing: 4) {
                     Text(tasting.user?.displayName ?? tasting.user?.username ?? "")
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.text)
                     
                     Text("is drinking a")
                         .font(.system(size: 15))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
                 
                 // Bottle name (tappable)
@@ -142,7 +142,7 @@ struct TastingCard: View {
                 } label: {
                     Text(tasting.bottle?.name ?? "")
                         .font(.system(size: 15, weight: .semibold))
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                         .lineLimit(1)
                 }
                 .buttonStyle(.plain)
@@ -152,7 +152,7 @@ struct TastingCard: View {
                     HStack(spacing: 4) {
                         Text("with")
                             .font(.system(size: 14))
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                         
                         ForEach(tasting.taggedFriends.prefix(3)) { friend in
                             Button {
@@ -160,7 +160,7 @@ struct TastingCard: View {
                             } label: {
                                 Text("@\(friend.username)")
                                     .font(.system(size: 14))
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.brand)
                             }
                             .buttonStyle(.plain)
                         }
@@ -185,7 +185,7 @@ struct TastingCard: View {
                                 Text(location.name)
                                     .font(.system(size: 14))
                             }
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.brand)
                         }
                         .buttonStyle(.plain)
                         
@@ -196,7 +196,7 @@ struct TastingCard: View {
                     
                     Text(tasting.createdAt.relativeTime)
                         .font(.system(size: 14))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
             

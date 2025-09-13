@@ -24,19 +24,19 @@ struct BottleRow: View {
             HStack(spacing: 2) {
               Image(systemName: "hand.thumbsup")
                 .font(.system(size: DesignSystem.FontSize.tiny))
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
               Image(systemName: "hand.thumbsup")
                 .font(.system(size: DesignSystem.FontSize.tiny))
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             }
           } else if Int(tasting.rating) == 1 {
             Image(systemName: "hand.thumbsup")
               .font(.system(size: DesignSystem.FontSize.tiny))
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
           } else if Int(tasting.rating) == -1 {
             Image(systemName: "hand.thumbsdown")
               .font(.system(size: DesignSystem.FontSize.tiny))
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
           }
           
           Text("Last: \(tasting.timeAgo)")
@@ -73,7 +73,7 @@ struct BottleRow: View {
           // Bottle name with proper truncation
           Text(bottle.fullName)
             .font(.system(size: DesignSystem.FontSize.title, weight: .semibold))
-            .foregroundColor(.primary)
+            .foregroundColor(.text)
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)
           
@@ -81,7 +81,7 @@ struct BottleRow: View {
           HStack(spacing: DesignSystem.Spacing.xSmall) {
             Text(bottle.brandName)
               .font(.system(size: DesignSystem.FontSize.body))
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
               .lineLimit(1)
               .truncationMode(.tail)
               .layoutPriority(1)
@@ -89,11 +89,11 @@ struct BottleRow: View {
             if let category = bottle.category {
               Text("•")
                 .font(.system(size: DesignSystem.FontSize.body))
-                .foregroundColor(.secondary.opacity(0.5))
+                .foregroundColor(.textMuted)
               
               Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
                 .font(.system(size: DesignSystem.FontSize.body))
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
                 .lineLimit(1)
             }
           }
@@ -110,10 +110,10 @@ struct BottleRow: View {
                 }
                 Text(String(format: "%.1f", bottle.avgRating))
                   .font(.system(size: DesignSystem.FontSize.small))
-                  .foregroundColor(.secondary)
+                  .foregroundColor(.textSecondary)
                 Text("(\(bottle.totalRatings))")
                   .font(.system(size: DesignSystem.FontSize.small))
-                  .foregroundColor(.secondary.opacity(DesignSystem.Opacity.dimmed))
+                  .foregroundColor(.textSecondary.opacity(DesignSystem.Opacity.dimmed))
               }
             } else {
               subtitle.view
@@ -125,7 +125,7 @@ struct BottleRow: View {
         
         if isSelected {
           Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(.peatedGold)
+            .foregroundColor(.brand)
             .font(.system(size: 20))
         }
       }
@@ -162,6 +162,6 @@ struct BottleImage: View {
   private var defaultBottleIcon: some View {
     Image(systemName: "wineglass")
       .font(.system(size: 18))
-      .foregroundColor(.peatedGold.opacity(DesignSystem.Opacity.strong))
+      .foregroundColor(.brand.opacity(DesignSystem.Opacity.strong))
   }
 }

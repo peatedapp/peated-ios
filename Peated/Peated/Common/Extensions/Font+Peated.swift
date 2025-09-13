@@ -13,4 +13,10 @@ extension Font {
   static let peatedFootnote = Font.system(size: 13, weight: .regular)
   static let peatedCaption = Font.system(size: 12, weight: .regular)
   static let peatedCaption2 = Font.system(size: 11, weight: .regular)
+
+  // Single semantic title for screen headers (Profile/Bottle/Entity)
+  static let titlePrimary = Font.system(size: 22, weight: .semibold, design: .default)
+
+  // Semantic alias for prominent names (bottles, entities, usernames)
+  static let nameTitle = Font.system(size: 17, weight: .semibold, design: .rounded)
 }

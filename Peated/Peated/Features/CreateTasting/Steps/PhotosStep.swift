@@ -22,10 +22,11 @@ struct PhotosStep: View {
                     Text("Add photos")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(.text)
                     
                     Text("Share the moment with photos (optional)")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
                 .padding(.horizontal)
                 .padding(.top)
@@ -81,11 +82,11 @@ struct PhotosStep: View {
                     if viewModel.photos.count > 0 {
                         HStack {
                             Image(systemName: "info.circle")
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                             
                             Text("\(viewModel.photos.count) of \(maxPhotos) photos added")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                             
                             Spacer()
                         }
@@ -101,6 +102,7 @@ struct PhotosStep: View {
             }
             .padding(.bottom, 100) // Space for navigation buttons
         }
+        .background(Color.background)
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(
                 sourceType: sourceType,
@@ -175,8 +177,8 @@ struct PhotoGridItem: View {
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title3)
-                    .foregroundColor(.white)
-                    .background(Color.black.opacity(0.6))
+                    .foregroundColor(.text)
+                    .background(Color.text.opacity(0.6))
                     .clipShape(Circle())
             }
             .padding(8)
@@ -213,28 +215,28 @@ struct AddPhotoButtonContent: View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.title2)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.brand)
                 .frame(width: 32)
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundColor(.primary)
+                    .foregroundColor(.text)
                 
                 Text(subtitle)
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
             }
             
             Spacer()
             
             Image(systemName: "chevron.right")
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
@@ -273,7 +275,7 @@ struct PhotoTipsView: View {
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(12)
     }
 }
@@ -287,12 +289,12 @@ struct PhotoTipRow: View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 16))
-                .foregroundColor(.accentColor)
+                .foregroundColor(.brand)
                 .frame(width: 20)
             
             Text(text)
                 .font(.caption)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
     }

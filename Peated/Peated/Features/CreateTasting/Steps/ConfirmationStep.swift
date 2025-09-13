@@ -12,10 +12,11 @@ struct ConfirmationStep: View {
                     Text("Looking good?")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(.text)
                     
                     Text("Quick check before sharing")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
                 .padding(.horizontal)
                 .padding(.top)
@@ -41,6 +42,7 @@ struct ConfirmationStep: View {
             }
             .padding(.bottom, 100) // Space for navigation buttons
         }
+        .background(Color.background)
     }
 }
 
@@ -55,25 +57,25 @@ struct TastingPreviewCard: View {
                 // User header (simulated)
                 HStack(spacing: 10) {
                     Circle()
-                        .fill(Color.gray.opacity(0.2))
+                        .fill(Color.border.opacity(0.2))
                         .overlay(
                             Image(systemName: "person.fill")
                                 .font(.system(size: 14))
-                                .foregroundColor(.gray.opacity(0.5))
+                                .foregroundColor(.textSecondary.opacity(0.5))
                         )
                         .frame(width: 32, height: 32)
                     
                     Text("You")
                         .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.primary)
+                        .foregroundColor(.text)
                     
                     Text("•")
                         .font(.system(size: 14))
-                        .foregroundColor(.secondary.opacity(0.5))
+                        .foregroundColor(.textSecondary.opacity(0.5))
                     
                     Text("now")
                         .font(.system(size: 14))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                     
                     Spacer()
                     
@@ -84,15 +86,15 @@ struct TastingPreviewCard: View {
                             HStack(spacing: 2) {
                                 Image(systemName: "hand.thumbsup.fill")
                                     .font(.system(size: 14))
-                                    .foregroundColor(.peatedGold)
+                        .foregroundColor(.brand)
                                 Image(systemName: "hand.thumbsup.fill")
                                     .font(.system(size: 14))
-                                    .foregroundColor(.peatedGold)
+                                .foregroundColor(.brand)
                             }
                         } else {
                             Image(systemName: getRatingIcon(viewModel.rating))
                                 .font(.system(size: 14))
-                                .foregroundColor(viewModel.rating < 0 ? .red : .peatedGold)
+                                .foregroundColor(viewModel.rating < 0 ? .danger : .brand)
                         }
                     }
                 }
@@ -111,7 +113,7 @@ struct TastingPreviewCard: View {
                                 case .failure, .empty:
                                     Image(systemName: "wineglass")
                                         .font(.system(size: DesignSystem.FontSize.headline))
-                                        .foregroundColor(.peatedGold.opacity(DesignSystem.Opacity.strong))
+                                        .foregroundColor(.brand.opacity(DesignSystem.Opacity.strong))
                                 @unknown default:
                                     ProgressView()
                                         .scaleEffect(0.5)
@@ -121,7 +123,7 @@ struct TastingPreviewCard: View {
                         } else {
                             Image(systemName: "wineglass")
                                 .font(.system(size: DesignSystem.FontSize.headline))
-                                .foregroundColor(.peatedGold.opacity(DesignSystem.Opacity.strong))
+                                .foregroundColor(.brand.opacity(DesignSystem.Opacity.strong))
                                 .frame(width: 28, height: 36)
                         }
                         
@@ -129,23 +131,23 @@ struct TastingPreviewCard: View {
                             // Bottle name
                             Text(bottle.name)
                                 .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.primary)
+                                .foregroundColor(.text)
                                 .lineLimit(1)
                             
                             // Brand • Category on one line
                             HStack(spacing: 4) {
                                 Text(bottle.brandName)
                                     .font(.system(size: 14))
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.textSecondary)
                                     .lineLimit(1)
                                 
                                 Text("•")
                                     .font(.system(size: 14))
-                                    .foregroundColor(.secondary.opacity(0.5))
+                                    .foregroundColor(.textSecondary.opacity(0.5))
                                 
                                 Text(bottle.category ?? "Whisky")
                                     .font(.system(size: 14))
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.textSecondary)
                                     .lineLimit(1)
                             }
                         }
@@ -153,11 +155,11 @@ struct TastingPreviewCard: View {
                         Spacer()
                     }
                     .padding(12)
-                    .background(Color.peatedSurfaceLight.opacity(0.6))
+                    .background(Color.surface.opacity(0.6))
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.peatedBorder.opacity(0.3), lineWidth: 1)
+                            .stroke(Color.border.opacity(0.3), lineWidth: 1)
                     )
                 }
                 
@@ -165,7 +167,7 @@ struct TastingPreviewCard: View {
                 if !viewModel.notes.isEmpty {
                     Text(viewModel.notes)
                         .font(.system(size: 14))
-                        .foregroundColor(.primary.opacity(0.9))
+                        .foregroundColor(.text.opacity(0.9))
                         .lineLimit(3)
                         .multilineTextAlignment(.leading)
                 }
@@ -177,10 +179,10 @@ struct TastingPreviewCard: View {
                             ForEach(Array(viewModel.selectedTags), id: \.self) { tag in
                                 Text("#\(tag)")
                                     .font(.system(size: 12))
-                                    .foregroundColor(.peatedGold)
+                                    .foregroundColor(.brand)
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 5)
-                                    .background(Color.peatedGold.opacity(0.1))
+                                    .background(Color.brand.opacity(0.1))
                                     .clipShape(Capsule())
                             }
                         }
@@ -210,10 +212,10 @@ struct TastingPreviewCard: View {
                         HStack(spacing: 4) {
                             Image(systemName: "drop")
                                 .font(.system(size: 12))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                             Text(servingStyle.displayName)
                                 .font(.system(size: 12))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                         }
                     }
                     
@@ -222,20 +224,20 @@ struct TastingPreviewCard: View {
                         HStack(spacing: 4) {
                             Image(systemName: "location")
                                 .font(.system(size: 12))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                             Text(location.name)
                                 .font(.system(size: 12))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                                 .lineLimit(1)
                         }
                     } else if viewModel.isDrinkingAtHome {
                         HStack(spacing: 4) {
                             Image(systemName: "house")
                                 .font(.system(size: 12))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                             Text("At Home")
                                 .font(.system(size: 12))
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                         }
                     }
                     
@@ -244,11 +246,11 @@ struct TastingPreviewCard: View {
                 .padding(.top, 4)
             }
             .padding()
-            .background(Color.peatedSurface)
+            .background(Color.surface)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.peatedBorder.opacity(0.3), lineWidth: 1)
+                    .stroke(Color.border.opacity(0.3), lineWidth: 1)
             )
         }
     }
@@ -298,7 +300,7 @@ struct PrivacyOption: View {
                 Image(systemName: icon)
                     .font(.title2)
                     .symbolRenderingMode(isSelected ? .multicolor : .monochrome)
-                    .foregroundColor(isSelected ? .peatedGold : .secondary)
+                    .foregroundColor(isSelected ? .brand : .secondary)
                 
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
@@ -306,17 +308,17 @@ struct PrivacyOption: View {
                 
                 Text(subtitle)
                     .font(.system(size: 11))
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
                     .opacity(isSelected ? 1 : 0.7)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.peatedGold.opacity(0.1) : Color.peatedSurfaceLight)
+                    .fill(isSelected ? Color.brand.opacity(0.1) : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.peatedGold : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -361,7 +363,7 @@ struct SocialToggle: View {
         HStack {
             Image(systemName: icon)
                 .font(.title3)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
                 .frame(width: 24)
             
             Text(platform)
@@ -370,11 +372,11 @@ struct SocialToggle: View {
             Spacer()
             
             Toggle("", isOn: $isEnabled)
-                .toggleStyle(SwitchToggleStyle(tint: .peatedGold))
+                .toggleStyle(SwitchToggleStyle(tint: .brand))
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Color.peatedSurfaceLight)
+        .background(Color.surface)
         .cornerRadius(10)
     }
 }

@@ -187,12 +187,12 @@ struct LoginScreen: View {
                 .autocapitalization(.none)
                 .focused($focusedField, equals: .email)
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(
-                            focusedField == .email ? Color.accentColor : Color.clear,
+                            focusedField == .email ? Color.brand : Color.clear,
                             lineWidth: 2
                         )
                 )
@@ -224,12 +224,12 @@ struct LoginScreen: View {
                 }
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(
-                        focusedField == .password ? Color.accentColor : Color.clear,
+                        focusedField == .password ? Color.brand : Color.clear,
                         lineWidth: 2
                     )
             )
@@ -246,7 +246,7 @@ struct LoginScreen: View {
                 // Handle forgot password
             }
             .font(.caption)
-            .foregroundColor(.accentColor)
+            .foregroundColor(.brand)
         }
     }
     
@@ -260,7 +260,7 @@ struct LoginScreen: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color.accentColor)
+                .background(Color.brand)
                 .cornerRadius(25)
         }
         .disabled(email.isEmpty || password.isEmpty || model.isLoading)
@@ -279,7 +279,7 @@ struct LoginScreen: View {
             }
             .font(.body)
             .fontWeight(.medium)
-            .foregroundColor(.accentColor)
+            .foregroundColor(.brand)
         }
     }
     

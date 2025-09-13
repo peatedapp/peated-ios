@@ -232,7 +232,7 @@ struct BottleDetailScreen: View {
                     Button(action: { /* Navigate to brand */ }) {
                         Text(brand.name)
                             .font(.body)
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.brand)
                     }
                 }
                 
@@ -280,7 +280,7 @@ struct BottleDetailScreen: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(12)
             }
             
@@ -296,13 +296,13 @@ struct BottleDetailScreen: View {
                         systemImage: bottle.isWishlist ? "heart.fill" : "heart"
                     )
                     .font(.body)
-                    .foregroundColor(bottle.isWishlist ? .white : .accentColor)
+                    .foregroundColor(bottle.isWishlist ? .white : .brand)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                     .background(
                         bottle.isWishlist 
-                            ? Color.accentColor 
-                            : Color.accentColor.opacity(0.1)
+                            ? Color.brand 
+                            : Color.brand.opacity(0.1)
                     )
                     .cornerRadius(10)
                 }
@@ -317,7 +317,7 @@ struct BottleDetailScreen: View {
                         systemImage: bottle.hasHad ? "checkmark.circle.fill" : "circle"
                     )
                     .font(.body)
-                    .foregroundColor(bottle.hasHad ? .white : .accentColor)
+                    .foregroundColor(bottle.hasHad ? .white : .brand)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                     .background(
@@ -375,10 +375,10 @@ struct BottleDetailScreen: View {
                         NavigationLink(destination: UserTastingsView(bottle: viewModel.bottle!)) {
                             Text("View Your Tastings")
                                 .font(.body)
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(.brand)
                             Image(systemName: "arrow.right")
                                 .font(.caption)
-                                .foregroundColor(.accentColor)
+                                .foregroundColor(.brand)
                         }
                     } else {
                         Text("You haven't tried this yet")
@@ -387,7 +387,7 @@ struct BottleDetailScreen: View {
                     }
                 }
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
                 .padding(.horizontal)
             }
@@ -408,7 +408,7 @@ struct BottleDetailScreen: View {
                     NavigationLink(destination: FriendsTastingsView(bottle: viewModel.bottle!)) {
                         Text("See all \(viewModel.friendsTastings.count)")
                             .font(.caption)
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.brand)
                     }
                 }
             }
@@ -447,7 +447,7 @@ struct BottleDetailScreen: View {
                     }
                 }
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .padding(.horizontal)
         }
@@ -466,7 +466,7 @@ struct BottleDetailScreen: View {
                 NavigationLink(destination: AllTastingsView(bottle: viewModel.bottle!)) {
                     Text("View all \(viewModel.bottle?.totalTastings ?? 0)")
                         .font(.caption)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                 }
             }
             .padding(.horizontal)
@@ -477,7 +477,7 @@ struct BottleDetailScreen: View {
                     .foregroundColor(.secondary)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.surface)
                     .cornerRadius(12)
                     .padding(.horizontal)
             } else {
@@ -548,7 +548,7 @@ struct BottleDetailScreen: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(20)
             }
         }
@@ -617,7 +617,7 @@ struct MiniTastingCard: View {
                 }
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
         }
         .buttonStyle(.plain)
@@ -658,7 +658,7 @@ struct SimilarBottleCard: View {
         }
         .frame(width: 120)
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(12)
     }
 }

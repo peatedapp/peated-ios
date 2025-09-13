@@ -40,11 +40,11 @@ struct WhiskyColorPicker: View {
                    let colorData = colors.first(where: { $0.value == selected }) {
                     Text(colorData.name)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 } else if selectedColor == -1 {
                     Text("Unsure")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
             
@@ -62,10 +62,10 @@ struct WhiskyColorPicker: View {
                             .frame(width: 44, height: 44)
                             .background(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color(.tertiarySystemBackground))
+                                    .fill(Color.surfaceSubtle)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .stroke(selectedColor == -1 ? Color.accentColor : Color(.separator), 
+                                            .stroke(selectedColor == -1 ? Color.brand : Color(.separator), 
                                                    lineWidth: selectedColor == -1 ? 2 : 1)
                                     )
                             )
@@ -84,7 +84,7 @@ struct WhiskyColorPicker: View {
                                 .frame(width: 44, height: 44)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
-                                        .stroke(selectedColor == colorData.value ? Color.accentColor : Color(.separator).opacity(0.3), 
+                                        .stroke(selectedColor == colorData.value ? Color.brand : Color(.separator).opacity(0.3), 
                                                lineWidth: selectedColor == colorData.value ? 2 : 1)
                                 )
                                 .scaleEffect(selectedColor == colorData.value ? 1.1 : 1.0)
@@ -98,4 +98,3 @@ struct WhiskyColorPicker: View {
         }
     }
 }
-

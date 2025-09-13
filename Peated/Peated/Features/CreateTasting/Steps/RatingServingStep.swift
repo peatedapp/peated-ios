@@ -12,11 +12,12 @@ struct RatingServingStep: View {
                     Text("Rate your experience")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(.text)
                     
                     if let bottle = viewModel.selectedBottle {
                         Text("How was the \(bottle.name)?")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                 }
                 .padding(.horizontal)
@@ -37,7 +38,7 @@ struct RatingServingStep: View {
                                 iconName: "hand.thumbsdown.fill",
                                 value: -1,
                                 selectedValue: $viewModel.rating,
-                                color: .red
+                                color: .danger
                             )
                             
                             // Sip button
@@ -46,7 +47,7 @@ struct RatingServingStep: View {
                                 iconName: "hand.thumbsup.fill",
                                 value: 1,
                                 selectedValue: $viewModel.rating,
-                                color: .blue
+                                color: .info
                             )
                             
                             // Savor button
@@ -55,7 +56,7 @@ struct RatingServingStep: View {
                                 iconName: "hands.sparkles.fill",
                                 value: 2,
                                 selectedValue: $viewModel.rating,
-                                color: .green
+                                color: .success
                             )
                         }
                         .frame(maxWidth: .infinity)
@@ -64,7 +65,7 @@ struct RatingServingStep: View {
                         if viewModel.rating != 0 {
                             Text(ratingDescription)
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                                 .transition(.opacity)
                         }
                     }
@@ -97,6 +98,7 @@ struct RatingServingStep: View {
             }
             .padding(.bottom, 100) // Space for navigation buttons
         }
+        .background(Color.background)
         .scrollDismissesKeyboard(.interactively)
     }
     
@@ -125,22 +127,22 @@ private struct RatingServingStyleButton: View {
             VStack(spacing: 8) {
                 Image(systemName: iconName)
                     .font(.title2)
-                    .foregroundColor(isSelected ? .black : .accentColor)
+                    .foregroundColor(isSelected ? .onBrand : .brand)
                 
                 Text(style.displayName)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .black : .primary)
+                    .foregroundColor(isSelected ? .onBrand : .text)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -191,7 +193,7 @@ private struct RatingSelectionButton: View {
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? color.opacity(0.2) : Color(.secondarySystemBackground))
+                    .fill(isSelected ? color.opacity(0.2) : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isSelected ? color : Color.clear, lineWidth: 2)

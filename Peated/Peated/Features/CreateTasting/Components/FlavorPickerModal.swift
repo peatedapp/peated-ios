@@ -7,14 +7,14 @@ struct FlavorPickerModal: View {
     @State private var tempSelection: Set<String>
     
     let flavorCategories: [(category: String, emoji: String, color: Color, flavors: [String])] = [
-        ("Sweet", "🍯", .orange, ["Honey", "Caramel", "Vanilla", "Toffee", "Butterscotch", "Brown Sugar", "Maple"]),
-        ("Fruity", "🍎", .pink, ["Apple", "Pear", "Citrus", "Berry", "Tropical", "Stone Fruit", "Dried Fruit"]),
-        ("Spicy", "🌶️", .red, ["Pepper", "Cinnamon", "Nutmeg", "Clove", "Ginger", "Anise", "Cardamom"]),
-        ("Woody", "🪵", .brown, ["Oak", "Cedar", "Pine", "Char", "Toasted", "Sawdust", "Pencil Shavings"]),
-        ("Smoky", "💨", .gray, ["Peat", "Ash", "Tobacco", "Leather", "Campfire", "BBQ", "Tar"]),
-        ("Floral", "🌸", .purple, ["Rose", "Lavender", "Violet", "Jasmine", "Heather", "Honeysuckle", "Perfume"]),
-        ("Nutty", "🥜", .brown, ["Almond", "Walnut", "Hazelnut", "Pecan", "Marzipan", "Coconut", "Cashew"]),
-        ("Other", "✨", .indigo, ["Maritime", "Medicinal", "Herbal", "Earthy", "Mineral", "Metallic", "Solvent"])
+        ("Sweet", "🍯", .flavorSweet, ["Honey", "Caramel", "Vanilla", "Toffee", "Butterscotch", "Brown Sugar", "Maple"]),
+        ("Fruity", "🍎", .flavorFruity, ["Apple", "Pear", "Citrus", "Berry", "Tropical", "Stone Fruit", "Dried Fruit"]),
+        ("Spicy", "🌶️", .flavorSpicy, ["Pepper", "Cinnamon", "Nutmeg", "Clove", "Ginger", "Anise", "Cardamom"]),
+        ("Woody", "🪵", .flavorWoody, ["Oak", "Cedar", "Pine", "Char", "Toasted", "Sawdust", "Pencil Shavings"]),
+        ("Smoky", "💨", .flavorSmoky, ["Peat", "Ash", "Tobacco", "Leather", "Campfire", "BBQ", "Tar"]),
+        ("Floral", "🌸", .flavorFloral, ["Rose", "Lavender", "Violet", "Jasmine", "Heather", "Honeysuckle", "Perfume"]),
+        ("Nutty", "🥜", .flavorNutty, ["Almond", "Walnut", "Hazelnut", "Pecan", "Marzipan", "Coconut", "Cashew"]),
+        ("Other", "✨", .flavorOther, ["Maritime", "Medicinal", "Herbal", "Earthy", "Mineral", "Metallic", "Solvent"])
     ]
     
     init(selectedTags: Binding<Set<String>>, isPresented: Binding<Bool>) {
@@ -35,26 +35,26 @@ struct FlavorPickerModal: View {
                                     Text(tag)
                                         .font(.caption)
                                         .fontWeight(.medium)
-                                        .foregroundColor(.primary)
+                                        .foregroundColor(.text)
                                     
                                     Button(action: {
                                         tempSelection.remove(tag)
                                     }) {
                                         Image(systemName: "xmark.circle.fill")
                                             .font(.caption2)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.textSecondary)
                                     }
                                 }
                                 .padding(.horizontal, 10)
                                 .padding(.vertical, 6)
-                                .background(Color(.tertiarySystemBackground))
+                                .background(Color.surfaceSubtle)
                                 .cornerRadius(12)
                             }
                         }
                         .padding(.horizontal)
                     }
                     .padding(.vertical, 12)
-                    .background(Color(.systemBackground))
+                    .background(Color.background)
                     
                     Divider()
                 }
@@ -95,8 +95,8 @@ struct FlavorPickerModal: View {
                                 Text(item.emoji)
                                     .font(.title2)
                                 
-                                Text(item.category)
-                                    .font(.headline)
+                                    Text(item.category)
+                                        .font(.headline)
                                 
                                 Spacer()
                                 
@@ -106,7 +106,7 @@ struct FlavorPickerModal: View {
                                     Text("\(selectedCount)")
                                         .font(.caption)
                                         .fontWeight(.semibold)
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.onStatus)
                                         .padding(.horizontal, 8)
                                         .padding(.vertical, 2)
                                         .background(item.color)
@@ -152,12 +152,12 @@ private struct ModalFlavorTagButton: View {
             Text(name)
                 .font(.subheadline)
                 .fontWeight(isSelected ? .semibold : .medium)
-                .foregroundColor(isSelected ? textColorForBackground(color) : .primary)
+                .foregroundColor(isSelected ? textColorForBackground(color) : .text)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: 14)
-                        .fill(isSelected ? color : Color(.tertiarySystemBackground))
+                        .fill(isSelected ? color : Color.surfaceSubtle)
                         .overlay(
                             RoundedRectangle(cornerRadius: 14)
                                 .stroke(isSelected ? Color.clear : color.opacity(0.3), lineWidth: 1)
@@ -168,11 +168,10 @@ private struct ModalFlavorTagButton: View {
     }
     
     private func textColorForBackground(_ backgroundColor: Color) -> Color {
-        // Use black text for light backgrounds (orange/yellow tones)
-        if backgroundColor == .orange || backgroundColor == .pink {
-            return .black
-        }
-        return .white
+        // Use semantic content colors
+        // Light backgrounds -> onSurface; otherwise -> onStatus
+        // (Our flavor tokens skew vibrant; onStatus ensures contrast when filled.)
+        return (backgroundColor == .flavorSweet || backgroundColor == .flavorFruity) ? .onSurface : .onStatus
     }
 }
 

@@ -24,6 +24,7 @@ struct CreateTastingFlow: View {
                 ProgressBar(currentStep: currentStep, totalSteps: 6)
                     .padding(.horizontal)
                     .padding(.top, 8)
+                    .background(Color.background)
                 
                 // Step content
                 TabView(selection: $currentStep) {
@@ -53,11 +54,12 @@ struct CreateTastingFlow: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: currentStep)
                 .ignoresSafeArea(.keyboard)
+                .background(Color.background)
                 
                 // Navigation buttons
                 navigationButtons
                     .padding()
-                    .background(Color(.systemBackground))
+                    .background(Color.background)
                     .overlay(
                         Rectangle()
                             .fill(Color(.separator))
@@ -65,6 +67,7 @@ struct CreateTastingFlow: View {
                         alignment: .top
                     )
             }
+            .background(Color.background)
             .navigationTitle("Add Tasting")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -77,7 +80,7 @@ struct CreateTastingFlow: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Text("\(currentStep)/6")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
             .interactiveDismissDisabled(viewModel.hasUnsavedChanges)
@@ -95,6 +98,7 @@ struct CreateTastingFlow: View {
                 Text(viewModel.errorMessage)
             }
         }
+        .background(Color.background)
         .onAppear {
             setupPreselectedData()
         }
@@ -112,7 +116,7 @@ struct CreateTastingFlow: View {
                         Text("Back")
                     }
                     .font(.body)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brand)
                 }
             }
             
@@ -127,11 +131,11 @@ struct CreateTastingFlow: View {
                     }
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundColor(.black)  // Changed from .white to .black
+                    .foregroundColor(.text)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                     .background(
-                        Color.accentColor
+                        Color.brand
                             .opacity(canProceed ? 1.0 : 0.5)
                     )
                     .cornerRadius(20)
@@ -142,7 +146,7 @@ struct CreateTastingFlow: View {
                     Group {
                         if viewModel.isSubmitting {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .black))  // Changed from .white to .black
+                                .progressViewStyle(CircularProgressViewStyle(tint: .onStatus))
                         } else {
                             HStack {
                                 Image(systemName: "checkmark.circle.fill")
@@ -152,11 +156,11 @@ struct CreateTastingFlow: View {
                     }
                     .font(.body)
                     .fontWeight(.semibold)
-                    .foregroundColor(.black)  // Changed from .white to .black
+                    .foregroundColor(.onBrand)
                     .frame(minWidth: 120)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(25)
                 }
                 .disabled(viewModel.isSubmitting)
@@ -239,12 +243,12 @@ struct ProgressBar: View {
             ZStack(alignment: .leading) {
                 // Background
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(Color(.systemGray5))
+                    .fill(Color.border.opacity(0.3))
                     .frame(height: 4)
                 
                 // Progress
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.accentColor)
+                    .fill(Color.brand)
                     .frame(
                         width: geometry.size.width * (CGFloat(currentStep) / CGFloat(totalSteps)),
                         height: 4

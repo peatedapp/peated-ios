@@ -2,86 +2,67 @@
 
 ## Overview
 
-This document defines the design system for the Peated iOS app, based on the web application's visual identity. The app uses a dark theme with yellow/gold accents.
+This document defines the design system for the Peated iOS app. The app uses a token‑based, themeable color system with a light “cream” default palette. All UI must use semantic tokens, not raw colors.
 
-## Color Palette
+See the detailed token reference in docs/design/colors.md.
 
-### Primary Colors
+## Color System
+
+Semantic color tokens are resolved through an `AppTheme` provider (ThemeManager). Use the names below in all UI code:
 
 ```swift
-extension Color {
-    // Brand Colors
-    static let peatedGold = Color(hex: "#fbbf24")          // Primary accent, toasts, ratings
-    static let peatedGoldDark = Color(hex: "#f59e0b")      // Darker variant for pressed states
-    
-    // Background Colors (Dark Theme)
-    static let peatedBackground = Color(hex: "#020617")     // Main background (slate-950)
-    static let peatedSurface = Color(hex: "#0f172a")        // Elevated surfaces (slate-900)
-    static let peatedSurfaceLight = Color(hex: "#1e293b")   // Cards, cells (slate-800)
-    
-    // Border Colors
-    static let peatedBorder = Color(hex: "#334155")         // Default borders (slate-700)
-    static let peatedBorderLight = Color(hex: "#475569")    // Hover/focus borders (slate-600)
-    
-    // Text Colors
-    static let peatedTextPrimary = Color.white
-    static let peatedTextSecondary = Color.white.opacity(0.7)
-    static let peatedTextMuted = Color.white.opacity(0.5)
-    
-    // Semantic Colors
-    static let peatedSuccess = Color(hex: "#10b981")        // Green for success
-    static let peatedError = Color(hex: "#ef4444")          // Red for errors
-    static let peatedWarning = Color(hex: "#f59e0b")        // Amber for warnings
-    static let peatedInfo = Color(hex: "#3b82f6")           // Blue for info
-}
-
-// Helper extension for hex colors
-extension Color {
-    init(hex: String) {
-        let hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
-        var int: UInt64 = 0
-        Scanner(string: hex).scanHexInt64(&int)
-        let a, r, g, b: UInt64
-        switch hex.count {
-        case 3: // RGB (12-bit)
-            (a, r, g, b) = (255, (int >> 8) * 17, (int >> 4 & 0xF) * 17, (int & 0xF) * 17)
-        case 6: // RGB (24-bit)
-            (a, r, g, b) = (255, int >> 16, int >> 8 & 0xFF, int & 0xFF)
-        case 8: // ARGB (32-bit)
-            (a, r, g, b) = (int >> 24, int >> 16 & 0xFF, int >> 8 & 0xFF, int & 0xFF)
-        default:
-            (a, r, g, b) = (1, 1, 1, 0)
-        }
-        
-        self.init(
-            .sRGB,
-            red: Double(r) / 255,
-            green: Double(g) / 255,
-            blue:  Double(b) / 255,
-            opacity: Double(a) / 255
-        )
-    }
-}
+// Tokens (via Color.<token>)
+// Brand
+brand, brandEmphasis, onBrand
+// Surfaces
+background, surface, surfaceSubtle, border
+// Text
+text, textSecondary, textMuted, onSurface
+// Overlays
+overlaySoft, overlay, overlayStrong
+// Status
+success, warning, danger, info, onStatus
 ```
 
-### Usage Examples
+Rules:
+- Use `background` for screen backgrounds; `surface`/`surfaceSubtle` for cards and list rows; `border` for separators/outlines.
+- Use `text`, `textSecondary`, `textMuted` for content; avoid `.white` / `.black` directly.
+- Buttons on brand use `background: .brand` and `foreground: .onBrand`.
+- Status surfaces (error/warning/info/success) should use `onStatus` for text/icons.
+- Use overlay tokens for shadows/overlays (e.g., scrims) — do not hand‑roll black/white opacities.
+- Do not use `.brand` or platform semantic backgrounds in app UI; use tokens.
+- Do not invent ad‑hoc tokens in features; extend the theme only in the design system.
+
+Dark mode readiness:
+- Tokens are resolved dynamically by the active theme. Our default theme targets light; dark values are in place for future enabling.
+
+Theme swapping:
+- Implement a new `AppTheme` and set `ThemeManager.shared.theme = MyTheme()` (e.g., in Developer Settings). No call site changes required.
+
+### Examples
 
 ```swift
-// Toast button
-Image(systemName: hasToasted ? "hands.clap.fill" : "hands.clap")
-    .foregroundColor(hasToasted ? .peatedGold : .peatedTextSecondary)
+// CTA on brand
+Button("Action") { ... }
+  .foregroundColor(.onBrand)
+  .padding(.vertical, 12)
+  .frame(maxWidth: .infinity)
+  .background(Color.brand)
+  .cornerRadius(12)
 
-// Rating stars
-Image(systemName: "star.fill")
-    .foregroundColor(.peatedGold)
-
-// Card background
+// Card
 RoundedRectangle(cornerRadius: 12)
-    .fill(Color.peatedSurfaceLight)
-    .overlay(
-        RoundedRectangle(cornerRadius: 12)
-            .stroke(Color.peatedBorder, lineWidth: 1)
-    )
+  .fill(Color.surface)
+  .overlay(
+    RoundedRectangle(cornerRadius: 12)
+      .stroke(Color.border.opacity(0.3), lineWidth: 1)
+  )
+
+// Inline emphasis
+Text("Savor").foregroundColor(.brand)
+
+// Overlay scrim
+Color.overlayStrong.ignoresSafeArea()
 ```
 
 ## Typography
@@ -156,9 +137,7 @@ enum ShadowStyle {
     case medium
     case large
     
-    var color: Color {
-        Color.black.opacity(0.25)
-    }
+    var color: Color { Color.overlay }
     
     var radius: CGFloat {
         switch self {
@@ -188,11 +167,11 @@ enum ShadowStyle {
 struct PeatedCardModifier: ViewModifier {
     func body(content: Content) -> some View {
         content
-            .background(Color.peatedSurfaceLight)
+            .background(Color.surface)
             .cornerRadius(CornerRadius.lg)
             .overlay(
                 RoundedRectangle(cornerRadius: CornerRadius.lg)
-                    .stroke(Color.peatedBorder, lineWidth: 1)
+                    .stroke(Color.border, lineWidth: 1)
             )
     }
 }
@@ -232,9 +211,9 @@ struct PeatedButtonStyle: ButtonStyle {
         let isPressed = configuration.isPressed
         switch variant {
         case .primary:
-            return isPressed ? .peatedGoldDark : .peatedGold
+            return isPressed ? .brandEmphasis : .brand
         case .secondary:
-            return isPressed ? .peatedSurfaceLight : .peatedSurface
+            return isPressed ? .surface : .surface
         case .ghost:
             return .clear
         }
@@ -243,9 +222,9 @@ struct PeatedButtonStyle: ButtonStyle {
     private var foregroundColor: Color {
         switch variant {
         case .primary:
-            return .black
+            return .onBrand
         case .secondary, .ghost:
-            return .peatedTextPrimary
+            return .text
         }
     }
 }
@@ -300,22 +279,21 @@ enum Animation {
 }
 ```
 
-## Dark Theme Considerations
+## Theming Considerations
 
-Since Peated uses a dark theme exclusively:
+Peated uses a token‑based theme with a light “cream” default and dark‑mode values in place.
 
-1. **Always use semantic colors** - Don't hardcode black/white
-2. **Ensure sufficient contrast** - Especially for muted text
-3. **Test on OLED displays** - Pure blacks can cause smearing
-4. **Consider elevation** - Use surface colors to show depth
-5. **Avoid bright whites** - Use slightly off-white for less eye strain
+1. Always use semantic tokens (Color.brand, Color.text, Color.surface, etc.).
+2. Ensure sufficient contrast; use `onBrand`/`onStatus` for text over color fills.
+3. Consider elevation: use `surface`/`surfaceSubtle` and `border` for depth.
+4. Avoid hardcoded `Color.white`/`Color.black` and platform accents in app UI.
 
 ## Accessibility
 
-- Ensure all text meets WCAG AA contrast ratios against backgrounds
-- Provide clear focus indicators using `.peatedGold`
-- Support Dynamic Type for all text
-- Include proper accessibility labels for icons
+- Ensure text meets WCAG AA contrast ratios against `background`/`surface`.
+- Provide clear focus indicators using `brand` outlines/fills as appropriate.
+- Support Dynamic Type for all text.
+- Include accessible labels for icons and dynamic content.
 
 ## Usage in Code
 
@@ -327,7 +305,7 @@ struct ContentView: View {
         VStack(spacing: Spacing.lg) {
             Text("Welcome to Peated")
                 .font(.peatedTitle)
-                .foregroundColor(.peatedTextPrimary)
+                .foregroundColor(.text)
             
             Button("Get Started") {
                 // Action
@@ -335,7 +313,7 @@ struct ContentView: View {
             .buttonStyle(PeatedButtonStyle(variant: .primary))
         }
         .padding(Spacing.xl)
-        .background(Color.peatedBackground)
+        .background(Color.background)
     }
 }
 ```

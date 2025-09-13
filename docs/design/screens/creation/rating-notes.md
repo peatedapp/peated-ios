@@ -81,7 +81,7 @@ struct RatingNotesStep: View {
                     Text(viewModel.selectedBottle?.name ?? "")
                         .font(.title2)
                         .fontWeight(.bold)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                 }
                 .padding(.horizontal)
                 .padding(.top)
@@ -159,7 +159,7 @@ struct RatingNotesStep: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 20)
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .padding(.horizontal)
         }
@@ -204,7 +204,7 @@ struct RatingNotesStep: View {
                             notesCharacterCount = viewModel.notes.count
                         }
                 }
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
                 
                 Text("\(notesCharacterCount)/\(maxNotesLength) characters")
@@ -275,7 +275,7 @@ struct RatingNotesStep: View {
                             Text(showingAllTags ? "Show Less" : "Show More")
                                 .font(.caption)
                         }
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                     }
                 }
                 .padding(.horizontal)
@@ -317,10 +317,10 @@ struct RatingNotesStep: View {
                                     Text("+ More")
                                         .font(.caption)
                                         .fontWeight(.medium)
-                                        .foregroundColor(.accentColor)
+                                        .foregroundColor(.brand)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
-                                        .background(Color.accentColor.opacity(0.1))
+                                        .background(Color.brand.opacity(0.1))
                                         .cornerRadius(15)
                                 }
                             }
@@ -343,7 +343,7 @@ struct RatingNotesStep: View {
                 }
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color(.tertiarySystemBackground))
+                .background(Color.surfaceSubtle)
                 .cornerRadius(8)
                 .padding(.horizontal)
             }
@@ -466,17 +466,17 @@ struct TagChip: View {
                     .font(.caption)
                     .fontWeight(isSelected ? .semibold : .medium)
             }
-            .foregroundColor(isSelected ? .white : (isSuggested ? .accentColor : .primary))
+            .foregroundColor(isSelected ? .white : (isSuggested ? .brand : .primary))
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(
                 Group {
                     if isSelected {
-                        Color.accentColor
+                        Color.brand
                     } else if isSuggested {
-                        Color.accentColor.opacity(0.15)
+                        Color.brand.opacity(0.15)
                     } else {
-                        Color(.secondarySystemBackground)
+                        Color.surface
                     }
                 }
             )
@@ -484,7 +484,7 @@ struct TagChip: View {
             .overlay(
                 RoundedRectangle(cornerRadius: 15)
                     .stroke(
-                        isSelected ? Color.clear : (isSuggested ? Color.accentColor.opacity(0.3) : Color.clear),
+                        isSelected ? Color.clear : (isSuggested ? Color.brand.opacity(0.3) : Color.clear),
                         lineWidth: 1
                     )
             )
@@ -504,7 +504,7 @@ struct ServingStyleButton: View {
             VStack(spacing: 8) {
                 Image(systemName: style.iconName)
                     .font(.title2)
-                    .foregroundColor(isSelected ? .white : .accentColor)
+                    .foregroundColor(isSelected ? .white : .brand)
                 
                 Text(style.displayName)
                     .font(.caption)
@@ -515,11 +515,11 @@ struct ServingStyleButton: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand : Color.surface)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(isSelected ? Color.clear : Color.accentColor.opacity(0.2), lineWidth: 1)
+                    .stroke(isSelected ? Color.clear : Color.brand.opacity(0.2), lineWidth: 1)
             )
         }
         .buttonStyle(.plain)

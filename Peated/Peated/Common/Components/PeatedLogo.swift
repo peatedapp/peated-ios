@@ -11,12 +11,12 @@ struct PeatedLogo: View {
         .resizable()
         .aspectRatio(contentMode: .fit)
         .frame(height: height)
-        .foregroundColor(.peatedGold)
+        .foregroundColor(.brand)
     } else {
       // Fallback text logo
       Text("PEATED")
         .font(.system(size: height * 0.4, weight: .black, design: .default))
-        .foregroundColor(.peatedGold)
+        .foregroundColor(.brand)
         .tracking(height * 0.08)
     }
   }
@@ -29,5 +29,5 @@ struct PeatedLogo: View {
     PeatedLogo(height: 80)
   }
   .padding()
-  .background(Color.peatedBackground)
+  .background(Color.background)
 }

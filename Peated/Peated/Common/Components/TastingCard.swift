@@ -14,8 +14,7 @@ struct TastingCard: View {
       VStack(alignment: .leading, spacing: 4) {
         // Bottle name
         Text(tasting.bottleName)
-            .font(.system(size: 15, weight: .medium))
-            .foregroundColor(.primary)
+            .headlineStyle()
             .lineLimit(1)
             .onTapGesture {
               onBottleTap()
@@ -25,16 +24,16 @@ struct TastingCard: View {
           HStack(spacing: 4) {
             Text(tasting.bottleBrandName)
               .font(.system(size: 13))
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
             
             if let category = tasting.bottleCategory {
               Text("•")
                 .font(.system(size: 13))
-                .foregroundColor(.secondary.opacity(0.5))
+                .foregroundColor(.textMuted)
               
               Text(category.capitalized)
                 .font(.system(size: 13))
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
             }
           }
           .lineLimit(1)
@@ -44,7 +43,7 @@ struct TastingCard: View {
           if let notes = tasting.notes, !notes.isEmpty {
             Text(notes)
               .font(.system(size: 14))
-              .foregroundColor(.primary.opacity(0.9))
+              .foregroundColor(.text)
               .lineLimit(2)
               .multilineTextAlignment(.leading)
               .padding(.top, 4)
@@ -56,11 +55,11 @@ struct TastingCard: View {
               HStack(spacing: 6) {
                 ForEach(tasting.tags, id: \.self) { tag in
                   Text("#\(tag)")
-                    .font(.system(size: 12))
-                    .foregroundColor(.peatedGold)
+                    .font(.peatedFootnote)
+                    .foregroundColor(.brand)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.peatedGold.opacity(0.1))
+                    .background(Color.brand.opacity(0.1))
                     .clipShape(Capsule())
                 }
               }
@@ -104,29 +103,29 @@ struct TastingCard: View {
                       .scaledToFill()
                   } placeholder: {
                     Circle()
-                      .fill(Color.gray.opacity(0.2))
+                      .fill(Color.border.opacity(0.2))
                       .overlay(
                         Image(systemName: "person.fill")
                           .font(.system(size: 10))
-                          .foregroundColor(.gray.opacity(0.5))
+                          .foregroundColor(.textMuted)
                       )
                   }
                   .frame(width: 20, height: 20)
                   .clipShape(Circle())
                 } else {
                   Circle()
-                    .fill(Color.gray.opacity(0.2))
+                    .fill(Color.border.opacity(0.2))
                     .overlay(
                       Image(systemName: "person.fill")
                         .font(.system(size: 10))
-                        .foregroundColor(.gray.opacity(0.5))
+                        .foregroundColor(.textMuted)
                     )
                     .frame(width: 20, height: 20)
                 }
                 
                 Text(tasting.username)
                   .font(.system(size: 13))
-                  .foregroundColor(.secondary)
+                  .foregroundColor(.textSecondary)
               }
               .contentShape(Rectangle()) // Make user area tappable
               .onTapGesture {
@@ -135,12 +134,12 @@ struct TastingCard: View {
               
               Text(" • ")
                 .font(.system(size: 13))
-                .foregroundColor(.secondary.opacity(0.5))
+                .foregroundColor(.textMuted)
               
               // Separate timestamp as tappable area
               Text(tasting.timeAgo)
                 .font(.system(size: 13))
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
                 .contentShape(Rectangle())
                 .onTapGesture {
                   onComment() // Navigate to detail when tapping timestamp
@@ -157,7 +156,7 @@ struct TastingCard: View {
                     Text("\(tasting.toastCount)")
                       .font(.system(size: 13))
                   }
-                  .foregroundColor(tasting.hasToasted ? .peatedGold : .secondary)
+                  .foregroundColor(tasting.hasToasted ? .brand : .textSecondary)
                 }
                 .buttonStyle(.plain)
                 
@@ -168,7 +167,7 @@ struct TastingCard: View {
                     Text("\(tasting.commentCount)")
                       .font(.system(size: 13))
                   }
-                  .foregroundColor(.secondary)
+                  .foregroundColor(.textSecondary)
                 }
                 .buttonStyle(.plain)
               }
@@ -177,20 +176,20 @@ struct TastingCard: View {
             // Friends who also tasted - on separate line
             if !tasting.friendUsernames.isEmpty {
               HStack(spacing: 4) {
-                Image(systemName: "person.2.fill")
-                  .font(.system(size: 11))
-                  .foregroundColor(.secondary)
+          Image(systemName: "person.2.fill")
+            .font(.system(size: 11))
+            .foregroundColor(.textSecondary)
                 
                 ForEach(Array(tasting.friendUsernames.prefix(3)), id: \.self) { friend in
                   Text("@\(friend)")
                     .font(.system(size: 13))
-                    .foregroundColor(.peatedGold)
+                    .foregroundColor(.brand)
                 }
                 
                 if tasting.friendUsernames.count > 3 {
                   Text("and \(tasting.friendUsernames.count - 3) more")
                     .font(.system(size: 13))
-                    .foregroundColor(.secondary)
+                  .foregroundColor(.textSecondary)
                 }
               }
             }
@@ -199,6 +198,7 @@ struct TastingCard: View {
       }
       .padding(16)
     }
-    .background(Color(.systemBackground))
+    .background(Color.clear)
+    .cardStyle()
   }
 }

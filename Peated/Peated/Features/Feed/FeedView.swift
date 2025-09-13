@@ -17,20 +17,39 @@ struct FeedView: View {
   var body: some View {
     NavigationStack(path: $navigationPath) {
       VStack(spacing: 0) {
-        // Feed type picker
-        Picker("Feed Type", selection: $model.selectedFeedType) {
+        // Tab-style navigation with bottom borders
+        HStack(spacing: 0) {
           ForEach(FeedType.allCases, id: \.self) { feedType in
-            Text(feedType.displayName).tag(feedType)
+            Button(action: {
+              model.selectedFeedType = feedType
+              Task {
+                await model.switchFeedType(feedType)
+              }
+            }) {
+              VStack(spacing: 0) {
+                Text(feedType.displayName)
+                  .font(.system(size: 15, weight: model.selectedFeedType == feedType ? .medium : .regular))
+                  .foregroundColor(model.selectedFeedType == feedType ? Color.text : Color.textSecondary)
+                  .frame(maxWidth: .infinity)
+                  .padding(.vertical, 12)
+                
+                // Bottom border indicator
+                Rectangle()
+                  .fill(model.selectedFeedType == feedType ? Color.brand : Color.clear)
+                  .frame(height: 2)
+              }
+            }
+            .buttonStyle(PlainButtonStyle())
           }
         }
-      .pickerStyle(.segmented)
-      .padding(.horizontal)
-      .padding(.vertical, 8)
-      .onChange(of: model.selectedFeedType) { _, newValue in
-        Task {
-          await model.switchFeedType(newValue)
-        }
-      }
+        .background(Color.background)
+        .overlay(
+          // Bottom border for the whole tab bar
+          Rectangle()
+            .fill(Color.border.opacity(0.2))
+            .frame(height: 1),
+          alignment: .bottom
+        )
       
       // Content container
       ZStack(alignment: .top) {
@@ -50,32 +69,35 @@ struct FeedView: View {
           ScrollView {
             LazyVStack(spacing: 0) {
               ForEach(model.tastings) { tasting in
-                VStack(spacing: 0) {
-                  TastingFeedCard(
-                    tasting: tasting,
-                    onToast: {
-                      Task {
-                        await model.toggleToast(for: tasting.id)
-                      }
-                    },
-                    onComment: {
-                      // Navigate to tasting detail
-                      navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
-                    },
-                    onUserTap: {
-                      // Navigate to user profile
-                      navigationPath.append(NavigationDestination.userProfile(userId: tasting.userId))
-                    },
-                    onBottleTap: {
-                      // Navigate to tasting detail (not bottle detail)
-                      navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
+                TastingFeedCard(
+                  tasting: tasting,
+                  onToast: {
+                    Task {
+                      await model.toggleToast(for: tasting.id)
                     }
-                  )
-                  
-                  // Separator
-                  Divider()
-                    .background(Color.gray.opacity(0.2))
-                }
+                  },
+                  onComment: {
+                    // Navigate to tasting detail
+                    navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
+                  },
+                  onUserTap: {
+                    // Navigate to user profile
+                    navigationPath.append(NavigationDestination.userProfile(userId: tasting.userId))
+                  },
+                  onBottleTap: {
+                    // Navigate to tasting detail (not bottle detail)
+                    navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
+                  }
+                )
+                .background(Color.background)
+                .overlay(
+                  // Inset light brown separator at the bottom
+                  Rectangle()
+                    .fill(Color.border)
+                    .frame(height: 0.5)
+                    .padding(.horizontal, 20),
+                  alignment: .bottom
+                )
                 .onAppear {
                   Task {
                     await model.loadMoreIfNeeded(currentItem: tasting)
@@ -88,7 +110,10 @@ struct FeedView: View {
                   .padding()
               }
             }
+            .background(Color.background)
           }
+          .scrollContentBackground(.hidden)
+          .background(Color.background)
           .refreshable {
             await model.refreshCurrentFeed()
           }
@@ -101,13 +126,12 @@ struct FeedView: View {
             Spacer()
             Button(action: { showingCreateTasting = true }) {
               Image(systemName: "plus")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.black)
+                .font(.system(size: 22, weight: .regular))
+                .foregroundColor(.onBrand)
                 .frame(width: 56, height: 56)
-                .background(Color.peatedGold)
+                .background(Color.brand)
                 .clipShape(Circle())
-                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                .shadow(color: Color.overlaySoft, radius: 8, x: 0, y: 4)
             }
             .padding(.trailing, 16)
             .padding(.bottom, 16)
@@ -125,9 +149,13 @@ struct FeedView: View {
           .animation(.easeInOut, value: model.error != nil)
         }
       }
+      .background(Color.background)
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .navigationTitle("Activity")
       .navigationBarTitleDisplayMode(.inline)
+      .toolbarBackground(Color.background, for: .navigationBar)
+      .toolbarBackground(.visible, for: .navigationBar)
+      .toolbarColorScheme(.light, for: .navigationBar)
       .sheet(isPresented: $showingCreateTasting) {
         CreateTastingFlow(onSuccess: {
           // Show success toast and refresh feed
@@ -168,6 +196,7 @@ struct FeedView: View {
         }
       }
     }
+    .background(Color.background)
     .toast(
       isShowing: $showingSuccessToast,
       message: "Tasting created successfully!",
@@ -181,16 +210,17 @@ struct FeedView: View {
 struct LoadingView: View {
   var body: some View {
     ScrollView {
-      VStack(spacing: 0) {
+      LazyVStack(spacing: 0) {
         ForEach(0..<5) { index in
-          VStack(spacing: 0) {
-            SkeletonTastingCard()
-            
-            if index < 4 {
-              Divider()
-                .background(Color.gray.opacity(0.2))
-            }
-          }
+          SkeletonTastingCard()
+            .background(Color.background)
+            .overlay(
+              Rectangle()
+                .fill(Color.border)
+                .frame(height: 0.5)
+                .padding(.horizontal, 20),
+              alignment: .bottom
+            )
         }
       }
     }
@@ -208,7 +238,7 @@ struct EmptyFeedView: View {
       VStack(spacing: 16) {
         Image(systemName: iconName)
           .font(.system(size: 60))
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
         
         Text(title)
           .font(.title2)
@@ -216,7 +246,7 @@ struct EmptyFeedView: View {
         
         Text(message)
           .font(.subheadline)
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
           .multilineTextAlignment(.center)
           .padding(.horizontal, 40)
         
@@ -226,10 +256,10 @@ struct EmptyFeedView: View {
           }) {
             Text("Find Friends")
               .fontWeight(.medium)
-              .foregroundColor(.white)
+              .foregroundColor(.onBrand)
               .padding(.horizontal, 24)
               .padding(.vertical, 12)
-              .background(Color.peatedGold)
+              .background(Color.brand)
               .cornerRadius(25)
           }
           .padding(.top)
@@ -274,4 +304,3 @@ struct EmptyFeedView: View {
     }
   }
 }
-

@@ -27,13 +27,13 @@ struct BarcodeScannerView: View {
           
           // Scanning frame
           RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-            .stroke(Color.peatedGold, lineWidth: DesignSystem.Border.thick)
+            .stroke(Color.brand, lineWidth: DesignSystem.Border.thick)
             .frame(width: 280, height: 280)
             .overlay(
               VStack {
                 if isScanning {
                   ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .peatedGold))
+                    .progressViewStyle(CircularProgressViewStyle(tint: .brand))
                     .scaleEffect(1.5)
                 }
               }
@@ -45,11 +45,11 @@ struct BarcodeScannerView: View {
           VStack(spacing: DesignSystem.Spacing.small) {
             Text("Position barcode within frame")
               .font(.system(size: DesignSystem.FontSize.title, weight: .medium))
-              .foregroundColor(.white)
+              .foregroundColor(.onStatus)
             
             Text("Scanning will happen automatically")
               .font(.system(size: DesignSystem.FontSize.body))
-              .foregroundColor(.white.opacity(DesignSystem.Opacity.dimmed))
+              .foregroundColor(.onStatus.opacity(DesignSystem.Opacity.dimmed))
           }
           .padding(.horizontal, DesignSystem.Spacing.screenPadding)
           .padding(.bottom, 50)

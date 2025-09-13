@@ -7,33 +7,33 @@ struct SkeletonTastingCard: View {
     HStack(alignment: .top, spacing: 12) {
       // Bottle image placeholder
       RoundedRectangle(cornerRadius: 4)
-        .fill(Color.gray.opacity(0.2))
+        .fill(Color.border.opacity(0.2))
         .frame(width: 48, height: 64)
       
       VStack(alignment: .leading, spacing: 6) {
         // Bottle name
         RoundedRectangle(cornerRadius: 4)
-          .fill(Color.gray.opacity(0.2))
+          .fill(Color.border.opacity(0.2))
           .frame(width: 180, height: 14)
         
         // Brand
         RoundedRectangle(cornerRadius: 4)
-          .fill(Color.gray.opacity(0.2))
+          .fill(Color.border.opacity(0.2))
           .frame(width: 120, height: 12)
         
         // Rating
         RoundedRectangle(cornerRadius: 4)
-          .fill(Color.gray.opacity(0.2))
+          .fill(Color.border.opacity(0.2))
           .frame(width: 100, height: 12)
         
         // User info
         HStack {
           Circle()
-            .fill(Color.gray.opacity(0.2))
+            .fill(Color.border.opacity(0.2))
             .frame(width: 20, height: 20)
           
           RoundedRectangle(cornerRadius: 4)
-            .fill(Color.gray.opacity(0.2))
+            .fill(Color.border.opacity(0.2))
             .frame(width: 150, height: 12)
         }
         .padding(.top, 4)
@@ -56,22 +56,22 @@ struct ErrorBanner: View {
     VStack {
       HStack {
         Image(systemName: "exclamationmark.triangle.fill")
-          .foregroundColor(.white)
+          .foregroundColor(.onStatus)
         
         Text("Failed to refresh feed")
           .font(.subheadline)
-          .foregroundColor(.white)
+          .foregroundColor(.onStatus)
         
         Spacer()
         
         Button(action: { isShowing = false }) {
           Image(systemName: "xmark")
-            .foregroundColor(.white)
+            .foregroundColor(.onStatus)
             .font(.caption)
         }
       }
       .padding()
-      .background(Color.red)
+      .background(Color.danger)
       .cornerRadius(8)
       .shadow(radius: 4)
       .padding(.horizontal)
@@ -94,7 +94,7 @@ struct ErrorEmptyView: View {
       VStack(spacing: 16) {
         Image(systemName: "exclamationmark.icloud")
           .font(.system(size: 60))
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
         
         Text("Unable to Load Feed")
           .font(.title2)
@@ -102,7 +102,7 @@ struct ErrorEmptyView: View {
         
         Text("We couldn't load your feed. Please check your connection and try again.")
           .font(.subheadline)
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
           .multilineTextAlignment(.center)
           .padding(.horizontal, 40)
         
@@ -112,10 +112,10 @@ struct ErrorEmptyView: View {
             Text("Tap to Retry")
           }
           .fontWeight(.medium)
-          .foregroundColor(.white)
+          .foregroundColor(.onBrand)
           .padding(.horizontal, 24)
           .padding(.vertical, 12)
-          .background(Color.peatedGold)
+          .background(Color.brand)
           .cornerRadius(25)
         }
         .padding(.top)

@@ -95,23 +95,23 @@ extension View {
   func cardStyle() -> some View {
     self
       .padding(DesignSystem.Spacing.cardPadding)
-      .background(Color.peatedSurface)
+      .background(Color.surface)
       .cornerRadius(DesignSystem.CornerRadius.large)
       .overlay(
         RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-          .stroke(Color.peatedBorder.opacity(DesignSystem.Opacity.light), lineWidth: DesignSystem.Border.thin)
+          .stroke(Color.border.opacity(DesignSystem.Opacity.light), lineWidth: DesignSystem.Border.thin)
       )
   }
   
   func bottleCardStyle(isSelected: Bool = false) -> some View {
     self
       .padding(DesignSystem.Spacing.medium)
-      .background(Color.peatedSurfaceLight.opacity(DesignSystem.Opacity.semiOpaque))
+      .background(Color.surface.opacity(DesignSystem.Opacity.semiOpaque))
       .cornerRadius(DesignSystem.CornerRadius.medium)
       .overlay(
         RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
           .stroke(
-            isSelected ? Color.peatedGold : Color.peatedBorder.opacity(DesignSystem.Opacity.light),
+            isSelected ? Color.brand : Color.border.opacity(DesignSystem.Opacity.light),
             lineWidth: isSelected ? DesignSystem.Border.thick : DesignSystem.Border.thin
           )
       )
@@ -120,10 +120,10 @@ extension View {
   func tagStyle() -> some View {
     self
       .font(.system(size: DesignSystem.FontSize.small))
-      .foregroundColor(.peatedGold)
+      .foregroundColor(.brand)
       .padding(.horizontal, DesignSystem.Spacing.medium)
       .padding(.vertical, DesignSystem.Spacing.xSmall + 1) // 5
-      .background(Color.peatedGold.opacity(DesignSystem.Opacity.subtle))
+      .background(Color.brand.opacity(DesignSystem.Opacity.subtle))
       .clipShape(Capsule())
   }
 }

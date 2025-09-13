@@ -14,11 +14,12 @@ struct NotesStep: View {
                     Text("Add tasting notes")
                         .font(.title2)
                         .fontWeight(.bold)
+                        .foregroundColor(.text)
                     
                     if let bottle = viewModel.selectedBottle {
                         Text("Describe your experience with \(bottle.name)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                 }
                 .padding(.horizontal)
@@ -39,20 +40,20 @@ struct NotesStep: View {
                             
                             if viewModel.selectedTags.isEmpty {
                                 Text("Select flavor notes")
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.textSecondary)
                             } else {
                                 Text("\(viewModel.selectedTags.count) flavors selected")
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.text)
                             }
                             
                             Spacer()
                             
                             Image(systemName: "chevron.right")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                         }
                         .padding()
-                        .background(Color(.secondarySystemBackground))
+                        .background(Color.surface)
                         .cornerRadius(12)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
@@ -70,19 +71,19 @@ struct NotesStep: View {
                                         Text(tag)
                                             .font(.caption)
                                             .fontWeight(.medium)
-                                            .foregroundColor(.primary)
+                                            .foregroundColor(.text)
                                         
                                         Button(action: {
                                             viewModel.selectedTags.remove(tag)
                                         }) {
                                             Image(systemName: "xmark.circle.fill")
                                                 .font(.caption2)
-                                                .foregroundColor(.secondary)
+                                                .foregroundColor(.textSecondary)
                                         }
                                     }
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 6)
-                                    .background(Color(.tertiarySystemBackground))
+                                    .background(Color.surfaceSubtle)
                                     .cornerRadius(12)
                                 }
                             }
@@ -100,7 +101,7 @@ struct NotesStep: View {
                         
                         Text("What did you taste? (Optional)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                     .padding(.horizontal)
                     
@@ -116,7 +117,7 @@ struct NotesStep: View {
                                 Group {
                                     if viewModel.notes.isEmpty && !isNotesFocused {
                                         Text("Describe the aroma, taste, and finish...")
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(.textSecondary)
                                             .padding(.top, 20)  // Adjusted for internal padding
                                             .padding(.leading, 17)  // Adjusted for internal padding
                                             .allowsHitTesting(false)
@@ -125,7 +126,7 @@ struct NotesStep: View {
                                 alignment: .topLeading
                             )
                     }
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.surface)
                     .cornerRadius(12)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
@@ -138,7 +139,7 @@ struct NotesStep: View {
                         Spacer()
                         Text("\(viewModel.notes.count)/500")
                             .font(.caption)
-                            .foregroundColor(viewModel.notes.count > 500 ? .red : .secondary)
+                            .foregroundColor(viewModel.notes.count > 500 ? .danger : .textSecondary)
                     }
                     .padding(.horizontal)
                     
@@ -149,52 +150,52 @@ struct NotesStep: View {
                         
                         Text("Consider describing:")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                         
                         VStack(alignment: .leading, spacing: 8) {
                             HStack(spacing: 12) {
                                 Image(systemName: "wind")
                                     .font(.caption)
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.brand)
                                     .frame(width: 20)
                                 Text("The nose/aroma")
                                     .font(.caption)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.text)
                             }
                             
                             HStack(spacing: 12) {
                                 Image(systemName: "mouth")
                                     .font(.caption)
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.brand)
                                     .frame(width: 20)
                                 Text("Initial taste")
                                     .font(.caption)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.text)
                             }
                             
                             HStack(spacing: 12) {
                                 Image(systemName: "timer")
                                     .font(.caption)
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.brand)
                                     .frame(width: 20)
                                 Text("The finish")
                                     .font(.caption)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.text)
                             }
                             
                             HStack(spacing: 12) {
                                 Image(systemName: "arrow.left.arrow.right")
                                     .font(.caption)
-                                    .foregroundColor(.accentColor)
+                                    .foregroundColor(.brand)
                                     .frame(width: 20)
                                 Text("How it compares to others")
                                     .font(.caption)
-                                    .foregroundColor(.primary)
+                                    .foregroundColor(.text)
                             }
                         }
                     }
                     .padding()
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.surface)
                     .cornerRadius(12)
                     .padding(.horizontal)
                     .padding(.top, 12)
@@ -202,6 +203,7 @@ struct NotesStep: View {
             }
             .padding(.bottom, 100) // Space for navigation buttons
         }
+        .background(Color.background)
         .scrollDismissesKeyboard(.interactively)
         .sheet(isPresented: $showFlavorPicker) {
             FlavorPickerModal(selectedTags: $viewModel.selectedTags, isPresented: $showFlavorPicker)

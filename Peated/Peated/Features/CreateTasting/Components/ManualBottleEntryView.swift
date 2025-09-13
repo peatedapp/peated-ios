@@ -55,7 +55,7 @@ struct ManualBottleEntryView: View {
         } footer: {
           Text("Enter the bottle name and brand as they appear on the label")
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
         }
         
         Section {
@@ -75,7 +75,7 @@ struct ManualBottleEntryView: View {
               }
             
             Text("%")
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
           }
           
           HStack {
@@ -85,7 +85,7 @@ struct ManualBottleEntryView: View {
               .submitLabel(.done)
             
             Text("years")
-              .foregroundColor(.secondary)
+              .foregroundColor(.textSecondary)
           }
         } header: {
           Text("Details")
@@ -110,12 +110,12 @@ struct ManualBottleEntryView: View {
       }
       .overlay {
         if isCreating {
-          Color.black.opacity(0.3)
+          Color.overlay
             .ignoresSafeArea()
             .overlay {
               ProgressView("Creating bottle...")
                 .padding()
-                .background(Color(.systemBackground))
+                .background(Color.background)
                 .cornerRadius(DesignSystem.CornerRadius.medium)
             }
         }

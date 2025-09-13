@@ -49,8 +49,8 @@ RatingView(
     maxRating: 5,
     size: 24,
     spacing: 8,
-    filledColor: .orange,
-    emptyColor: .gray.opacity(0.3)
+    filledColor: .brand,
+    emptyColor: Color.border.opacity(0.3)
 )
 
 // With number display
@@ -338,8 +338,8 @@ extension Color {
             rating: 3.5,
             size: 16,
             spacing: 2,
-            filledColor: .red,
-            emptyColor: .red.opacity(0.3)
+            filledColor: .danger,
+            emptyColor: Color.danger.opacity(0.3)
         )
         
         RatingView(
@@ -353,7 +353,7 @@ extension Color {
             rating: 4.5,
             size: 40,
             spacing: 10,
-            filledColor: .purple
+            filledColor: .brand
         )
     }
     .padding()
@@ -419,8 +419,8 @@ RatingView(
 ```swift
 RatingView(
     rating: bottle.avgRating,
-    filledColor: .orange,
-    emptyColor: .orange.opacity(0.2)
+    filledColor: .brand,
+    emptyColor: Color.brand.opacity(0.2)
 )
 ```
 

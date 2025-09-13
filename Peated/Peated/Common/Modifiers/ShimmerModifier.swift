@@ -8,9 +8,9 @@ struct ShimmerModifier: ViewModifier {
   init(
     animation: Animation = Animation.linear(duration: 1.5).repeatForever(autoreverses: false),
     gradient: Gradient = Gradient(colors: [
-      .gray.opacity(0.3),
-      .gray.opacity(0.5),
-      .gray.opacity(0.3)
+      Color.border.opacity(0.2),
+      Color.border.opacity(0.45),
+      Color.border.opacity(0.2)
     ])
   ) {
     self.animation = animation
@@ -42,9 +42,9 @@ extension View {
   func shimmer(
     animation: Animation = Animation.linear(duration: 1.5).repeatForever(autoreverses: false),
     gradient: Gradient = Gradient(colors: [
-      .gray.opacity(0.3),
-      .gray.opacity(0.5),
-      .gray.opacity(0.3)
+      Color.border.opacity(0.2),
+      Color.border.opacity(0.45),
+      Color.border.opacity(0.2)
     ])
   ) -> some View {
     modifier(ShimmerModifier(animation: animation, gradient: gradient))

@@ -23,7 +23,7 @@ struct LoginViewSimple: View {
     ZStack {
       // Background gradient
       LinearGradient(
-        gradient: Gradient(colors: [Color.peatedBackground, Color.peatedSurface]),
+        gradient: Gradient(colors: [Color.background, Color.surface]),
         startPoint: .top,
         endPoint: .bottom
       )
@@ -42,16 +42,16 @@ struct LoginViewSimple: View {
           // Divider
           HStack {
             Rectangle()
-              .fill(Color.peatedBorder)
+              .fill(Color.border)
               .frame(height: 1)
             
             Text("OR")
               .font(.peatedCaption)
-              .foregroundColor(.peatedTextMuted)
+              .foregroundColor(.textMuted)
               .padding(.horizontal, 16)
             
             Rectangle()
-              .fill(Color.peatedBorder)
+              .fill(Color.border)
               .frame(height: 1)
           }
           .padding(.horizontal)
@@ -111,11 +111,11 @@ struct LoginViewSimple: View {
         Text("Welcome back")
           .font(.peatedTitle2)
           .fontWeight(.bold)
-          .foregroundColor(.peatedTextPrimary)
+          .foregroundColor(.text)
         
         Text("Track and share your whisky journey")
           .font(.peatedBody)
-          .foregroundColor(.peatedTextSecondary)
+          .foregroundColor(.textSecondary)
       }
     }
   }
@@ -127,20 +127,20 @@ struct LoginViewSimple: View {
       HStack(spacing: 12) {
         Image(systemName: "g.circle.fill")
           .font(.system(size: 20, weight: .semibold))
-          .foregroundColor(.peatedBackground)
+          .foregroundColor(.onBrand)
         if isLoading {
           ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: .peatedBackground))
+            .progressViewStyle(CircularProgressViewStyle(tint: .onBrand))
         } else {
           Text("Continue with Google")
             .font(.peatedBody)
             .fontWeight(.semibold)
-            .foregroundColor(.peatedBackground)
+            .foregroundColor(.onBrand)
         }
       }
       .frame(maxWidth: .infinity)
       .padding(.vertical, 16)
-      .background(isLoading ? Color.peatedGold.opacity(0.6) : Color.peatedGold)
+      .background(isLoading ? Color.brand.opacity(0.6) : Color.brand)
       .cornerRadius(12)
       .animation(.easeInOut(duration: 0.1), value: isLoading)
     }
@@ -153,7 +153,7 @@ struct LoginViewSimple: View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Email")
         .font(.peatedCaption)
-        .foregroundColor(.peatedTextSecondary)
+        .foregroundColor(.textSecondary)
       
       PeatedTextField(
         placeholder: "you@example.com",
@@ -165,12 +165,12 @@ struct LoginViewSimple: View {
       .disableAutocorrection(true)
       .focused($focusedField, equals: .email)
       .padding()
-      .background(Color.peatedSurfaceLight)
+      .background(Color.surface)
       .cornerRadius(12)
       .overlay(
         RoundedRectangle(cornerRadius: 12)
           .stroke(
-            focusedField == .email ? Color.peatedGold : Color.clear,
+            focusedField == .email ? Color.brand : Color.clear,
             lineWidth: 2
           )
       )
@@ -183,7 +183,7 @@ struct LoginViewSimple: View {
     VStack(alignment: .leading, spacing: 8) {
       Text("Password")
         .font(.peatedCaption)
-        .foregroundColor(.peatedTextSecondary)
+        .foregroundColor(.textSecondary)
       
       HStack {
         PeatedTextField(
@@ -197,16 +197,16 @@ struct LoginViewSimple: View {
           isPasswordVisible.toggle()
         } label: {
           Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
-            .foregroundColor(.peatedTextSecondary)
+            .foregroundColor(.textSecondary)
         }
       }
       .padding()
-      .background(Color.peatedSurfaceLight)
+      .background(Color.surface)
       .cornerRadius(12)
       .overlay(
         RoundedRectangle(cornerRadius: 12)
           .stroke(
-            focusedField == .password ? Color.peatedGold : Color.clear,
+            focusedField == .password ? Color.brand : Color.clear,
             lineWidth: 2
           )
       )
@@ -223,7 +223,7 @@ struct LoginViewSimple: View {
         // TODO: Handle forgot password
       }
       .font(.peatedCaption)
-      .foregroundColor(.peatedGold)
+      .foregroundColor(.brand)
     }
   }
   
@@ -234,10 +234,10 @@ struct LoginViewSimple: View {
       Text("Sign In")
         .font(.peatedBody)
         .fontWeight(.semibold)
-        .foregroundColor(.peatedBackground)
+        .foregroundColor(.onBrand)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(Color.peatedGold)
+        .background(Color.brand)
         .cornerRadius(12)
     }
     .disabled(email.isEmpty || password.isEmpty || isLoading)
@@ -249,14 +249,14 @@ struct LoginViewSimple: View {
     HStack {
       Text("Don't have an account?")
         .font(.peatedBody)
-        .foregroundColor(.peatedTextSecondary)
+        .foregroundColor(.textSecondary)
       
       Button("Sign up") {
         // TODO: Navigate to registration
       }
       .font(.peatedBody)
       .fontWeight(.medium)
-      .foregroundColor(.peatedGold)
+      .foregroundColor(.brand)
     }
   }
   
@@ -264,11 +264,11 @@ struct LoginViewSimple: View {
   @ViewBuilder
   private var loadingOverlay: some View {
     if isLoading {
-      Color.black.opacity(0.4)
+      Color.overlayStrong
         .ignoresSafeArea()
         .overlay(
           ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+            .progressViewStyle(CircularProgressViewStyle(tint: .onStatus))
             .scaleEffect(1.5)
         )
     }

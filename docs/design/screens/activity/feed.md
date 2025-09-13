@@ -90,7 +90,7 @@ struct ActivityFeedScreen: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if hasNewActivity {
                         Circle()
-                            .fill(Color.accentColor)
+                            .fill(Color.brand)
                             .frame(width: 8, height: 8)
                             .offset(x: -8, y: -8)
                     }
@@ -231,7 +231,7 @@ struct ActivityFeedScreen: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
-                                .background(Color.accentColor)
+                                .background(Color.brand)
                                 .cornerRadius(20)
                         }
                         
@@ -256,7 +256,7 @@ struct ActivityFeedScreen: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 24)
                                 .padding(.vertical, 12)
-                                .background(Color.accentColor)
+                                .background(Color.brand)
                                 .cornerRadius(20)
                         }
                         
@@ -310,7 +310,7 @@ struct ActivityFeedScreen: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(20)
             }
         }

@@ -3,28 +3,7 @@ import UIKit
 
 // MARK: - Color Opacity Helper
 extension Color {
-    static let lightBlueBackground = Color(UIColor.systemBlue.withAlphaComponent(0.1))
-    
-    func withOpacity(_ opacity: Double) -> Color {
-        switch self {
-        case .orange:
-            return Color(UIColor.systemOrange.withAlphaComponent(opacity))
-        case .pink:
-            return Color(UIColor.systemPink.withAlphaComponent(opacity))
-        case .red:
-            return Color(UIColor.systemRed.withAlphaComponent(opacity))
-        case .brown:
-            return Color(UIColor.systemBrown.withAlphaComponent(opacity))
-        case .gray:
-            return Color(UIColor.systemGray.withAlphaComponent(opacity))
-        case .purple:
-            return Color(UIColor.systemPurple.withAlphaComponent(opacity))
-        case .indigo:
-            return Color(UIColor.systemIndigo.withAlphaComponent(opacity))
-        default:
-            return Color(UIColor.systemBlue.withAlphaComponent(opacity))
-        }
-    }
+    func withOpacity(_ value: Double) -> Color { self.opacity(value) }
 }
 
 // MARK: - Simplified Flavor Wheel Component
@@ -33,14 +12,14 @@ struct SimpleFlavorWheel: View {
     @State private var expandedCategory: String?
     
     let flavorCategories: [(category: String, emoji: String, color: Color, flavors: [String])] = [
-        ("Sweet", "🍯", .orange, ["Honey", "Caramel", "Vanilla", "Toffee", "Butterscotch"]),
-        ("Fruity", "🍎", .pink, ["Apple", "Pear", "Citrus", "Berry", "Tropical"]),
-        ("Spicy", "🌶️", .red, ["Pepper", "Cinnamon", "Nutmeg", "Clove", "Ginger"]),
-        ("Woody", "🪵", .brown, ["Oak", "Cedar", "Pine", "Char", "Toasted"]),
-        ("Smoky", "💨", .gray, ["Peat", "Ash", "Tobacco", "Leather", "Campfire"]),
-        ("Floral", "🌸", .purple, ["Rose", "Lavender", "Violet", "Jasmine", "Heather"]),
-        ("Nutty", "🥜", .brown, ["Almond", "Walnut", "Hazelnut", "Pecan", "Marzipan"]),
-        ("Other", "✨", .indigo, ["Maritime", "Medicinal", "Herbal", "Earthy", "Mineral"])
+        ("Sweet", "🍯", .flavorSweet, ["Honey", "Caramel", "Vanilla", "Toffee", "Butterscotch"]),
+        ("Fruity", "🍎", .flavorFruity, ["Apple", "Pear", "Citrus", "Berry", "Tropical"]),
+        ("Spicy", "🌶️", .flavorSpicy, ["Pepper", "Cinnamon", "Nutmeg", "Clove", "Ginger"]),
+        ("Woody", "🪵", .flavorWoody, ["Oak", "Cedar", "Pine", "Char", "Toasted"]),
+        ("Smoky", "💨", .flavorSmoky, ["Peat", "Ash", "Tobacco", "Leather", "Campfire"]),
+        ("Floral", "🌸", .flavorFloral, ["Rose", "Lavender", "Violet", "Jasmine", "Heather"]),
+        ("Nutty", "🥜", .flavorNutty, ["Almond", "Walnut", "Hazelnut", "Pecan", "Marzipan"]),
+        ("Other", "✨", .flavorOther, ["Maritime", "Medicinal", "Herbal", "Earthy", "Mineral"])
     ]
     
     var body: some View {
@@ -55,7 +34,7 @@ struct SimpleFlavorWheel: View {
                 if !selectedTags.isEmpty {
                     Text("\(selectedTags.count) selected")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
             
@@ -122,7 +101,7 @@ struct SimpleFlavorWheel: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.secondarySystemBackground))
+                        .fill(Color.surface)
                 )
             }
             
@@ -140,7 +119,7 @@ struct SimpleFlavorWheel: View {
                             selectedTags.removeAll()
                         }
                         .font(.caption)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                     }
                     
                     FlexibleView(data: selectedTags.sorted(), spacing: 6) { tag in
@@ -154,12 +133,12 @@ struct SimpleFlavorWheel: View {
                             }) {
                                 Image(systemName: "xmark.circle.fill")
                                     .font(.caption2)
-                                    .foregroundColor(.secondary)
+                                    .foregroundColor(.textSecondary)
                             }
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(Color.lightBlueBackground)
+                        .background(Color.surfaceSubtle)
                         .cornerRadius(12)
                     }
                 }
@@ -208,7 +187,7 @@ struct CategoryButton: View {
                 Text(name)
                     .font(.caption2)
                     .fontWeight(hasSelection ? .semibold : .regular)
-                    .foregroundColor(hasSelection ? color : .primary)
+                    .foregroundColor(hasSelection ? color : .text)
             }
         }
         .buttonStyle(.plain)
@@ -227,12 +206,12 @@ struct SimpleFlavorTag: View {
             Text(name)
                 .font(.caption)
                 .fontWeight(isSelected ? .semibold : .medium)
-                .foregroundColor(isSelected ? textColorForBackground(color) : .primary)
+                .foregroundColor(isSelected ? textColorForBackground(color) : .text)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(isSelected ? color : Color(.tertiarySystemBackground))
+                        .fill(isSelected ? color : Color.surfaceSubtle)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(isSelected ? Color.clear : color.withOpacity(0.3), lineWidth: 1)
@@ -243,11 +222,7 @@ struct SimpleFlavorTag: View {
     }
     
     private func textColorForBackground(_ backgroundColor: Color) -> Color {
-        // Use black text for light backgrounds (orange/yellow/pink tones)
-        if backgroundColor == .orange || backgroundColor == .pink {
-            return .black
-        }
-        return .white
+        return (backgroundColor == .flavorSweet || backgroundColor == .flavorFruity) ? .onSurface : .onStatus
     }
 }
 

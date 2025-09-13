@@ -35,7 +35,7 @@ struct ProfileView: View {
           
           Text("This user profile could not be loaded.")
             .font(.subheadline)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
             .multilineTextAlignment(.center)
             .padding(.horizontal, 40)
           
@@ -46,10 +46,10 @@ struct ProfileView: View {
           }) {
             Text("Try Again")
               .fontWeight(.medium)
-              .foregroundColor(.white)
+              .foregroundColor(.onBrand)
               .padding(.horizontal, 24)
               .padding(.vertical, 12)
-              .background(Color.peatedGold)
+              .background(Color.brand)
               .cornerRadius(25)
           }
         }
@@ -61,6 +61,7 @@ struct ProfileView: View {
           VStack(spacing: 0) {
             // Profile header
             profileHeader
+              .background(Color.background)
             
             // Stats section
             statsSection
@@ -92,7 +93,9 @@ struct ProfileView: View {
               }
             }
           }
+          .background(Color.background)
         }
+        .background(Color.background)
         .navigationTitle("Profile")
         .navigationBarTitleDisplayMode(.inline)
       }
@@ -105,7 +108,7 @@ struct ProfileView: View {
             showingSettings = true
           }) {
             Image(systemName: "gearshape")
-              .foregroundColor(.primary)
+              .foregroundColor(.text)
           }
         }
       }
@@ -141,35 +144,30 @@ struct ProfileView: View {
             .aspectRatio(contentMode: .fill)
         } placeholder: {
           Circle()
-            .fill(Color.gray.opacity(0.3))
+            .fill(Color.border.opacity(0.3))
             .overlay(
               ProgressView()
-                .tint(.gray)
+                .tint(.textSecondary)
             )
         }
         .frame(width: 100, height: 100)
         .clipShape(Circle())
       } else {
         Circle()
-          .fill(Color.gray.opacity(0.3))
+          .fill(Color.border.opacity(0.2))
           .frame(width: 100, height: 100)
           .overlay(
             Text(model.user?.username.prefix(1).uppercased() ?? "?")
               .font(.largeTitle)
               .fontWeight(.medium)
-              .foregroundColor(.gray)
+              .foregroundColor(.textSecondary)
           )
       }
       
       // Username and email
       VStack(spacing: 4) {
         Text("@\(model.user?.username ?? "Loading...")")
-          .font(.title2)
-          .fontWeight(.semibold)
-        
-        Text(model.user?.email ?? "")
-          .font(.subheadline)
-          .foregroundColor(.secondary)
+          .headlineStyle()
       }
       
       // Role badges
@@ -185,8 +183,8 @@ struct ProfileView: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(Color.red)
-            .foregroundColor(.white)
+            .background(Color.danger)
+            .foregroundColor(.onStatus)
             .cornerRadius(12)
           } else if user.mod {
             HStack(spacing: 4) {
@@ -198,8 +196,8 @@ struct ProfileView: View {
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 4)
-            .background(Color.orange)
-            .foregroundColor(.white)
+            .background(Color.warning)
+            .foregroundColor(.onStatus)
             .cornerRadius(12)
           }
         }
@@ -220,7 +218,7 @@ struct ProfileView: View {
       StatView(title: "Collected", value: model.user?.collectedCount ?? 0)
     }
     .padding(.vertical, 16)
-    .background(Color(.systemGray6))
+    .background(Color.surface)
     .cornerRadius(12)
   }
   
@@ -238,7 +236,7 @@ struct ProfileView: View {
               VStack(spacing: 8) {
                 ZStack {
                   RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.orange.opacity(0.15))
+                    .fill(Color.background)
                     .frame(width: 80, height: 80)
                   
                   // Use imageUrl if available, otherwise fallback to SF Symbol
@@ -257,7 +255,7 @@ struct ProfileView: View {
                   } else {
                     Image(systemName: achievementIcon(for: achievement.name))
                       .font(.system(size: 40))
-                      .foregroundColor(.orange)
+                      .foregroundColor(.warning)
                   }
                 }
                 
@@ -300,7 +298,7 @@ struct ProfileView: View {
               
               if index < 2 {
                 Divider()
-                  .background(Color.gray.opacity(0.2))
+                  .background(Color.border.opacity(0.2))
               }
             }
           }
@@ -309,48 +307,42 @@ struct ProfileView: View {
       } else if feedModel.error != nil && feedModel.tastings.isEmpty {
         // Error state with no data
         Text("Unable to load activity")
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding(.vertical, 40)
           .padding(.horizontal)
       } else if feedModel.tastings.isEmpty {
         // Empty state
         Text("No tastings yet")
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding(.vertical, 40)
           .padding(.horizontal)
       } else {
-        // Show tastings
+        // Show tastings using unified feed card design
         VStack(spacing: 0) {
-          ForEach(feedModel.tastings.prefix(5)) { tasting in
-            VStack(spacing: 0) {
-              UnifiedTastingListItem(
-                tasting: tasting,
-                onToast: {
-                  Task {
-                    await feedModel.toggleToast(for: tasting.id)
-                  }
-                },
-                onComment: {
-                  onNavigateToTasting?(tasting.id)
-                },
-                onUserTap: {
-                  // Don't navigate to self if it's the same user
-                  if tasting.userId != model.user?.id {
-                    onNavigateToProfile?(tasting.userId)
-                  }
-                },
-                onBottleTap: {
-                  onNavigateToTasting?(tasting.id)
-                }
-              )
-              
-              Divider()
-                .background(Color.gray.opacity(0.2))
+          ActivityList(
+            tastings: feedModel.tastings,
+            showBottle: true,
+            showUserHeader: false,
+            limit: 5,
+            onToast: { tasting in
+              Task { await feedModel.toggleToast(for: tasting.id) }
+            },
+            onComment: { tasting in
+              onNavigateToTasting?(tasting.id)
+            },
+            onUserTap: { tasting in
+              // Don't navigate to self if it's the same user
+              if tasting.userId != model.user?.id {
+                onNavigateToProfile?(tasting.userId)
+              }
+            },
+            onBottleTap: { tasting in
+              onNavigateToTasting?(tasting.id)
             }
-          }
-          
+          )
+
           // Show more button if there are more than 5 tastings
           if feedModel.tastings.count > 5 {
             Button(action: {
@@ -359,7 +351,7 @@ struct ProfileView: View {
               Text("View All Activity")
                 .font(.subheadline)
                 .fontWeight(.medium)
-                .foregroundColor(.peatedGold)
+                .foregroundColor(.brand)
                 .padding(.vertical, 12)
                 .frame(maxWidth: .infinity)
             }
@@ -375,7 +367,7 @@ struct ProfileView: View {
         .font(.headline)
       
       Text("No favorites yet")
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
         .frame(maxWidth: .infinity, alignment: .center)
         .padding(.vertical, 40)
     }
@@ -393,7 +385,7 @@ struct StatView: View {
         .fontWeight(.semibold)
       Text(title)
         .font(.caption)
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
     }
     .frame(maxWidth: .infinity)
   }

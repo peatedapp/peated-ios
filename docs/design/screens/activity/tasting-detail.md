@@ -200,7 +200,7 @@ struct TastingDetailScreen: View {
                 
                 Text("(\(tasting.toastCount))")
                     .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
                 
                 Spacer()
                 
@@ -211,21 +211,21 @@ struct TastingDetailScreen: View {
                             UserAvatar(user: toast.user, size: 24)
                                 .overlay(
                                     Circle()
-                                        .stroke(Color(.systemBackground), lineWidth: 2)
+                                        .stroke(Color.background, lineWidth: 2)
                                 )
                         }
                         
                         if tasting.toastCount > 5 {
                             Text("+\(tasting.toastCount - 5)")
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                                 .padding(.leading, 4)
                         }
                     }
                     
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
             }
         }
@@ -243,7 +243,7 @@ struct TastingDetailScreen: View {
                 if !viewModel.comments.isEmpty {
                     Text("(\(viewModel.comments.count))")
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.textSecondary)
                 }
                 
                 Spacer()
@@ -252,7 +252,7 @@ struct TastingDetailScreen: View {
             if viewModel.comments.isEmpty {
                 Text("No comments yet. Be the first!")
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.textSecondary)
                     .padding(.vertical, 20)
             } else {
                 ForEach(viewModel.comments) { comment in
@@ -292,19 +292,19 @@ struct TastingDetailScreen: View {
                     }) {
                         Image(systemName: "arrow.up.circle.fill")
                             .font(.title2)
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.brand)
                     }
                     .disabled(viewModel.isPostingComment)
                 }
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(20)
         }
         .padding(.horizontal)
         .padding(.vertical, 8)
-        .background(Color(.systemBackground))
+        .background(Color.background)
     }
     
     // MARK: - Error View
@@ -313,7 +313,7 @@ struct TastingDetailScreen: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 50))
-                .foregroundColor(.orange)
+                .foregroundColor(.warning)
             
             Text("Unable to load tasting")
                 .font(.title3)
@@ -321,7 +321,7 @@ struct TastingDetailScreen: View {
             
             Text(message)
                 .font(.body)
-                .foregroundColor(.secondary)
+                .foregroundColor(.textSecondary)
                 .multilineTextAlignment(.center)
             
             Button(action: {
@@ -332,10 +332,10 @@ struct TastingDetailScreen: View {
                 Text("Try Again")
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundColor(.white)
+                    .foregroundColor(.onBrand)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(20)
             }
         }
@@ -378,8 +378,8 @@ struct CommentView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 6)
                                 .padding(.vertical, 2)
-                                .background(Color.accentColor.opacity(0.2))
-                                .foregroundColor(.accentColor)
+                                .background(Color.brand.opacity(0.2))
+                                .foregroundColor(.brand)
                                 .cornerRadius(4)
                         }
                         

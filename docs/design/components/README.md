@@ -95,9 +95,9 @@ Components should be as stateless as possible:
 extension View {
     func cardStyle() -> some View {
         self
-            .background(Color(.systemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
-            .shadow(color: .black.opacity(0.1), radius: 4, y: 2)
+            .shadow(color: Color.overlaySoft, radius: 4, y: 2)
     }
 }
 

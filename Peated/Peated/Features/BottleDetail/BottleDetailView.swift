@@ -56,19 +56,19 @@ struct BottleDetailView: View {
       VStack(spacing: 20) {
         // Image placeholder
         RoundedRectangle(cornerRadius: 12)
-          .fill(Color.gray.opacity(0.3))
+          .fill(Color.border.opacity(0.3))
           .frame(height: 300)
           .padding(.horizontal)
         
         // Content placeholders
         VStack(alignment: .leading, spacing: 12) {
           RoundedRectangle(cornerRadius: 8)
-            .fill(Color.gray.opacity(0.3))
+            .fill(Color.border.opacity(0.3))
             .frame(height: 24)
             .frame(maxWidth: 200)
           
           RoundedRectangle(cornerRadius: 8)
-            .fill(Color.gray.opacity(0.3))
+            .fill(Color.border.opacity(0.3))
             .frame(height: 20)
             .frame(maxWidth: 150)
         }
@@ -76,6 +76,8 @@ struct BottleDetailView: View {
       }
       .redacted(reason: .placeholder)
     }
+    .scrollContentBackground(.hidden)
+    .background(Color.background)
   }
   
   // MARK: - Loaded View
@@ -110,6 +112,8 @@ struct BottleDetailView: View {
         }
       }
     }
+    .scrollContentBackground(.hidden)
+    .background(Color.background)
     .refreshable {
       await model.refresh()
     }
@@ -122,7 +126,7 @@ struct BottleDetailView: View {
       // Bottle image or placeholder (similar to EntityDetailView)
       ZStack {
         Circle()
-          .fill(Color.peatedSurfaceLight)
+          .fill(Color.surface)
           .frame(width: 100, height: 100)
         
         if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
@@ -137,7 +141,7 @@ struct BottleDetailView: View {
             case .failure, .empty:
               Image(systemName: "wineglass")
                 .font(.system(size: 40))
-                .foregroundColor(.gray.opacity(0.5))
+                .foregroundColor(.textSecondary.opacity(0.5))
             @unknown default:
               ProgressView()
             }
@@ -145,17 +149,18 @@ struct BottleDetailView: View {
         } else {
           Image(systemName: "wineglass")
             .font(.system(size: 40))
-            .foregroundColor(.gray.opacity(0.5))
+            .foregroundColor(.textSecondary.opacity(0.5))
         }
       }
       
       // Bottle name and brand
       VStack(spacing: 4) {
         Text(bottle.fullName)
-          .font(.title2)
-          .fontWeight(.semibold)
-          .foregroundColor(.primary)
+          .headlineStyle()
+          .lineLimit(1)
+          .minimumScaleFactor(0.98)
           .multilineTextAlignment(.center)
+          .padding(.horizontal)
         
         Button(action: {
           // TODO: Navigate to brand/entity detail
@@ -166,7 +171,7 @@ struct BottleDetailView: View {
             Text(bottle.brandName)
           }
           .font(.system(size: DesignSystem.FontSize.small))
-          .foregroundColor(.secondary)
+          .foregroundColor(.textSecondary)
         }
         .buttonStyle(.plain)
       }
@@ -183,10 +188,10 @@ struct BottleDetailView: View {
         Label("Record Tasting", systemImage: "plus.circle.fill")
           .font(.body)
           .fontWeight(.semibold)
-          .foregroundColor(.black)
+          .foregroundColor(.onBrand)
           .frame(maxWidth: .infinity)
           .padding(.vertical, 14)
-          .background(Color.peatedGold)
+          .background(Color.brand)
           .cornerRadius(12)
       }
       
@@ -195,9 +200,9 @@ struct BottleDetailView: View {
         Image(systemName: "square.and.arrow.up")
           .font(.system(size: 20))
           .fontWeight(.medium)
-          .foregroundColor(.white)
+          .foregroundColor(.text)
           .frame(width: 50, height: 50)
-          .background(Color.gray.opacity(0.3))
+          .background(Color.border.opacity(0.3))
           .cornerRadius(12)
       }
     }
@@ -238,7 +243,7 @@ struct BottleDetailView: View {
             .lineLimit(1)
           Text("Category")
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
         }
         .frame(maxWidth: .infinity)
       }
@@ -246,7 +251,7 @@ struct BottleDetailView: View {
       if bottle.category != nil && (bottle.abv != nil || bottle.statedAge != nil) {
         Divider()
           .frame(height: 40)
-          .background(Color.gray.opacity(0.3))
+          .background(Color.border.opacity(0.3))
       }
       
       // ABV
@@ -257,7 +262,7 @@ struct BottleDetailView: View {
             .fontWeight(.bold)
           Text("ABV")
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
         }
         .frame(maxWidth: .infinity)
       }
@@ -265,7 +270,7 @@ struct BottleDetailView: View {
       if bottle.abv != nil && bottle.statedAge != nil {
         Divider()
           .frame(height: 40)
-          .background(Color.gray.opacity(0.3))
+          .background(Color.border.opacity(0.3))
       }
       
       // Age
@@ -276,7 +281,7 @@ struct BottleDetailView: View {
             .fontWeight(.bold)
           Text("Years")
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
         }
         .frame(maxWidth: .infinity)
       }
@@ -287,20 +292,20 @@ struct BottleDetailView: View {
           HStack(spacing: 4) {
             Image(systemName: "star.fill")
               .font(.system(size: 14))
-              .foregroundColor(.peatedGold)
+              .foregroundColor(.brand)
             Text(String(format: "%.1f", bottle.avgRating))
               .font(.title2)
               .fontWeight(.bold)
           }
           Text("\(bottle.totalRatings) ratings")
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
         }
         .frame(maxWidth: .infinity)
       }
     }
     .padding(.vertical, 12)
-    .background(Color.peatedSurfaceLight.opacity(0.5))
+    .background(Color.surface.opacity(0.5))
     .cornerRadius(DesignSystem.CornerRadius.medium)
   }
   
@@ -311,12 +316,12 @@ struct BottleDetailView: View {
       Text("ABOUT")
         .font(.system(size: DesignSystem.FontSize.small))
         .fontWeight(.semibold)
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
       
       VStack(alignment: .leading, spacing: 4) {
         Text(bottle.description ?? "")
           .font(.system(size: DesignSystem.FontSize.body))
-          .foregroundColor(.primary)
+          .foregroundColor(.text)
           .lineLimit(isDescriptionExpanded ? nil : 3)
           .fixedSize(horizontal: false, vertical: true)
         
@@ -330,7 +335,7 @@ struct BottleDetailView: View {
             Text(isDescriptionExpanded ? "Show less" : "Read more")
               .font(.system(size: DesignSystem.FontSize.small))
               .fontWeight(.medium)
-              .foregroundColor(.peatedGold)
+              .foregroundColor(.brand)
           }
           .padding(.top, 2)
         }
@@ -345,19 +350,19 @@ struct BottleDetailView: View {
       Text("CHARACTERISTICS")
         .font(.system(size: DesignSystem.FontSize.small))
         .fontWeight(.semibold)
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
       
       HStack(spacing: 12) {
         if bottle.caskStrength {
           Label("Cask Strength", systemImage: "checkmark.circle.fill")
             .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.green)
+            .foregroundColor(.success)
         }
         
         if bottle.singleCask {
           Label("Single Cask", systemImage: "checkmark.circle.fill")
             .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.green)
+            .foregroundColor(.success)
         }
       }
     }
@@ -399,7 +404,7 @@ struct BottleDetailView: View {
             // Add divider between items
             if tasting != model.recentTastings.prefix(3).last {
               Divider()
-                .background(Color.gray.opacity(0.2))
+                .background(Color.border.opacity(0.2))
             }
           }
         }
@@ -435,7 +440,7 @@ struct BottleDetailView: View {
     VStack(spacing: 16) {
       Image(systemName: "exclamationmark.triangle")
         .font(.system(size: 50))
-        .foregroundColor(.orange)
+        .foregroundColor(.warning)
       
       Text("Unable to load bottle")
         .font(.title3)
@@ -443,7 +448,7 @@ struct BottleDetailView: View {
       
       Text(message)
         .font(.body)
-        .foregroundColor(.secondary)
+        .foregroundColor(.textSecondary)
         .multilineTextAlignment(.center)
       
       Button(action: {
@@ -454,14 +459,16 @@ struct BottleDetailView: View {
         Text("Try Again")
           .font(.body)
           .fontWeight(.medium)
-          .foregroundColor(.white)
+          .foregroundColor(.onBrand)
           .padding(.horizontal, 24)
           .padding(.vertical, 12)
-          .background(Color.peatedGold)
+          .background(Color.brand)
           .cornerRadius(20)
       }
     }
     .padding()
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .background(Color.background)
   }
 }
 
@@ -500,7 +507,7 @@ struct SimilarBottleCard: View {
         Text(bottle.name)
           .font(.caption)
           .fontWeight(.medium)
-          .foregroundColor(.primary)
+          .foregroundColor(.text)
           .lineLimit(2)
           .multilineTextAlignment(.center)
         
@@ -514,13 +521,13 @@ struct SimilarBottleCard: View {
           }
           Text(String(format: "%.1f", bottle.avgRating))
             .font(.caption2)
-            .foregroundColor(.secondary)
+            .foregroundColor(.textSecondary)
         }
       }
     }
     .frame(width: 120)
     .padding()
-    .background(Color(.secondarySystemBackground))
+    .background(Color.surface)
     .cornerRadius(12)
   }
 }

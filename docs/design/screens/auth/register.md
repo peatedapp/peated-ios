@@ -177,7 +177,7 @@ struct RegistrationScreen: View {
                     model.validateEmail(email)
                 }
                 .padding()
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
                 .overlay(fieldBorder(for: .email))
             
@@ -215,7 +215,7 @@ struct RegistrationScreen: View {
                 }
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .overlay(fieldBorder(for: .username))
             
@@ -252,7 +252,7 @@ struct RegistrationScreen: View {
                 }
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .overlay(fieldBorder(for: .password))
             .onChange(of: password) { _ in
@@ -302,7 +302,7 @@ struct RegistrationScreen: View {
                 }
             }
             .padding()
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .overlay(fieldBorder(for: .confirmPassword))
             
@@ -320,7 +320,7 @@ struct RegistrationScreen: View {
         HStack(alignment: .top, spacing: 12) {
             Button(action: { agreedToTerms.toggle() }) {
                 Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
-                    .foregroundColor(agreedToTerms ? .accentColor : .secondary)
+                    .foregroundColor(agreedToTerms ? .brand : .secondary)
                     .font(.title3)
             }
             
@@ -329,13 +329,13 @@ struct RegistrationScreen: View {
                     .font(.caption) +
                 Text("Terms of Service")
                     .font(.caption)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brand)
                     .underline() +
                 Text(" and ")
                     .font(.caption) +
                 Text("Privacy Policy")
                     .font(.caption)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brand)
                     .underline()
             }
             .multilineTextAlignment(.leading)
@@ -357,7 +357,7 @@ struct RegistrationScreen: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color.accentColor)
+                .background(Color.brand)
                 .cornerRadius(25)
         }
         .disabled(!isFormValid)
@@ -368,7 +368,7 @@ struct RegistrationScreen: View {
     private func fieldBorder(for field: Field) -> some View {
         RoundedRectangle(cornerRadius: 12)
             .stroke(
-                focusedField == field ? Color.accentColor : Color.clear,
+                focusedField == field ? Color.brand : Color.clear,
                 lineWidth: 2
             )
     }

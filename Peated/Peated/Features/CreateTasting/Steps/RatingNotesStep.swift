@@ -17,7 +17,7 @@ struct RatingNotesStep: View {
                     if let bottle = viewModel.selectedBottle {
                         Text("How was the \(bottle.name)?")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                 }
                 .padding(.horizontal)
@@ -38,7 +38,7 @@ struct RatingNotesStep: View {
                                 iconName: "hand.thumbsdown.fill",
                                 value: -1,
                                 selectedValue: $viewModel.rating,
-                                color: .red
+                                color: .danger
                             )
                             
                             // Sip button
@@ -47,7 +47,7 @@ struct RatingNotesStep: View {
                                 iconName: "hand.thumbsup.fill",
                                 value: 1,
                                 selectedValue: $viewModel.rating,
-                                color: .blue
+                                color: .info
                             )
                             
                             // Savor button
@@ -56,7 +56,7 @@ struct RatingNotesStep: View {
                                 iconName: "hands.sparkles.fill",
                                 value: 2,
                                 selectedValue: $viewModel.rating,
-                                color: .green
+                                color: .success
                             )
                         }
                         .frame(maxWidth: .infinity)
@@ -65,7 +65,7 @@ struct RatingNotesStep: View {
                         if viewModel.rating != 0 {
                             Text(ratingDescription)
                                 .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                .foregroundColor(.textSecondary)
                                 .transition(.opacity)
                         }
                     }
@@ -77,14 +77,14 @@ struct RatingNotesStep: View {
                         
                         Text("What did you taste? (Optional)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                         
                         ZStack(alignment: .topLeading) {
                             RoundedRectangle(cornerRadius: 12)
-                                .fill(Color(.secondarySystemBackground))
+                                .fill(Color.surface)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 12)
-                                        .stroke(isNotesFocused ? Color.accentColor : Color.clear, lineWidth: 2)
+                                        .stroke(isNotesFocused ? Color.brand : Color.clear, lineWidth: 2)
                                 )
                             
                             TextEditor(text: $viewModel.notes)
@@ -99,7 +99,7 @@ struct RatingNotesStep: View {
                                             VStack {
                                                 HStack {
                                                     Text("Describe the aroma, taste, and finish...")
-                                                        .foregroundColor(.secondary)
+                                                        .foregroundColor(.textSecondary)
                                                         .padding(.leading, 16)
                                                         .padding(.top, 20)
                                                     Spacer()
@@ -116,7 +116,7 @@ struct RatingNotesStep: View {
                             Spacer()
                             Text("\(viewModel.notes.count)/500")
                                 .font(.caption)
-                                .foregroundColor(viewModel.notes.count > 500 ? .red : .secondary)
+                                .foregroundColor(viewModel.notes.count > 500 ? .danger : .textSecondary)
                         }
                     }
                     
@@ -148,7 +148,7 @@ struct RatingNotesStep: View {
                         
                         Text("What flavors did you detect? (Optional)")
                             .font(.subheadline)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                         
                         FlavorTagsView(
                             selectedTags: $viewModel.selectedTags,
@@ -198,22 +198,22 @@ struct ServingStyleButton: View {
             VStack(spacing: 8) {
                 Image(systemName: iconName)
                     .font(.title2)
-                    .foregroundColor(isSelected ? .black : .accentColor)
+                    .foregroundColor(isSelected ? .onBrand : .brand)
                 
                 Text(style.displayName)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .black : .primary)
+                    .foregroundColor(isSelected ? .onSurface : .text)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                                .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -271,15 +271,15 @@ struct FlavorTagButton: View {
             Text(tag)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(isSelected ? .black : .primary)
+                .foregroundColor(isSelected ? .onSurface : .text)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(
                     RoundedRectangle(cornerRadius: 16)
-                        .fill(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
+                        .fill(isSelected ? Color.brand : Color.surface)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.accentColor.opacity(0.3), lineWidth: 1)
+                                .stroke(Color.brand.opacity(0.3), lineWidth: 1)
                         )
                 )
         }
@@ -313,15 +313,15 @@ struct RatingButton: View {
                     HStack(spacing: 2) {
                         Image(systemName: "hand.thumbsup.fill")
                             .font(.system(size: 20))
-                            .foregroundColor(isSelected ? color : .secondary)
+                            .foregroundColor(isSelected ? color : .textSecondary)
                         Image(systemName: "hand.thumbsup.fill")
                             .font(.system(size: 20))
-                            .foregroundColor(isSelected ? color : .secondary)
+                            .foregroundColor(isSelected ? color : .textSecondary)
                     }
                 } else {
                     Image(systemName: iconName)
                         .font(.system(size: 28))
-                        .foregroundColor(isSelected ? color : .secondary)
+                        .foregroundColor(isSelected ? color : .textSecondary)
                 }
                 Text(title)
                     .font(.caption)
@@ -331,7 +331,7 @@ struct RatingButton: View {
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? color.opacity(0.2) : Color(.secondarySystemBackground))
+                    .fill(isSelected ? color.opacity(0.2) : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isSelected ? color : Color.clear, lineWidth: 2)

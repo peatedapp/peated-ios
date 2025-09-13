@@ -12,7 +12,7 @@ struct ImageViewer: View {
   var body: some View {
     ZStack {
       // Background
-      Color.black
+      Color.overlayStrong
         .ignoresSafeArea()
         .onTapGesture {
           withAnimation {
@@ -80,14 +80,14 @@ struct ImageViewer: View {
             VStack(spacing: 16) {
               Image(systemName: "photo.slash")
                 .font(.system(size: 50))
-                .foregroundColor(.gray)
+                .foregroundColor(.textMuted)
               Text("Failed to load image")
-                .foregroundColor(.gray)
+                .foregroundColor(.textSecondary)
             }
             
           case .empty:
             ProgressView()
-              .progressViewStyle(CircularProgressViewStyle(tint: .white))
+              .progressViewStyle(CircularProgressViewStyle(tint: .onStatus))
               .scaleEffect(1.5)
             
           @unknown default:
@@ -105,8 +105,8 @@ struct ImageViewer: View {
           } label: {
             Image(systemName: "xmark.circle.fill")
               .font(.system(size: 30))
-              .foregroundColor(.white.opacity(0.7))
-              .background(Circle().fill(Color.black.opacity(0.3)))
+              .foregroundColor(.onStatus.opacity(0.85))
+              .background(Circle().fill(Color.overlay))
           }
           .padding()
         }

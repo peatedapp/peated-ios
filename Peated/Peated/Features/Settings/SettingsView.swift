@@ -16,14 +16,14 @@ struct SettingsView: View {
                         Text("Username")
                         Spacer()
                         Text("@\(model.user?.username ?? "Loading...")")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                     
                     HStack {
                         Text("Email")
                         Spacer()
                         Text(model.user?.email ?? "Loading...")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                             .lineLimit(1)
                             .truncationMode(.middle)
                     }
@@ -37,7 +37,7 @@ struct SettingsView: View {
                     }) {
                         Label("Developer Settings", systemImage: "hammer")
                     }
-                    .foregroundColor(.primary)
+                    .foregroundColor(.text)
                 }
                 #endif
                 
@@ -54,7 +54,7 @@ struct SettingsView: View {
                         Text("Version")
                         Spacer()
                         Text("\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                     
                     Link(destination: URL(string: "https://peated.com")!) {
@@ -70,7 +70,7 @@ struct SettingsView: View {
                         HStack {
                             Spacer()
                             Text("Sign Out")
-                                .foregroundColor(.red)
+                                .foregroundColor(.danger)
                             Spacer()
                         }
                     }

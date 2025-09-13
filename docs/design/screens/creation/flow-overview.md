@@ -152,7 +152,7 @@ struct CreateTastingFlow: View {
                         Text("Back")
                     }
                     .font(.body)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brand)
                 }
             }
             
@@ -171,7 +171,7 @@ struct CreateTastingFlow: View {
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                     .background(
-                        Color.accentColor
+                        Color.brand
                             .opacity(canProceed ? 1.0 : 0.5)
                     )
                     .cornerRadius(20)
@@ -196,7 +196,7 @@ struct CreateTastingFlow: View {
                     .frame(minWidth: 120)
                     .padding(.horizontal, 24)
                     .padding(.vertical, 12)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(25)
                 }
                 .disabled(viewModel.isSubmitting)
@@ -281,7 +281,7 @@ struct ProgressBar: View {
                 
                 // Progress
                 RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.accentColor)
+                    .fill(Color.brand)
                     .frame(
                         width: geometry.size.width * (CGFloat(currentStep) / CGFloat(totalSteps)),
                         height: 4

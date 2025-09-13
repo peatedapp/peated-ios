@@ -8,7 +8,6 @@ struct TastingDetailView: View {
   
   @State private var model: TastingDetailModel
   @State private var commentText = ""
-  @State private var showingToastList = false
   @State private var showingDeleteAlert = false
   @FocusState private var isCommentFieldFocused: Bool
   @Environment(\.dismiss) private var dismiss
@@ -54,7 +53,7 @@ struct TastingDetailView: View {
             }
           } label: {
             Image(systemName: "ellipsis.circle")
-              .foregroundColor(.peatedTextPrimary)
+              .foregroundColor(.text)
           }
         }
       }
@@ -62,11 +61,7 @@ struct TastingDetailView: View {
     .task {
       await model.loadTasting()
     }
-    .sheet(isPresented: $showingToastList) {
-      if let tasting = model.tasting {
-        ToastListView(tasting: tasting)
-      }
-    }
+    // Removed toast list sheet
     .confirmationDialog("Delete Tasting", isPresented: $showingDeleteAlert) {
       Button("Delete", role: .destructive) {
         Task {
@@ -91,7 +86,7 @@ struct TastingDetailView: View {
       VStack(spacing: 16) {
         // Tasting card skeleton
         RoundedRectangle(cornerRadius: 12)
-          .fill(Color.peatedSurfaceLight)
+          .fill(Color.surface)
           .frame(height: 300)
           .shimmer()
         
@@ -99,16 +94,16 @@ struct TastingDetailView: View {
         ForEach(0..<3, id: \.self) { _ in
           HStack(alignment: .top, spacing: 12) {
             Circle()
-              .fill(Color.peatedSurfaceLight)
+              .fill(Color.surface)
               .frame(width: 32, height: 32)
             
             VStack(alignment: .leading, spacing: 8) {
               RoundedRectangle(cornerRadius: 4)
-                .fill(Color.peatedSurfaceLight)
+                .fill(Color.surface)
                 .frame(width: 120, height: 14)
               
               RoundedRectangle(cornerRadius: 4)
-                .fill(Color.peatedSurfaceLight)
+                .fill(Color.surface)
                 .frame(height: 40)
             }
           }
@@ -117,7 +112,7 @@ struct TastingDetailView: View {
       }
       .padding()
     }
-    .background(Color.peatedBackground)
+    .background(Color.background)
   }
   
   // MARK: - Loaded View
@@ -148,17 +143,7 @@ struct TastingDetailView: View {
             }
           )
           
-          Divider()
-            .padding(.vertical, 16)
-          
-          // Toasts section
-          if tasting.toastCount > 0 {
-            toastsSection(tasting)
-              .padding(.horizontal)
-            
-            Divider()
-              .padding(.vertical, 16)
-          }
+          // Removed standalone toasts section
           
           // Comments section
           commentsSection(tasting)
@@ -172,65 +157,10 @@ struct TastingDetailView: View {
       // Comment input
       commentInputView
     }
-    .background(Color.peatedBackground)
+    .background(Color.background)
   }
   
-  // MARK: - Toasts Section
-  
-  @ViewBuilder
-  private func toastsSection(_ tasting: TastingDetail) -> some View {
-    Button {
-      showingToastList = true
-    } label: {
-      HStack {
-        Text("Toasts")
-          .font(.peatedHeadline)
-          .foregroundColor(.peatedTextPrimary)
-        
-        Text("(\(tasting.toastCount))")
-          .font(.peatedSubheadline)
-          .foregroundColor(.peatedTextSecondary)
-        
-        Spacer()
-        
-        // Show preview of toasters
-        if !tasting.toasts.isEmpty {
-          HStack(spacing: -8) {
-            ForEach(tasting.toasts.prefix(5)) { toast in
-              if let url = toast.userAvatarUrl, let avatarUrl = URL(string: url) {
-                AsyncImage(url: avatarUrl) { image in
-                  image
-                    .resizable()
-                    .scaledToFill()
-                } placeholder: {
-                  Circle()
-                    .fill(Color.peatedSurfaceLight)
-                }
-                .frame(width: 24, height: 24)
-                .clipShape(Circle())
-                .overlay(
-                  Circle()
-                    .stroke(Color.peatedBackground, lineWidth: 2)
-                )
-              }
-            }
-            
-            if tasting.toastCount > 5 {
-              Text("+\(tasting.toastCount - 5)")
-                .font(.peatedCaption)
-                .foregroundColor(.peatedTextSecondary)
-                .padding(.leading, 4)
-            }
-          }
-          
-          Image(systemName: "chevron.right")
-            .font(.peatedCaption)
-            .foregroundColor(.peatedTextSecondary)
-        }
-      }
-    }
-    .buttonStyle(.plain)
-  }
+  // Removed toasts section
   
   // MARK: - Comments Section
   
@@ -240,12 +170,12 @@ struct TastingDetailView: View {
       HStack {
         Text("Comments")
           .font(.peatedHeadline)
-          .foregroundColor(.peatedTextPrimary)
+          .foregroundColor(.text)
         
         if case .loaded(let comments) = model.commentState, !comments.isEmpty {
           Text("(\(comments.count))")
             .font(.peatedSubheadline)
-            .foregroundColor(.peatedTextSecondary)
+            .foregroundColor(.textSecondary)
         }
         
         Spacer()
@@ -258,16 +188,16 @@ struct TastingDetailView: View {
         ForEach(0..<2, id: \.self) { _ in
           HStack(alignment: .top, spacing: 12) {
             Circle()
-              .fill(Color.peatedSurfaceLight)
+              .fill(Color.surface)
               .frame(width: 32, height: 32)
             
             VStack(alignment: .leading, spacing: 8) {
               RoundedRectangle(cornerRadius: 4)
-                .fill(Color.peatedSurfaceLight)
+                .fill(Color.surface)
                 .frame(width: 120, height: 14)
               
               RoundedRectangle(cornerRadius: 4)
-                .fill(Color.peatedSurfaceLight)
+                .fill(Color.surface)
                 .frame(height: 40)
             }
           }
@@ -278,7 +208,7 @@ struct TastingDetailView: View {
         if comments.isEmpty {
           Text("No comments yet. Be the first!")
             .font(.peatedBody)
-            .foregroundColor(.peatedTextSecondary)
+            .foregroundColor(.textSecondary)
             .padding(.vertical, 20)
         } else {
           ForEach(comments) { comment in
@@ -302,11 +232,11 @@ struct TastingDetailView: View {
         VStack(spacing: 8) {
           Image(systemName: "exclamationmark.triangle")
             .font(.system(size: 24))
-            .foregroundColor(.orange)
+            .foregroundColor(.warning)
           
           Text("Failed to load comments")
             .font(.peatedSubheadline)
-            .foregroundColor(.peatedTextPrimary)
+            .foregroundColor(.text)
           
           Button {
             Task {
@@ -315,7 +245,7 @@ struct TastingDetailView: View {
           } label: {
             Text("Try Again")
               .font(.peatedCaption)
-              .foregroundColor(.peatedGold)
+              .foregroundColor(.brand)
           }
         }
         .frame(maxWidth: .infinity)
@@ -332,9 +262,10 @@ struct TastingDetailView: View {
     HStack(spacing: 12) {
       HStack {
         TextField("Add a comment...", text: $commentText, axis: .vertical)
+          .textFieldStyle(.plain)
           .font(.peatedBody)
-          .foregroundColor(.peatedTextPrimary)
-          .tint(.peatedGold)
+          .foregroundColor(.text)
+          .tint(.brand)
           .lineLimit(1...4)
           .focused($isCommentFieldFocused)
         
@@ -346,19 +277,18 @@ struct TastingDetailView: View {
           } label: {
             Image(systemName: "arrow.up.circle.fill")
               .font(.system(size: 24))
-              .foregroundColor(.peatedGold)
+              .foregroundColor(.brand)
           }
           .disabled(model.isPostingComment)
         }
       }
       .padding(.horizontal, 16)
       .padding(.vertical, 10)
-      .background(Color.peatedSurfaceLight)
+      .background(Color.surface)
       .cornerRadius(20)
     }
-    .padding(.horizontal)
     .padding(.vertical, 8)
-    .background(Color.peatedSurface)
+    .background(Color.background)
   }
   
   // MARK: - Error View
@@ -368,16 +298,16 @@ struct TastingDetailView: View {
     VStack(spacing: 16) {
       Image(systemName: "exclamationmark.triangle")
         .font(.system(size: 50))
-        .foregroundColor(.orange)
+        .foregroundColor(.warning)
       
       Text("Unable to load tasting")
         .font(.peatedTitle3)
         .fontWeight(.semibold)
-        .foregroundColor(.peatedTextPrimary)
+        .foregroundColor(.text)
       
       Text(message)
         .font(.peatedBody)
-        .foregroundColor(.peatedTextSecondary)
+            .foregroundColor(.textSecondary)
         .multilineTextAlignment(.center)
       
       Button {
@@ -388,16 +318,16 @@ struct TastingDetailView: View {
         Text("Try Again")
           .font(.peatedBody)
           .fontWeight(.medium)
-          .foregroundColor(.peatedBackground)
+          .foregroundColor(.onBrand)
           .padding(.horizontal, 24)
           .padding(.vertical, 12)
-          .background(Color.peatedGold)
+          .background(Color.brand)
           .cornerRadius(20)
       }
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color.peatedBackground)
+    .background(Color.background)
   }
   
   // MARK: - Actions
@@ -435,34 +365,35 @@ struct TastingDetailCard: View {
             case .failure, .empty:
               Image(systemName: "wineglass")
                 .font(.system(size: 24))
-                .foregroundColor(.peatedTextMuted)
+                .foregroundColor(.textMuted)
             @unknown default:
               ProgressView()
             }
           }
           .frame(width: 60, height: 80)
-          .background(Color.peatedSurfaceLight)
+          .background(Color.surface)
           .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         
         VStack(alignment: .leading, spacing: 4) {
           Text(tasting.bottleName)
-            .font(.peatedHeadline)
-            .foregroundColor(.peatedTextPrimary)
+            .headlineStyle()
+            .lineLimit(1)
+            .minimumScaleFactor(0.98)
           
           HStack(spacing: 4) {
             Text(tasting.bottleBrandName)
               .font(.peatedSubheadline)
-              .foregroundColor(.peatedTextSecondary)
+              .foregroundColor(.textSecondary)
             
             if let category = tasting.bottleCategory {
               Text("•")
                 .font(.peatedSubheadline)
-                .foregroundColor(.peatedTextMuted)
+                .foregroundColor(.textMuted)
               
               Text(category.capitalized)
                 .font(.peatedSubheadline)
-                .foregroundColor(.peatedTextSecondary)
+                .foregroundColor(.textSecondary)
             }
           }
           
@@ -471,13 +402,13 @@ struct TastingDetailCard: View {
             ForEach(0..<5) { index in
               Image(systemName: index < Int(tasting.rating) ? "star.fill" : "star")
                 .font(.system(size: 14))
-                .foregroundColor(.peatedGold)
+                .foregroundColor(.brand)
             }
             
             Text(String(format: "%.1f", tasting.rating))
               .font(.peatedBody)
               .fontWeight(.medium)
-              .foregroundColor(.peatedTextPrimary)
+              .foregroundColor(.text)
           }
           .padding(.top, 4)
         }
@@ -489,7 +420,8 @@ struct TastingDetailCard: View {
       if let notes = tasting.notes, !notes.isEmpty {
         Text(notes)
           .font(.peatedBody)
-          .foregroundColor(.peatedTextPrimary)
+          .italic()
+          .foregroundColor(.text)
           .fixedSize(horizontal: false, vertical: true)
       }
       
@@ -499,11 +431,11 @@ struct TastingDetailCard: View {
           HStack(spacing: 8) {
             ForEach(tasting.tags, id: \.self) { tag in
               Text("#\(tag)")
-                .font(.peatedCaption)
-                .foregroundColor(.peatedGold)
+                .font(.peatedFootnote)
+                .foregroundColor(.brand)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.peatedGold.opacity(0.1))
+                .background(Color.brand.opacity(0.1))
                 .clipShape(Capsule())
             }
           }
@@ -541,7 +473,7 @@ struct TastingDetailCard: View {
                 .scaledToFill()
             } placeholder: {
               Circle()
-                .fill(Color.peatedSurfaceLight)
+                .fill(Color.surface)
             }
             .frame(width: 32, height: 32)
             .clipShape(Circle())
@@ -551,11 +483,11 @@ struct TastingDetailCard: View {
             Text(tasting.authorDisplayName)
               .font(.peatedSubheadline)
               .fontWeight(.medium)
-              .foregroundColor(.peatedTextPrimary)
+              .foregroundColor(.text)
             
             Text("@\(tasting.username) • \(tasting.timeAgo)")
               .font(.peatedCaption)
-              .foregroundColor(.peatedTextSecondary)
+              .foregroundColor(.textSecondary)
           }
         }
         .contentShape(Rectangle())
@@ -577,12 +509,12 @@ struct TastingDetailCard: View {
             Text("\(tasting.toastCount)")
               .font(.peatedSubheadline)
           }
-          .foregroundColor(tasting.hasToasted ? .peatedGold : .peatedTextSecondary)
+          .foregroundColor(tasting.hasToasted ? .brand : .textSecondary)
         }
       }
     }
     .padding()
-    .background(Color.peatedSurface)
+    .background(Color.surface)
     .cornerRadius(12)
   }
 }
@@ -610,17 +542,17 @@ struct CommentView: View {
                 .scaledToFill()
             } placeholder: {
               Circle()
-                .fill(Color.peatedSurfaceLight)
+                .fill(Color.surface)
             }
             .frame(width: 32, height: 32)
             .clipShape(Circle())
           } else {
             Circle()
-              .fill(Color.peatedSurfaceLight)
+              .fill(Color.surface)
               .overlay(
                 Image(systemName: "person.fill")
                   .font(.system(size: 16))
-                  .foregroundColor(.peatedTextMuted)
+                  .foregroundColor(.textMuted)
               )
               .frame(width: 32, height: 32)
           }
@@ -631,30 +563,31 @@ struct CommentView: View {
             Text(comment.authorDisplayName)
               .font(.peatedSubheadline)
               .fontWeight(.semibold)
-              .foregroundColor(.peatedTextPrimary)
+              .foregroundColor(.text)
             
             if isOP {
               Text("OP")
                 .font(.system(size: 10, weight: .medium))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(Color.peatedGold.opacity(0.2))
-                .foregroundColor(.peatedGold)
+                .background(Color.brand.opacity(0.2))
+                .foregroundColor(.brand)
                 .cornerRadius(4)
             }
             
             Text("•")
               .font(.peatedCaption)
-              .foregroundColor(.peatedTextMuted)
+              .foregroundColor(.textMuted)
             
             Text(comment.timeAgo)
               .font(.peatedCaption)
-              .foregroundColor(.peatedTextSecondary)
+              .foregroundColor(.textSecondary)
           }
           
           Text(comment.text)
             .font(.peatedBody)
-            .foregroundColor(.peatedTextPrimary)
+            .italic()
+            .foregroundColor(.text)
             .fixedSize(horizontal: false, vertical: true)
         }
         
@@ -670,7 +603,7 @@ struct CommentView: View {
           } label: {
             Image(systemName: "ellipsis")
               .font(.peatedCaption)
-              .foregroundColor(.peatedTextSecondary)
+              .foregroundColor(.textSecondary)
               .frame(width: 24, height: 24)
           }
         }
@@ -684,60 +617,7 @@ struct CommentView: View {
   }
 }
 
-// MARK: - Toast List View
-
-struct ToastListView: View {
-  let tasting: TastingDetail
-  @Environment(\.dismiss) private var dismiss
-  
-  var body: some View {
-    NavigationStack {
-      List(tasting.toasts) { toast in
-        HStack {
-          if let avatarUrl = toast.userAvatarUrl, let url = URL(string: avatarUrl) {
-            AsyncImage(url: url) { image in
-              image
-                .resizable()
-                .scaledToFill()
-            } placeholder: {
-              Circle()
-                .fill(Color.peatedSurfaceLight)
-            }
-            .frame(width: 44, height: 44)
-            .clipShape(Circle())
-          }
-          
-          VStack(alignment: .leading, spacing: 2) {
-            Text(toast.userDisplayName ?? toast.username)
-              .font(.peatedBody)
-              .fontWeight(.medium)
-              .foregroundColor(.peatedTextPrimary)
-            
-            Text("@\(toast.username)")
-              .font(.peatedCaption)
-              .foregroundColor(.peatedTextSecondary)
-          }
-          
-          Spacer()
-          
-          // TODO: Add follow button
-        }
-        .padding(.vertical, 4)
-      }
-      .listStyle(.plain)
-      .navigationTitle("Toasts")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-        ToolbarItem(placement: .navigationBarTrailing) {
-          Button("Done") {
-            dismiss()
-          }
-          .foregroundColor(.peatedGold)
-        }
-      }
-    }
-  }
-}
+// Removed ToastListView
 
 // MARK: - Shimmer Effect
 
@@ -758,7 +638,7 @@ struct ShimmeringView: ViewModifier {
         LinearGradient(
           gradient: Gradient(colors: [
             Color.clear,
-            Color.white.opacity(0.3),
+            Color.surface.opacity(0.3),
             Color.clear
           ]),
           startPoint: .leading,

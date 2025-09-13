@@ -179,11 +179,11 @@ struct BottleSelectionStep: View {
             }
         }
         .padding(12)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(10)
         .overlay(
             RoundedRectangle(cornerRadius: 10)
-                .stroke(isSearchFocused ? Color.accentColor : Color.clear, lineWidth: 2)
+                .stroke(isSearchFocused ? Color.brand : Color.clear, lineWidth: 2)
         )
         .onChange(of: isSearchFocused) { focused in
             withAnimation {
@@ -205,10 +205,10 @@ struct BottleSelectionStep: View {
                     .font(.body)
                     .fontWeight(.medium)
             }
-            .foregroundColor(.accentColor)
+            .foregroundColor(.brand)
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(Color.accentColor.opacity(0.1))
+            .background(Color.brand.opacity(0.1))
             .cornerRadius(10)
         }
     }
@@ -295,12 +295,12 @@ struct BottleSelectionStep: View {
                         .font(.caption)
                 }
                 .font(.body)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.brand)
             }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(12)
     }
     
@@ -421,17 +421,17 @@ struct BottleSearchRow: View {
                 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                         .font(.title3)
                 }
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor.opacity(0.1) : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand.opacity(0.1) : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
@@ -486,17 +486,17 @@ struct RecentBottleRow: View {
                 
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                         .font(.title3)
                 }
             }
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.accentColor.opacity(0.1) : Color(.secondarySystemBackground))
+                    .fill(isSelected ? Color.brand.opacity(0.1) : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }

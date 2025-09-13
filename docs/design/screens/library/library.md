@@ -140,7 +140,7 @@ struct LibraryScreen: View {
             HStack {
                 Image(systemName: "chart.bar.fill")
                     .font(.title3)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brand)
                 
                 Text("Your Whisky Journey")
                     .font(.headline)
@@ -180,16 +180,16 @@ struct LibraryScreen: View {
                 HStack {
                     Text("View Detailed Stats")
                         .font(.caption)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                     
                     Image(systemName: "arrow.right")
                         .font(.caption)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                 }
             }
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(16)
     }
     
@@ -232,7 +232,7 @@ struct LibraryScreen: View {
             }
         }
         .padding(12)
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(10)
     }
     
@@ -278,7 +278,7 @@ struct LibraryScreen: View {
                     HStack {
                         Image(systemName: "plus.circle.fill")
                             .font(.title3)
-                            .foregroundColor(.accentColor)
+                            .foregroundColor(.brand)
                         
                         Text("Create New List")
                             .font(.body)
@@ -289,7 +289,7 @@ struct LibraryScreen: View {
                     .padding()
                 }
             }
-            .background(Color(.secondarySystemBackground))
+            .background(Color.surface)
             .cornerRadius(12)
             .padding(.horizontal)
         }
@@ -308,7 +308,7 @@ struct LibraryScreen: View {
                 NavigationLink(destination: AllTastingsView()) {
                     Text("See all")
                         .font(.caption)
-                        .foregroundColor(.accentColor)
+                        .foregroundColor(.brand)
                 }
             }
             .padding(.horizontal)
@@ -339,7 +339,7 @@ struct LibraryScreen: View {
                         }
                     }
                 }
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(12)
                 .padding(.horizontal)
             }
@@ -513,7 +513,7 @@ struct ListDetailView: View {
                         Image(systemName: "chevron.down")
                             .font(.caption)
                     }
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brand)
                 }
             }
             .padding()
@@ -536,7 +536,7 @@ struct ListDetailView: View {
                     }
                 }
                 .padding(12)
-                .background(Color(.secondarySystemBackground))
+                .background(Color.surface)
                 .cornerRadius(10)
                 
                 // Filter and view options
@@ -557,7 +557,7 @@ struct ListDetailView: View {
                         .foregroundColor(.secondary)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color(.tertiarySystemBackground))
+                        .background(Color.surfaceSubtle)
                         .cornerRadius(8)
                     }
                     
@@ -567,16 +567,16 @@ struct ListDetailView: View {
                     HStack(spacing: 8) {
                         Button(action: { viewMode = .grid }) {
                             Image(systemName: "square.grid.2x2")
-                                .foregroundColor(viewMode == .grid ? .accentColor : .secondary)
+                                .foregroundColor(viewMode == .grid ? .brand : .secondary)
                         }
                         
                         Button(action: { viewMode = .list }) {
                             Image(systemName: "list.bullet")
-                                .foregroundColor(viewMode == .list ? .accentColor : .secondary)
+                                .foregroundColor(viewMode == .list ? .brand : .secondary)
                         }
                     }
                     .padding(4)
-                    .background(Color(.tertiarySystemBackground))
+                    .background(Color.surfaceSubtle)
                     .cornerRadius(8)
                 }
             }
@@ -663,7 +663,7 @@ struct ListDetailView: View {
                 }
             }
         }
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(12)
     }
     
@@ -745,7 +745,7 @@ struct BottleGridItem: View {
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(.tertiarySystemBackground))
+            .background(Color.surfaceSubtle)
             .cornerRadius(12)
         }
         .buttonStyle(.plain)

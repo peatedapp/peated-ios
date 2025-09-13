@@ -212,7 +212,7 @@ struct OnboardingPager: View {
             HStack(spacing: 8) {
                 ForEach(0..<3) { index in
                     Circle()
-                        .fill(currentPage == index ? Color.accentColor : Color.gray.opacity(0.3))
+                        .fill(currentPage == index ? Color.brand : Color.gray.opacity(0.3))
                         .frame(width: 8, height: 8)
                         .animation(.easeInOut, value: currentPage)
                 }
@@ -279,7 +279,7 @@ struct OnboardingPage: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(25)
             }
             .padding(.horizontal, 40)
@@ -355,7 +355,7 @@ struct PermissionsView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 16)
-                    .background(Color.accentColor)
+                    .background(Color.brand)
                     .cornerRadius(25)
             }
             .padding(.horizontal, 40)
@@ -378,7 +378,7 @@ struct PermissionRow: View {
             HStack {
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(.brand)
                     .frame(width: 30)
                 
                 VStack(alignment: .leading, spacing: 4) {
@@ -406,7 +406,7 @@ struct PermissionRow: View {
             .disabled(status == .granted)
         }
         .padding()
-        .background(Color(.secondarySystemBackground))
+        .background(Color.surface)
         .cornerRadius(16)
     }
     
@@ -426,7 +426,7 @@ struct PermissionRow: View {
         case .granted:
             return .white
         case .denied:
-            return .accentColor
+            return .brand
         default:
             return isOptional ? .secondary : .white
         }
@@ -437,9 +437,9 @@ struct PermissionRow: View {
         case .granted:
             return .green
         case .denied:
-            return Color(.secondarySystemBackground)
+            return Color.surface
         default:
-            return isOptional ? Color(.tertiarySystemBackground) : .accentColor
+            return isOptional ? Color.surfaceSubtle : .brand
         }
     }
 }

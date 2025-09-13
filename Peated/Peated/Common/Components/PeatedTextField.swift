@@ -10,17 +10,17 @@ struct PeatedTextField: View {
     ZStack(alignment: .leading) {
       if text.isEmpty {
         Text(placeholder)
-          .foregroundColor(.peatedTextMuted)
+          .foregroundColor(.textMuted)
       }
       
       if isSecure {
         SecureField("", text: $text)
-          .foregroundColor(.peatedTextPrimary)
+          .foregroundColor(.text)
       } else {
         TextField("", text: $text)
-          .foregroundColor(.peatedTextPrimary)
+          .foregroundColor(.text)
       }
     }
-    .tint(.peatedGold)
+    .tint(.brand)
   }
 }

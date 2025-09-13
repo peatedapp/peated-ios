@@ -29,16 +29,16 @@ struct OfflineIndicator: View {
     HStack(spacing: 8) {
       Image(systemName: "wifi.slash")
         .font(.system(size: 14, weight: .medium))
-        .foregroundColor(.white)
+        .foregroundColor(.onStatus)
       
       VStack(alignment: .leading, spacing: 0) {
         Text("You're offline")
           .font(.peatedCaption)
           .fontWeight(.semibold)
-          .foregroundColor(.white)
+          .foregroundColor(.onStatus)
         Text("Changes will sync automatically when you're back online.")
           .font(.peatedCaption)
-          .foregroundColor(.white.opacity(0.9))
+          .foregroundColor(.onStatus.opacity(0.9))
       }
       
       if queueManager.pendingCount > 0 {
@@ -46,10 +46,10 @@ struct OfflineIndicator: View {
         Text("\(queueManager.pendingCount) pending")
           .font(.peatedCaption)
           .fontWeight(.medium)
-          .foregroundColor(.white)
+          .foregroundColor(.onStatus)
           .padding(.horizontal, 8)
           .padding(.vertical, 2)
-          .background(Color.white.opacity(0.18))
+          .background(Color.onStatus.opacity(0.18))
           .cornerRadius(6)
       }
       
@@ -57,7 +57,7 @@ struct OfflineIndicator: View {
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 8)
-    .background(Color.red)
+    .background(Color.danger)
     .transition(.move(edge: .top).combined(with: .opacity))
   }
   
@@ -67,19 +67,19 @@ struct OfflineIndicator: View {
   private var syncingBar: some View {
     HStack(spacing: 8) {
       ProgressView()
-        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+        .progressViewStyle(CircularProgressViewStyle(tint: .onStatus))
         .scaleEffect(0.7)
       
       Text("Back online — syncing \(queueManager.pendingCount) changes…")
         .font(.peatedCaption)
         .fontWeight(.medium)
-        .foregroundColor(.white)
+        .foregroundColor(.onStatus)
       
       Spacer()
     }
     .padding(.horizontal, 16)
     .padding(.vertical, 8)
-    .background(Color.blue)
+    .background(Color.info)
     .transition(.move(edge: .top).combined(with: .opacity))
   }
 }
@@ -96,11 +96,11 @@ struct OfflineStatusView: View {
         HStack {
           Image(systemName: networkMonitor.isConnected ? "wifi" : "wifi.slash")
             .font(.system(size: 20))
-            .foregroundColor(networkMonitor.isConnected ? .green : .red)
+            .foregroundColor(networkMonitor.isConnected ? .success : .danger)
           
           Text("Network Status")
             .font(.peatedHeadline)
-            .foregroundColor(.peatedTextPrimary)
+            .foregroundColor(.text)
           
           Spacer()
         }
@@ -109,35 +109,35 @@ struct OfflineStatusView: View {
           HStack {
             Text("Connection:")
               .font(.peatedCaption)
-              .foregroundColor(.peatedTextSecondary)
+              .foregroundColor(.textSecondary)
             
             Text(networkMonitor.isConnected ? "Online" : "Offline")
               .font(.peatedCaption)
               .fontWeight(.medium)
-              .foregroundColor(networkMonitor.isConnected ? .green : .red)
+              .foregroundColor(networkMonitor.isConnected ? .success : .danger)
           }
           
           if networkMonitor.isConnected {
             HStack {
               Text("Type:")
                 .font(.peatedCaption)
-                .foregroundColor(.peatedTextSecondary)
+                .foregroundColor(.textSecondary)
               
               Text(networkMonitor.connectionType.displayName)
                 .font(.peatedCaption)
                 .fontWeight(.medium)
-                .foregroundColor(.peatedTextPrimary)
+                .foregroundColor(.text)
             }
             
             if networkMonitor.isExpensive {
               HStack {
                 Image(systemName: "exclamationmark.triangle.fill")
                   .font(.system(size: 12))
-                  .foregroundColor(.orange)
+                  .foregroundColor(.warning)
                 
                 Text("Expensive connection")
                   .font(.peatedCaption)
-                  .foregroundColor(.orange)
+                  .foregroundColor(.warning)
               }
             }
             
@@ -145,37 +145,37 @@ struct OfflineStatusView: View {
               HStack {
                 Image(systemName: "tortoise.fill")
                   .font(.system(size: 12))
-                  .foregroundColor(.orange)
+                  .foregroundColor(.warning)
                 
                 Text("Low data mode")
                   .font(.peatedCaption)
-                  .foregroundColor(.orange)
+                  .foregroundColor(.warning)
               }
             }
           }
         }
       }
       .padding()
-      .background(Color.peatedSurfaceLight)
+      .background(Color.surface)
       .cornerRadius(12)
       
       // Offline Queue Status
       if queueManager.pendingCount > 0 {
         VStack(alignment: .leading, spacing: 12) {
           HStack {
-            Image(systemName: "arrow.up.arrow.down.circle")
-              .font(.system(size: 20))
-              .foregroundColor(.blue)
+                Image(systemName: "arrow.up.arrow.down.circle")
+                  .font(.system(size: 20))
+                  .foregroundColor(.info)
             
             Text("Pending Sync")
               .font(.peatedHeadline)
-              .foregroundColor(.peatedTextPrimary)
+              .foregroundColor(.text)
             
             Spacer()
             
             if queueManager.isSyncing {
               ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                .progressViewStyle(CircularProgressViewStyle(tint: .info))
                 .scaleEffect(0.8)
             }
           }
@@ -184,24 +184,24 @@ struct OfflineStatusView: View {
             HStack {
               Text("Pending:")
                 .font(.peatedCaption)
-                .foregroundColor(.peatedTextSecondary)
+                .foregroundColor(.textSecondary)
               
               Text("\(queueManager.pendingCount) operations")
                 .font(.peatedCaption)
                 .fontWeight(.medium)
-                .foregroundColor(.peatedTextPrimary)
+                .foregroundColor(.text)
             }
             
             if queueManager.failedCount > 0 {
               HStack {
                 Text("Failed:")
                   .font(.peatedCaption)
-                  .foregroundColor(.peatedTextSecondary)
+                  .foregroundColor(.textSecondary)
                 
                 Text("\(queueManager.failedCount) operations")
                   .font(.peatedCaption)
                   .fontWeight(.medium)
-                  .foregroundColor(.red)
+                  .foregroundColor(.danger)
               }
             }
             
@@ -214,14 +214,14 @@ struct OfflineStatusView: View {
                 HStack {
                   Text(type.description)
                     .font(.peatedCaption)
-                    .foregroundColor(.peatedTextSecondary)
+                    .foregroundColor(.textSecondary)
                   
                   Spacer()
                   
                   Text("\(count)")
                     .font(.peatedCaption)
                     .fontWeight(.medium)
-                    .foregroundColor(.peatedTextPrimary)
+                    .foregroundColor(.text)
                 }
               }
             }
@@ -241,13 +241,13 @@ struct OfflineStatusView: View {
                   .font(.peatedCaption)
                   .fontWeight(.medium)
               }
-              .foregroundColor(.blue)
+              .foregroundColor(.info)
             }
             .padding(.top, 8)
           }
         }
         .padding()
-        .background(Color.peatedSurfaceLight)
+        .background(Color.surface)
         .cornerRadius(12)
       }
       
@@ -255,25 +255,25 @@ struct OfflineStatusView: View {
       VStack(alignment: .leading, spacing: 12) {
         Text("Network Preferences")
           .font(.peatedHeadline)
-          .foregroundColor(.peatedTextPrimary)
+          .foregroundColor(.text)
           .padding(.horizontal)
         
         Toggle("Load images on cellular", isOn: Binding(
           get: { UserDefaults.standard.bool(forKey: UserDefaults.NetworkKeys.loadImagesOnCellular) },
           set: { UserDefaults.standard.set($0, forKey: UserDefaults.NetworkKeys.loadImagesOnCellular) }
         ))
-        .tint(.peatedGold)
+        .tint(.brand)
         .padding(.horizontal)
         
         Toggle("Sync on cellular", isOn: Binding(
           get: { UserDefaults.standard.bool(forKey: UserDefaults.NetworkKeys.syncOnCellular) },
           set: { UserDefaults.standard.set($0, forKey: UserDefaults.NetworkKeys.syncOnCellular) }
         ))
-        .tint(.peatedGold)
+        .tint(.brand)
         .padding(.horizontal)
       }
       .padding(.vertical)
-      .background(Color.peatedSurfaceLight)
+      .background(Color.surface)
       .cornerRadius(12)
       
       Spacer()
@@ -292,10 +292,10 @@ struct OfflineIndicator_Previews: PreviewProvider {
       
       Spacer()
     }
-    .background(Color.peatedBackground)
+    .background(Color.background)
     
     OfflineStatusView()
-      .background(Color.peatedBackground)
+      .background(Color.background)
   }
 }
 #endif

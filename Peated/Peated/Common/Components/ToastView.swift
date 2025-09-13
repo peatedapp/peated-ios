@@ -12,10 +12,10 @@ struct ToastView: View {
     
     var backgroundColor: Color {
       switch self {
-      case .error: return Color.red
-      case .success: return Color.green
-      case .info: return Color.blue
-      case .warning: return Color.orange
+      case .error: return Color.danger
+      case .success: return Color.success
+      case .info: return Color.info
+      case .warning: return Color.warning
       }
     }
     
@@ -33,11 +33,11 @@ struct ToastView: View {
     HStack(spacing: 12) {
       Image(systemName: type.iconName)
         .font(.system(size: 20))
-        .foregroundColor(.white)
+        .foregroundColor(.onStatus)
       
       Text(message)
         .font(.system(size: 14, weight: .medium))
-        .foregroundColor(.white)
+        .foregroundColor(.onStatus)
         .multilineTextAlignment(.leading)
       
       Spacer(minLength: 0)
@@ -46,7 +46,7 @@ struct ToastView: View {
     .padding(.vertical, 12)
     .background(type.backgroundColor)
     .cornerRadius(12)
-    .shadow(color: .black.opacity(0.2), radius: 4, x: 0, y: 2)
+    .shadow(color: .overlaySoft, radius: 4, x: 0, y: 2)
   }
 }
 
