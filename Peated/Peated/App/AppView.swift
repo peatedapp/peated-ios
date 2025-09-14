@@ -41,8 +41,7 @@ struct AppView: View {
                         }
                         
                         NavigationStack {
-                            Text("Library")
-                                .navigationTitle("My Library")
+                            LibraryView()
                         }
                         .tabItem {
                             Label("Library", systemImage: "books.vertical.fill")
