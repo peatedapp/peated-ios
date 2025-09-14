@@ -11,6 +11,7 @@ struct BottleDetailView: View {
   @State private var isDescriptionExpanded = false
   @State private var showingHeroImageViewer = false
   
+  
   init(bottleId: String, bottleName: String? = nil) {
     self.bottleId = bottleId
     self.bottleName = bottleName
@@ -47,6 +48,11 @@ struct BottleDetailView: View {
           }
         })
       }
+    }
+    .scrollContentBackground(.hidden)
+    .background(Color.background)
+    .refreshable {
+      await model.refresh()
     }
   }
   
@@ -86,11 +92,16 @@ struct BottleDetailView: View {
   private func loadedView(_ bottle: Bottle) -> some View {
     ScrollView {
       VStack(spacing: 0) {
-        // Hero image
+        // Hero image with in-image title (if available)
         heroSection(bottle)
-        // Title below image for readability
-        titleSection(bottle)
-        
+
+        // Fallback name card when no image
+        if bottle.imageUrl == nil {
+          nameCardSection(bottle)
+            .padding(.horizontal)
+            .padding(.top, 16)
+        }
+
         // Stats and about sections
         aboutSection(bottle)
           .padding(.vertical, 20)
@@ -121,7 +132,7 @@ struct BottleDetailView: View {
       await model.refresh()
     }
   }
-  
+
   // MARK: - Hero Section
   @ViewBuilder
   private func heroSection(_ bottle: Bottle) -> some View {
@@ -129,23 +140,54 @@ struct BottleDetailView: View {
       AsyncImage(url: url) { phase in
         switch phase {
         case .success(let image):
-          image
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-            .frame(maxWidth: .infinity)
-            .frame(height: 390)
-            .clipped()
-            // Bottom border to separate image from details
-            .overlay(
-              Rectangle()
-                .fill(Color.border.opacity(0.3))
-                .frame(height: 1),
-              alignment: .bottom
+          ZStack(alignment: .bottom) {
+            image
+              .resizable()
+              .aspectRatio(contentMode: .fill)
+              .frame(maxWidth: .infinity)
+              .frame(height: 390)
+              .clipped()
+
+            // Gradient scrim for legibility
+            LinearGradient(
+              colors: [Color.clear, Color.brandEmphasis.opacity(0.6)],
+              startPoint: .top,
+              endPoint: .bottom
             )
-            .contentShape(Rectangle())
-            .onTapGesture { showingHeroImageViewer = true }
-            .imageViewer(imageUrl: bottle.imageUrl, isPresented: $showingHeroImageViewer)
-            .padding(.top, 0)
+            .frame(height: 160)
+            .frame(maxWidth: .infinity)
+            .allowsHitTesting(false)
+            .alignmentGuide(.bottom) { $0[.bottom] }
+
+            // Title + brand link
+            VStack(spacing: 8) {
+              Text(bottle.fullName)
+                .font(.peatedDisplaySerifLarge)
+                .foregroundColor(.onBrand)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
+
+              NavigationLink(
+                destination: EntityDetailView(entityId: bottle.brand.id, entityName: bottle.brand.name)
+              ) {
+                HStack(spacing: 4) {
+                  Image(systemName: "building.2")
+                    .font(.system(size: 10))
+                  Text(bottle.brandName)
+                }
+                .font(.system(size: DesignSystem.FontSize.small))
+                .foregroundColor(.onBrand)
+              }
+              .buttonStyle(.plain)
+            }
+            .padding(.bottom, 16)
+          }
+          .contentShape(Rectangle())
+          .onTapGesture { showingHeroImageViewer = true }
+          .imageViewer(imageUrl: bottle.imageUrl, isPresented: $showingHeroImageViewer)
+          .padding(.top, 0)
         case .failure, .empty:
           EmptyView()
         @unknown default:
@@ -157,21 +199,21 @@ struct BottleDetailView: View {
     }
   }
 
-  // MARK: - Title Section (below image)
+  // MARK: - Name Banner (no-image fallback)
   @ViewBuilder
-  private func titleSection(_ bottle: Bottle) -> some View {
+  private func nameCardSection(_ bottle: Bottle) -> some View {
     VStack(spacing: 8) {
       Text(bottle.fullName)
-        .font(.peatedDisplaySerif)
+        .font(.peatedDisplaySerifLarge)
         .foregroundColor(.text)
+        .multilineTextAlignment(.center)
         .lineLimit(2)
         .fixedSize(horizontal: false, vertical: true)
-        .multilineTextAlignment(.center)
         .padding(.horizontal)
-      
-      Button(action: {
-        // TODO: Navigate to brand/entity detail
-      }) {
+
+      NavigationLink(
+        destination: EntityDetailView(entityId: bottle.brand.id, entityName: bottle.brand.name)
+      ) {
         HStack(spacing: 4) {
           Image(systemName: "building.2")
             .font(.system(size: 10))
@@ -182,8 +224,18 @@ struct BottleDetailView: View {
       }
       .buttonStyle(.plain)
     }
-    .padding(.top, bottle.imageUrl == nil ? 16 : 12)
+    .padding(.vertical, 24)
+    .frame(maxWidth: .infinity)
+    .background(Color.surfaceSubtle)
+    .overlay(
+      Rectangle()
+        .fill(Color.border.opacity(0.3))
+        .frame(height: 1),
+      alignment: .bottom
+    )
   }
+
+  // Title section replaced by headerSection above
   
   // MARK: - Action Buttons
   @ViewBuilder
@@ -191,13 +243,17 @@ struct BottleDetailView: View {
     HStack(spacing: 12) {
       // Primary CTA
       Button(action: { showingCreateTasting = true }) {
-        Label("Record Tasting", systemImage: "plus.circle.fill")
+        Label("Record Tasting", systemImage: "plus.circle")
           .font(.body)
           .fontWeight(.semibold)
-          .foregroundColor(.onBrand)
+          .foregroundColor(.brand)
           .frame(maxWidth: .infinity)
           .padding(.vertical, 14)
-          .background(Color.brand)
+          .background(Color.brand.opacity(0.14))
+          .overlay(
+            RoundedRectangle(cornerRadius: 12)
+              .stroke(Color.brand.opacity(0.2), lineWidth: 1)
+          )
           .cornerRadius(12)
       }
       

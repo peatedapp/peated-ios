@@ -21,8 +21,13 @@ struct EntityDetailView: View {
       case .loaded(let entity):
         ScrollView {
           VStack(spacing: 0) {
-            // Hero Section
+            // Optional small hero (avatar)
             heroSection(entity: entity)
+
+            // Name card (provides consistent contrast)
+            nameCardSection(entity: entity)
+              .padding(.horizontal)
+              .padding(.top, entity.imageUrl == nil ? 16 : 12)
             
             // Stats section
             statsSection(entity: entity)
@@ -90,15 +95,15 @@ struct EntityDetailView: View {
   
   @ViewBuilder
   private func heroSection(entity: Entity) -> some View {
-    VStack(spacing: 16) {
-      // Entity Image or Placeholder
-      ZStack {
-        Circle()
-          .fill(Color.surface)
-          .frame(width: 100, height: 100)
-        
-        if let imageUrl = entity.imageUrl {
-          AsyncImage(url: URL(string: imageUrl)) { image in
+    if let imageUrl = entity.imageUrl, let url = URL(string: imageUrl) {
+      VStack(spacing: 16) {
+        // Entity Image
+        ZStack {
+          Circle()
+            .fill(Color.surface)
+            .frame(width: 100, height: 100)
+
+          AsyncImage(url: url) { image in
             image
               .resizable()
               .aspectRatio(contentMode: .fill)
@@ -107,44 +112,50 @@ struct EntityDetailView: View {
           } placeholder: {
             ProgressView()
           }
-        } else {
-          Image(systemName: entity.type == .distillery ? "building.2" : "tag")
-            .font(.system(size: 40))
-            .foregroundColor(.textSecondary.opacity(0.5))
         }
       }
-      
-      // Entity Name and Type
-      VStack(spacing: 4) {
-        Text(entity.name)
-          .font(.system(size: 24, weight: .regular, design: .default))
-          .foregroundColor(.text)
-          .multilineTextAlignment(.center)
-          .lineLimit(2)
-          .fixedSize(horizontal: false, vertical: true)
-          .minimumScaleFactor(0.98)
-          .padding(.horizontal)
-        
-        HStack(spacing: 8) {
-          Label(entity.type.displayName, systemImage: entity.type == .distillery ? "building.2" : "tag")
-            .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.textSecondary)
-          
-          if let country = entity.country {
-            Text("•")
-              .foregroundColor(.textSecondary)
-            HStack(spacing: 4) {
-              Image(systemName: "location")
-                .font(.system(size: 10))
-              Text(country)
-            }
-            .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.textSecondary)
+      .padding(.top, 20)
+    } else {
+      EmptyView()
+    }
+  }
+
+  // MARK: - Name Card
+  @ViewBuilder
+  private func nameCardSection(entity: Entity) -> some View {
+    VStack(spacing: 8) {
+      Text(entity.name)
+        .font(.peatedDisplaySerifLarge)
+        .foregroundColor(.text)
+        .multilineTextAlignment(.center)
+        .lineLimit(2)
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(.horizontal)
+
+      HStack(spacing: 8) {
+        Label(entity.type.displayName, systemImage: entity.type == .distillery ? "building.2" : "tag")
+          .font(.system(size: DesignSystem.FontSize.small))
+          .foregroundColor(.textSecondary)
+
+        if let country = entity.country {
+          Text("•").foregroundColor(.textSecondary)
+          HStack(spacing: 4) {
+            Image(systemName: "location").font(.system(size: 10))
+            Text(country)
           }
+          .font(.system(size: DesignSystem.FontSize.small))
+          .foregroundColor(.textSecondary)
         }
       }
     }
-    .padding(.top, 20)
+    .padding(.vertical, 16)
+    .frame(maxWidth: .infinity)
+    .background(Color.surface)
+    .cornerRadius(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(Color.border.opacity(0.3), lineWidth: 1)
+    )
   }
   
   // MARK: - Stats Section
