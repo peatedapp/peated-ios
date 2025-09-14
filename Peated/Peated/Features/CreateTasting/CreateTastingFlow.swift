@@ -70,6 +70,9 @@ struct CreateTastingFlow: View {
             .background(Color.background)
             .navigationTitle("Add Tasting")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(Color.background, for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .toolbarColorScheme(.light, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
@@ -131,7 +134,7 @@ struct CreateTastingFlow: View {
                     }
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundColor(.text)
+                    .foregroundColor(.onBrand)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
                     .background(

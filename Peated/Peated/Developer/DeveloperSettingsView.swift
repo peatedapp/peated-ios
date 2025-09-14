@@ -8,7 +8,7 @@ struct DeveloperSettingsView: View {
     @State private var showingResetConfirmation = false
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 Section {
                     Picker("Environment", selection: $settings.apiEnvironment) {
@@ -133,6 +133,10 @@ struct DeveloperSettingsView: View {
                     }
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.background)
+            .tint(.brand)
+            .listRowBackground(Color.surface)
             .navigationTitle("Developer Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -152,6 +156,7 @@ struct DeveloperSettingsView: View {
                 Text("This will reset all developer settings to their defaults.")
             }
         }
+        .background(Color.background)
     }
 }
 

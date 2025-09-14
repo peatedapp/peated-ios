@@ -176,18 +176,18 @@ struct HomeLocationButton: View {
             HStack(spacing: 16) {
                 Image(systemName: "house.fill")
                     .font(.title2)
-                    .foregroundColor(isSelected ? .text : .brand)
+                    .foregroundColor(isSelected ? .onBrand : .brand)
                     .frame(width: 32)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("At Home")
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .text : .text)
+                        .foregroundColor(isSelected ? .onBrand : .text)
                     
                     Text("Just chilling")
                         .font(.caption)
-                        .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
+                        .foregroundColor(isSelected ? .onBrand.opacity(0.9) : .textSecondary)
                 }
                 
                 Spacer()
@@ -195,7 +195,7 @@ struct HomeLocationButton: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.text)
+                        .foregroundColor(.onBrand)
                 }
             }
             .padding()
@@ -230,7 +230,7 @@ struct CurrentLocationButton: View {
                     } else {
                         Image(systemName: "location.fill")
                             .font(.title2)
-                            .foregroundColor(isSelected ? .text : .brand)
+                            .foregroundColor(isSelected ? .onBrand : .brand)
                     }
                 }
                 .frame(width: 32)
@@ -239,17 +239,17 @@ struct CurrentLocationButton: View {
                     Text(currentLocation?.name ?? "Use Current Location")
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .text : .text)
+                        .foregroundColor(isSelected ? .onBrand : .text)
                     
                     if let address = currentLocation?.address {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
+                            .foregroundColor(isSelected ? .onBrand.opacity(0.9) : .textSecondary)
                             .lineLimit(2)
                     } else if !isLoading {
                         Text("Tap to find nearby places")
                             .font(.caption)
-                            .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
+                            .foregroundColor(isSelected ? .onBrand.opacity(0.9) : .textSecondary)
                     }
                 }
                 
@@ -258,7 +258,7 @@ struct CurrentLocationButton: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.text)
+                        .foregroundColor(.onBrand)
                 }
             }
             .padding()
@@ -347,19 +347,19 @@ struct LocationRow: View {
             HStack(spacing: 12) {
                 Image(systemName: "mappin.circle.fill")
                     .font(.title2)
-                    .foregroundColor(isSelected ? .text : .brand)
+                    .foregroundColor(isSelected ? .onBrand : .brand)
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(location.name)
                         .font(.body)
                         .fontWeight(.medium)
-                        .foregroundColor(isSelected ? .text : .text)
+                        .foregroundColor(isSelected ? .onBrand : .text)
                         .lineLimit(1)
                     
                     if let address = location.address {
                         Text(address)
                             .font(.caption)
-                            .foregroundColor(isSelected ? .text.opacity(0.7) : .textSecondary)
+                            .foregroundColor(isSelected ? .onBrand.opacity(0.9) : .textSecondary)
                             .lineLimit(2)
                     }
                 }
@@ -369,7 +369,7 @@ struct LocationRow: View {
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
-                        .foregroundColor(.text)
+                        .foregroundColor(.onBrand)
                 }
             }
             .padding()

@@ -203,7 +203,7 @@ struct ServingStyleButton: View {
                 Text(style.displayName)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .onSurface : .text)
+                    .foregroundColor(isSelected ? .onBrand : .text)
                     .multilineTextAlignment(.center)
             }
             .frame(maxWidth: .infinity)
@@ -271,7 +271,7 @@ struct FlavorTagButton: View {
             Text(tag)
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(isSelected ? .onSurface : .text)
+                .foregroundColor(isSelected ? .onBrand : .text)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(

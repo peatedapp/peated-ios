@@ -8,7 +8,7 @@ struct SettingsView: View {
     @State private var model = ProfileModel()
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             List {
                 // Account Section
                 Section("Account") {
@@ -76,6 +76,11 @@ struct SettingsView: View {
                     }
                 }
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(Color.background)
+            .listRowBackground(Color.surface)
+            .tint(.brand)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -86,6 +91,7 @@ struct SettingsView: View {
                 }
             }
         }
+        .background(Color.background)
         .sheet(isPresented: $showingDeveloperSettings) {
             DeveloperSettingsView()
         }

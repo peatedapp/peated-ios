@@ -39,8 +39,8 @@ struct BottleDetailView: View {
     }
     .sheet(isPresented: $showingCreateTasting) {
       if let bottle = model.bottle {
-        // TODO: Pass preselected bottle to CreateTastingFlow
-        CreateTastingFlow(onSuccess: {
+        // Pass preselected bottle so step 1 (selection) is skipped
+        CreateTastingFlow(preselectedBottle: bottle, onSuccess: {
           // Refresh to show new tasting
           Task {
             await model.refresh()
