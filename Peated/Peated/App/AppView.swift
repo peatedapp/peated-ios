@@ -80,13 +80,13 @@ struct AppView: View {
                         tabAppearance.configureWithOpaqueBackground()
                         tabAppearance.backgroundColor = UIColor(Color.background)
                         
-                        // Inactive state
-                        tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(Color.textSecondary)
-                        tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textSecondary)]
-                        tabAppearance.inlineLayoutAppearance.normal.iconColor = UIColor(Color.textSecondary)
-                        tabAppearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textSecondary)]
-                        tabAppearance.compactInlineLayoutAppearance.normal.iconColor = UIColor(Color.textSecondary)
-                        tabAppearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textSecondary)]
+                        // Inactive state (use a muted tone distinct from brand)
+                        tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
+                        tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
+                        tabAppearance.inlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
+                        tabAppearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
+                        tabAppearance.compactInlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
+                        tabAppearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
                         
                         // Active state
                         tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.brand)
@@ -98,6 +98,9 @@ struct AppView: View {
                         
                         UITabBar.appearance().standardAppearance = tabAppearance
                         UITabBar.appearance().scrollEdgeAppearance = tabAppearance
+                        // Ensure SwiftUI respects inactive vs active colors
+                        UITabBar.appearance().unselectedItemTintColor = UIColor(Color.textMuted)
+                        UITabBar.appearance().tintColor = UIColor(Color.brand)
                         
                         // Customize refresh control appearance
                         UIRefreshControl.appearance().backgroundColor = UIColor(Color.background)

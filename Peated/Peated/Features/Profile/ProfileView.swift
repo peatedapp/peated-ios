@@ -167,7 +167,7 @@ struct ProfileView: View {
       // Username and email
       VStack(spacing: 4) {
         Text(model.user?.username ?? "Loading...")
-          .font(.peatedDisplaySerif)
+          .font(.system(size: 24, weight: .regular, design: .default))
           .foregroundColor(.text)
           .multilineTextAlignment(.center)
           .lineLimit(2)

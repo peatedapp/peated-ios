@@ -115,9 +115,14 @@ extension Bottle {
         name: apiBottle.brand.name
       ),
       category: category,
+      description: apiBottle.description,
       caskStrength: apiBottle.caskStrength ?? false,
       singleCask: apiBottle.singleCask ?? false,
-      statedAge: apiBottle.statedAge.map { Int($0) }
+      statedAge: apiBottle.statedAge.map { Int($0) },
+      imageUrl: apiBottle.imageUrl,
+      abv: apiBottle.abv,
+      avgRating: apiBottle.avgRating ?? 0.0,
+      totalRatings: Int(apiBottle.totalTastings ?? 0)
     )
   }
 }

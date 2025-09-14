@@ -59,7 +59,7 @@ struct ManualBottleEntryView: View {
         }
         
         Section {
-          Picker("Category", selection: $category) {
+          Picker("Style", selection: $category) {
             ForEach(categories, id: \.0) { value, label in
               Text(label).tag(value)
             }

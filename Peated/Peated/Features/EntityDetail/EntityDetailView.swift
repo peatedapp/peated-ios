@@ -117,7 +117,7 @@ struct EntityDetailView: View {
       // Entity Name and Type
       VStack(spacing: 4) {
         Text(entity.name)
-          .font(.peatedDisplaySerif)
+          .font(.system(size: 24, weight: .regular, design: .default))
           .foregroundColor(.text)
           .multilineTextAlignment(.center)
           .lineLimit(2)

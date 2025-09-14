@@ -9,6 +9,7 @@ struct BottleDetailView: View {
   @State private var showingCreateTasting = false
   @State private var showingShareSheet = false
   @State private var isDescriptionExpanded = false
+  @State private var showingHeroImageViewer = false
   
   init(bottleId: String, bottleName: String? = nil) {
     self.bottleId = bottleId
@@ -85,8 +86,10 @@ struct BottleDetailView: View {
   private func loadedView(_ bottle: Bottle) -> some View {
     ScrollView {
       VStack(spacing: 0) {
-        // Hero section with bottle image and name
+        // Hero image
         heroSection(bottle)
+        // Title below image for readability
+        titleSection(bottle)
         
         // Stats and about sections
         aboutSection(bottle)
@@ -122,63 +125,64 @@ struct BottleDetailView: View {
   // MARK: - Hero Section
   @ViewBuilder
   private func heroSection(_ bottle: Bottle) -> some View {
-    VStack(spacing: 16) {
-      // Bottle image or placeholder (similar to EntityDetailView)
-      ZStack {
-        Circle()
-          .fill(Color.surface)
-          .frame(width: 100, height: 100)
-        
-        if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
-          AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-              image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 100, height: 100)
-                .clipShape(Circle())
-            case .failure, .empty:
-              Image(systemName: "wineglass")
-                .font(.system(size: 40))
-                .foregroundColor(.textSecondary.opacity(0.5))
-            @unknown default:
-              ProgressView()
-            }
-          }
-        } else {
-          Image(systemName: "wineglass")
-            .font(.system(size: 40))
-            .foregroundColor(.textSecondary.opacity(0.5))
+    if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
+      AsyncImage(url: url) { phase in
+        switch phase {
+        case .success(let image):
+          image
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(maxWidth: .infinity)
+            .frame(height: 390)
+            .clipped()
+            // Bottom border to separate image from details
+            .overlay(
+              Rectangle()
+                .fill(Color.border.opacity(0.3))
+                .frame(height: 1),
+              alignment: .bottom
+            )
+            .contentShape(Rectangle())
+            .onTapGesture { showingHeroImageViewer = true }
+            .imageViewer(imageUrl: bottle.imageUrl, isPresented: $showingHeroImageViewer)
+            .padding(.top, 0)
+        case .failure, .empty:
+          EmptyView()
+        @unknown default:
+          EmptyView()
         }
       }
-      
-      // Bottle name and brand
-      VStack(spacing: 4) {
-        Text(bottle.fullName)
-          .font(.peatedDisplaySerif)
-          .foregroundColor(.text)
-          .lineLimit(2)
-          .fixedSize(horizontal: false, vertical: true)
-          .minimumScaleFactor(0.98)
-          .multilineTextAlignment(.center)
-          .padding(.horizontal)
-        
-        Button(action: {
-          // TODO: Navigate to brand/entity detail
-        }) {
-          HStack(spacing: 4) {
-            Image(systemName: "building.2")
-              .font(.system(size: 10))
-            Text(bottle.brandName)
-          }
-          .font(.system(size: DesignSystem.FontSize.small))
-          .foregroundColor(.textSecondary)
-        }
-        .buttonStyle(.plain)
-      }
+    } else {
+      EmptyView()
     }
-    .padding(.top, 20)
+  }
+
+  // MARK: - Title Section (below image)
+  @ViewBuilder
+  private func titleSection(_ bottle: Bottle) -> some View {
+    VStack(spacing: 8) {
+      Text(bottle.fullName)
+        .font(.peatedDisplaySerif)
+        .foregroundColor(.text)
+        .lineLimit(2)
+        .fixedSize(horizontal: false, vertical: true)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal)
+      
+      Button(action: {
+        // TODO: Navigate to brand/entity detail
+      }) {
+        HStack(spacing: 4) {
+          Image(systemName: "building.2")
+            .font(.system(size: 10))
+          Text(bottle.brandName)
+        }
+        .font(.system(size: DesignSystem.FontSize.small))
+        .foregroundColor(.textSecondary)
+      }
+      .buttonStyle(.plain)
+    }
+    .padding(.top, bottle.imageUrl == nil ? 16 : 12)
   }
   
   // MARK: - Action Buttons
@@ -236,14 +240,14 @@ struct BottleDetailView: View {
   @ViewBuilder
   private func statsSection(_ bottle: Bottle) -> some View {
     HStack(spacing: 0) {
-      // Category
+      // Style (formerly Category)
       if let category = bottle.category {
         VStack(spacing: 8) {
           Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
             .font(.system(size: DesignSystem.FontSize.small))
             .fontWeight(.semibold)
             .lineLimit(1)
-          Text("Category")
+          Text("Style")
             .font(.caption)
             .foregroundColor(.textSecondary)
         }

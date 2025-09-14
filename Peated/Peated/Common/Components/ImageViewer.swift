@@ -11,8 +11,8 @@ struct ImageViewer: View {
   
   var body: some View {
     ZStack {
-      // Background
-      Color.overlayStrong
+      // Background (white to handle transparent images gracefully)
+      Color.white
         .ignoresSafeArea()
         .onTapGesture {
           withAnimation {
