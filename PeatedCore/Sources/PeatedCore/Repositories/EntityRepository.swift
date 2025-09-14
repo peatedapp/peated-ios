@@ -44,7 +44,7 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
           entityType = .brand // Default fallback
         }
         
-        return Entity(
+        let entity = Entity(
           id: String(Int(payload.id)),
           name: payload.name,
           type: entityType,
@@ -55,6 +55,8 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
           totalBottles: Int(payload.totalBottles ?? 0),
           totalTastings: Int(payload.totalTastings ?? 0)
         )
+        await NormalizedStore.shared.upsert(.entity(entity.id), value: entity)
+        return entity
       }
       
     case .badRequest:

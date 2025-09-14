@@ -26,7 +26,12 @@ public final class EntityDetailModel {
   }
   
   public func loadEntity() async {
-    state = .loading
+    // Snapshot-first
+    if let (cached, _) = await NormalizedStore.shared.get(.entity(entityId), as: Entity.self) {
+      state = .loaded(cached)
+    } else {
+      state = .loading
+    }
     
     do {
       let entity = try await entityRepository.getEntity(id: entityId)
@@ -43,7 +48,7 @@ public final class EntityDetailModel {
         }
       }
     } catch {
-      state = .error(error)
+      if case .loading = state { state = .error(error) }
     }
   }
   

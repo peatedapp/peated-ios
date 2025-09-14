@@ -6,10 +6,7 @@ public class DeveloperSettings: ObservableObject {
     public static let shared = DeveloperSettings()
     
     @AppStorage("dev.apiEnvironment") public var apiEnvironment: APIEnvironment = .production
-    @AppStorage("dev.enableDebugLogging") public var enableDebugLogging: Bool = false
-    @AppStorage("dev.enableNetworkInspector") public var enableNetworkInspector: Bool = false
-    @AppStorage("dev.mockAPIResponses") public var mockAPIResponses: Bool = false
-    @AppStorage("dev.showPerformanceOverlay") public var showPerformanceOverlay: Bool = false
+    // Placeholder flags removed: keep class minimal until tools exist
     
     public var currentAPIURL: URL {
         switch apiEnvironment {
@@ -22,10 +19,7 @@ public class DeveloperSettings: ObservableObject {
     
     public func reset() {
         apiEnvironment = .production
-        enableDebugLogging = false
-        enableNetworkInspector = false
-        mockAPIResponses = false
-        showPerformanceOverlay = false
+        // No extra flags to reset currently
     }
 }
 

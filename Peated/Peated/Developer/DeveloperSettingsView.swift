@@ -6,6 +6,7 @@ struct DeveloperSettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var copiedToClipboard = false
     @State private var showingResetConfirmation = false
+    @AppStorage("debug.cacheLogging") private var cacheLogging: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -58,22 +59,18 @@ struct DeveloperSettingsView: View {
                     Text("Changes take effect immediately for new API calls")
                 }
                 
-                Section("Debug Tools") {
-                    Toggle(isOn: $settings.enableDebugLogging) {
-                        Label("Debug Logging", systemImage: "doc.text.magnifyingglass")
+                // Removed placeholder debug toggles that had no runtime effect.
+
+                Section("Diagnostics") {
+                    Button(role: .destructive) {
+                        Task {
+                            await NormalizedStore.shared.clear()
+                            URLCache.shared.removeAllCachedResponses()
+                        }
+                    } label: {
+                        Label("Wipe Cache", systemImage: "trash")
                     }
-                    
-                    Toggle(isOn: $settings.enableNetworkInspector) {
-                        Label("Network Inspector", systemImage: "network")
-                    }
-                    
-                    Toggle(isOn: $settings.mockAPIResponses) {
-                        Label("Mock API Responses", systemImage: "theatermasks")
-                    }
-                    
-                    Toggle(isOn: $settings.showPerformanceOverlay) {
-                        Label("Performance Overlay", systemImage: "speedometer")
-                    }
+                    .help("Clears the in-app normalized cache and the URL cache. App behavior is unchanged; next reads will rehydrate on demand.")
                 }
                 
                 Section("App Info") {

@@ -25,21 +25,26 @@ public final class BottleDetailModel {
   }
   
   public func loadBottle() async {
-    state = .loading
-    
+    // If we have a cached snapshot, show it immediately and refresh in background
+    if let (cached, _) = await NormalizedStore.shared.get(.bottle(bottleId), as: Bottle.self) {
+      self.bottle = cached
+      self.state = .loaded(cached)
+    } else {
+      state = .loading
+    }
+
     do {
-      // Load bottle details
       let bottle = try await bottleRepository.getBottle(id: bottleId)
       self.bottle = bottle
-      state = .loaded(bottle)
-      
-      // Load additional data in parallel
+      self.state = .loaded(bottle)
+
       async let recentTastingsTask = loadRecentTastings()
       async let similarBottlesTask = loadSimilarBottles(category: bottle.category)
-      
       _ = await (recentTastingsTask, similarBottlesTask)
     } catch {
-      state = .error(error.localizedDescription)
+      if case .loading = state {
+        state = .error(error.localizedDescription)
+      }
     }
   }
   

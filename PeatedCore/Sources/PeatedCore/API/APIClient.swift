@@ -22,12 +22,13 @@ public actor APIClient {
         // Add middleware stack
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
+        let cacheConditionals = CacheConditionalsMiddleware()
         
         self.client = Client(
             serverURL: currentServerURL,
             configuration: runtimeConfiguration,
             transport: transport,
-            middlewares: [loggingMiddleware, authMiddleware]
+            middlewares: [loggingMiddleware, cacheConditionals, authMiddleware]
         )
     }
     
@@ -43,12 +44,13 @@ public actor APIClient {
         
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
+        let cacheConditionals = CacheConditionalsMiddleware()
         
         self.client = Client(
             serverURL: url,
             configuration: runtimeConfiguration,
             transport: transport,
-            middlewares: [loggingMiddleware, authMiddleware]
+            middlewares: [loggingMiddleware, cacheConditionals, authMiddleware]
         )
     }
     

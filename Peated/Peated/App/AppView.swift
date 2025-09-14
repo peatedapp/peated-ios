@@ -4,6 +4,7 @@ import PeatedCore
 struct AppView: View {
     @State private var model = AppModel()
     @State private var showingDeveloperSettings = false
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         Group {
@@ -104,6 +105,11 @@ struct AppView: View {
                         // Customize refresh control appearance
                         UIRefreshControl.appearance().backgroundColor = UIColor(Color.background)
                         UIRefreshControl.appearance().tintColor = UIColor(Color.textSecondary)
+                    }
+                    .onChange(of: scenePhase) { newPhase in
+                        if newPhase == .background {
+                            Task { await NormalizedStore.shared.flush() }
+                        }
                     }
                 }
             } else {

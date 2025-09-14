@@ -31,6 +31,11 @@ class ProfileModel {
   func loadUser() async {
     isLoading = true
     error = nil
+    // Warm UI from cache first (no flicker)
+    if let id = userId ?? AuthenticationManager.shared.currentUser?.id,
+       let (cached, _) = await NormalizedStore.shared.get(.user(id), as: User.self) {
+      self.user = cached
+    }
     
     // Use detached task to prevent cancellation
     let result = await Task.detached {

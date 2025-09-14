@@ -35,7 +35,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
       switch okResponse.body {
       case .json(let payload):
         return payload.results.map { apiBottle in
-          Bottle(
+          let bottle = Bottle(
             id: String(Int(apiBottle.id)),
             name: apiBottle.name,
             fullName: apiBottle.fullName,
@@ -52,6 +52,8 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             avgRating: 0.0,  // Not available in list endpoint
             totalRatings: 0   // Not available in list endpoint
           )
+          Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
+          return bottle
         }
       }
     case .badRequest:
@@ -80,7 +82,9 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
     case .ok(let okResponse):
       switch okResponse.body {
       case .json(let payload):
-        return Bottle(from: payload)
+        let bottle = Bottle(from: payload)
+        await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle)
+        return bottle
       }
     case .unauthorized:
       throw APIError.unauthorized
@@ -117,7 +121,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
           let avgRating = apiBottle.avgRating ?? 0.0
           let totalRatings = Int(apiBottle.totalTastings ?? 0)
           
-          return Bottle(
+          let bottle = Bottle(
             id: bottleId,
             name: apiBottle.name,
             fullName: apiBottle.fullName,
@@ -131,6 +135,8 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             avgRating: avgRating,
             totalRatings: totalRatings
           )
+          Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
+          return bottle
         }
       }
     case .badRequest:
@@ -215,7 +221,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
       switch okResponse.body {
       case .json(let payload):
         return payload.results.map { apiBottle in
-          Bottle(
+          let bottle = Bottle(
             id: String(Int(apiBottle.id)),
             name: apiBottle.name,
             fullName: apiBottle.fullName,
@@ -232,6 +238,8 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             avgRating: apiBottle.avgRating ?? 0.0,
             totalRatings: Int(apiBottle.totalTastings ?? 0)
           )
+          Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
+          return bottle
         }
       }
     case .badRequest:

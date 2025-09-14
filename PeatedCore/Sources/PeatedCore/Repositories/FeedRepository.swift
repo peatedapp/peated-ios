@@ -59,7 +59,22 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     let response = try await client.listTastings(query: query)
     let payload = try response.extractPayload()
     
-    let tastings = payload.results.map { TastingFeedItem.from($0) }
+    let tastings = payload.results.map { item -> TastingFeedItem in
+      let t = TastingFeedItem.from(item)
+      // Seed cache for referenced entities
+      Task {
+        await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
+          id: t.bottleId,
+          name: t.bottleName, // best effort; fullName expected here
+          fullName: t.bottleName,
+          brand: Brand(id: "0", name: t.bottleBrandName),
+          category: t.bottleCategory,
+          imageUrl: t.bottleImageUrl
+        ))
+      }
+      return t
+    }
     
     // Use the cursor from the API response
     let nextCursor: String?
@@ -103,7 +118,21 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     let response = try await client.listTastings(query: query)
     let payload = try response.extractPayload()
     
-    let tastings = payload.results.map { TastingFeedItem.from($0) }
+    let tastings = payload.results.map { item -> TastingFeedItem in
+      let t = TastingFeedItem.from(item)
+      Task {
+        await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
+          id: t.bottleId,
+          name: t.bottleName,
+          fullName: t.bottleName,
+          brand: Brand(id: "0", name: t.bottleBrandName),
+          category: t.bottleCategory,
+          imageUrl: t.bottleImageUrl
+        ))
+      }
+      return t
+    }
     
     // Use the cursor from the API response
     let nextCursor: String?
@@ -142,7 +171,21 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     let response = try await client.listTastings(query: query)
     let payload = try response.extractPayload()
     
-    let tastings = payload.results.map { TastingFeedItem.from($0) }
+    let tastings = payload.results.map { item -> TastingFeedItem in
+      let t = TastingFeedItem.from(item)
+      Task {
+        await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
+          id: t.bottleId,
+          name: t.bottleName,
+          fullName: t.bottleName,
+          brand: Brand(id: "0", name: t.bottleBrandName),
+          category: t.bottleCategory,
+          imageUrl: t.bottleImageUrl
+        ))
+      }
+      return t
+    }
     
     // Use the cursor from the API response
     let nextCursor: String?
