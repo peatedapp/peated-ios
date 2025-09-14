@@ -5,6 +5,14 @@ struct AppView: View {
     @State private var model = AppModel()
     @State private var showingDeveloperSettings = false
     @Environment(\.scenePhase) private var scenePhase
+    @State private var profileNavigationPath = NavigationPath()
+    
+    // Navigation destinations for the Profile tab
+    enum ProfileDestination: Hashable {
+        case userProfile(userId: String)
+        case tastingDetail(tastingId: String)
+        case bottleDetail(bottleId: String)
+    }
     
     var body: some View {
         Group {
@@ -48,10 +56,43 @@ struct AppView: View {
                             Label("Library", systemImage: "books.vertical.fill")
                         }
                         
-                        NavigationStack {
-                            ProfileView()
-                                .navigationTitle("Profile")
-                                .navigationBarTitleDisplayMode(.inline)
+                        NavigationStack(path: $profileNavigationPath) {
+                            ProfileView(
+                                onNavigateToProfile: { userId in
+                                    profileNavigationPath.append(ProfileDestination.userProfile(userId: userId))
+                                },
+                                onNavigateToTasting: { tastingId in
+                                    profileNavigationPath.append(ProfileDestination.tastingDetail(tastingId: tastingId))
+                                }
+                            )
+                            .navigationTitle("Profile")
+                            .navigationBarTitleDisplayMode(.inline)
+                            .navigationDestination(for: ProfileDestination.self) { destination in
+                                switch destination {
+                                case .userProfile(let userId):
+                                    ProfileView(
+                                        userId: userId,
+                                        onNavigateToProfile: { targetUserId in
+                                            profileNavigationPath.append(ProfileDestination.userProfile(userId: targetUserId))
+                                        },
+                                        onNavigateToTasting: { tastingId in
+                                            profileNavigationPath.append(ProfileDestination.tastingDetail(tastingId: tastingId))
+                                        }
+                                    )
+                                case .tastingDetail(let tastingId):
+                                    TastingDetailView(
+                                        tastingId: tastingId,
+                                        onNavigateToProfile: { userId in
+                                            profileNavigationPath.append(ProfileDestination.userProfile(userId: userId))
+                                        },
+                                        onNavigateToBottle: { bottleId in
+                                            profileNavigationPath.append(ProfileDestination.bottleDetail(bottleId: bottleId))
+                                        }
+                                    )
+                                case .bottleDetail(let bottleId):
+                                    BottleDetailView(bottleId: bottleId, bottleName: nil)
+                                }
+                            }
                         }
                         .tabItem {
                             Label("Profile", systemImage: "person.fill")
