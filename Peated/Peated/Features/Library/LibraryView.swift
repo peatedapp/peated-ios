@@ -114,7 +114,7 @@ struct LibraryView: View {
         VStack(spacing: 12) {
           Text("No favorites yet")
             .foregroundColor(.textSecondary)
-          Text("Tap the heart on a bottle to save it here.")
+          Text("Tap the star on a bottle to save it here.")
             .font(.footnote)
             .foregroundColor(.textSecondary)
         }

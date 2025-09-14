@@ -49,9 +49,7 @@ struct UnifiedTastingCard: View {
             .foregroundColor(.text)
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)
-            .onTapGesture {
-              onBottleTap()
-            }
+            .onTapGesture { onBottleTap() }
           
           HStack(spacing: 4) {
             Text(tasting.bottleBrandName)
@@ -67,6 +65,9 @@ struct UnifiedTastingCard: View {
                 .font(.peatedSubheadline)
                 .foregroundColor(.textSecondary)
             }
+
+            // Inline status icons
+            BottleStatusIcons(bottleId: tasting.bottleId)
           }
           .lineLimit(1)
         }
@@ -288,9 +289,7 @@ struct UnifiedTastingListItem: View {
             .foregroundColor(.text)
             .lineLimit(2)
             .fixedSize(horizontal: false, vertical: true)
-            .onTapGesture {
-              onBottleTap()
-            }
+            .onTapGesture { onBottleTap() }
           
           HStack(spacing: 4) {
             Text(tasting.bottleBrandName)
@@ -306,6 +305,9 @@ struct UnifiedTastingListItem: View {
                 .font(.peatedSubheadline)
                 .foregroundColor(.textSecondary)
             }
+
+            // Inline status icons
+            BottleStatusIcons(bottleId: tasting.bottleId)
           }
           .lineLimit(1)
         }

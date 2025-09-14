@@ -50,7 +50,9 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             imageUrl: apiBottle.imageUrl,
             abv: apiBottle.abv,
             avgRating: 0.0,  // Not available in list endpoint
-            totalRatings: 0   // Not available in list endpoint
+            totalRatings: 0,   // Not available in list endpoint
+            isFavorite: apiBottle.isFavorite ?? false,
+            hasTasted: apiBottle.hasTasted
           )
           Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
           return bottle
@@ -133,7 +135,9 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             imageUrl: apiBottle.imageUrl,
             abv: apiBottle.abv,
             avgRating: avgRating,
-            totalRatings: totalRatings
+            totalRatings: totalRatings,
+            isFavorite: apiBottle.isFavorite ?? false,
+            hasTasted: apiBottle.hasTasted
           )
           Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
           return bottle
@@ -186,7 +190,9 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             imageUrl: apiBottle.imageUrl,
             abv: apiBottle.abv,
             avgRating: avgRating,
-            totalRatings: totalRatings
+            totalRatings: totalRatings,
+            isFavorite: apiBottle.isFavorite ?? false,
+            hasTasted: apiBottle.hasTasted
           )
         }
       }

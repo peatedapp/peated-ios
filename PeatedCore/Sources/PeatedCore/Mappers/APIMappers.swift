@@ -122,7 +122,9 @@ extension Bottle {
       imageUrl: apiBottle.imageUrl,
       abv: apiBottle.abv,
       avgRating: apiBottle.avgRating ?? 0.0,
-      totalRatings: Int(apiBottle.totalTastings ?? 0)
+      totalRatings: Int(apiBottle.totalTastings ?? 0),
+      isFavorite: apiBottle.isFavorite ?? false,
+      hasTasted: apiBottle.hasTasted
     )
   }
 }

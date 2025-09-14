@@ -26,6 +26,8 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
   public let abv: Double?
   public let avgRating: Double
   public let totalRatings: Int
+  public var isFavorite: Bool
+  public var hasTasted: Bool
   
   // Convenience properties
   public var brandName: String { brand.name }
@@ -43,7 +45,9 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
     imageUrl: String? = nil,
     abv: Double? = nil,
     avgRating: Double = 0.0,
-    totalRatings: Int = 0
+    totalRatings: Int = 0,
+    isFavorite: Bool = false,
+    hasTasted: Bool = false
   ) {
     self.id = id
     self.name = name
@@ -58,5 +62,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
     self.abv = abv
     self.avgRating = avgRating
     self.totalRatings = totalRatings
+    self.isFavorite = isFavorite
+    self.hasTasted = hasTasted
   }
 }

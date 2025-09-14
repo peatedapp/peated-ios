@@ -61,16 +61,19 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     
     let tastings = payload.results.map { item -> TastingFeedItem in
       let t = TastingFeedItem.from(item)
-      // Seed cache for referenced entities
+      // Seed cache for referenced entities, including per-user flags
       Task {
         await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        let b = item.bottle
         await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
           id: t.bottleId,
           name: t.bottleName, // best effort; fullName expected here
           fullName: t.bottleName,
           brand: Brand(id: "0", name: t.bottleBrandName),
           category: t.bottleCategory,
-          imageUrl: t.bottleImageUrl
+          imageUrl: t.bottleImageUrl,
+          isFavorite: b.isFavorite,
+          hasTasted: b.hasTasted
         ))
       }
       return t
@@ -122,13 +125,16 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
       let t = TastingFeedItem.from(item)
       Task {
         await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        let b = item.bottle
         await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
           id: t.bottleId,
           name: t.bottleName,
           fullName: t.bottleName,
           brand: Brand(id: "0", name: t.bottleBrandName),
           category: t.bottleCategory,
-          imageUrl: t.bottleImageUrl
+          imageUrl: t.bottleImageUrl,
+          isFavorite: b.isFavorite,
+          hasTasted: b.hasTasted
         ))
       }
       return t
@@ -175,13 +181,16 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
       let t = TastingFeedItem.from(item)
       Task {
         await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        let b = item.bottle
         await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
           id: t.bottleId,
           name: t.bottleName,
           fullName: t.bottleName,
           brand: Brand(id: "0", name: t.bottleBrandName),
           category: t.bottleCategory,
-          imageUrl: t.bottleImageUrl
+          imageUrl: t.bottleImageUrl,
+          isFavorite: b.isFavorite,
+          hasTasted: b.hasTasted
         ))
       }
       return t

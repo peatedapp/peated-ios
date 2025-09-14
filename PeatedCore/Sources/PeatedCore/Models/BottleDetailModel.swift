@@ -19,6 +19,7 @@ public final class BottleDetailModel {
   private let bottleId: String
   private let bottleRepository = BottleRepository()
   private let feedRepository = FeedRepository()
+  private let collectionRepository = CollectionRepository()
   
   public init(bottleId: String) {
     self.bottleId = bottleId
@@ -50,6 +51,31 @@ public final class BottleDetailModel {
   
   public func refresh() async {
     await loadBottle()
+  }
+
+  public func toggleFavorite() async {
+    guard var current = self.bottle else { return }
+    let target = !current.isFavorite
+    // Optimistic update
+    current.isFavorite = target
+    self.bottle = current
+    if case .loaded = self.state { self.state = .loaded(current) }
+    await NormalizedStore.shared.upsert(.bottle(current.id), value: current)
+
+    do {
+      if target {
+        try await collectionRepository.addBottleToFavorites(bottleId: bottleId)
+      } else {
+        try await collectionRepository.removeBottleFromFavorites(bottleId: bottleId)
+      }
+    } catch {
+      // Revert on failure
+      current.isFavorite.toggle()
+      self.bottle = current
+      if case .loaded = self.state { self.state = .loaded(current) }
+      await NormalizedStore.shared.upsert(.bottle(current.id), value: current)
+      print("Failed to toggle favorite: \(error)")
+    }
   }
   
   private func loadRecentTastings() async {

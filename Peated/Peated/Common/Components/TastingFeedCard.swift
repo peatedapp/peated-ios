@@ -100,7 +100,7 @@ struct TastingFeedCard: View {
       if showBottle {
         Button(action: onBottleTap) {
           VStack(alignment: .leading, spacing: 6) {
-            // Bottle name - unified serif display style
+            // Bottle name
             Text(tasting.bottleName)
               .font(.peatedDisplaySerif)
               .foregroundColor(.text)
@@ -121,6 +121,9 @@ struct TastingFeedCard: View {
                   .font(.system(size: 13, weight: .light))
                   .foregroundColor(.textSecondary)
               }
+
+              // Compact status icons inline with brand/category
+              BottleStatusIcons(bottleId: tasting.bottleId)
             }
           }
         }

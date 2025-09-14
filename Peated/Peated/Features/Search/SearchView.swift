@@ -371,6 +371,21 @@ struct SearchView: View {
           }
         }
         Spacer(minLength: DesignSystem.Spacing.small)
+        // Compact status icons: tasted + favorite
+        if let bottle = result.bottle {
+          HStack(spacing: 6) {
+            if bottle.hasTasted {
+              Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 12))
+                .foregroundColor(.brand)
+            }
+            if bottle.isFavorite {
+              Image(systemName: "star.fill")
+                .font(.system(size: 11))
+                .foregroundColor(.brand)
+            }
+          }
+        }
         Image(systemName: "chevron.right").font(.caption).foregroundColor(.textSecondary)
       } else if result.type == .user {
         VStack(alignment: .leading, spacing: 4) {
@@ -548,6 +563,20 @@ struct SearchView: View {
       
       Spacer()
       
+      // Compact status icons: tasted + favorite
+      HStack(spacing: 6) {
+        if bottle.hasTasted {
+          Image(systemName: "checkmark.circle.fill")
+            .font(.system(size: 12))
+            .foregroundColor(.brand)
+        }
+        if bottle.isFavorite {
+          Image(systemName: "star.fill")
+            .font(.system(size: 11))
+            .foregroundColor(.brand)
+        }
+      }
+
       Image(systemName: "chevron.right")
         .font(.caption)
         .foregroundColor(.textSecondary)

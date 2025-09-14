@@ -122,7 +122,23 @@ struct BottleRow: View {
         }
         
         Spacer(minLength: DesignSystem.Spacing.small)
-        
+
+        // Compact status icons: favorite and has-tasted
+        HStack(spacing: 6) {
+          if bottle.hasTasted {
+            Image(systemName: "checkmark.circle.fill")
+              .font(.system(size: 12))
+              .foregroundColor(.brand)
+              .accessibilityLabel("Tasted")
+          }
+          if bottle.isFavorite {
+            Image(systemName: "star.fill")
+              .font(.system(size: 11))
+              .foregroundColor(.brand)
+              .accessibilityLabel("Favorited")
+          }
+        }
+
         if isSelected {
           Image(systemName: "checkmark.circle.fill")
             .foregroundColor(.brand)

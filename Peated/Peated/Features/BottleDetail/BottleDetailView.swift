@@ -159,7 +159,7 @@ struct BottleDetailView: View {
             .allowsHitTesting(false)
             .alignmentGuide(.bottom) { $0[.bottom] }
 
-            // Title + brand link
+            // Title + brand link + status icons
             VStack(spacing: 8) {
               Text(bottle.fullName)
                 .font(.peatedDisplaySerifLarge)
@@ -181,6 +181,36 @@ struct BottleDetailView: View {
                 .foregroundColor(.onBrand)
               }
               .buttonStyle(.plain)
+
+              // Status badges with labels for clarity (hero)
+              if bottle.hasTasted || bottle.isFavorite {
+                HStack(spacing: 10) {
+                  if bottle.hasTasted {
+                    HStack(spacing: 4) {
+                      Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 12))
+                        .foregroundColor(.brand)
+                      Text("Tasted")
+                        .font(.system(size: DesignSystem.FontSize.small))
+                        .foregroundColor(.onBrand)
+                    }
+                  }
+                  if bottle.hasTasted && bottle.isFavorite {
+                    Text("•")
+                      .foregroundColor(.onBrand.opacity(0.7))
+                  }
+                  if bottle.isFavorite {
+                    HStack(spacing: 4) {
+                      Image(systemName: "star.fill")
+                        .font(.system(size: 12))
+                        .foregroundColor(.brand)
+                      Text("Favorited")
+                        .font(.system(size: DesignSystem.FontSize.small))
+                        .foregroundColor(.onBrand)
+                    }
+                  }
+                }
+              }
             }
             .padding(.bottom, 16)
           }
@@ -223,6 +253,36 @@ struct BottleDetailView: View {
         .foregroundColor(.textSecondary)
       }
       .buttonStyle(.plain)
+
+      // Status badges with labels for clarity (no-image fallback)
+      if bottle.hasTasted || bottle.isFavorite {
+        HStack(spacing: 10) {
+          if bottle.hasTasted {
+            HStack(spacing: 4) {
+              Image(systemName: "checkmark.circle.fill")
+                .font(.system(size: 12))
+                .foregroundColor(.brand)
+              Text("Tasted")
+                .font(.system(size: DesignSystem.FontSize.small))
+                .foregroundColor(.textSecondary)
+            }
+          }
+          if bottle.hasTasted && bottle.isFavorite {
+            Text("•")
+              .foregroundColor(.textSecondary)
+          }
+          if bottle.isFavorite {
+            HStack(spacing: 4) {
+              Image(systemName: "star.fill")
+                .font(.system(size: 12))
+                .foregroundColor(.brand)
+              Text("Favorited")
+                .font(.system(size: DesignSystem.FontSize.small))
+                .foregroundColor(.textSecondary)
+            }
+          }
+        }
+      }
     }
     .padding(.vertical, 24)
     .frame(maxWidth: .infinity)
@@ -266,6 +326,18 @@ struct BottleDetailView: View {
           .frame(width: 50, height: 50)
           .background(Color.border.opacity(0.3))
           .cornerRadius(12)
+      }
+
+      // Favorite button
+      Button(action: { Task { await model.toggleFavorite() } }) {
+        Image(systemName: bottle.isFavorite ? "star.fill" : "star")
+          .font(.system(size: 20))
+          .fontWeight(.medium)
+          .foregroundColor(bottle.isFavorite ? .brand : .text)
+          .frame(width: 50, height: 50)
+          .background(Color.border.opacity(0.3))
+          .cornerRadius(12)
+          .accessibilityLabel(bottle.isFavorite ? "Unfavorite" : "Favorite")
       }
     }
   }

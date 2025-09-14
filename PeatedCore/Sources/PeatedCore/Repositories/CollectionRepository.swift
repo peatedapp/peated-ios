@@ -85,7 +85,9 @@ public actor CollectionRepository: BaseRepositoryProtocol {
             imageUrl: b.imageUrl,
             abv: b.abv,
             avgRating: b.avgRating ?? 0.0,
-            totalRatings: Int(b.totalTastings ?? 0)
+            totalRatings: Int(b.totalTastings ?? 0),
+            isFavorite: b.isFavorite ?? true, // bottles in favorites collection should be favorited
+            hasTasted: b.hasTasted
           )
         }
       }
@@ -96,5 +98,45 @@ public actor CollectionRepository: BaseRepositoryProtocol {
     default:
       throw APIError.invalidResponse
     }
+  }
+}
+
+extension CollectionRepository {
+  public func addBottleToFavorites(bottleId: String, user: String = "me") async throws {
+    guard let collectionId = try await getFavoritesCollectionId(user: user) else {
+      throw APIError.requestFailed("Favorites collection not found")
+    }
+    let client = await self.client
+    guard let cid = Double(collectionId), let bid = Double(bottleId) else {
+      throw APIError.requestFailed("Invalid id(s)")
+    }
+    _ = try await client.addBottleToCollection(
+      .init(
+        path: .init(
+          user: .init(value3: user),
+          collection: Operations.addBottleToCollection.Input.Path.collectionPayload(value2: cid)
+        ),
+        body: .json(.init(bottle: bid))
+      )
+    )
+  }
+
+  public func removeBottleFromFavorites(bottleId: String, user: String = "me") async throws {
+    guard let collectionId = try await getFavoritesCollectionId(user: user) else {
+      throw APIError.requestFailed("Favorites collection not found")
+    }
+    let client = await self.client
+    guard let cid = Double(collectionId), let bid = Double(bottleId) else {
+      throw APIError.requestFailed("Invalid id(s)")
+    }
+    _ = try await client.removeBottleFromCollection(
+      .init(
+        path: .init(
+          user: .init(value3: user),
+          collection: Operations.removeBottleFromCollection.Input.Path.collectionPayload(value1: cid)
+        ),
+        body: .json(.init(bottle: bid))
+      )
+    )
   }
 }
