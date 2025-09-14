@@ -1,0 +1,87 @@
+import SwiftUI
+import UIKit
+
+// MARK: - TextInput
+// Reusable, theme-aware text input with optional label/icon/unit and error/helper text.
+struct TextInput: View {
+  // Content
+  let label: String?
+  let placeholder: String
+  @Binding var text: String
+  var leadingSystemImage: String? = nil
+  var unit: String? = nil
+  var isSecure: Bool = false
+
+  // Behavior
+  var keyboard: UIKeyboardType = .default
+  var contentType: UITextContentType? = nil
+  var submitLabel: SubmitLabel = .done
+  var autocorrection: Bool = true
+  var capitalization: TextInputAutocapitalization = .sentences
+  var disabled: Bool = false
+  var error: String? = nil
+  var helper: String? = nil
+  var onSubmit: (() -> Void)? = nil
+
+  // Focus (internal; external binding optional for integration if needed)
+  @FocusState private var internalFocused: Bool
+  var isFocused: Binding<Bool>? = nil
+
+  var body: some View {
+    VStack(alignment: .leading, spacing: 6) {
+      if let label = label, !label.isEmpty {
+        Text(label)
+          .font(.caption)
+          .foregroundColor(.textSecondary)
+      }
+
+      HStack(spacing: 8) {
+        if let icon = leadingSystemImage {
+          Image(systemName: icon)
+            .foregroundColor(.textSecondary)
+        }
+
+        Group {
+          if isSecure {
+            SecureField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+          } else {
+            TextField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+          }
+        }
+        .textFieldStyle(.plain)
+        .foregroundColor(.text)
+        .keyboardType(keyboard)
+        .submitLabel(submitLabel)
+        .autocorrectionDisabled(!autocorrection)
+        .textInputAutocapitalization(capitalization)
+        .textContentType(contentType)
+        .onSubmit { onSubmit?() }
+        .focused($internalFocused)
+
+        if let unit = unit, !unit.isEmpty {
+          Text(unit)
+            .foregroundColor(.textSecondary)
+        }
+      }
+      .inputBox(state: inputState)
+      .disabled(disabled)
+
+      if let error = error, !error.isEmpty {
+        Text(error)
+          .font(.caption)
+          .foregroundColor(.danger)
+      } else if let helper = helper, !helper.isEmpty {
+        Text(helper)
+          .font(.caption)
+          .foregroundColor(.textSecondary)
+      }
+    }
+  }
+
+  private var inputState: InputBox.State {
+    if disabled { return .disabled }
+    if error != nil { return .error }
+    let focused = isFocused?.wrappedValue ?? internalFocused
+    return focused ? .focused : .normal
+  }
+}

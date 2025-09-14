@@ -7,10 +7,12 @@ struct EntityDetailView: View {
   @State private var isDescriptionExpanded = false
   @Environment(\.dismiss) private var dismiss
   let entityName: String?
+  let seed: Entity?
   
-  init(entityId: String, entityName: String? = nil) {
-    _model = State(initialValue: EntityDetailModel(entityId: entityId))
+  init(entityId: String, entityName: String? = nil, seed: Entity? = nil) {
+    _model = State(initialValue: EntityDetailModel(entityId: entityId, seed: seed))
     self.entityName = entityName
+    self.seed = seed
   }
   
   var body: some View {
@@ -41,14 +43,32 @@ struct EntityDetailView: View {
                 .padding(.bottom, 20)
             }
             
-            // Tab selection
-            Picker("Content", selection: $selectedTab) {
-              Text("Activity").tag(0)
-              Text("Bottles").tag(1)
+            // Tab selection (custom)
+            HStack(spacing: 0) {
+              ForEach([(0, "Activity"), (1, "Bottles")], id: \.0) { pair in
+                let idx = pair.0
+                let title = pair.1
+                Button(action: { selectedTab = idx }) {
+                  VStack(spacing: 0) {
+                    Text(title)
+                      .font(.system(size: 15, weight: selectedTab == idx ? .medium : .regular))
+                      .foregroundColor(selectedTab == idx ? Color.text : Color.textSecondary)
+                      .frame(maxWidth: .infinity)
+                      .padding(.vertical, 12)
+                    Rectangle()
+                      .fill(selectedTab == idx ? Color.brand : Color.clear)
+                      .frame(height: 2)
+                  }
+                }
+                .buttonStyle(.plain)
+              }
             }
-            .pickerStyle(.segmented)
             .padding(.horizontal)
             .padding(.bottom, 16)
+            .overlay(
+              Rectangle().fill(Color.border.opacity(0.2)).frame(height: 1),
+              alignment: .bottom
+            )
             
             // Tab content
             Group {
@@ -61,7 +81,6 @@ struct EntityDetailView: View {
             }
           }
         }
-        .background(Color.background)
       case .error(let error):
         VStack(spacing: 16) {
           Image(systemName: "exclamationmark.triangle")
@@ -89,6 +108,7 @@ struct EntityDetailView: View {
     .task {
       await model.loadEntity()
     }
+    .screenBackground()
   }
   
   // MARK: - Hero Section
@@ -150,12 +170,6 @@ struct EntityDetailView: View {
     }
     .padding(.vertical, 16)
     .frame(maxWidth: .infinity)
-    .background(Color.surface)
-    .cornerRadius(12)
-    .overlay(
-      RoundedRectangle(cornerRadius: 12)
-        .stroke(Color.border.opacity(0.3), lineWidth: 1)
-    )
   }
   
   // MARK: - Stats Section

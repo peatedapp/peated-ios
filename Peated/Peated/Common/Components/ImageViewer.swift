@@ -11,8 +11,8 @@ struct ImageViewer: View {
   
   var body: some View {
     ZStack {
-      // Background (white to handle transparent images gracefully)
-      Color.white
+      // Background: use app standard dark background so edges match the app
+      Color.background
         .ignoresSafeArea()
         .onTapGesture {
           withAnimation {
@@ -28,6 +28,9 @@ struct ImageViewer: View {
             image
               .resizable()
               .aspectRatio(contentMode: .fit)
+              // Render the image over white so transparent pixels appear on white,
+              // while the surrounding edges use our dark app background.
+              .background(Color.white)
               .scaleEffect(scale * magnifyBy)
               .offset(offset)
               .gesture(

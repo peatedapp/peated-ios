@@ -38,27 +38,7 @@ struct TastingFeedCard: View {
         HStack(alignment: .center, spacing: 10) {
           // User avatar (even smaller for elegance)
           Button(action: onUserTap) {
-            if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
-              AsyncImage(url: url) { image in
-                image
-                  .resizable()
-                  .scaledToFill()
-              } placeholder: {
-                Circle()
-                  .fill(Color.border.opacity(0.3))
-              }
-              .frame(width: 28, height: 28)
-              .clipShape(Circle())
-            } else {
-              Circle()
-                .fill(Color.border.opacity(0.3))
-                .overlay(
-                  Image(systemName: "person.fill")
-                    .font(.system(size: 12))
-                    .foregroundColor(Color.textSecondary)
-                )
-                .frame(width: 28, height: 28)
-            }
+            AvatarImage(urlString: tasting.userAvatarUrl, size: 28)
           }
           .buttonStyle(PlainButtonStyle())
 
@@ -140,14 +120,14 @@ struct TastingFeedCard: View {
           .fixedSize(horizontal: false, vertical: true)
       }
       
-      // Tags - more elegant
+      // Tags - muted for dark background
       if !tasting.tags.isEmpty {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
             ForEach(tasting.tags, id: \.self) { tag in
               Text("#\(tag)")
                 .font(.system(size: 12, weight: .light))
-                .foregroundColor(Color(hex: "#cf5d4e"))
+                .foregroundColor(.textSecondary)
             }
           }
         }
@@ -233,7 +213,6 @@ struct TastingFeedCard: View {
     }
     .padding(.horizontal, 20)
     .padding(.vertical, 24)
-    .background(Color.background)
     .fullScreenCover(isPresented: $showingImageViewer) {
       if let imageUrl = tasting.imageUrl {
         ImageViewer(imageUrl: imageUrl, isPresented: $showingImageViewer)

@@ -14,11 +14,11 @@ struct ManualBottleEntryView: View {
   @State private var showingError = false
   @State private var errorMessage = ""
   
-  @FocusState private var focusedField: Field?
-  
-  enum Field {
-    case name, brand, abv, age
-  }
+  // Local focus bindings for inputs
+  @FocusState private var focusName: Bool
+  @FocusState private var focusBrand: Bool
+  @FocusState private var focusAbv: Bool
+  @FocusState private var focusAge: Bool
   
   private let categories = [
     ("scotch", "Scotch"),
@@ -33,63 +33,12 @@ struct ManualBottleEntryView: View {
   
   var body: some View {
     NavigationStack {
-      Form {
-        Section {
-          TextField("Bottle Name", text: $bottleName)
-            .focused($focusedField, equals: .name)
-            .textContentType(.name)
-            .submitLabel(.next)
-            .onSubmit {
-              focusedField = .brand
-            }
-          
-          TextField("Brand/Distillery", text: $brandName)
-            .focused($focusedField, equals: .brand)
-            .textContentType(.organizationName)
-            .submitLabel(.next)
-            .onSubmit {
-              focusedField = .abv
-            }
-        } header: {
-          Text("Basic Information")
-        } footer: {
-          Text("Enter the bottle name and brand as they appear on the label")
-            .font(.caption)
-            .foregroundColor(.textSecondary)
+      ScrollView {
+        VStack(spacing: 16) {
+          basicInfoSection
+          detailsSection
         }
-        
-        Section {
-          Picker("Style", selection: $category) {
-            ForEach(categories, id: \.0) { value, label in
-              Text(label).tag(value)
-            }
-          }
-          
-          HStack {
-            TextField("ABV %", text: $abv)
-              .focused($focusedField, equals: .abv)
-              .keyboardType(.decimalPad)
-              .submitLabel(.next)
-              .onSubmit {
-                focusedField = .age
-              }
-            
-            Text("%")
-              .foregroundColor(.textSecondary)
-          }
-          
-          HStack {
-            TextField("Age (optional)", text: $age)
-              .focused($focusedField, equals: .age)
-              .keyboardType(.numberPad)
-              .submitLabel(.done)
-            
-            Text("years")
-              .foregroundColor(.textSecondary)
-          }
-        } header: {
-          Text("Details")
-        }
+        .padding(.vertical)
       }
       .navigationTitle("Add Bottle")
       .navigationBarTitleDisplayMode(.inline)
@@ -125,6 +74,100 @@ struct ManualBottleEntryView: View {
       } message: {
         Text(errorMessage)
       }
+      .background(Color.background)
+      // Keep nav bar items consistent (white) and avoid amber on generic controls
+      .tint(.text)
+    }
+  }
+
+  // MARK: - Sections
+  private var basicInfoSection: some View {
+    FormSection("Basic Information") {
+      TextInput(
+        label: "Bottle Name",
+        placeholder: "Bottle Name",
+        text: $bottleName,
+        leadingSystemImage: "wineglass",
+        isSecure: false,
+        keyboard: .default,
+        submitLabel: .next,
+        autocorrection: true,
+        capitalization: .words,
+        onSubmit: { focusBrand = true },
+        isFocused: Binding(get: { focusName }, set: { focusName = $0 })
+      )
+
+      TextInput(
+        label: "Brand/Distillery",
+        placeholder: "Brand/Distillery",
+        text: $brandName,
+        leadingSystemImage: "building.2",
+        keyboard: .default,
+        submitLabel: .next,
+        autocorrection: true,
+        capitalization: .words,
+        onSubmit: { focusAbv = true },
+        isFocused: Binding(get: { focusBrand }, set: { focusBrand = $0 })
+      )
+
+      Text("Enter the bottle name and brand as they appear on the label")
+        .font(.caption)
+        .foregroundColor(.textSecondary)
+        .padding(.top, 4)
+    }
+  }
+
+  private var detailsSection: some View {
+    FormSection("Details") {
+      categoryPickerRow
+      // ABV
+      TextInput(
+        label: "ABV",
+        placeholder: "ABV %",
+        text: $abv,
+        leadingSystemImage: "percent",
+        unit: "%",
+        keyboard: .decimalPad,
+        submitLabel: .next,
+        onSubmit: { focusAge = true },
+        isFocused: Binding(get: { focusAbv }, set: { focusAbv = $0 })
+      )
+
+      // Age
+      TextInput(
+        label: "Age",
+        placeholder: "Age (optional)",
+        text: $age,
+        leadingSystemImage: "clock",
+        unit: "years",
+        keyboard: .numberPad,
+        submitLabel: .done,
+        isFocused: Binding(get: { focusAge }, set: { focusAge = $0 })
+      )
+    }
+  }
+
+  // MARK: - Category Picker in InputBox style
+  private var categoryPickerRow: some View {
+    Menu {
+      ForEach(categories, id: \.0) { value, label in
+        Button(label) { category = value }
+      }
+    } label: {
+      HStack(spacing: 8) {
+        Image(systemName: "tag")
+          .foregroundColor(.textSecondary)
+        VStack(alignment: .leading, spacing: 2) {
+          Text("Style").font(.caption).foregroundColor(.textSecondary)
+          Text(categories.first(where: { $0.0 == category })?.1 ?? "")
+            .foregroundColor(.text)
+        }
+        Spacer()
+        Image(systemName: "chevron.up.chevron.down")
+          .font(.caption)
+          .foregroundColor(.textSecondary)
+      }
+      .inputBox()
     }
   }
   

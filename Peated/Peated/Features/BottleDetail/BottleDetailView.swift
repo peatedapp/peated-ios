@@ -4,6 +4,7 @@ import PeatedCore
 struct BottleDetailView: View {
   let bottleId: String
   let bottleName: String?
+  let seed: Bottle?
   
   @State private var model: BottleDetailModel
   @State private var showingCreateTasting = false
@@ -12,10 +13,11 @@ struct BottleDetailView: View {
   @State private var showingHeroImageViewer = false
   
   
-  init(bottleId: String, bottleName: String? = nil) {
+  init(bottleId: String, bottleName: String? = nil, seed: Bottle? = nil) {
     self.bottleId = bottleId
     self.bottleName = bottleName
-    self._model = State(initialValue: BottleDetailModel(bottleId: bottleId))
+    self.seed = seed
+    self._model = State(initialValue: BottleDetailModel(bottleId: bottleId, seed: seed))
   }
   
   var body: some View {
@@ -50,10 +52,11 @@ struct BottleDetailView: View {
       }
     }
     .scrollContentBackground(.hidden)
-    .background(Color.background)
+    
     .refreshable {
       await model.refresh()
     }
+    .screenBackground()
   }
   
   // MARK: - Loading View
@@ -127,7 +130,6 @@ struct BottleDetailView: View {
       }
     }
     .scrollContentBackground(.hidden)
-    .background(Color.background)
     .refreshable {
       await model.refresh()
     }
@@ -137,16 +139,14 @@ struct BottleDetailView: View {
   @ViewBuilder
   private func heroSection(_ bottle: Bottle) -> some View {
     if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
-      AsyncImage(url: url) { phase in
-        switch phase {
-        case .success(let image):
-          ZStack(alignment: .bottom) {
-            image
-              .resizable()
-              .aspectRatio(contentMode: .fill)
-              .frame(maxWidth: .infinity)
-              .frame(height: 390)
-              .clipped()
+      CachedAsyncImage(url: url) { image in
+        ZStack(alignment: .bottom) {
+          image
+            .resizable()
+            .aspectRatio(contentMode: .fill)
+            .frame(maxWidth: .infinity)
+            .frame(height: 390)
+            .clipped()
 
             // Gradient scrim for legibility
             LinearGradient(
@@ -165,12 +165,23 @@ struct BottleDetailView: View {
                 .font(.peatedDisplaySerifLarge)
                 .foregroundColor(.onBrand)
                 .multilineTextAlignment(.center)
-                .lineLimit(2)
+                .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
 
               NavigationLink(
-                destination: EntityDetailView(entityId: bottle.brand.id, entityName: bottle.brand.name)
+                destination: EntityDetailView(
+                  entityId: bottle.brand.id,
+                  entityName: bottle.brand.name,
+                  seed: Entity(
+                    id: bottle.brand.id,
+                    name: bottle.brand.name,
+                    type: .brand,
+                    imageUrl: nil,
+                    totalBottles: 0,
+                    totalTastings: 0
+                  )
+                )
               ) {
                 HStack(spacing: 4) {
                   Image(systemName: "building.2")
@@ -189,7 +200,7 @@ struct BottleDetailView: View {
                     HStack(spacing: 4) {
                       Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 12))
-                        .foregroundColor(.brand)
+                        .foregroundColor(.textSecondary)
                       Text("Tasted")
                         .font(.system(size: DesignSystem.FontSize.small))
                         .foregroundColor(.onBrand)
@@ -203,7 +214,7 @@ struct BottleDetailView: View {
                     HStack(spacing: 4) {
                       Image(systemName: "star.fill")
                         .font(.system(size: 12))
-                        .foregroundColor(.brand)
+                        .foregroundColor(.textSecondary)
                       Text("Favorited")
                         .font(.system(size: DesignSystem.FontSize.small))
                         .foregroundColor(.onBrand)
@@ -213,16 +224,13 @@ struct BottleDetailView: View {
               }
             }
             .padding(.bottom, 16)
-          }
-          .contentShape(Rectangle())
-          .onTapGesture { showingHeroImageViewer = true }
-          .imageViewer(imageUrl: bottle.imageUrl, isPresented: $showingHeroImageViewer)
-          .padding(.top, 0)
-        case .failure, .empty:
-          EmptyView()
-        @unknown default:
-          EmptyView()
         }
+        .contentShape(Rectangle())
+        .onTapGesture { showingHeroImageViewer = true }
+        .imageViewer(imageUrl: bottle.imageUrl, isPresented: $showingHeroImageViewer)
+        .padding(.top, 0)
+      } placeholder: {
+        EmptyView()
       }
     } else {
       EmptyView()
@@ -237,12 +245,23 @@ struct BottleDetailView: View {
         .font(.peatedDisplaySerifLarge)
         .foregroundColor(.text)
         .multilineTextAlignment(.center)
-        .lineLimit(2)
+        .lineLimit(nil)
         .fixedSize(horizontal: false, vertical: true)
         .padding(.horizontal)
 
       NavigationLink(
-        destination: EntityDetailView(entityId: bottle.brand.id, entityName: bottle.brand.name)
+        destination: EntityDetailView(
+          entityId: bottle.brand.id,
+          entityName: bottle.brand.name,
+          seed: Entity(
+            id: bottle.brand.id,
+            name: bottle.brand.name,
+            type: .brand,
+            imageUrl: nil,
+            totalBottles: 0,
+            totalTastings: 0
+          )
+        )
       ) {
         HStack(spacing: 4) {
           Image(systemName: "building.2")
@@ -261,7 +280,7 @@ struct BottleDetailView: View {
             HStack(spacing: 4) {
               Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 12))
-                .foregroundColor(.brand)
+                .foregroundColor(.textSecondary)
               Text("Tasted")
                 .font(.system(size: DesignSystem.FontSize.small))
                 .foregroundColor(.textSecondary)
@@ -275,7 +294,7 @@ struct BottleDetailView: View {
             HStack(spacing: 4) {
               Image(systemName: "star.fill")
                 .font(.system(size: 12))
-                .foregroundColor(.brand)
+                .foregroundColor(.textSecondary)
               Text("Favorited")
                 .font(.system(size: DesignSystem.FontSize.small))
                 .foregroundColor(.textSecondary)
@@ -286,13 +305,6 @@ struct BottleDetailView: View {
     }
     .padding(.vertical, 24)
     .frame(maxWidth: .infinity)
-    .background(Color.surfaceSubtle)
-    .overlay(
-      Rectangle()
-        .fill(Color.border.opacity(0.3))
-        .frame(height: 1),
-      alignment: .bottom
-    )
   }
 
   // Title section replaced by headerSection above
@@ -374,6 +386,7 @@ struct BottleDetailView: View {
           Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
             .font(.system(size: DesignSystem.FontSize.small))
             .fontWeight(.semibold)
+            .foregroundColor(.text)
             .lineLimit(1)
           Text("Style")
             .font(.caption)
@@ -394,6 +407,7 @@ struct BottleDetailView: View {
           Text("\(abv, specifier: "%.1f")%")
             .font(.title2)
             .fontWeight(.bold)
+            .foregroundColor(.text)
           Text("ABV")
             .font(.caption)
             .foregroundColor(.textSecondary)
@@ -413,6 +427,7 @@ struct BottleDetailView: View {
           Text("\(age)")
             .font(.title2)
             .fontWeight(.bold)
+            .foregroundColor(.text)
           Text("Years")
             .font(.caption)
             .foregroundColor(.textSecondary)
@@ -430,6 +445,7 @@ struct BottleDetailView: View {
             Text(String(format: "%.1f", bottle.avgRating))
               .font(.title2)
               .fontWeight(.bold)
+              .foregroundColor(.text)
           }
           Text("\(bottle.totalRatings) ratings")
             .font(.caption)
@@ -602,7 +618,6 @@ struct BottleDetailView: View {
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color.background)
   }
 }
 
@@ -613,29 +628,8 @@ struct SimilarBottleCard: View {
   var body: some View {
     VStack(spacing: 8) {
       // Bottle image
-      if let imageUrl = bottle.imageUrl, let url = URL(string: imageUrl) {
-        AsyncImage(url: url) { phase in
-          switch phase {
-          case .success(let image):
-            image
-              .resizable()
-              .aspectRatio(contentMode: .fit)
-          case .failure, .empty:
-            Image(systemName: "wineglass")
-              .font(.system(size: 24))
-              .foregroundColor(.secondary)
-          @unknown default:
-            ProgressView()
-              .scaleEffect(0.5)
-          }
-        }
+      BottleImage(imageUrl: bottle.imageUrl)
         .frame(width: 80, height: 120)
-      } else {
-        Image(systemName: "wineglass")
-          .font(.system(size: 24))
-          .foregroundColor(.secondary)
-          .frame(width: 80, height: 120)
-      }
       
       VStack(spacing: 4) {
         Text(bottle.name)

@@ -9,9 +9,10 @@ struct SettingsView: View {
     
     var body: some View {
         NavigationStack {
-            List {
+            ScrollView {
+                VStack(spacing: 16) {
                 // Account Section
-                Section("Account") {
+                FormSection("Account") {
                     HStack {
                         Text("Username")
                         Spacer()
@@ -31,7 +32,7 @@ struct SettingsView: View {
                 
                 // Developer Section (DEBUG only)
                 #if DEBUG
-                Section("Development") {
+                FormSection("Development") {
                     Button(action: {
                         showingDeveloperSettings = true
                     }) {
@@ -42,14 +43,14 @@ struct SettingsView: View {
                 #endif
                 
                 // Support Section
-                Section("Support") {
+                FormSection("Support") {
                     Link(destination: URL(string: "https://github.com/dcramer/peated")!) {
                         Label("Help & Support", systemImage: "questionmark.circle")
                     }
                 }
                 
                 // About Section
-                Section("About") {
+                FormSection("About") {
                     HStack {
                         Text("Version")
                         Spacer()
@@ -63,7 +64,7 @@ struct SettingsView: View {
                 }
                 
                 // Sign Out
-                Section {
+                FormSection(nil) {
                     Button(action: {
                         showingLogoutAlert = true
                     }) {
@@ -75,12 +76,11 @@ struct SettingsView: View {
                         }
                     }
                 }
+                }
+                .padding(.vertical)
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
-            .background(Color.background)
-            .listRowBackground(Color.surface)
-            .tint(.brand)
+            // Use neutral tint in Settings; avoid brand/amber on generic controls
+            .tint(.text)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -91,7 +91,7 @@ struct SettingsView: View {
                 }
             }
         }
-        .background(Color.background)
+        .screenBackground()
         .sheet(isPresented: $showingDeveloperSettings) {
             DeveloperSettingsView()
         }

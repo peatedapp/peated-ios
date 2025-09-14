@@ -42,6 +42,12 @@ public struct User: Codable, Equatable, Sendable {
     self.admin = admin ?? false
     self.mod = mod ?? false
   }
+
+  public func withPicture(_ url: String?) -> User {
+    var copy = self
+    copy.pictureUrl = url
+    return copy
+  }
 }
 
 // Achievement/Badge model

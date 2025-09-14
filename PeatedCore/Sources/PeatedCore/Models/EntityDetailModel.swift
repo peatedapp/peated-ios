@@ -17,18 +17,24 @@ public final class EntityDetailModel {
   public private(set) var isLoadingTastings = false
   
   private let entityId: String
+  private let seed: Entity?
   private let entityRepository = EntityRepository()
   private let bottleRepository = BottleRepository()
   private let feedRepository = FeedRepository()
   
-  public init(entityId: String) {
+  public init(entityId: String, seed: Entity? = nil) {
     self.entityId = entityId
+    self.seed = seed
   }
   
   public func loadEntity() async {
-    // Snapshot-first
+    // 1) Seed immediately if provided
+    if let seed { state = .loaded(seed) }
+    // 2) Snapshot-first
     if let (cached, _) = await NormalizedStore.shared.get(.entity(entityId), as: Entity.self) {
       state = .loaded(cached)
+    } else if case .loaded = state {
+      // keep seeded
     } else {
       state = .loading
     }

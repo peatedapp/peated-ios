@@ -3,6 +3,7 @@ import PeatedCore
 
 struct ProfileView: View {
   let userId: String?
+  let seed: User?
   let onNavigateToProfile: ((String) -> Void)?
   let onNavigateToTasting: ((String) -> Void)?
   
@@ -12,92 +13,24 @@ struct ProfileView: View {
   @State private var selectedTab = 0
   @State private var showingSettings = false
   
-  init(userId: String? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToTasting: ((String) -> Void)? = nil) {
+  init(userId: String? = nil, seed: User? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToTasting: ((String) -> Void)? = nil) {
     self.userId = userId
+    self.seed = seed
     self.onNavigateToProfile = onNavigateToProfile
     self.onNavigateToTasting = onNavigateToTasting
-    self._model = State(initialValue: ProfileModel(userId: userId))
+    self._model = State(initialValue: ProfileModel(userId: userId, seed: seed))
   }
   
   
   var body: some View {
     Group {
-      if model.error != nil && model.user == nil {
-        // Error state for user profile loading
-        VStack(spacing: 20) {
-          Image(systemName: "exclamationmark.triangle")
-            .font(.system(size: 60))
-            .foregroundColor(.yellow)
-          
-          Text("Unable to load profile")
-            .font(.title2)
-            .fontWeight(.semibold)
-          
-          Text("This user profile could not be loaded.")
-            .font(.subheadline)
-            .foregroundColor(.textSecondary)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal, 40)
-          
-          Button(action: {
-            Task {
-              await model.loadUser()
-            }
-          }) {
-            Text("Try Again")
-              .fontWeight(.medium)
-              .foregroundColor(.onBrand)
-              .padding(.horizontal, 24)
-              .padding(.vertical, 12)
-              .background(Color.brand)
-              .cornerRadius(25)
-          }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .navigationTitle("Profile")
-        .navigationBarTitleDisplayMode(.inline)
+      if !model.isPrimed {
+        // Avoid showing default placeholders before cache prime completes
+        Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity)
+      } else if model.error != nil && model.user == nil {
+        errorView
       } else {
-        ScrollView {
-          VStack(spacing: 0) {
-            // Profile header
-            profileHeader
-              .background(Color.background)
-            
-            // Stats section
-            statsSection
-              .padding(.horizontal)
-              .padding(.vertical, 20)
-            
-            // Badges section
-            if !model.achievements.isEmpty {
-              badgesSection
-                .padding(.bottom, 20)
-            }
-            
-            // Tab selection
-            Picker("Content", selection: $selectedTab) {
-              Text("Activity").tag(0)
-              Text("Favorites").tag(1)
-            }
-            .pickerStyle(.segmented)
-            .padding(.horizontal)
-            .padding(.bottom, 8)
-            
-            // Tab content
-            Group {
-              if selectedTab == 0 {
-                activitySection
-              } else {
-                favoritesSection
-                  .padding(.horizontal)
-              }
-            }
-          }
-          .background(Color.background)
-        }
-        .background(Color.background)
-        .navigationTitle("Profile")
-        .navigationBarTitleDisplayMode(.inline)
+        loadedView
       }
     }
     .toolbar {
@@ -140,14 +73,16 @@ struct ProfileView: View {
         }
       }
     }
-    .sheet(isPresented: $showingSettings) {
-      SettingsView()
-    }
+    .sheet(isPresented: $showingSettings) { SettingsView() }
     .task(id: userId) {
       await model.loadUser()
       
       // Only load feed if user loaded successfully
       if model.user != nil {
+        // Warm the profile avatar into memory cache to avoid placeholder
+        if let s = model.user?.pictureUrl, let u = URL(string: s) {
+          ImagePrefetcher.prefetch(urls: [u], max: 1)
+        }
         // For the current user, use personal feed
         // For other users, we need to filter the global feed by user (not ideal but API limitation)
         if userId == nil {
@@ -157,48 +92,148 @@ struct ProfileView: View {
           feedModel.selectedFeedType = .global
         }
         await feedModel.loadFeed(refresh: true)
+
+        // Prefetch avatars and bottle images for profile feed
+        var urls: [URL] = []
+        for item in feedModel.tastings.prefix(40) {
+          if let s = item.userAvatarUrl, let u = URL(string: s) { urls.append(u) }
+          if let s = item.bottleImageUrl, let u = URL(string: s) { urls.append(u) }
+          if let s = item.imageUrl, let u = URL(string: s) { urls.append(u) }
+        }
+        ImagePrefetcher.prefetch(urls: urls, max: 40)
       }
     }
+    .screenBackground()
+  }
+
+  // MARK: - Subviews to reduce type-checking complexity
+  @ViewBuilder
+  private var loadedView: some View {
+    ScrollView {
+      VStack(spacing: 0) {
+        if let _ = model.user {
+          profileHeader
+        }
+
+        if model.statsPrimed, let _ = model.user {
+          statsSection
+            .padding(.horizontal)
+            .padding(.vertical, 20)
+        }
+
+        if !model.achievements.isEmpty {
+          badgesSection
+            .padding(.bottom, 20)
+        }
+
+        // Custom tabs to better match dark chrome and avoid gray segmented look
+        HStack(spacing: 0) {
+          ForEach([(0, "Activity"), (1, "Favorites")], id: \.0) { pair in
+            let idx = pair.0
+            let title = pair.1
+            Button(action: { selectedTab = idx }) {
+              VStack(spacing: 0) {
+                Text(title)
+                  .font(.system(size: 15, weight: selectedTab == idx ? .medium : .regular))
+                  .foregroundColor(selectedTab == idx ? Color.text : Color.textSecondary)
+                  .frame(maxWidth: .infinity)
+                  .padding(.vertical, 12)
+
+                // Bottom indicator
+                Rectangle()
+                  .fill(selectedTab == idx ? Color.brand : Color.clear)
+                  .frame(height: 2)
+              }
+            }
+            .buttonStyle(.plain)
+          }
+        }
+        .padding(.horizontal)
+        .padding(.bottom, 8)
+        .overlay(
+          Rectangle()
+            .fill(Color.border.opacity(0.2))
+            .frame(height: 1),
+          alignment: .bottom
+        )
+
+        Group {
+          if selectedTab == 0 {
+            activitySection
+          } else {
+            favoritesSection
+              .padding(.horizontal)
+          }
+        }
+      }
+    }
+    .navigationTitle("Profile")
+    .navigationBarTitleDisplayMode(.inline)
+    .toolbarBackground(Color.chrome, for: .navigationBar)
+    .toolbarBackground(.visible, for: .navigationBar)
+    .toolbarColorScheme(.dark, for: .navigationBar)
+  }
+
+  @ViewBuilder
+  private var errorView: some View {
+    VStack(spacing: 20) {
+      Image(systemName: "exclamationmark.triangle")
+        .font(.system(size: 60))
+        .foregroundColor(.yellow)
+
+      Text("Unable to load profile")
+        .font(.title2)
+        .fontWeight(.semibold)
+
+      Text("This user profile could not be loaded.")
+        .font(.subheadline)
+        .foregroundColor(.textSecondary)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 40)
+
+      Button(action: { Task { await model.loadUser() } }) {
+        Text("Try Again")
+          .fontWeight(.medium)
+          .foregroundColor(.onBrand)
+          .padding(.horizontal, 24)
+          .padding(.vertical, 12)
+          .background(Color.brand)
+          .cornerRadius(25)
+      }
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .navigationTitle("Profile")
+    .navigationBarTitleDisplayMode(.inline)
   }
   
   private var profileHeader: some View {
     VStack(spacing: 16) {
       // Avatar
       if let pictureUrl = model.user?.pictureUrl, !pictureUrl.isEmpty {
-        AsyncImage(url: URL(string: pictureUrl)) { image in
-          image
-            .resizable()
-            .aspectRatio(contentMode: .fill)
-        } placeholder: {
-          Circle()
-            .fill(Color.border.opacity(0.3))
-            .overlay(
-              ProgressView()
-                .tint(.textSecondary)
-            )
-        }
-        .frame(width: 100, height: 100)
-        .clipShape(Circle())
+        AvatarImage(urlString: pictureUrl, size: 100)
+          .task(id: pictureUrl) {
+            if let u = URL(string: pictureUrl) {
+              ImagePrefetcher.prefetch(urls: [u], max: 1)
+            }
+          }
       } else {
-        Circle()
-          .fill(Color.border.opacity(0.2))
+        // If user not available yet, keep this empty to avoid flicker
+        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
+          .fill(Color.surface)
+          .opacity(0.0)
           .frame(width: 100, height: 100)
-          .overlay(
-            Text(model.user?.username.prefix(1).uppercased() ?? "?")
-              .font(.largeTitle)
-              .fontWeight(.medium)
-              .foregroundColor(.textSecondary)
-          )
       }
       
       // Username and email
       VStack(spacing: 4) {
-        Text(model.user?.username ?? "Loading...")
-          .font(.system(size: 24, weight: .regular, design: .default))
-          .foregroundColor(.text)
-          .multilineTextAlignment(.center)
-          .lineLimit(2)
-          .fixedSize(horizontal: false, vertical: true)
+        if let username = model.user?.username {
+          Text(username)
+            .font(.system(size: 24, weight: .regular, design: .default))
+            .foregroundColor(.text)
+            .multilineTextAlignment(.center)
+            .lineLimit(2)
+            .fixedSize(horizontal: false, vertical: true)
+        }
       }
       
       // Role badges
@@ -249,8 +284,11 @@ struct ProfileView: View {
       StatView(title: "Collected", value: model.user?.collectedCount ?? 0)
     }
     .padding(.vertical, 16)
-    .background(Color.surface)
     .cornerRadius(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(Color.border.opacity(0.2), lineWidth: 1)
+    )
   }
   
   private var badgesSection: some View {
@@ -271,23 +309,7 @@ struct ProfileView: View {
                     .frame(width: 80, height: 80)
                   
                   // Use imageUrl if available, otherwise fallback to SF Symbol
-                  if let imageUrl = achievement.imageUrl, !imageUrl.isEmpty {
-                    AsyncImage(url: URL(string: imageUrl)) { image in
-                      image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80)
-                        .clipped()
-                    } placeholder: {
-                      ProgressView()
-                        .frame(width: 80, height: 80)
-                    }
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                  } else {
-                    Image(systemName: achievementIcon(for: achievement.name))
-                      .font(.system(size: 40))
-                      .foregroundColor(.warning)
-                  }
+                  BadgeImage(urlString: achievement.imageUrl, size: 80, cornerRadius: 12)
                 }
                 
                 // Show level instead of name
@@ -403,38 +425,40 @@ struct ProfileView: View {
         .padding(.vertical, 40)
     }
   }
-}
 
-struct StatView: View {
-  let title: String
-  let value: Int
-  
-  var body: some View {
-    VStack(spacing: 4) {
-      Text(formatNumber(value))
-        .font(.title2)
-        .fontWeight(.semibold)
-      Text(title)
-        .font(.caption)
-        .foregroundColor(.textSecondary)
+  struct StatView: View {
+    let title: String
+    let value: Int
+    
+    var body: some View {
+      VStack(spacing: 4) {
+        Text(formatNumber(value))
+          .font(.title2)
+          .fontWeight(.semibold)
+          .foregroundColor(.text)
+        Text(title)
+          .font(.caption)
+          .foregroundColor(.textSecondary)
+      }
+      .frame(maxWidth: .infinity)
     }
-    .frame(maxWidth: .infinity)
-  }
-  
-  private func formatNumber(_ number: Int) -> String {
-    if number >= 1_000_000 {
-      let millions = Double(number) / 1_000_000
-      return String(format: "%.1fM", millions)
-    } else if number >= 10_000 {
-      let thousands = Double(number) / 1_000
-      return String(format: "%.0fk", thousands)
-    } else if number >= 1_000 {
-      let thousands = Double(number) / 1_000
-      return String(format: "%.1fk", thousands)
-    } else {
-      return "\(number)"
+
+    private func formatNumber(_ number: Int) -> String {
+      if number >= 1_000_000 {
+        let millions = Double(number) / 1_000_000
+        return String(format: "%.1fM", millions)
+      } else if number >= 10_000 {
+        let thousands = Double(number) / 1_000
+        return String(format: "%.0fk", thousands)
+      } else if number >= 1_000 {
+        let thousands = Double(number) / 1_000
+        return String(format: "%.1fk", thousands)
+      } else {
+        return "\(number)"
+      }
     }
   }
+
 }
 
 #Preview {

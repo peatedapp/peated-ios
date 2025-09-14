@@ -118,6 +118,9 @@ struct FlavorPickerModal: View {
                     }
                 }
                 .listStyle(InsetGroupedListStyle())
+                .scrollContentBackground(.hidden)
+                .background(Color.background)
+                .listRowBackground(Color.surface)
             }
             .navigationTitle("Select Flavors")
             .navigationBarTitleDisplayMode(.inline)

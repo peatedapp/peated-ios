@@ -51,17 +51,17 @@ struct TastingCard: View {
               .padding(.top, 4)
           }
           
-          // Tags
+          // Tags (muted style)
           if !tasting.tags.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
               HStack(spacing: 6) {
                 ForEach(tasting.tags, id: \.self) { tag in
                   Text("#\(tag)")
                     .font(.peatedFootnote)
-                    .foregroundColor(.brand)
+                    .foregroundColor(.textSecondary)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
-                    .background(Color.brand.opacity(0.1))
+                    .background(Color.surfaceSubtle)
                     .clipShape(Capsule())
                 }
               }
@@ -98,32 +98,7 @@ struct TastingCard: View {
             HStack(spacing: 0) {
               // Tappable user info area
               HStack(spacing: 6) {
-                if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
-                  AsyncImage(url: url) { image in
-                    image
-                      .resizable()
-                      .scaledToFill()
-                  } placeholder: {
-                    Circle()
-                      .fill(Color.border.opacity(0.2))
-                      .overlay(
-                        Image(systemName: "person.fill")
-                          .font(.system(size: 10))
-                          .foregroundColor(.textMuted)
-                      )
-                  }
-                  .frame(width: 20, height: 20)
-                  .clipShape(Circle())
-                } else {
-                  Circle()
-                    .fill(Color.border.opacity(0.2))
-                    .overlay(
-                      Image(systemName: "person.fill")
-                        .font(.system(size: 10))
-                        .foregroundColor(.textMuted)
-                    )
-                    .frame(width: 20, height: 20)
-                }
+                AvatarImage(urlString: tasting.userAvatarUrl, size: 20)
                 
                 Text(tasting.username)
                   .font(.system(size: 13))

@@ -31,7 +31,6 @@ struct ActivityList: View {
           onUserTap: { onUserTap(tasting) },
           onBottleTap: { onBottleTap(tasting) }
         )
-        .background(Color.background)
         .overlay(
           Rectangle()
             .fill(Color.border)
@@ -41,6 +40,6 @@ struct ActivityList: View {
         )
       }
     }
-    .background(Color.background)
+    
   }
 }

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import PeatedCore
 
 struct AppView: View {
@@ -14,13 +15,67 @@ struct AppView: View {
         case bottleDetail(bottleId: String)
     }
     
+    // Configure global UIAppearance for consistent chrome/tints
+    private func configureAppearance() {
+        // Navigation bar
+        let navAppearance = UINavigationBarAppearance()
+        navAppearance.configureWithOpaqueBackground()
+        navAppearance.backgroundColor = UIColor(Color.chrome)
+        // Use concrete UIColors to avoid any UIAppearance/dynamic color bridging quirks
+        navAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
+        navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+
+        UINavigationBar.appearance().standardAppearance = navAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
+        UINavigationBar.appearance().compactAppearance = navAppearance
+        // Ensure back chevron and "< Back" text are white, not brand/amber
+        UINavigationBar.appearance().tintColor = UIColor(Color.text)
+
+        // Tab bar (selected state may still use brand for affordance)
+        let tabAppearance = UITabBarAppearance()
+        tabAppearance.configureWithOpaqueBackground()
+        tabAppearance.backgroundColor = UIColor(Color.chrome)
+
+        tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
+        tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
+        tabAppearance.inlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
+        tabAppearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
+        tabAppearance.compactInlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
+        tabAppearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
+
+        tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.brand)
+        tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
+        tabAppearance.inlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
+        tabAppearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
+        tabAppearance.compactInlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
+        tabAppearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
+
+        UITabBar.appearance().standardAppearance = tabAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
+
+        // Refresh control
+        UIRefreshControl.appearance().backgroundColor = UIColor(Color.background)
+        UIRefreshControl.appearance().tintColor = UIColor(Color.textSecondary)
+
+        // Keep the rest of UIAppearance minimal to avoid UIKit bugs during trait changes.
+
+        // Rely on SwiftUI's preferredColorScheme(.dark) instead of overriding windows
+    }
+
+    // Pre-warm assets that commonly flicker (e.g., current user's avatar)
+    private func prewarmCurrentUserAssets() {
+        if let urlString = AuthenticationManager.shared.currentUser?.pictureUrl,
+           let url = URL(string: urlString) {
+            ImagePrefetcher.prefetch(urls: [url], max: 1)
+        }
+    }
+    
     var body: some View {
         Group {
             if model.isLoading {
                 // Splash screen
                 ZStack {
-                    Color.background
-                        .ignoresSafeArea()
+                    ScreenBackground()
                     
                     VStack(spacing: 20) {
                         PeatedLogo(height: 80)
@@ -98,55 +153,7 @@ struct AppView: View {
                             Label("Profile", systemImage: "person.fill")
                           }
                     }
-                    .background(Color.background)
-                    .tint(.brand)
-                    .onAppear {
-                        // Customize navigation bar appearance
-                        let navAppearance = UINavigationBarAppearance()
-                        navAppearance.configureWithOpaqueBackground()
-                        navAppearance.backgroundColor = UIColor(Color.background)
-                        navAppearance.titleTextAttributes = [.foregroundColor: UIColor(Color.text)]
-                        navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(Color.text)]
-                        
-                        UINavigationBar.appearance().standardAppearance = navAppearance
-                        UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
-                        UINavigationBar.appearance().compactAppearance = navAppearance
-                        UINavigationBar.appearance().tintColor = UIColor(Color.brand)
-                        
-                        // Force dark content status bar (dark text on light background)
-                        UINavigationBar.appearance().barStyle = .default
-                        
-                        // Customize tab bar appearance
-                        let tabAppearance = UITabBarAppearance()
-                        tabAppearance.configureWithOpaqueBackground()
-                        tabAppearance.backgroundColor = UIColor(Color.background)
-                        
-                        // Inactive state (use a muted tone distinct from brand)
-                        tabAppearance.stackedLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
-                        tabAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
-                        tabAppearance.inlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
-                        tabAppearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
-                        tabAppearance.compactInlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
-                        tabAppearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
-                        
-                        // Active state
-                        tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.brand)
-                        tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
-                        tabAppearance.inlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
-                        tabAppearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
-                        tabAppearance.compactInlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
-                        tabAppearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
-                        
-                        UITabBar.appearance().standardAppearance = tabAppearance
-                        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
-                        // Ensure SwiftUI respects inactive vs active colors
-                        UITabBar.appearance().unselectedItemTintColor = UIColor(Color.textMuted)
-                        UITabBar.appearance().tintColor = UIColor(Color.brand)
-                        
-                        // Customize refresh control appearance
-                        UIRefreshControl.appearance().backgroundColor = UIColor(Color.background)
-                        UIRefreshControl.appearance().tintColor = UIColor(Color.textSecondary)
-                    }
+                    .screenBackground()
                     .onChange(of: scenePhase) { newPhase in
                         if newPhase == .background {
                             Task { await NormalizedStore.shared.flush() }
@@ -162,13 +169,18 @@ struct AppView: View {
                 }
             }
         }
-        .preferredColorScheme(.light)
-        .environment(\.colorScheme, .light)
+        .preferredColorScheme(.dark)
+        .environment(\.colorScheme, .dark)
         .appTheme(ThemeManager.shared.theme) // Provide theme via Environment
         .task {
             await model.checkAuthStatus()
+            if model.isAuthenticated { prewarmCurrentUserAssets() }
+        }
+        .onChange(of: model.isAuthenticated) { newVal in
+            if newVal { prewarmCurrentUserAssets() }
         }
         .withToastContainer() // Add toast container at root level
+        .onAppear { configureAppearance() } // Ensure appearance is also applied for auth flow
         #if DEBUG
         .onShake {
             showingDeveloperSettings = true

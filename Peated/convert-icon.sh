@@ -7,7 +7,7 @@ set -euo pipefail
 # Defaults (can be overridden via env or flags)
 SOURCE_IMAGE_DEFAULT="/Users/dcramer/src/peated/apps/web/src/assets/glyph.png"
 OUTPUT_DIR_DEFAULT="/Users/dcramer/src/peated-ios/Peated/Peated/Resources/Assets.xcassets/AppIcon.appiconset"
-INSET_PERCENT_DEFAULT="12"   # percent of canvas on each side (e.g., 12 => 12%)
+INSET_PERCENT_DEFAULT="20"   # percent of canvas on each side (e.g., 20 => 20%)
 PAD_COLOR_DEFAULT="000000"    # default to black background for contrast
 
 usage() {
@@ -18,7 +18,7 @@ Usage: $(basename "$0") [--source <path>] [--output <appiconset_dir>] [--inset <
   --output      Path to .appiconset directory. Default: $OUTPUT_DIR_DEFAULT
   --inset       Padding per-side as percent (0-50). Default: $INSET_PERCENT_DEFAULT
   --pad-color   Hex background color used when padding. Default: $PAD_COLOR_DEFAULT
-  --recolor-to  Recolor non-transparent pixels to this hex (e.g., F59E0B)
+  --recolor-to  Recolor non-transparent pixels to this hex (e.g., F59E0B). Default: FFFFFF
   --allow-fallback  Permit using existing AppIcon(.png) if source not found. Default: disabled (script exits if missing)
 
 Environment overrides: SOURCE_IMAGE, OUTPUT_DIR, INSET_PERCENT, PAD_COLOR
@@ -31,7 +31,8 @@ OUTPUT_DIR="${OUTPUT_DIR:-$OUTPUT_DIR_DEFAULT}"
 INSET_PERCENT="${INSET_PERCENT:-$INSET_PERCENT_DEFAULT}"
 PAD_COLOR="${PAD_COLOR:-$PAD_COLOR_DEFAULT}"
 ALLOW_FALLBACK=false
-RECOLOR_TO=""
+# Default recolor to white so our glyph is white-on-black unless overridden
+RECOLOR_TO="${RECOLOR_TO:-FFFFFF}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in

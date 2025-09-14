@@ -111,10 +111,14 @@ struct SearchView: View {
   @FocusState private var focused: Bool
   @State private var navigationPath = NavigationPath()
   
+  struct BottleSeed: Hashable { let id: String; let name: String; let fullName: String; let brandId: String; let brandName: String; let category: String?; let imageUrl: String?; let isFavorite: Bool; let hasTasted: Bool }
+  struct EntitySeed: Hashable { let id: String; let name: String; let type: Entity.EntityType }
+  struct UserSeed: Hashable { let id: String; let username: String; let pictureUrl: String? }
+
   enum SearchDestination: Hashable {
-    case bottleDetail(bottleId: String, bottleName: String?)
-    case entityDetail(entityId: String, entityName: String?)
-    case userProfile(userId: String, username: String?)
+    case bottleDetail(seed: BottleSeed)
+    case entityDetail(seed: EntitySeed)
+    case userProfile(seed: UserSeed)
   }
 
   var body: some View {
@@ -127,50 +131,42 @@ struct SearchView: View {
         content
       }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-      .background(Color.background)
       .animation(.easeInOut(duration: 0.2), value: model.isSearching)
       .navigationBarHidden(true)
       .navigationDestination(for: SearchDestination.self) { destination in
         switch destination {
-        case .bottleDetail(let bottleId, let bottleName):
-          BottleDetailView(bottleId: bottleId, bottleName: bottleName)
-        case .entityDetail(let entityId, let entityName):
-          EntityDetailView(entityId: entityId, entityName: entityName)
-        case .userProfile(let userId, let username):
-          ProfileView(userId: userId)
+        case .bottleDetail(let seed):
+          let bottle = Bottle(
+            id: seed.id,
+            name: seed.name,
+            fullName: seed.fullName,
+            brand: Brand(id: seed.brandId, name: seed.brandName),
+            category: seed.category,
+            imageUrl: seed.imageUrl,
+            isFavorite: seed.isFavorite,
+            hasTasted: seed.hasTasted
+          )
+          BottleDetailView(bottleId: seed.id, bottleName: seed.fullName, seed: bottle)
+        case .entityDetail(let seed):
+          let entity = Entity(id: seed.id, name: seed.name, type: seed.type)
+          EntityDetailView(entityId: seed.id, entityName: seed.name, seed: entity)
+        case .userProfile(let seed):
+          let user = User(id: seed.id, email: "", username: seed.username).withPicture(seed.pictureUrl)
+          ProfileView(userId: seed.id, seed: user)
         }
       }
     }
+    .screenBackground()
   }
 
   private var searchBar: some View {
     HStack(spacing: 12) {
-      HStack {
-        Image(systemName: "magnifyingglass").foregroundColor(.textSecondary)
-        TextField("Search bottles, brands, users", text: $model.searchText)
-          .textFieldStyle(.plain)
-          .focused($focused)
-          .onSubmit { model.submit() }
-          .onChange(of: model.searchText) { newValue in
-            model.onChange(query: newValue)
-          }
-        if !model.searchText.isEmpty {
-          Button(action: {
-            model.searchText = ""
-            model.clear()
-          }) {
-            Image(systemName: "xmark.circle.fill").foregroundColor(.textSecondary)
-          }
-        }
+      SearchInput(placeholder: "Search bottles, brands, users", text: $model.searchText, onSubmit: {
+        model.submit()
+      })
+      .onChange(of: model.searchText) { newValue in
+        model.onChange(query: newValue)
       }
-      .padding(.horizontal, 12)
-      .padding(.vertical, 10)
-      .background(Color.surface)
-      .overlay(
-        RoundedRectangle(cornerRadius: 10)
-          .stroke(Color.border, lineWidth: 1)
-      )
-      .cornerRadius(10)
 
       if model.isSearching {
         Button("Cancel") {
@@ -377,12 +373,12 @@ struct SearchView: View {
             if bottle.hasTasted {
               Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 12))
-                .foregroundColor(.brand)
+                .foregroundColor(.textSecondary)
             }
             if bottle.isFavorite {
               Image(systemName: "star.fill")
                 .font(.system(size: 11))
-                .foregroundColor(.brand)
+                .foregroundColor(.textSecondary)
             }
           }
         }
@@ -568,12 +564,12 @@ struct SearchView: View {
         if bottle.hasTasted {
           Image(systemName: "checkmark.circle.fill")
             .font(.system(size: 12))
-            .foregroundColor(.brand)
+            .foregroundColor(.textSecondary)
         }
         if bottle.isFavorite {
           Image(systemName: "star.fill")
             .font(.system(size: 11))
-            .foregroundColor(.brand)
+            .foregroundColor(.textSecondary)
         }
       }
 
@@ -590,20 +586,56 @@ struct SearchView: View {
     
     switch result.type {
     case .bottle:
-      if let bottle = result.bottle {
-        navigationPath.append(SearchDestination.bottleDetail(bottleId: bottle.id, bottleName: bottle.fullName))
+      if let b = result.bottle {
+        let s = BottleSeed(
+          id: b.id,
+          name: b.name,
+          fullName: b.fullName,
+          brandId: b.brand.id,
+          brandName: b.brand.name,
+          category: b.category,
+          imageUrl: b.imageUrl,
+          isFavorite: b.isFavorite,
+          hasTasted: b.hasTasted
+        )
+        navigationPath.append(SearchDestination.bottleDetail(seed: s))
       } else {
-        navigationPath.append(SearchDestination.bottleDetail(bottleId: result.id, bottleName: result.name))
+        // Minimal seed when API doesn’t return full object in result
+        let s = BottleSeed(
+          id: result.id,
+          name: result.name,
+          fullName: result.name,
+          brandId: "0",
+          brandName: "",
+          category: nil,
+          imageUrl: nil,
+          isFavorite: false,
+          hasTasted: false
+        )
+        navigationPath.append(SearchDestination.bottleDetail(seed: s))
       }
     case .entity:
-      navigationPath.append(SearchDestination.entityDetail(entityId: result.id, entityName: result.name))
+      let e = EntitySeed(id: result.id, name: result.name, type: .brand)
+      navigationPath.append(SearchDestination.entityDetail(seed: e))
     case .user:
-      navigationPath.append(SearchDestination.userProfile(userId: result.id, username: result.name))
+      let u = UserSeed(id: result.id, username: result.name, pictureUrl: nil)
+      navigationPath.append(SearchDestination.userProfile(seed: u))
     }
   }
   
   private func handleBottleTap(_ bottle: Bottle) {
     model.addRecent(bottle.fullName)
-    navigationPath.append(SearchDestination.bottleDetail(bottleId: bottle.id, bottleName: bottle.fullName))
+    let s = BottleSeed(
+      id: bottle.id,
+      name: bottle.name,
+      fullName: bottle.fullName,
+      brandId: bottle.brand.id,
+      brandName: bottle.brand.name,
+      category: bottle.category,
+      imageUrl: bottle.imageUrl,
+      isFavorite: bottle.isFavorite,
+      hasTasted: bottle.hasTasted
+    )
+    navigationPath.append(SearchDestination.bottleDetail(seed: s))
   }
 }

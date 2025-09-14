@@ -13,35 +13,9 @@ struct UnifiedTastingCard: View {
       // Header with bottle info and image (like detail view)
       HStack(alignment: .top, spacing: 12) {
         // Bottle image
-        if let imageUrl = tasting.bottleImageUrl, let url = URL(string: imageUrl) {
-          AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-              image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-            case .failure, .empty:
-              Image(systemName: "wineglass")
-                .font(.system(size: 24))
-                .foregroundColor(.textMuted)
-            @unknown default:
-              ProgressView()
-            }
-          }
+        BottleImage(imageUrl: tasting.bottleImageUrl)
           .frame(width: 48, height: 48)
-          .background(Color.surface)
           .clipShape(RoundedRectangle(cornerRadius: 8))
-        } else {
-          // Placeholder
-          RoundedRectangle(cornerRadius: 8)
-            .fill(Color.surface)
-            .frame(width: 48, height: 48)
-            .overlay(
-              Image(systemName: "wineglass")
-                .font(.system(size: 24))
-                .foregroundColor(.textMuted)
-            )
-        }
         
         VStack(alignment: .leading, spacing: 4) {
           Text(tasting.bottleName)
@@ -103,17 +77,17 @@ struct UnifiedTastingCard: View {
           .multilineTextAlignment(.leading)
       }
       
-      // Tags
+      // Tags (muted style)
       if !tasting.tags.isEmpty {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
             ForEach(tasting.tags, id: \.self) { tag in
               Text("#\(tag)")
                 .font(.peatedFootnote)
-                .foregroundColor(.brand)
+                .foregroundColor(.textSecondary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.brand.opacity(0.1))
+                .background(Color.surfaceSubtle)
                 .clipShape(Capsule())
             }
           }
@@ -147,27 +121,7 @@ struct UnifiedTastingCard: View {
       HStack {
         // User avatar and info
         HStack(spacing: 8) {
-          if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
-            AsyncImage(url: url) { image in
-              image
-                .resizable()
-                .scaledToFill()
-            } placeholder: {
-              Circle()
-                .fill(Color.surface)
-            }
-            .frame(width: 32, height: 32)
-            .clipShape(Circle())
-          } else {
-            Circle()
-              .fill(Color.surface)
-              .overlay(
-                Image(systemName: "person.fill")
-                  .font(.system(size: 16))
-                  .foregroundColor(.textMuted)
-              )
-              .frame(width: 32, height: 32)
-          }
+          AvatarImage(urlString: tasting.userAvatarUrl, size: 32)
           
           VStack(alignment: .leading, spacing: 2) {
             Text(tasting.username)
@@ -235,8 +189,11 @@ struct UnifiedTastingCard: View {
       }
     }
     .padding()
-    .background(Color.surface)
     .cornerRadius(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(Color.border.opacity(0.2), lineWidth: 1)
+    )
   }
 }
 
@@ -253,35 +210,9 @@ struct UnifiedTastingListItem: View {
       // Header with bottle info and image (like detail view)
       HStack(alignment: .top, spacing: 12) {
         // Bottle image
-        if let imageUrl = tasting.bottleImageUrl, let url = URL(string: imageUrl) {
-          AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-              image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-            case .failure, .empty:
-              Image(systemName: "wineglass")
-                .font(.system(size: 24))
-                .foregroundColor(.textMuted)
-            @unknown default:
-              ProgressView()
-            }
-          }
+        BottleImage(imageUrl: tasting.bottleImageUrl)
           .frame(width: 48, height: 48)
-          .background(Color.surface)
           .clipShape(RoundedRectangle(cornerRadius: 8))
-        } else {
-          // Placeholder
-          RoundedRectangle(cornerRadius: 8)
-            .fill(Color.surface)
-            .frame(width: 48, height: 48)
-            .overlay(
-              Image(systemName: "wineglass")
-                .font(.system(size: 24))
-                .foregroundColor(.textMuted)
-            )
-        }
         
         VStack(alignment: .leading, spacing: 4) {
           Text(tasting.bottleName)
@@ -343,17 +274,17 @@ struct UnifiedTastingListItem: View {
           .multilineTextAlignment(.leading)
       }
       
-      // Tags
+      // Tags (muted style)
       if !tasting.tags.isEmpty {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
             ForEach(tasting.tags, id: \.self) { tag in
               Text("#\(tag)")
                 .font(.peatedCaption)
-                .foregroundColor(.brand)
+                .foregroundColor(.textSecondary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.brand.opacity(0.1))
+                .background(Color.surfaceSubtle)
                 .clipShape(Capsule())
             }
           }
@@ -387,27 +318,7 @@ struct UnifiedTastingListItem: View {
       HStack {
         // User avatar and info
         HStack(spacing: 8) {
-          if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
-            AsyncImage(url: url) { image in
-              image
-                .resizable()
-                .scaledToFill()
-            } placeholder: {
-              Circle()
-                .fill(Color.surface)
-            }
-            .frame(width: 32, height: 32)
-            .clipShape(Circle())
-          } else {
-            Circle()
-              .fill(Color.surface)
-              .overlay(
-                Image(systemName: "person.fill")
-                  .font(.system(size: 16))
-                  .foregroundColor(.textMuted)
-              )
-              .frame(width: 32, height: 32)
-          }
+          AvatarImage(urlString: tasting.userAvatarUrl, size: 32)
           
           VStack(alignment: .leading, spacing: 2) {
             Text(tasting.username)
@@ -475,7 +386,6 @@ struct UnifiedTastingListItem: View {
       }
     }
     .padding()
-    .background(Color.background)
   }
 }
 

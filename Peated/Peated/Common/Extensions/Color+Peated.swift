@@ -11,6 +11,7 @@ extension Color {
   static var surface: Color { ThemeProvider.current.surface }
   static var surfaceSubtle: Color { ThemeProvider.current.surfaceSubtle }
   static var border: Color { ThemeProvider.current.border }
+  static var chrome: Color { ThemeProvider.current.chrome }
   // Text
   static var text: Color { ThemeProvider.current.text }
   static var textSecondary: Color { ThemeProvider.current.textSecondary }

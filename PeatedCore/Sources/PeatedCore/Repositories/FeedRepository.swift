@@ -75,6 +75,8 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
           isFavorite: b.isFavorite,
           hasTasted: b.hasTasted
         ))
+        // Persist tasting into DB tasting cache for instant detail seeding
+        try? await DatabaseManager.shared.cacheTasting(t)
       }
       return t
     }
@@ -136,6 +138,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
           isFavorite: b.isFavorite,
           hasTasted: b.hasTasted
         ))
+        try? await DatabaseManager.shared.cacheTasting(t)
       }
       return t
     }
@@ -192,6 +195,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
           isFavorite: b.isFavorite,
           hasTasted: b.hasTasted
         ))
+        try? await DatabaseManager.shared.cacheTasting(t)
       }
       return t
     }

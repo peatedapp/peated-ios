@@ -11,6 +11,8 @@ protocol AppTheme {
   var surface: Color { get }
   var surfaceSubtle: Color { get }
   var border: Color { get }
+  // App chrome (nav/tab bars)
+  var chrome: Color { get }
   // Text
   var text: Color { get }
   var textSecondary: Color { get }
@@ -37,67 +39,79 @@ protocol AppTheme {
   var flavorOther: Color { get }
 }
 
-// MARK: - Cream Theme (Default)
+// MARK: - Classic Peated Theme (Slate + Amber)
+// Uses slate backgrounds with white text and amber highlights, matching peated.com.
 struct CreamTheme: AppTheme {
+  // We intentionally keep both palettes aligned so the app presents
+  // a consistent dark look regardless of system appearance.
   private struct PaletteLight {
-    static let brand = Color(hex: "#5D4E32")
-    static let brandEmphasis = Color(hex: "#4A3D28")
-    static let bg = Color(hex: "#FDF3DA")
-    static let surface = Color(hex: "#FFF9ED")
-    static let surfaceSubtle = Color(hex: "#F9EED4")
-    static let border = Color(hex: "#D7C6A5")
-    static let text = Color(hex: "#1F1B16")
-    static let textSecondary = Color(hex: "#5D4E32")
-    static let textMuted = Color(hex: "#7A6A4E")
-    static let onBrand = Color.white
-    static let onSurface = Color(hex: "#1F1B16")
-    static let overlaySoft = Color.black.opacity(0.15)
-    static let overlay = Color.black.opacity(0.3)
-    static let overlayStrong = Color.black.opacity(0.6)
-    static let success = Color(hex: "#10B981")
-    static let warning = Color(hex: "#F59E0B")
-    static let danger  = Color(hex: "#EF4444")
-    static let info    = Color(hex: "#3B82F6")
+    // Brand / highlight
+    static let brand = Color(hex: "#FBBF24")   // amber-400
+    static let brandEmphasis = Color(hex: "#F59E0B") // amber-500
+    // Surfaces
+    static let bg = Color(hex: "#020617")          // deep slate (new dark baseline)
+    static let surface = Color(hex: "#1E293B")     // slate-800
+    static let surfaceSubtle = Color(hex: "#334155")// slate-700
+    static let border = Color(hex: "#475569")       // slate-600
+    // App chrome (nav/tab bars)
+    static let chrome = Color(hex: "#020617")      // near-black navy
+    // Text
+    static let text = Color.white
+    static let textSecondary = Color(hex: "#CBD5E1") // slate-300
+    static let textMuted = Color(hex: "#94A3B8")     // slate-400
+    static let onBrand = Color.black                 // readable over amber
+    static let onSurface = Color.white
+    // Overlays
+    static let overlaySoft = Color.white.opacity(0.05)
+    static let overlay = Color.white.opacity(0.1)
+    static let overlayStrong = Color.white.opacity(0.2)
+    // Status
+    static let success = Color(hex: "#10B981")  // emerald-500
+    static let warning = Color(hex: "#F59E0B")  // amber-500
+    static let danger  = Color(hex: "#EF4444")  // red-500
+    static let info    = Color(hex: "#3B82F6")  // blue-500
     static let onStatus = Color.white
     // Domain accents
-    static let flavorSweet = Color(hex: "#F59E0B") // amber
-    static let flavorFruity = Color(hex: "#EC4899") // pink
-    static let flavorSpicy  = Color(hex: "#EF4444") // red
-    static let flavorWoody  = Color(hex: "#8B5E3C") // brown
-    static let flavorSmoky  = Color(hex: "#6B7280") // gray
-    static let flavorFloral = Color(hex: "#8B5CF6") // purple
-    static let flavorNutty  = Color(hex: "#92400E") // brownish
-    static let flavorOther  = Color(hex: "#6366F1") // indigo
+    static let flavorSweet = Color(hex: "#F59E0B") // amber-500
+    static let flavorFruity = Color(hex: "#EC4899") // pink-500
+    static let flavorSpicy  = Color(hex: "#EF4444") // red-500
+    static let flavorWoody  = Color(hex: "#8B5E3C") // brownish
+    static let flavorSmoky  = Color(hex: "#94A3B8") // slate-400
+    static let flavorFloral = Color(hex: "#8B5CF6") // purple-500
+    static let flavorNutty  = Color(hex: "#92400E") // amber-800-ish
+    static let flavorOther  = Color(hex: "#6366F1") // indigo-500
   }
   private struct PaletteDark {
-    static let brand = Color(hex: "#E8D7B6")
-    static let brandEmphasis = Color(hex: "#F5E8C9")
-    static let bg = Color(hex: "#1C1A16")
-    static let surface = Color(hex: "#26231D")
-    static let surfaceSubtle = Color(hex: "#2E2A22")
-    static let border = Color(hex: "#4A4437")
-    static let text = Color(hex: "#F7F3EA")
-    static let textSecondary = Color(hex: "#D7C6A5")
-    static let textMuted = Color(hex: "#B9A98B")
-    static let onBrand = Color.black
-    static let onSurface = Color(hex: "#F7F3EA")
-    static let overlaySoft = Color.white.opacity(0.12)
-    static let overlay = Color.white.opacity(0.25)
-    static let overlayStrong = Color.white.opacity(0.5)
-    static let success = Color(hex: "#34D399")
-    static let warning = Color(hex: "#FBBF24")
-    static let danger  = Color(hex: "#F87171")
-    static let info    = Color(hex: "#60A5FA")
-    static let onStatus = Color.black
-    // Domain accents (keep similar hues)
-    static let flavorSweet = Color(hex: "#F59E0B")
-    static let flavorFruity = Color(hex: "#EC4899")
-    static let flavorSpicy  = Color(hex: "#F87171")
-    static let flavorWoody  = Color(hex: "#A4714A")
-    static let flavorSmoky  = Color(hex: "#9CA3AF")
-    static let flavorFloral = Color(hex: "#A78BFA")
-    static let flavorNutty  = Color(hex: "#B45309")
-    static let flavorOther  = Color(hex: "#818CF8")
+    // Mirror light palette to maintain consistent dark UI
+    static let brand = PaletteLight.brand
+    static let brandEmphasis = PaletteLight.brandEmphasis
+    static let bg = PaletteLight.bg
+    static let surface = PaletteLight.surface
+    static let surfaceSubtle = PaletteLight.surfaceSubtle
+    static let border = PaletteLight.border
+    static let chrome = PaletteLight.chrome
+    static let text = PaletteLight.text
+    static let textSecondary = PaletteLight.textSecondary
+    static let textMuted = PaletteLight.textMuted
+    static let onBrand = PaletteLight.onBrand
+    static let onSurface = PaletteLight.onSurface
+    static let overlaySoft = PaletteLight.overlaySoft
+    static let overlay = PaletteLight.overlay
+    static let overlayStrong = PaletteLight.overlayStrong
+    static let success = PaletteLight.success
+    static let warning = PaletteLight.warning
+    static let danger = PaletteLight.danger
+    static let info = PaletteLight.info
+    static let onStatus = PaletteLight.onStatus
+    static let flavorSweet = PaletteLight.flavorSweet
+    static let flavorFruity = PaletteLight.flavorFruity
+    // Slightly lighter red in dark mode for better contrast on slate background
+    static let flavorSpicy = Color(hex: "#F87171") // red-400
+    static let flavorWoody = PaletteLight.flavorWoody
+    static let flavorSmoky = PaletteLight.flavorSmoky
+    static let flavorFloral = PaletteLight.flavorFloral
+    static let flavorNutty = PaletteLight.flavorNutty
+    static let flavorOther = PaletteLight.flavorOther
   }
 
   private func dynamic(_ light: Color, _ dark: Color) -> Color {
@@ -117,6 +131,7 @@ struct CreamTheme: AppTheme {
   var surface: Color { dynamic(PaletteLight.surface, PaletteDark.surface) }
   var surfaceSubtle: Color { dynamic(PaletteLight.surfaceSubtle, PaletteDark.surfaceSubtle) }
   var border: Color { dynamic(PaletteLight.border, PaletteDark.border) }
+  var chrome: Color { dynamic(PaletteLight.chrome, PaletteDark.chrome) }
   // Text
   var text: Color { dynamic(PaletteLight.text, PaletteDark.text) }
   var textSecondary: Color { dynamic(PaletteLight.textSecondary, PaletteDark.textSecondary) }

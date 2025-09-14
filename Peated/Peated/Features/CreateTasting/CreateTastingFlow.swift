@@ -24,7 +24,6 @@ struct CreateTastingFlow: View {
                 ProgressBar(currentStep: currentStep, totalSteps: 6)
                     .padding(.horizontal)
                     .padding(.top, 8)
-                    .background(Color.background)
                 
                 // Step content
                 TabView(selection: $currentStep) {
@@ -54,12 +53,10 @@ struct CreateTastingFlow: View {
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: currentStep)
                 .ignoresSafeArea(.keyboard)
-                .background(Color.background)
                 
                 // Navigation buttons
                 navigationButtons
                     .padding()
-                    .background(Color.background)
                     .overlay(
                         Rectangle()
                             .fill(Color(.separator))
@@ -67,12 +64,11 @@ struct CreateTastingFlow: View {
                         alignment: .top
                     )
             }
-            .background(Color.background)
             .navigationTitle("Add Tasting")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.background, for: .navigationBar)
+            .toolbarBackground(Color.chrome, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.light, for: .navigationBar)
+            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
@@ -101,7 +97,7 @@ struct CreateTastingFlow: View {
                 Text(viewModel.errorMessage)
             }
         }
-        .background(Color.background)
+        .screenBackground()
         .onAppear {
             setupPreselectedData()
         }

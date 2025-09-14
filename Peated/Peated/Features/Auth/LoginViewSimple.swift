@@ -58,8 +58,25 @@ struct LoginViewSimple: View {
           
           // Email/Password form
           VStack(spacing: 16) {
-            emailField
-            passwordField
+            TextInput(
+              label: "Email",
+              placeholder: "you@example.com",
+              text: $email,
+              keyboard: .emailAddress,
+              submitLabel: .next,
+              autocorrection: false,
+              capitalization: .never,
+              onSubmit: { focusedField = .password }
+            )
+
+            PasswordInput(
+              label: "Password",
+              placeholder: "Password",
+              text: $password,
+              submitLabel: .done,
+              onSubmit: { handleEmailSignIn() }
+            )
+
             forgotPasswordLink
           }
           .padding(.horizontal)
@@ -147,72 +164,7 @@ struct LoginViewSimple: View {
     .disabled(isLoading)
   }
   
-  // MARK: - Email Field
-  @ViewBuilder
-  private var emailField: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Email")
-        .font(.peatedCaption)
-        .foregroundColor(.textSecondary)
-      
-      PeatedTextField(
-        placeholder: "you@example.com",
-        text: $email
-      )
-      .keyboardType(.emailAddress)
-      .textContentType(.emailAddress)
-      .autocapitalization(.none)
-      .disableAutocorrection(true)
-      .focused($focusedField, equals: .email)
-      .padding()
-      .background(Color.surface)
-      .cornerRadius(12)
-      .overlay(
-        RoundedRectangle(cornerRadius: 12)
-          .stroke(
-            focusedField == .email ? Color.brand : Color.clear,
-            lineWidth: 2
-          )
-      )
-    }
-  }
-  
-  // MARK: - Password Field
-  @ViewBuilder
-  private var passwordField: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      Text("Password")
-        .font(.peatedCaption)
-        .foregroundColor(.textSecondary)
-      
-      HStack {
-        PeatedTextField(
-          placeholder: "Password",
-          text: $password,
-          isSecure: !isPasswordVisible
-        )
-        .focused($focusedField, equals: .password)
-        
-        Button {
-          isPasswordVisible.toggle()
-        } label: {
-          Image(systemName: isPasswordVisible ? "eye.slash" : "eye")
-            .foregroundColor(.textSecondary)
-        }
-      }
-      .padding()
-      .background(Color.surface)
-      .cornerRadius(12)
-      .overlay(
-        RoundedRectangle(cornerRadius: 12)
-          .stroke(
-            focusedField == .password ? Color.brand : Color.clear,
-            lineWidth: 2
-          )
-      )
-    }
-    .textContentType(.password)
-  }
+  // Removed old field builders in favor of TextInput/Modifier usage
   
   // MARK: - Forgot Password
   @ViewBuilder
@@ -226,6 +178,8 @@ struct LoginViewSimple: View {
       .foregroundColor(.brand)
     }
   }
+
+  // Password handled via PasswordInput abstraction
   
   // MARK: - Sign In Button
   @ViewBuilder

@@ -11,13 +11,13 @@ struct BottleStatusIcons: View {
       if hasTasted {
         Image(systemName: "checkmark.circle.fill")
           .font(.system(size: 12))
-          .foregroundColor(.brand)
+          .foregroundColor(.textSecondary)
           .accessibilityLabel("Tasted")
       }
       if isFavorite {
         Image(systemName: "star.fill")
           .font(.system(size: 11))
-          .foregroundColor(.brand)
+          .foregroundColor(.textSecondary)
           .accessibilityLabel("Favorited")
       }
     }

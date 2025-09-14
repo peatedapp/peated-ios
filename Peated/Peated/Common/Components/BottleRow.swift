@@ -128,13 +128,13 @@ struct BottleRow: View {
           if bottle.hasTasted {
             Image(systemName: "checkmark.circle.fill")
               .font(.system(size: 12))
-              .foregroundColor(.brand)
+              .foregroundColor(.textSecondary)
               .accessibilityLabel("Tasted")
           }
           if bottle.isFavorite {
             Image(systemName: "star.fill")
               .font(.system(size: 11))
-              .foregroundColor(.brand)
+              .foregroundColor(.textSecondary)
               .accessibilityLabel("Favorited")
           }
         }
@@ -156,22 +156,21 @@ struct BottleImage: View {
   let imageUrl: String?
   
   var body: some View {
-    if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
-      AsyncImage(url: url) { phase in
-        switch phase {
-        case .success(let image):
+    Group {
+      if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
+        CachedAsyncImage(url: url) { image in
           image
             .resizable()
             .aspectRatio(contentMode: .fit)
-        case .failure, .empty:
+        } placeholder: {
           defaultBottleIcon
-        @unknown default:
-          ProgressView()
-            .scaleEffect(0.5)
         }
+        .task(id: imageUrl) {
+          ImagePrefetcher.prefetch(urls: [url], max: 1)
+        }
+      } else {
+        defaultBottleIcon
       }
-    } else {
-      defaultBottleIcon
     }
   }
   

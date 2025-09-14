@@ -10,8 +10,9 @@ struct DeveloperSettingsView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
+            ScrollView {
+                VStack(spacing: 16) {
+                    FormSection("API Configuration") {
                     Picker("Environment", selection: $settings.apiEnvironment) {
                         ForEach(APIEnvironment.allCases, id: \.self) { env in
                             Label {
@@ -32,11 +33,11 @@ struct DeveloperSettingsView: View {
                     
                     HStack {
                         Text("Current URL")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                         Spacer()
                         Text(settings.currentAPIURL.absoluteString)
                             .font(.caption)
-                            .foregroundColor(.primary)
+                            .foregroundColor(.text)
                             .lineLimit(1)
                             .truncationMode(.middle)
                     }
@@ -53,15 +54,14 @@ struct DeveloperSettingsView: View {
                             Text(copiedToClipboard ? "Copied!" : "Copy API URL")
                         }
                     }
-                } header: {
-                    Text("API Configuration")
-                } footer: {
                     Text("Changes take effect immediately for new API calls")
-                }
+                        .font(.caption)
+                        .foregroundColor(.textSecondary)
+                        .padding(.top, 4)
+                    }
                 
                 // Removed placeholder debug toggles that had no runtime effect.
-
-                Section("Diagnostics") {
+                FormSection("Diagnostics") {
                     Button(role: .destructive) {
                         Task {
                             await NormalizedStore.shared.clear()
@@ -73,12 +73,12 @@ struct DeveloperSettingsView: View {
                     .help("Clears the in-app normalized cache and the URL cache. App behavior is unchanged; next reads will rehydrate on demand.")
                 }
                 
-                Section("App Info") {
+                FormSection("App Info") {
                     HStack {
                         Text("Version")
                         Spacer()
                         Text("\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                     
                     HStack {
@@ -86,25 +86,25 @@ struct DeveloperSettingsView: View {
                         Spacer()
                         Text(Bundle.main.bundleIdentifier ?? "Unknown")
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                     
                     HStack {
                         Text("Device")
                         Spacer()
                         Text(UIDevice.current.name)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                     
                     HStack {
                         Text("iOS Version")
                         Spacer()
                         Text(UIDevice.current.systemVersion)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.textSecondary)
                     }
                 }
                 
-                Section("Quick Navigation") {
+                FormSection("Quick Navigation") {
                     NavigationLink(destination: BottleDetailView(bottleId: "1", bottleName: "Lagavulin 16")) {
                         Label("Sample Bottle (Lagavulin 16)", systemImage: "wineglass")
                     }
@@ -122,7 +122,7 @@ struct DeveloperSettingsView: View {
                     }
                 }
                 
-                Section {
+                FormSection(nil) {
                     Button(role: .destructive) {
                         showingResetConfirmation = true
                     } label: {
@@ -130,10 +130,9 @@ struct DeveloperSettingsView: View {
                     }
                 }
             }
-            .scrollContentBackground(.hidden)
+            }
             .background(Color.background)
-            .tint(.brand)
-            .listRowBackground(Color.surface)
+            .tint(.text)
             .navigationTitle("Developer Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

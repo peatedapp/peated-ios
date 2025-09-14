@@ -103,29 +103,8 @@ struct TastingPreviewCard: View {
                 if let bottle = viewModel.selectedBottle {
                     HStack(spacing: 12) {
                         // Bottle image or icon
-                        if let bottleImageUrl = bottle.imageUrl, let url = URL(string: bottleImageUrl) {
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fit)
-                                case .failure, .empty:
-                                    Image(systemName: "wineglass")
-                                        .font(.system(size: DesignSystem.FontSize.headline))
-                                        .foregroundColor(.brand.opacity(DesignSystem.Opacity.strong))
-                                @unknown default:
-                                    ProgressView()
-                                        .scaleEffect(0.5)
-                                }
-                            }
+                        BottleImage(imageUrl: bottle.imageUrl)
                             .frame(width: 28, height: 36)
-                        } else {
-                            Image(systemName: "wineglass")
-                                .font(.system(size: DesignSystem.FontSize.headline))
-                                .foregroundColor(.brand.opacity(DesignSystem.Opacity.strong))
-                                .frame(width: 28, height: 36)
-                        }
                         
                         VStack(alignment: .leading, spacing: 3) {
                             // Bottle name

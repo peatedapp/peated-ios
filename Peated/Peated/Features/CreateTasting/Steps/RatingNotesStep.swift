@@ -79,37 +79,13 @@ struct RatingNotesStep: View {
                             .font(.subheadline)
                             .foregroundColor(.textSecondary)
                         
-                        ZStack(alignment: .topLeading) {
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.surface)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(isNotesFocused ? Color.brand : Color.clear, lineWidth: 2)
-                                )
-                            
-                            TextEditor(text: $viewModel.notes)
-                                .focused($isNotesFocused)
-                                .padding(12)
-                                .background(Color.clear)
-                                .frame(minHeight: 120)
-                                .overlay(
-                                    // Placeholder text
-                                    Group {
-                                        if viewModel.notes.isEmpty && !isNotesFocused {
-                                            VStack {
-                                                HStack {
-                                                    Text("Describe the aroma, taste, and finish...")
-                                                        .foregroundColor(.textSecondary)
-                                                        .padding(.leading, 16)
-                                                        .padding(.top, 20)
-                                                    Spacer()
-                                                }
-                                                Spacer()
-                                            }
-                                        }
-                                    }
-                                )
-                        }
+                        TextArea(
+                            label: nil,
+                            placeholder: "Describe the aroma, taste, and finish...",
+                            text: $viewModel.notes,
+                            minHeight: 120
+                        )
+                        .focused($isNotesFocused)
                         
                         // Character count
                         HStack {

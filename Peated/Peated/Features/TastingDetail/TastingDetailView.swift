@@ -3,6 +3,7 @@ import PeatedCore
 
 struct TastingDetailView: View {
   let tastingId: String
+  let seed: TastingFeedItem?
   let onNavigateToProfile: ((String) -> Void)?
   let onNavigateToBottle: ((String) -> Void)?
   
@@ -12,11 +13,12 @@ struct TastingDetailView: View {
   @FocusState private var isCommentFieldFocused: Bool
   @Environment(\.dismiss) private var dismiss
   
-  init(tastingId: String, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToBottle: ((String) -> Void)? = nil) {
+  init(tastingId: String, seed: TastingFeedItem? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToBottle: ((String) -> Void)? = nil) {
     self.tastingId = tastingId
+    self.seed = seed
     self.onNavigateToProfile = onNavigateToProfile
     self.onNavigateToBottle = onNavigateToBottle
-    self._model = State(initialValue: TastingDetailModel(tastingId: tastingId))
+    self._model = State(initialValue: TastingDetailModel(tastingId: tastingId, seed: seed))
   }
   
   var body: some View {
@@ -27,6 +29,9 @@ struct TastingDetailView: View {
         
       case .loaded(let tasting):
         loadedView(tasting)
+          .task(id: tasting.id) {
+            prefetchDetailImages(tasting)
+          }
         
       case .error(let message):
         errorView(message)
@@ -76,6 +81,15 @@ struct TastingDetailView: View {
     } message: {
       Text("Are you sure you want to delete this tasting? This cannot be undone.")
     }
+    .screenBackground()
+  }
+
+  private func prefetchDetailImages(_ tasting: TastingDetail) {
+    var urls: [URL] = []
+    if let s = tasting.userAvatarUrl, let u = URL(string: s) { urls.append(u) }
+    if let s = tasting.bottleImageUrl, let u = URL(string: s) { urls.append(u) }
+    if let s = tasting.imageUrl, let u = URL(string: s) { urls.append(u) }
+    ImagePrefetcher.prefetch(urls: urls, max: 3)
   }
   
   // MARK: - Loading View
@@ -112,7 +126,6 @@ struct TastingDetailView: View {
       }
       .padding()
     }
-    .background(Color.background)
   }
   
   // MARK: - Loaded View
@@ -157,7 +170,6 @@ struct TastingDetailView: View {
       // Comment input
       commentInputView
     }
-    .background(Color.background)
   }
   
   // Removed toasts section
@@ -260,20 +272,24 @@ struct TastingDetailView: View {
   @ViewBuilder
   private var commentInputView: some View {
     HStack(spacing: 12) {
-      HStack {
-        TextField("Add a comment...", text: $commentText, axis: .vertical)
-          .textFieldStyle(.plain)
+      HStack(spacing: 8) {
+        TextEditor(text: $commentText)
           .font(.peatedBody)
           .foregroundColor(.text)
-          .tint(.brand)
-          .lineLimit(1...4)
+          .frame(minHeight: 20, maxHeight: 80)
           .focused($isCommentFieldFocused)
-        
+          .background(Color.clear)
+          .overlay(alignment: .topLeading) {
+            if commentText.isEmpty && !isCommentFieldFocused {
+              Text("Add a comment...")
+                .foregroundColor(.textMuted)
+                .padding(.top, 2)
+            }
+          }
+
         if !commentText.isEmpty {
           Button {
-            Task {
-              await postComment()
-            }
+            Task { await postComment() }
           } label: {
             Image(systemName: "arrow.up.circle.fill")
               .font(.system(size: 24))
@@ -282,10 +298,7 @@ struct TastingDetailView: View {
           .disabled(model.isPostingComment)
         }
       }
-      .padding(.horizontal, 16)
-      .padding(.vertical, 10)
-      .background(Color.surface)
-      .cornerRadius(20)
+      .inputBox(state: isCommentFieldFocused ? .focused : .normal, cornerRadius: 20, horizontalPadding: 16, verticalPadding: 10)
     }
     .padding(.vertical, 8)
     .background(Color.background)
@@ -327,7 +340,6 @@ struct TastingDetailView: View {
     }
     .padding()
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(Color.background)
   }
   
   // MARK: - Actions
@@ -355,25 +367,10 @@ struct TastingDetailCard: View {
       // Header with bottle info
       HStack(alignment: .top, spacing: 12) {
         // Bottle image
-        if let imageUrl = tasting.bottleImageUrl, let url = URL(string: imageUrl) {
-          AsyncImage(url: url) { phase in
-            switch phase {
-            case .success(let image):
-              image
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-            case .failure, .empty:
-              Image(systemName: "wineglass")
-                .font(.system(size: 24))
-                .foregroundColor(.textMuted)
-            @unknown default:
-              ProgressView()
-            }
-          }
+        BottleImage(imageUrl: tasting.bottleImageUrl)
           .frame(width: 60, height: 80)
           .background(Color.surface)
           .clipShape(RoundedRectangle(cornerRadius: 8))
-        }
         
         VStack(alignment: .leading, spacing: 4) {
           Text(tasting.bottleName)
@@ -427,17 +424,17 @@ struct TastingDetailCard: View {
           .fixedSize(horizontal: false, vertical: true)
       }
       
-      // Tags
+      // Tags (muted style)
       if !tasting.tags.isEmpty {
         ScrollView(.horizontal, showsIndicators: false) {
           HStack(spacing: 8) {
             ForEach(tasting.tags, id: \.self) { tag in
               Text("#\(tag)")
                 .font(.peatedFootnote)
-                .foregroundColor(.brand)
+                .foregroundColor(.textSecondary)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.brand.opacity(0.1))
+                .background(Color.surfaceSubtle)
                 .clipShape(Capsule())
             }
           }
@@ -468,18 +465,7 @@ struct TastingDetailCard: View {
       HStack {
         // User avatar and info
         HStack(spacing: 8) {
-          if let avatarUrl = tasting.userAvatarUrl, let url = URL(string: avatarUrl) {
-            AsyncImage(url: url) { image in
-              image
-                .resizable()
-                .scaledToFill()
-            } placeholder: {
-              Circle()
-                .fill(Color.surface)
-            }
-            .frame(width: 32, height: 32)
-            .clipShape(Circle())
-          }
+          AvatarImage(urlString: tasting.userAvatarUrl, size: 32)
           
           VStack(alignment: .leading, spacing: 2) {
             Text(tasting.authorDisplayName)
@@ -537,27 +523,7 @@ struct CommentView: View {
         Button {
           onProfile(comment.userId)
         } label: {
-          if let avatarUrl = comment.userAvatarUrl, let url = URL(string: avatarUrl) {
-            AsyncImage(url: url) { image in
-              image
-                .resizable()
-                .scaledToFill()
-            } placeholder: {
-              Circle()
-                .fill(Color.surface)
-            }
-            .frame(width: 32, height: 32)
-            .clipShape(Circle())
-          } else {
-            Circle()
-              .fill(Color.surface)
-              .overlay(
-                Image(systemName: "person.fill")
-                  .font(.system(size: 16))
-                  .foregroundColor(.textMuted)
-              )
-              .frame(width: 32, height: 32)
-          }
+          AvatarImage(urlString: comment.userAvatarUrl, size: 32)
         }
         
         VStack(alignment: .leading, spacing: 4) {

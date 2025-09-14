@@ -47,16 +47,46 @@ struct LibraryView: View {
   @State private var selectedTab: LibraryTab = .favorites
   @State private var navigationPath = NavigationPath()
 
+  struct BottleNav: Hashable {
+    let id: String
+    let name: String
+    let fullName: String
+    let brandId: String
+    let brandName: String
+    let category: String?
+    let imageUrl: String?
+    let isFavorite: Bool
+    let hasTasted: Bool
+  }
+
   var body: some View {
     NavigationStack(path: $navigationPath) {
       VStack(spacing: 0) {
-        // Tabs
-        Picker("LibraryTab", selection: $selectedTab) {
-          Text(LibraryTab.collection.title).tag(LibraryTab.collection)
-          Text(LibraryTab.favorites.title).tag(LibraryTab.favorites)
+        // Tabs (custom, dark friendly)
+        HStack(spacing: 0) {
+          ForEach(LibraryTab.allCases, id: \.self) { tab in
+            Button(action: { selectedTab = tab }) {
+              VStack(spacing: 0) {
+                Text(tab.title)
+                  .font(.system(size: 15, weight: selectedTab == tab ? .medium : .regular))
+                  .foregroundColor(selectedTab == tab ? Color.text : Color.textSecondary)
+                  .frame(maxWidth: .infinity)
+                  .padding(.vertical, 12)
+                Rectangle()
+                  .fill(selectedTab == tab ? Color.brand : Color.clear)
+                  .frame(height: 2)
+              }
+            }
+            .buttonStyle(.plain)
+          }
         }
-        .pickerStyle(.segmented)
-        .padding()
+        .padding(.horizontal)
+        .padding(.top, 8)
+        .padding(.bottom, 8)
+        .overlay(
+          Rectangle().fill(Color.border.opacity(0.2)).frame(height: 1),
+          alignment: .bottom
+        )
 
         // Content
         Group {
@@ -68,9 +98,8 @@ struct LibraryView: View {
           }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.background)
       }
-      .background(Color.background)
+      
       .navigationTitle("My Library")
       .navigationBarTitleDisplayMode(.inline)
       .task { await viewModel.loadFavorites() }
@@ -80,10 +109,21 @@ struct LibraryView: View {
         }
       }
       .refreshable { await viewModel.loadFavorites() }
-      .navigationDestination(for: String.self) { bottleId in
-        BottleDetailView(bottleId: bottleId)
+      .navigationDestination(for: BottleNav.self) { nav in
+        let bottle = Bottle(
+          id: nav.id,
+          name: nav.name,
+          fullName: nav.fullName,
+          brand: Brand(id: nav.brandId, name: nav.brandName),
+          category: nav.category,
+          imageUrl: nav.imageUrl,
+          isFavorite: nav.isFavorite,
+          hasTasted: nav.hasTasted
+        )
+        BottleDetailView(bottleId: nav.id, bottleName: nav.fullName, seed: bottle)
       }
     }
+    .screenBackground()
   }
 
   // MARK: - Views
@@ -123,7 +163,18 @@ struct LibraryView: View {
           LazyVStack(spacing: 12) {
             ForEach(viewModel.favorites, id: \.id) { bottle in
               BottleRow(bottle: bottle) {
-                navigationPath.append(bottle.id)
+                let nav = BottleNav(
+                  id: bottle.id,
+                  name: bottle.name,
+                  fullName: bottle.fullName,
+                  brandId: bottle.brand.id,
+                  brandName: bottle.brand.name,
+                  category: bottle.category,
+                  imageUrl: bottle.imageUrl,
+                  isFavorite: bottle.isFavorite,
+                  hasTasted: bottle.hasTasted
+                )
+                navigationPath.append(nav)
               }
             }
           }

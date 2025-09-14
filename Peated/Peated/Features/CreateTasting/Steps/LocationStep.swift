@@ -283,33 +283,7 @@ struct LocationSearchBar: View {
     let onSearch: () -> Void
     
     var body: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.textSecondary)
-            
-            TextField("Search for a place...", text: $searchText)
-                .textFieldStyle(.plain)
-                .foregroundColor(.text)
-                .focused($isSearchFocused)
-                .onSubmit(onSearch)
-            
-            if !searchText.isEmpty {
-                Button(action: {
-                    searchText = ""
-                    isSearchFocused = false
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.textSecondary)
-                }
-            }
-        }
-        .padding(12)
-        .background(Color.surface)
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(isSearchFocused ? Color.brand : Color.clear, lineWidth: 2)
-        )
+        SearchInput(placeholder: "Search for a place...", text: $searchText, onSubmit: onSearch)
     }
 }
 

@@ -104,36 +104,16 @@ struct NotesStep: View {
                             .foregroundColor(.textSecondary)
                     }
                     .padding(.horizontal)
-                    
-                    // TextEditor styled like photo buttons
-                    ZStack(alignment: .topLeading) {
-                        TextEditor(text: $viewModel.notes)
-                            .focused($isNotesFocused)
-                            .scrollContentBackground(.hidden)  // Hide the default background
-                            .padding(12)  // Internal padding for text
-                            .frame(minHeight: 200)
-                            .overlay(
-                                // Placeholder text
-                                Group {
-                                    if viewModel.notes.isEmpty && !isNotesFocused {
-                                        Text("Describe the aroma, taste, and finish...")
-                                            .foregroundColor(.textSecondary)
-                                            .padding(.top, 20)  // Adjusted for internal padding
-                                            .padding(.leading, 17)  // Adjusted for internal padding
-                                            .allowsHitTesting(false)
-                                    }
-                                },
-                                alignment: .topLeading
-                            )
-                    }
-                    .background(Color.surface)
-                    .cornerRadius(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color(.separator), lineWidth: 1)
+
+                    TextArea(
+                        label: nil,
+                        placeholder: "Describe the aroma, taste, and finish...",
+                        text: $viewModel.notes,
+                        minHeight: 200
                     )
+                    .focused($isNotesFocused)
                     .padding(.horizontal)
-                    
+
                     // Character count
                     HStack {
                         Spacer()

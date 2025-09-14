@@ -71,46 +71,16 @@ struct BottleSelectionStep: View {
     // MARK: - Search Bar
     @ViewBuilder
     private var searchBar: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.textSecondary)
-            
-            TextField("Search for a bottle...", text: $searchText)
-                .textFieldStyle(.plain)
-                .foregroundColor(.text)
-                .autocapitalization(.none)
-                .disableAutocorrection(true)
-                .submitLabel(.search)
-                .focused($isSearchFocused)
-                .onSubmit {
-                    Task { await searchBottles() }
-                }
-                .onChange(of: searchText) { _, newValue in
-                    if newValue.isEmpty {
-                        viewModel.searchResults = []
-                    } else {
-                        searchBottlesDebounced(newValue)
-                    }
-                }
-            
-            if !searchText.isEmpty {
-                Button(action: {
-                    searchText = ""
-                    viewModel.searchResults = []
-                    isSearchFocused = false
-                }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.textSecondary)
-                }
+        SearchInput(placeholder: "Search for a bottle...", text: $searchText, onSubmit: {
+            Task { await searchBottles() }
+        })
+        .onChange(of: searchText) { _, newValue in
+            if newValue.isEmpty {
+                viewModel.searchResults = []
+            } else {
+                searchBottlesDebounced(newValue)
             }
         }
-        .padding(12)
-        .background(Color.surface)
-        .cornerRadius(10)
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(isSearchFocused ? Color.brand : Color.clear, lineWidth: 2)
-        )
     }
     
     // MARK: - Scan Barcode Button
@@ -308,5 +278,4 @@ struct BottleSelectionStep: View {
         nil
     }
 }
-
 

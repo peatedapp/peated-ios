@@ -8,12 +8,74 @@ struct FeedView: View {
   @State private var showingSuccessToast = false
   
   // Navigation destination types
+  struct TastingSeed: Hashable {
+    let id: String
+    let rating: Double
+    let notes: String?
+    let servingStyle: String?
+    let imageUrl: String?
+    let createdAt: Date
+    let userId: String
+    let username: String
+    let userDisplayName: String?
+    let userAvatarUrl: String?
+    let bottleId: String
+    let bottleName: String
+    let bottleBrandName: String
+    let bottleCategory: String?
+    let bottleImageUrl: String?
+    let toastCount: Int
+    let commentCount: Int
+    let hasToasted: Bool
+    let tags: [String]
+    let location: String?
+    let friendUsernames: [String]
+  }
+
+  struct UserSeed: Hashable { let id: String; let username: String; let pictureUrl: String? }
+
   enum NavigationDestination: Hashable {
-    case userProfile(userId: String)
-    case tastingDetail(tastingId: String)
+    case userProfile(seed: UserSeed)
+    case tastingDetail(seed: TastingSeed)
     case bottleDetail(bottleId: String)
   }
+
+  private func makeSeed(from t: TastingFeedItem) -> TastingSeed {
+    TastingSeed(
+      id: t.id,
+      rating: t.rating,
+      notes: t.notes,
+      servingStyle: t.servingStyle,
+      imageUrl: t.imageUrl,
+      createdAt: t.createdAt,
+      userId: t.userId,
+      username: t.username,
+      userDisplayName: t.userDisplayName,
+      userAvatarUrl: t.userAvatarUrl,
+      bottleId: t.bottleId,
+      bottleName: t.bottleName,
+      bottleBrandName: t.bottleBrandName,
+      bottleCategory: t.bottleCategory,
+      bottleImageUrl: t.bottleImageUrl,
+      toastCount: t.toastCount,
+      commentCount: t.commentCount,
+      hasToasted: t.hasToasted,
+      tags: t.tags,
+      location: t.location,
+      friendUsernames: t.friendUsernames
+    )
+  }
   
+  private func prefetchFeedImages() {
+    var urls: [URL] = []
+    for item in model.tastings.prefix(60) {
+      if let s = item.userAvatarUrl, let u = URL(string: s) { urls.append(u) }
+      if let s = item.bottleImageUrl, let u = URL(string: s) { urls.append(u) }
+      if let s = item.imageUrl, let u = URL(string: s) { urls.append(u) }
+    }
+    ImagePrefetcher.prefetch(urls: urls, max: 60)
+  }
+
   var body: some View {
     NavigationStack(path: $navigationPath) {
       VStack(spacing: 0) {
@@ -42,7 +104,7 @@ struct FeedView: View {
             .buttonStyle(PlainButtonStyle())
           }
         }
-        .background(Color.background)
+        
         .overlay(
           // Bottom border for the whole tab bar
           Rectangle()
@@ -77,16 +139,21 @@ struct FeedView: View {
                     }
                   },
                   onComment: {
-                    // Navigate to tasting detail
-                    navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
+                    navigationPath.append(
+                      NavigationDestination.tastingDetail(seed: makeSeed(from: tasting))
+                    )
                   },
                   onUserTap: {
-                    // Navigate to user profile
-                    navigationPath.append(NavigationDestination.userProfile(userId: tasting.userId))
+                    navigationPath.append(
+                      NavigationDestination.userProfile(
+                        seed: UserSeed(id: tasting.userId, username: tasting.username, pictureUrl: tasting.userAvatarUrl)
+                      )
+                    )
                   },
                   onBottleTap: {
-                    // Navigate to tasting detail (not bottle detail)
-                    navigationPath.append(NavigationDestination.tastingDetail(tastingId: tasting.id))
+                    navigationPath.append(
+                      NavigationDestination.tastingDetail(seed: makeSeed(from: tasting))
+                    )
                   }
                 )
                 .background(Color.background)
@@ -110,10 +177,10 @@ struct FeedView: View {
                   .padding()
               }
             }
-            .background(Color.background)
+            
           }
           .scrollContentBackground(.hidden)
-          .background(Color.background)
+          
           .refreshable {
             await model.refreshCurrentFeed()
           }
@@ -149,13 +216,9 @@ struct FeedView: View {
           .animation(.easeInOut, value: model.error != nil)
         }
       }
-      .background(Color.background)
+      
       .frame(maxWidth: .infinity, maxHeight: .infinity)
-      .navigationTitle("Activity")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbarBackground(Color.background, for: .navigationBar)
-      .toolbarBackground(.visible, for: .navigationBar)
-      .toolbarColorScheme(.light, for: .navigationBar)
+      .navigationBarHidden(true)
       .sheet(isPresented: $showingCreateTasting) {
         CreateTastingFlow(onSuccess: {
           // Show success toast and refresh feed
@@ -168,24 +231,55 @@ struct FeedView: View {
       }
       .task {
         await model.loadFeed(refresh: true)
+        prefetchFeedImages()
       }
       .navigationDestination(for: NavigationDestination.self) { destination in
         switch destination {
-        case .userProfile(let userId):
+        case .userProfile(let seed):
           ProfileView(
-            userId: userId,
+            userId: seed.id,
+            seed: User(id: seed.id, email: "", username: seed.username).withPicture(seed.pictureUrl),
             onNavigateToProfile: { userId in
-              navigationPath.append(NavigationDestination.userProfile(userId: userId))
+              navigationPath.append(NavigationDestination.userProfile(seed: UserSeed(id: userId, username: "", pictureUrl: nil)))
             },
             onNavigateToTasting: { tastingId in
-              navigationPath.append(NavigationDestination.tastingDetail(tastingId: tastingId))
+              let fallback = TastingSeed(
+                id: tastingId, rating: 0, notes: nil, servingStyle: nil, imageUrl: nil,
+                createdAt: Date(), userId: "", username: "", userDisplayName: nil, userAvatarUrl: nil,
+                bottleId: "", bottleName: "", bottleBrandName: "", bottleCategory: nil, bottleImageUrl: nil,
+                toastCount: 0, commentCount: 0, hasToasted: false, tags: [], location: nil, friendUsernames: []
+              )
+              navigationPath.append(NavigationDestination.tastingDetail(seed: fallback))
             }
           )
-        case .tastingDetail(let tastingId):
+        case .tastingDetail(let seed):
           TastingDetailView(
-            tastingId: tastingId,
+            tastingId: seed.id,
+            seed: TastingFeedItem(
+              id: seed.id,
+              rating: seed.rating,
+              notes: seed.notes,
+              servingStyle: seed.servingStyle,
+              imageUrl: seed.imageUrl,
+              createdAt: seed.createdAt,
+              userId: seed.userId,
+              username: seed.username,
+              userDisplayName: seed.userDisplayName,
+              userAvatarUrl: seed.userAvatarUrl,
+              bottleId: seed.bottleId,
+              bottleName: seed.bottleName,
+              bottleBrandName: seed.bottleBrandName,
+              bottleCategory: seed.bottleCategory,
+              bottleImageUrl: seed.bottleImageUrl,
+              toastCount: seed.toastCount,
+              commentCount: seed.commentCount,
+              hasToasted: seed.hasToasted,
+              tags: seed.tags,
+              location: seed.location,
+              friendUsernames: seed.friendUsernames
+            ),
             onNavigateToProfile: { userId in
-              navigationPath.append(NavigationDestination.userProfile(userId: userId))
+              navigationPath.append(NavigationDestination.userProfile(seed: UserSeed(id: userId, username: "", pictureUrl: nil)))
             },
             onNavigateToBottle: { bottleId in
               navigationPath.append(NavigationDestination.bottleDetail(bottleId: bottleId))
@@ -196,7 +290,7 @@ struct FeedView: View {
         }
       }
     }
-    .background(Color.background)
+    .screenBackground()
     .toast(
       isShowing: $showingSuccessToast,
       message: "Tasting created successfully!",

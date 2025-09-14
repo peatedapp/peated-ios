@@ -33,14 +33,19 @@ public class TastingDetailModel {
   
   // Dependencies
   private let tastingId: String
+  private let seed: TastingFeedItem?
   private let tastingRepository: TastingRepository
   private let apiClient: APIClient
+  private let cacheManager = CacheManager.shared
+  private let database = DatabaseManager.shared
   
   public init(
     tastingId: String,
+    seed: TastingFeedItem? = nil,
     tastingRepository: TastingRepository? = nil
   ) {
     self.tastingId = tastingId
+    self.seed = seed
     
     // Create API client
     let apiClient = APIClient(
@@ -48,28 +53,54 @@ public class TastingDetailModel {
     )
     self.apiClient = apiClient
     self.tastingRepository = tastingRepository ?? TastingRepository(apiClient: apiClient)
+
+    // If we have a navigation seed, render it immediately to avoid any skeleton
+    if let seed {
+      let seeded = TastingDetail(from: seed)
+      self.state = .loaded(seeded)
+      // Kick off background work without waiting for view lifecycle
+      Task { await self.loadComments() }
+      Task { await self.refreshFromNetworkAndUpdate() }
+    }
   }
   
   /// Loads the full tasting details including comments
   public func loadTasting() async {
+    // 0) Seed from navigation if provided (fastest)
+    if let seed {
+      let seeded = TastingDetail(from: seed)
+      state = .loaded(seeded)
+      Task { await self.loadComments() }
+      Task { await self.refreshFromNetworkAndUpdate() }
+      return
+    }
+
+    // 1) Seed from cache (fast-path) to avoid flicker
+    if let cached = try? await database.getCachedTasting(id: tastingId) {
+      let seeded = TastingDetail(from: cached.tasting)
+      state = .loaded(seeded)
+      // Load comments asynchronously
+      Task { await self.loadComments() }
+      // Refresh details in background and update cache/state when complete
+      Task { await self.refreshFromNetworkAndUpdate() }
+      return
+    }
+
+    // 2) Fallback: no cache available, do a normal network load
     state = .loading
-    
+    await refreshFromNetworkAndUpdate()
+  }
+
+  private func refreshFromNetworkAndUpdate() async {
     do {
-      // Get tasting details
       let client = await apiClient.generatedClient
       let response = try await client.getTasting(
-        .init(
-          path: .init(tasting: Double(tastingId) ?? 0)
-        )
+        .init(path: .init(tasting: Double(tastingId) ?? 0))
       )
-      
-      guard case .ok(let okResponse) = response,
-            case .json(let payload) = okResponse.body else {
+      guard case .ok(let okResponse) = response, case .json(let payload) = okResponse.body else {
         state = .error("Failed to load tasting")
         return
       }
-      
-      // Map the API response to TastingDetail
       let detail = TastingDetail(
         id: String(Int(payload.id)),
         rating: extractRating(from: payload.rating),
@@ -79,7 +110,7 @@ public class TastingDetailModel {
         createdAt: payload.createdAt,
         userId: String(Int(payload.createdBy.id)),
         username: payload.createdBy.username,
-        userDisplayName: nil, // API doesn't provide display name separately
+        userDisplayName: nil,
         userAvatarUrl: payload.createdBy.pictureUrl,
         bottleId: String(Int(payload.bottle.id)),
         bottleName: payload.bottle.fullName,
@@ -90,16 +121,16 @@ public class TastingDetailModel {
         commentCount: Int(payload.comments),
         hasToasted: payload.hasToasted ?? false,
         tags: payload.tags ?? [],
-        location: nil, // TODO: location field needs to be added to API response
-        comments: [], // Comments loaded separately
+        location: nil,
+        comments: [],
         toasts: []
       )
-      
+      // Update state immediately (comments load separately)
       state = .loaded(detail)
-      
-      // Load comments separately with error handling
+      // Write-through cache for future loads/navigation
+      try? await database.updateCachedTasting(detail.toFeedItem())
+      // Ensure comments get loaded
       await loadComments()
-      
     } catch {
       state = .error(error.localizedDescription)
     }

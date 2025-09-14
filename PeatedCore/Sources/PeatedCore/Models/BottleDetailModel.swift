@@ -17,20 +17,27 @@ public final class BottleDetailModel {
   public private(set) var similarBottles: [Bottle] = []
   
   private let bottleId: String
+  private let seed: Bottle?
   private let bottleRepository = BottleRepository()
   private let feedRepository = FeedRepository()
   private let collectionRepository = CollectionRepository()
   
-  public init(bottleId: String) {
+  public init(bottleId: String, seed: Bottle? = nil) {
     self.bottleId = bottleId
+    self.seed = seed
   }
   
   public func loadBottle() async {
-    // If we have a cached snapshot, show it immediately and refresh in background
+    // 1) Show seed immediately if provided
+    if let seed {
+      self.bottle = seed
+      self.state = .loaded(seed)
+    }
+    // 2) Snapshot-first from normalized store
     if let (cached, _) = await NormalizedStore.shared.get(.bottle(bottleId), as: Bottle.self) {
       self.bottle = cached
       self.state = .loaded(cached)
-    } else {
+    } else if self.bottle == nil {
       state = .loading
     }
 
