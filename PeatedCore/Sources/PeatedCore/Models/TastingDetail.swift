@@ -125,7 +125,7 @@ extension TastingDetail {
 
 extension TastingDetail {
   /// Creates a TastingDetail from API response
-  public init?(from apiTasting: Operations.getTasting.Output.Ok.Body.jsonPayload?) {
+  public init?(from apiTasting: Components.Schemas.Tasting?) {
     // TODO: Implement proper API response mapping when the API structure is clearer
     // For now, we'll use the feedItem conversion in the view
     return nil

@@ -4,7 +4,7 @@ import PeatedAPI
 // MARK: - User Mapping
 
 extension User {
-  init(from apiUser: Operations.getMe.Output.Ok.Body.jsonPayload.userPayload) {
+  init(from apiUser: Components.Schemas.User) {
     self.init(
       id: apiUser.id,
       email: apiUser.email,
@@ -16,7 +16,7 @@ extension User {
     self.pictureUrl = apiUser.pictureUrl
   }
   
-  init(from apiUser: Operations.login.Output.Ok.Body.jsonPayload.userPayload) {
+  init(from apiUser: Components.Schemas.Auth.userPayload) {
     self.init(
       id: apiUser.id,
       email: apiUser.email,
@@ -32,7 +32,7 @@ extension User {
 // MARK: - Tasting Mapping
 
 extension TastingFeedItem {
-  static func from(_ apiTasting: Operations.listTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload) -> TastingFeedItem {
+  static func from(_ apiTasting: Components.Schemas.Tasting) -> TastingFeedItem {
     let apiUser = apiTasting.createdBy
     let apiBottle = apiTasting.bottle
     
@@ -88,7 +88,7 @@ extension TastingFeedItem {
 // MARK: - Achievement Mapping
 
 extension Achievement {
-  init(from badgeResult: Operations.listUserBadges.Output.Ok.Body.jsonPayload.resultsPayloadPayload) {
+  init(from badgeResult: Components.Schemas.BadgeAward) {
     let badge = badgeResult.badge
     self.init(
       id: String(Int(badge.id)),
@@ -103,7 +103,7 @@ extension Achievement {
 // MARK: - Bottle Mapping
 
 extension Bottle {
-  init(from apiBottle: Operations.getBottle.Output.Ok.Body.jsonPayload) {
+  init(from apiBottle: Components.Schemas.Bottle) {
     let category: String? = apiBottle.category?.value as? String
     
     self.init(
@@ -122,8 +122,8 @@ extension Bottle {
       imageUrl: apiBottle.imageUrl,
       abv: apiBottle.abv,
       avgRating: apiBottle.avgRating ?? 0.0,
-      totalRatings: Int(apiBottle.totalTastings ?? 0),
-      isFavorite: apiBottle.isFavorite ?? false,
+      totalRatings: Int(apiBottle.totalTastings),
+      isFavorite: apiBottle.isFavorite,
       hasTasted: apiBottle.hasTasted
     )
   }

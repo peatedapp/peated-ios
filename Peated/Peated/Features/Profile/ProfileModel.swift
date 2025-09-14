@@ -48,11 +48,11 @@ class ProfileModel {
     self.achievementsRepository = AchievementsRepository(apiClient: apiClient)
     self.userRepository = UserRepository(apiClient: apiClient)
 
-    // Start with seed or current user, but don't prime UI until we attempt a cache merge
+    // Start with seed or current user (internal), but don't render yet; wait for cache merge
     if let seed { self.user = seed }
     if userId == nil, let current = authManager.currentUser { if self.user == nil { self.user = current } }
 
-    // Attempt cache merge before rendering anything to avoid defaults
+    // Attempt cache merge before allowing UI to render
     Task { [weak self] in
       guard let self else { return }
       let id = self.userId ?? self.user?.id ?? self.authManager.currentUser?.id
@@ -60,9 +60,8 @@ class ProfileModel {
          let (cached, _) = await NormalizedStore.shared.get(.user(id), as: User.self) {
         self.user = self.mergedUser(self.user, with: cached)
         self.statsPrimed = true
-      } else if self.user != nil {
-        // We at least have seed/current; show that while network populates stats
       }
+      // Only now allow the UI to render (either merged cache or only seed)
       self.isPrimed = (self.user != nil)
     }
   }

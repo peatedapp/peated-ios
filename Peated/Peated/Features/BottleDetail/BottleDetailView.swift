@@ -148,16 +148,8 @@ struct BottleDetailView: View {
             .frame(height: 390)
             .clipped()
 
-            // Gradient scrim for legibility
-            LinearGradient(
-              colors: [Color.clear, Color.brandEmphasis.opacity(0.6)],
-              startPoint: .top,
-              endPoint: .bottom
-            )
-            .frame(height: 160)
-            .frame(maxWidth: .infinity)
-            .allowsHitTesting(false)
-            .alignmentGuide(.bottom) { $0[.bottom] }
+            // Removed background scrim behind the title to avoid
+            // any background appearing around the bottle name.
 
             // Title + brand link + status icons
             VStack(spacing: 8) {

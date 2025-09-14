@@ -49,9 +49,9 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             statedAge: apiBottle.statedAge.map { Int($0) },
             imageUrl: apiBottle.imageUrl,
             abv: apiBottle.abv,
-            avgRating: 0.0,  // Not available in list endpoint
-            totalRatings: 0,   // Not available in list endpoint
-            isFavorite: apiBottle.isFavorite ?? false,
+            avgRating: apiBottle.avgRating ?? 0.0,
+            totalRatings: Int(apiBottle.totalTastings),
+            isFavorite: apiBottle.isFavorite,
             hasTasted: apiBottle.hasTasted
           )
           Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
@@ -84,7 +84,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
     case .ok(let okResponse):
       switch okResponse.body {
       case .json(let payload):
-        let bottle = Bottle(from: payload)
+        let bottle = Bottle(from: payload.value1)
         await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle)
         return bottle
       }
@@ -121,7 +121,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
           let category = apiBottle.category?.value as? String
           let statedAge = apiBottle.statedAge.map { Int($0) }
           let avgRating = apiBottle.avgRating ?? 0.0
-          let totalRatings = Int(apiBottle.totalTastings ?? 0)
+          let totalRatings = Int(apiBottle.totalTastings)
           
           let bottle = Bottle(
             id: bottleId,
@@ -136,7 +136,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             abv: apiBottle.abv,
             avgRating: avgRating,
             totalRatings: totalRatings,
-            isFavorite: apiBottle.isFavorite ?? false,
+            isFavorite: apiBottle.isFavorite,
             hasTasted: apiBottle.hasTasted
           )
           Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
@@ -176,7 +176,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
           let category = apiBottle.category?.value as? String
           let statedAge = apiBottle.statedAge.map { Int($0) }
           let avgRating = apiBottle.avgRating ?? 0.0
-          let totalRatings = Int(apiBottle.totalTastings ?? 0)
+          let totalRatings = Int(apiBottle.totalTastings)
           
           return Bottle(
             id: bottleId,
@@ -191,7 +191,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             abv: apiBottle.abv,
             avgRating: avgRating,
             totalRatings: totalRatings,
-            isFavorite: apiBottle.isFavorite ?? false,
+            isFavorite: apiBottle.isFavorite,
             hasTasted: apiBottle.hasTasted
           )
         }
@@ -242,7 +242,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             imageUrl: apiBottle.imageUrl,
             abv: apiBottle.abv,
             avgRating: apiBottle.avgRating ?? 0.0,
-            totalRatings: Int(apiBottle.totalTastings ?? 0)
+            totalRatings: Int(apiBottle.totalTastings)
           )
           Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
           return bottle

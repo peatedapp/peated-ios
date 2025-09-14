@@ -63,7 +63,11 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
       let t = TastingFeedItem.from(item)
       // Seed cache for referenced entities, including per-user flags
       Task {
-        await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        var u = User(id: t.userId, email: "", username: t.username)
+        u.pictureUrl = t.userAvatarUrl
+        await NormalizedStore.shared.upsert(.user(t.userId), value: u)
+        await SnapshotStore.upsertUser(UserProfileSnapshot(id: t.userId, username: t.username, pictureUrl: t.userAvatarUrl))
+        await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
         let b = item.bottle
         await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
           id: t.bottleId,
@@ -126,7 +130,11 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     let tastings = payload.results.map { item -> TastingFeedItem in
       let t = TastingFeedItem.from(item)
       Task {
-        await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        var u = User(id: t.userId, email: "", username: t.username)
+        u.pictureUrl = t.userAvatarUrl
+        await NormalizedStore.shared.upsert(.user(t.userId), value: u)
+        await SnapshotStore.upsertUser(UserProfileSnapshot(id: t.userId, username: t.username, pictureUrl: t.userAvatarUrl))
+        await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
         let b = item.bottle
         await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
           id: t.bottleId,
@@ -183,7 +191,11 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     let tastings = payload.results.map { item -> TastingFeedItem in
       let t = TastingFeedItem.from(item)
       Task {
-        await NormalizedStore.shared.upsert(.user(t.userId), value: User(id: t.userId, email: "", username: t.username))
+        var u = User(id: t.userId, email: "", username: t.username)
+        u.pictureUrl = t.userAvatarUrl
+        await NormalizedStore.shared.upsert(.user(t.userId), value: u)
+        await SnapshotStore.upsertUser(UserProfileSnapshot(id: t.userId, username: t.username, pictureUrl: t.userAvatarUrl))
+        await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
         let b = item.bottle
         await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
           id: t.bottleId,

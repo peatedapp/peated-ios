@@ -81,7 +81,7 @@ public enum APIResponseHelper {
 // MARK: - Response Extensions for Common Patterns
 
 extension Operations.login.Output {
-  public func extractPayload() throws -> Operations.login.Output.Ok.Body.jsonPayload {
+  public func extractPayload() throws -> Components.Schemas.Auth {
     switch self {
     case .ok(let okResponse):
       switch okResponse.body {
