@@ -16,6 +16,14 @@ public struct User: Codable, Equatable, Sendable {
   public var bottlesCount: Int = 0
   public var collectedCount: Int = 0
   public var contributionsCount: Int = 0
+  // Relationship with current user
+  public enum FriendStatus: String, Codable, Sendable {
+    case none
+    case pending
+    case friends
+  }
+  public var friendStatus: FriendStatus? = nil
+  public var isFriend: Bool? { friendStatus == .friends }
   
   public init(id: String, email: String, username: String, verified: Bool = false, admin: Bool = false, mod: Bool = false) {
     self.id = id

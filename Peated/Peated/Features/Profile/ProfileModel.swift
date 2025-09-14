@@ -8,6 +8,7 @@ class ProfileModel {
   var achievements: [Achievement] = []
   var isLoading = false
   var error: Error?
+  var isTogglingFriend = false
   
   // Optional userId - if nil, shows current user
   let userId: String?
@@ -70,5 +71,29 @@ class ProfileModel {
     
     // The app will automatically navigate back to login
     // because AppView observes the auth state
+  }
+  
+  func toggleFriendship() async {
+    guard let targetId = user?.id else { return }
+    isTogglingFriend = true
+    defer { isTogglingFriend = false }
+    do {
+      switch user?.friendStatus {
+      case .friends:
+        // Unfriend
+        try await userRepository.unfollowUser(id: targetId)
+        user?.friendStatus = User.FriendStatus.none
+      case .pending:
+        // Cancel request
+        try await userRepository.unfollowUser(id: targetId)
+        user?.friendStatus = User.FriendStatus.none
+      default:
+        // Send request
+        try await userRepository.followUser(id: targetId)
+        user?.friendStatus = User.FriendStatus.pending
+      }
+    } catch {
+      self.error = error
+    }
   }
 }

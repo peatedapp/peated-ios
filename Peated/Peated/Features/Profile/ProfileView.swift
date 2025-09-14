@@ -101,7 +101,7 @@ struct ProfileView: View {
       }
     }
     .toolbar {
-      // Only show settings for current user
+      // Settings for current user
       if userId == nil {
         ToolbarItem(placement: .navigationBarTrailing) {
           Button(action: {
@@ -109,6 +109,33 @@ struct ProfileView: View {
           }) {
             Image(systemName: "gearshape")
               .foregroundColor(.text)
+          }
+        }
+      } else if let target = model.user, let current = AuthenticationManager.shared.currentUser, target.id != current.id {
+        // Overflow menu for other users (…)
+        ToolbarItem(placement: .navigationBarTrailing) {
+          Menu {
+            // Add/Unfriend/Cancel based on status
+            Button(role: (target.friendStatus == .friends || target.friendStatus == .pending) ? .destructive : .none) {
+              Task { await model.toggleFriendship() }
+            } label: {
+              Group {
+                if target.friendStatus == .friends {
+                  Label("Unfriend", systemImage: "person.fill.xmark")
+                } else if target.friendStatus == .pending {
+                  Label("Remove Friend", systemImage: "person.fill.xmark")
+                } else {
+                  Label("Add Friend", systemImage: "person.badge.plus")
+                }
+              }
+            }
+          } label: {
+            if model.isTogglingFriend {
+              ProgressView().tint(.brand)
+            } else {
+              Image(systemName: "ellipsis.circle")
+                .foregroundColor(.text)
+            }
           }
         }
       }
