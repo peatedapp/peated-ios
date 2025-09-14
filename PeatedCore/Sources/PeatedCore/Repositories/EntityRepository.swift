@@ -56,6 +56,12 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
           totalTastings: Int(payload.totalTastings ?? 0)
         )
         await NormalizedStore.shared.upsert(.entity(entity.id), value: entity)
+        await SnapshotStore.upsertEntity(EntitySnapshot(
+          id: entity.id,
+          name: entity.name,
+          type: entity.type,
+          imageUrl: entity.imageUrl
+        ))
         return entity
       }
       

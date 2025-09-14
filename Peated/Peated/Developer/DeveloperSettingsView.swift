@@ -132,7 +132,7 @@ struct DeveloperSettingsView: View {
             }
             }
             .background(Color.background)
-            .tint(.text)
+            .navigationChrome()
             .navigationTitle("Developer Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -3,7 +3,6 @@ import PeatedCore
 
 struct FeedView: View {
   @State private var model = FeedModel()
-  @State private var showingCreateTasting = false
   @State private var navigationPath = NavigationPath()
   @State private var showingSuccessToast = false
   
@@ -186,25 +185,6 @@ struct FeedView: View {
           }
         }
         
-        // Floating action button
-        VStack {
-          Spacer()
-          HStack {
-            Spacer()
-            Button(action: { showingCreateTasting = true }) {
-              Image(systemName: "plus")
-                .font(.system(size: 22, weight: .regular))
-                .foregroundColor(.onBrand)
-                .frame(width: 56, height: 56)
-                .background(Color.brand)
-                .clipShape(Circle())
-                .shadow(color: Color.overlaySoft, radius: 8, x: 0, y: 4)
-            }
-            .padding(.trailing, 16)
-            .padding(.bottom, 16)
-          }
-        }
-        
         if model.error != nil && model.hasData {
           VStack {
             ErrorBanner(error: model.error!, isShowing: .init(
@@ -219,16 +199,7 @@ struct FeedView: View {
       
       .frame(maxWidth: .infinity, maxHeight: .infinity)
       .navigationBarHidden(true)
-      .sheet(isPresented: $showingCreateTasting) {
-        CreateTastingFlow(onSuccess: {
-          // Show success toast and refresh feed
-          showingSuccessToast = true
-          Task {
-            await model.refreshCurrentFeed()
-          }
-        })
-        .interactiveDismissDisabled()
-      }
+      // Record Tasting now lives on center tab in AppView
       .task {
         await model.loadFeed(refresh: true)
         prefetchFeedImages()
@@ -250,6 +221,9 @@ struct FeedView: View {
                 toastCount: 0, commentCount: 0, hasToasted: false, tags: [], location: nil, friendUsernames: []
               )
               navigationPath.append(NavigationDestination.tastingDetail(seed: fallback))
+            },
+            onNavigateToBottle: { bottleId in
+              navigationPath.append(NavigationDestination.bottleDetail(bottleId: bottleId))
             }
           )
         case .tastingDetail(let seed):

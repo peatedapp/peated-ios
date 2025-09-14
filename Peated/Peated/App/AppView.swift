@@ -7,13 +7,19 @@ struct AppView: View {
     @State private var showingDeveloperSettings = false
     @Environment(\.scenePhase) private var scenePhase
     @State private var profileNavigationPath = NavigationPath()
+    enum MainTab: Hashable { case activity, search, record, library, profile }
+    @State private var selectedTab: MainTab = .activity
+    @State private var lastNonRecordTab: MainTab = .activity
+    @State private var showingCreateTasting = false
     
     // Navigation destinations for the Profile tab
     enum ProfileDestination: Hashable {
         case userProfile(userId: String)
         case tastingDetail(tastingId: String)
         case bottleDetail(bottleId: String)
-    }
+                }
+
+    //
     
     // Configure global UIAppearance for consistent chrome/tints
     private func configureAppearance() {
@@ -45,6 +51,11 @@ struct AppView: View {
 
         tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.brand)
         tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
+
+        // Slightly increase perceived vertical padding for tab items by
+        // nudging title lower relative to icon. This gives more breathing room.
+        tabAppearance.stackedLayoutAppearance.normal.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 2)
+        tabAppearance.stackedLayoutAppearance.selected.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 2)
         tabAppearance.inlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
         tabAppearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
         tabAppearance.compactInlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
@@ -91,26 +102,36 @@ struct AppView: View {
                     // Offline indicator at the top
                     OfflineIndicator()
                     
-                    TabView {
+                    TabView(selection: $selectedTab) {
                         FeedView()
                             .tabItem {
                                 Label("Activity", systemImage: "house.fill")
                             }
-                        
+                            .tag(MainTab.activity)
+
                         NavigationStack {
                             SearchView()
                         }
                         .tabItem {
                             Label("Search", systemImage: "magnifyingglass")
                         }
-                        
+                        .tag(MainTab.search)
+
+                        // Record Tasting middle tab triggers sheet
+                        Color.clear
+                            .tabItem {
+                                Label("Record", systemImage: "plus.circle.fill")
+                            }
+                            .tag(MainTab.record)
+
                         NavigationStack {
                             LibraryView()
                         }
                         .tabItem {
                             Label("Library", systemImage: "books.vertical.fill")
                         }
-                        
+                        .tag(MainTab.library)
+
                         NavigationStack(path: $profileNavigationPath) {
                             ProfileView(
                                 onNavigateToProfile: { userId in
@@ -118,6 +139,9 @@ struct AppView: View {
                                 },
                                 onNavigateToTasting: { tastingId in
                                     profileNavigationPath.append(ProfileDestination.tastingDetail(tastingId: tastingId))
+                                },
+                                onNavigateToBottle: { bottleId in
+                                    profileNavigationPath.append(ProfileDestination.bottleDetail(bottleId: bottleId))
                                 }
                             )
                             .navigationTitle("Profile")
@@ -132,6 +156,9 @@ struct AppView: View {
                                         },
                                         onNavigateToTasting: { tastingId in
                                             profileNavigationPath.append(ProfileDestination.tastingDetail(tastingId: tastingId))
+                                        },
+                                        onNavigateToBottle: { bottleId in
+                                            profileNavigationPath.append(ProfileDestination.bottleDetail(bottleId: bottleId))
                                         }
                                     )
                                 case .tastingDetail(let tastingId):
@@ -152,8 +179,24 @@ struct AppView: View {
                         .tabItem {
                             Label("Profile", systemImage: "person.fill")
                           }
+                        .tag(MainTab.profile)
                     }
                     .screenBackground()
+                    .onChange(of: selectedTab) { newValue in
+                        if newValue == .record {
+                            showingCreateTasting = true
+                            // revert to last used non-record tab so the modal closes back there
+                            selectedTab = lastNonRecordTab
+                        } else {
+                            lastNonRecordTab = newValue
+                        }
+                    }
+                    .sheet(isPresented: $showingCreateTasting) {
+                        CreateTastingFlow(onSuccess: {
+                            // Dismiss handled automatically; FeedView will refresh itself when visible
+                        })
+                        .interactiveDismissDisabled()
+                    }
                     .onChange(of: scenePhase) { newPhase in
                         if newPhase == .background {
                             Task { await NormalizedStore.shared.flush() }

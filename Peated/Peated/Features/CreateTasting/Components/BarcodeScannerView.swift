@@ -57,6 +57,7 @@ struct BarcodeScannerView: View {
       }
       .navigationTitle("Scan Barcode")
       .navigationBarTitleDisplayMode(.inline)
+      .navigationChrome()
       .toolbar {
         ToolbarItem(placement: .navigationBarLeading) {
           Button("Cancel") {

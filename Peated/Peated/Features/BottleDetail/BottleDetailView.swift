@@ -57,6 +57,7 @@ struct BottleDetailView: View {
       await model.refresh()
     }
     .screenBackground()
+    .navigationChrome()
   }
   
   // MARK: - Loading View

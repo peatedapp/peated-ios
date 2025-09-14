@@ -58,8 +58,18 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
           print("Failed to fetch user details: \(error)")
         }
         
-        // Write-through cache
+        // Write-through caches
         await NormalizedStore.shared.upsert(.user(user.id), value: user)
+        await SnapshotStore.upsertUser(UserProfileSnapshot(
+          id: user.id,
+          username: user.username,
+          pictureUrl: user.pictureUrl,
+          tastingsCount: user.tastingsCount,
+          bottlesCount: user.bottlesCount,
+          collectedCount: user.collectedCount,
+          contributionsCount: user.contributionsCount,
+          friendStatus: user.friendStatus
+        ))
         return user
       }
     case .unauthorized:
@@ -117,8 +127,18 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
         user.collectedCount = Int(payload.stats.collected)
         user.contributionsCount = Int(payload.stats.contributions)
         
-        // Write-through cache
+        // Write-through caches
         await NormalizedStore.shared.upsert(.user(user.id), value: user)
+        await SnapshotStore.upsertUser(UserProfileSnapshot(
+          id: user.id,
+          username: user.username,
+          pictureUrl: user.pictureUrl,
+          tastingsCount: user.tastingsCount,
+          bottlesCount: user.bottlesCount,
+          collectedCount: user.collectedCount,
+          contributionsCount: user.contributionsCount,
+          friendStatus: user.friendStatus
+        ))
         return user
       }
     case .unauthorized:

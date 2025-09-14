@@ -1,28 +1,11 @@
 import SwiftUI
 
-/// Subtle app-wide background that prevents flat, solid fills.
-///
-/// Mimics the website’s slight top-left glow using layered, very low-opacity
-/// gradients over the theme `Color.background`. Designed to be unobtrusive and
-/// work across dark mode UI.
+/// App-wide background that uses a solid dark color from the theme.
+/// Removes gradients to keep the UI consistently dark across all screens.
 struct ScreenBackground: View {
   var body: some View {
-    ZStack {
-      // Base background color from theme
-      Color.background
-
-      // Subtle diagonal lightening from top-left (dark) to bottom-right (light)
-      // Keep it gentle so background reads as nearly solid.
-      LinearGradient(
-        colors: [
-          .clear,                    // preserve #0F172A at top-left
-          Color.white.opacity(0.06)  // dialed back lift toward bottom-right
-        ],
-        startPoint: .topLeading,
-        endPoint: .bottomTrailing
-      )
-    }
-    .ignoresSafeArea()
+    Color.background
+      .ignoresSafeArea()
   }
 }
 

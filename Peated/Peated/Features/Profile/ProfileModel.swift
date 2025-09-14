@@ -12,6 +12,11 @@ class ProfileModel {
   var isPrimed = false
   var statsPrimed = false
   
+  // Favorites (for profile)
+  var favorites: [Bottle] = []
+  var isLoadingFavorites = false
+  var favoritesError: Error?
+  
   // Optional userId - if nil, shows current user
   let userId: String?
   private let seed: User?
@@ -19,6 +24,7 @@ class ProfileModel {
   private let authManager = AuthenticationManager.shared
   private let achievementsRepository: AchievementsRepository
   private let userRepository: UserRepository
+  private let collectionRepository: CollectionRepository
   
   private func mergedUser(_ seed: User?, with cached: User?) -> User? {
     guard let seed = seed else { return cached }
@@ -47,39 +53,59 @@ class ProfileModel {
     )
     self.achievementsRepository = AchievementsRepository(apiClient: apiClient)
     self.userRepository = UserRepository(apiClient: apiClient)
+    self.collectionRepository = CollectionRepository(apiClient: apiClient)
 
-    // Start with seed or current user (internal), but don't render yet; wait for cache merge
-    if let seed { self.user = seed }
-    if userId == nil, let current = authManager.currentUser { if self.user == nil { self.user = current } }
+    // Capture a minimal seed snapshot (optional)
+    let seedSnapshot: UserProfileSnapshot? = {
+      if let seed { return UserProfileSnapshot(id: seed.id, username: seed.username, pictureUrl: seed.pictureUrl) }
+      if userId == nil, let current = authManager.currentUser { return UserProfileSnapshot(id: current.id, username: current.username, pictureUrl: current.pictureUrl) }
+      return nil
+    }()
 
-    // Attempt cache merge before allowing UI to render
     Task { [weak self] in
       guard let self else { return }
-      let id = self.userId ?? self.user?.id ?? self.authManager.currentUser?.id
-      if let id,
-         let (cached, _) = await NormalizedStore.shared.get(.user(id), as: User.self) {
-        self.user = self.mergedUser(self.user, with: cached)
-        self.statsPrimed = true
+      // Determine target id
+      guard let id = self.userId ?? seed?.id ?? self.authManager.currentUser?.id else { return }
+
+      // Use SWR helper to produce initial snapshot & refresh in background
+      let initial = await SWR.snapshot(
+        seed: seedSnapshot,
+        readSnapshot: { await SnapshotStore.getUser(id) },
+        fetchFull: {
+          if let target = self.userId { return try await self.userRepository.getUser(id: target) }
+          else { return try await self.userRepository.getCurrentUser() }
+        },
+        writeSnapshot: { user in
+          await SnapshotStore.upsertUser(UserProfileSnapshot(
+            id: user.id,
+            username: user.username,
+            pictureUrl: user.pictureUrl,
+            tastingsCount: user.tastingsCount,
+            bottlesCount: user.bottlesCount,
+            collectedCount: user.collectedCount,
+            contributionsCount: user.contributionsCount,
+            friendStatus: user.friendStatus
+          ))
+        },
+        merge: SnapshotStore.merge,
+        onChanged: { [weak self] snap in
+          await MainActor.run {
+            self?.applySnapshot(snap)
+          }
+        }
+      )
+
+      await MainActor.run {
+        if let initial { self.applySnapshot(initial) }
+        self.isPrimed = (self.user != nil)
       }
-      // Only now allow the UI to render (either merged cache or only seed)
-      self.isPrimed = (self.user != nil)
     }
   }
   
   func loadUser() async {
     isLoading = true
     error = nil
-    // If not primed yet (e.g., no seed), try cache now; otherwise skip (already merged)
-    if !isPrimed {
-      if let id = userId ?? AuthenticationManager.shared.currentUser?.id,
-         let (cached, _) = await NormalizedStore.shared.get(.user(id), as: User.self) {
-        self.user = self.mergedUser(self.user, with: cached)
-        self.statsPrimed = true
-      }
-      isPrimed = (self.user != nil)
-    }
-    
-    // Use detached task to prevent cancellation
+    // Network refresh still happens via SWR init; keep this in case caller expects explicit reload behavior.
     let result = await Task.detached {
       do {
         if let userId = self.userId {
@@ -110,6 +136,36 @@ class ProfileModel {
     error = result.error
     isLoading = false
     statsPrimed = (result.user != nil)
+
+    // Warm recent activity from cache immediately (no network) and optionally refresh
+    await loadRecentFromCache()
+  }
+
+  /// Loads recent activity for the profile from cached MRU IDs and DB tasting cache
+  func loadRecentFromCache(limit: Int = 10) async -> [TastingFeedItem] {
+    guard let id = user?.id ?? userId else { return [] }
+    let ids = await SnapshotStore.getUserRecent(userId: id, limit: limit)
+    if ids.isEmpty { return [] }
+    var items: [TastingFeedItem] = []
+    for tid in ids {
+      if let cached = try? await DatabaseManager.shared.getCachedTasting(id: tid) {
+        items.append(cached.tasting)
+      }
+    }
+    return items
+  }
+
+  private func applySnapshot(_ snap: UserProfileSnapshot) {
+    var u = self.user ?? User(id: snap.id, email: "", username: snap.username ?? "")
+    if let v = snap.username { u = User(id: u.id, email: u.email, username: v, verified: u.verified, admin: u.admin, mod: u.mod) }
+    if let v = snap.pictureUrl { u.pictureUrl = v }
+    if let v = snap.tastingsCount { u.tastingsCount = v }
+    if let v = snap.bottlesCount { u.bottlesCount = v }
+    if let v = snap.collectedCount { u.collectedCount = v }
+    if let v = snap.contributionsCount { u.contributionsCount = v }
+    if let v = snap.friendStatus { u.friendStatus = v }
+    self.user = u
+    self.statsPrimed = self.statsPrimed || (snap.tastingsCount != nil || snap.bottlesCount != nil || snap.collectedCount != nil || snap.contributionsCount != nil)
   }
   
   func logout() async {
@@ -142,6 +198,32 @@ class ProfileModel {
       }
     } catch {
       self.error = error
+    }
+  }
+
+  @MainActor
+  func loadFavorites() async {
+    isLoadingFavorites = true
+    favoritesError = nil
+    defer { isLoadingFavorites = false }
+
+    // Determine which user to load favorites for
+    let userKey: String
+    if let targetId = self.userId ?? self.user?.id {
+      userKey = targetId
+    } else {
+      userKey = "me"
+    }
+
+    do {
+      if let favId = try await collectionRepository.getFavoritesCollectionId(user: userKey) {
+        let items = try await collectionRepository.listBottles(in: favId, user: userKey)
+        self.favorites = items
+      } else {
+        self.favorites = []
+      }
+    } catch {
+      self.favoritesError = error
     }
   }
 }

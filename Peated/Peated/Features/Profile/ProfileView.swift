@@ -6,6 +6,7 @@ struct ProfileView: View {
   let seed: User?
   let onNavigateToProfile: ((String) -> Void)?
   let onNavigateToTasting: ((String) -> Void)?
+  let onNavigateToBottle: ((String) -> Void)?
   
   @State private var model: ProfileModel
   @State private var feedModel = FeedModel()
@@ -13,68 +14,29 @@ struct ProfileView: View {
   @State private var selectedTab = 0
   @State private var showingSettings = false
   
-  init(userId: String? = nil, seed: User? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToTasting: ((String) -> Void)? = nil) {
+  init(
+    userId: String? = nil,
+    seed: User? = nil,
+    onNavigateToProfile: ((String) -> Void)? = nil,
+    onNavigateToTasting: ((String) -> Void)? = nil,
+    onNavigateToBottle: ((String) -> Void)? = nil
+  ) {
     self.userId = userId
     self.seed = seed
     self.onNavigateToProfile = onNavigateToProfile
     self.onNavigateToTasting = onNavigateToTasting
+    self.onNavigateToBottle = onNavigateToBottle
     self._model = State(initialValue: ProfileModel(userId: userId, seed: seed))
   }
   
   
   var body: some View {
-    Group {
-      if !model.isPrimed {
-        // Avoid showing default placeholders before cache prime completes
-        Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity)
-      } else if model.error != nil && model.user == nil {
-        errorView
-      } else {
-        loadedView
-      }
-    }
-    .toolbar {
-      // Settings for current user
-      if userId == nil {
-        ToolbarItem(placement: .navigationBarTrailing) {
-          Button(action: {
-            showingSettings = true
-          }) {
-            Image(systemName: "gearshape")
-              .foregroundColor(.text)
-          }
-        }
-      } else if let target = model.user, let current = AuthenticationManager.shared.currentUser, target.id != current.id {
-        // Overflow menu for other users (…)
-        ToolbarItem(placement: .navigationBarTrailing) {
-          Menu {
-            // Add/Unfriend/Cancel based on status
-            Button(role: (target.friendStatus == .friends || target.friendStatus == .pending) ? .destructive : .none) {
-              Task { await model.toggleFriendship() }
-            } label: {
-              Group {
-                if target.friendStatus == .friends {
-                  Label("Unfriend", systemImage: "person.fill.xmark")
-                } else if target.friendStatus == .pending {
-                  Label("Remove Friend", systemImage: "person.fill.xmark")
-                } else {
-                  Label("Add Friend", systemImage: "person.badge.plus")
-                }
-              }
-            }
-          } label: {
-            if model.isTogglingFriend {
-              ProgressView().tint(.brand)
-            } else {
-              Image(systemName: "ellipsis.circle")
-                .foregroundColor(.text)
-            }
-          }
-        }
-      }
-    }
+    content
+    .toolbar { toolbarItems }
     .sheet(isPresented: $showingSettings) { SettingsView() }
     .task(id: userId) {
+      // Always default to Activity when loading a profile
+      selectedTab = 0
       await model.loadUser()
       
       // Only load feed if user loaded successfully
@@ -91,7 +53,11 @@ struct ProfileView: View {
           // TODO: When API supports filtering by user, update this
           feedModel.selectedFeedType = .global
         }
+        // Load from network (personal for self; global fallback for others)
         await feedModel.loadFeed(refresh: true)
+
+        // Preload favorites for this profile
+        await model.loadFavorites()
 
         // Prefetch avatars and bottle images for profile feed
         var urls: [URL] = []
@@ -104,6 +70,50 @@ struct ProfileView: View {
       }
     }
     .screenBackground()
+  }
+
+  @ViewBuilder
+  private var content: some View {
+    if !model.isPrimed {
+      Color.clear.frame(maxWidth: .infinity, maxHeight: .infinity)
+    } else if model.error != nil && model.user == nil {
+      errorView
+    } else {
+      loadedView
+    }
+  }
+
+  @ToolbarContentBuilder
+  private var toolbarItems: some ToolbarContent {
+    if userId == nil {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Button(action: { showingSettings = true }) {
+          Image(systemName: "gearshape").foregroundColor(.text)
+        }
+      }
+    } else if let target = model.user, let current = AuthenticationManager.shared.currentUser, target.id != current.id {
+      ToolbarItem(placement: .navigationBarTrailing) {
+        Menu {
+          Button(role: (target.friendStatus == .friends || target.friendStatus == .pending) ? .destructive : .none) {
+            Task { await model.toggleFriendship() }
+          } label: {
+            if target.friendStatus == .friends {
+              Label("Unfriend", systemImage: "person.fill.xmark")
+            } else if target.friendStatus == .pending {
+              Label("Remove Friend", systemImage: "person.fill.xmark")
+            } else {
+              Label("Add Friend", systemImage: "person.badge.plus")
+            }
+          }
+        } label: {
+          if model.isTogglingFriend {
+            ProgressView().tint(.brand)
+          } else {
+            Image(systemName: "ellipsis.circle").foregroundColor(.text)
+          }
+        }
+      }
+    }
   }
 
   // MARK: - Subviews to reduce type-checking complexity
@@ -165,13 +175,16 @@ struct ProfileView: View {
               .padding(.horizontal)
           }
         }
+        .onChange(of: selectedTab) { newValue in
+          if newValue == 1 {
+            Task { await model.loadFavorites() }
+          }
+        }
       }
     }
     .navigationTitle("Profile")
     .navigationBarTitleDisplayMode(.inline)
-    .toolbarBackground(Color.chrome, for: .navigationBar)
-    .toolbarBackground(.visible, for: .navigationBar)
-    .toolbarColorScheme(.dark, for: .navigationBar)
+    .navigationChrome()
   }
 
   @ViewBuilder
@@ -415,14 +428,45 @@ struct ProfileView: View {
   }
   
   private var favoritesSection: some View {
-    VStack(alignment: .leading, spacing: 16) {
-      Text("Favorites")
-        .font(.headline)
-      
-      Text("No favorites yet")
-        .foregroundColor(.textSecondary)
-        .frame(maxWidth: .infinity, alignment: .center)
-        .padding(.vertical, 40)
+    VStack(alignment: .leading, spacing: 12) {
+      Group {
+        if model.isLoadingFavorites {
+          ProgressView().tint(.brand)
+        } else if let err = model.favoritesError {
+          VStack(spacing: 8) {
+            Text("Couldn't load favorites")
+              .font(.subheadline)
+            Text(err.localizedDescription)
+              .font(.footnote)
+              .foregroundColor(.textSecondary)
+            Button("Retry") { Task { await model.loadFavorites() } }
+              .buttonStyle(.borderedProminent)
+          }
+          .frame(maxWidth: .infinity)
+        } else if model.favorites.isEmpty {
+          VStack(spacing: 8) {
+            Text("No favorites yet")
+              .foregroundColor(.textSecondary)
+            Text("Tap the star on a bottle to save it here.")
+              .font(.footnote)
+              .foregroundColor(.textSecondary)
+          }
+          .frame(maxWidth: .infinity)
+          .padding(.vertical, 24)
+        } else {
+          ScrollView {
+            LazyVStack(spacing: 12) {
+              ForEach(model.favorites, id: \.id) { bottle in
+                BottleRow(bottle: bottle) {
+                  onNavigateToBottle?(bottle.id)
+                }
+              }
+            }
+            .padding(.top, 8)
+          }
+          .refreshable { await model.loadFavorites() }
+        }
+      }
     }
   }
 

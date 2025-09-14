@@ -86,6 +86,13 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
       case .json(let payload):
         let bottle = Bottle(from: payload.value1)
         await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle)
+        await SnapshotStore.upsertBottle(BottleSnapshot(
+          id: bottle.id,
+          fullName: bottle.fullName,
+          brandId: bottle.brand.id,
+          brandName: bottle.brand.name,
+          imageUrl: bottle.imageUrl
+        ))
         return bottle
       }
     case .unauthorized:

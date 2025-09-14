@@ -66,9 +66,7 @@ struct CreateTastingFlow: View {
             }
             .navigationTitle("Add Tasting")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(Color.chrome, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .toolbarColorScheme(.dark, for: .navigationBar)
+            .navigationChrome()
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {

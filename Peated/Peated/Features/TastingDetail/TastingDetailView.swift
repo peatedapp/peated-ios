@@ -37,7 +37,8 @@ struct TastingDetailView: View {
         errorView(message)
       }
     }
-    .navigationBarTitleDisplayMode(.inline)
+  .navigationBarTitleDisplayMode(.inline)
+  .navigationChrome()
     .toolbar {
       ToolbarItem(placement: .navigationBarTrailing) {
         if let tasting = model.tasting,

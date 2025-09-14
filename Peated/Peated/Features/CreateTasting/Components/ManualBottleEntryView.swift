@@ -75,8 +75,7 @@ struct ManualBottleEntryView: View {
         Text(errorMessage)
       }
       .background(Color.background)
-      // Keep nav bar items consistent (white) and avoid amber on generic controls
-      .tint(.text)
+      .navigationChrome()
     }
   }
 

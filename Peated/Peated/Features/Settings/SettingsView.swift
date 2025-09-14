@@ -79,8 +79,7 @@ struct SettingsView: View {
                 }
                 .padding(.vertical)
             }
-            // Use neutral tint in Settings; avoid brand/amber on generic controls
-            .tint(.text)
+            .navigationChrome()
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

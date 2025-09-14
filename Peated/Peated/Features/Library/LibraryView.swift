@@ -102,6 +102,7 @@ struct LibraryView: View {
       
       .navigationTitle("My Library")
       .navigationBarTitleDisplayMode(.inline)
+      .navigationChrome()
       .task { await viewModel.loadFavorites() }
       .onChange(of: selectedTab) { newValue in
         if newValue == .favorites {

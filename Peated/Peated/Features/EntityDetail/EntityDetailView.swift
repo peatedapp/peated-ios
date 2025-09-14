@@ -104,7 +104,8 @@ struct EntityDetailView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
       }
     }
-    .navigationBarTitleDisplayMode(.inline)
+  .navigationBarTitleDisplayMode(.inline)
+  .navigationChrome()
     .task {
       await model.loadEntity()
     }

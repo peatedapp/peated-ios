@@ -133,6 +133,7 @@ struct SearchView: View {
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
       .animation(.easeInOut(duration: 0.2), value: model.isSearching)
       .navigationBarHidden(true)
+      .navigationChrome()
       .navigationDestination(for: SearchDestination.self) { destination in
         switch destination {
         case .bottleDetail(let seed):
@@ -152,7 +153,19 @@ struct SearchView: View {
           EntityDetailView(entityId: seed.id, entityName: seed.name, seed: entity)
         case .userProfile(let seed):
           let user = User(id: seed.id, email: "", username: seed.username).withPicture(seed.pictureUrl)
-          ProfileView(userId: seed.id, seed: user)
+          ProfileView(
+            userId: seed.id,
+            seed: user,
+            onNavigateToProfile: { userId in
+              navigationPath.append(SearchDestination.userProfile(seed: UserSeed(id: userId, username: "", pictureUrl: nil)))
+            },
+            onNavigateToTasting: nil,
+            onNavigateToBottle: { bottleId in
+              navigationPath.append(SearchDestination.bottleDetail(seed: BottleSeed(
+                id: bottleId, name: "", fullName: "", brandId: "", brandName: "", category: nil, imageUrl: nil, isFavorite: true, hasTasted: false
+              )))
+            }
+          )
         }
       }
     }
