@@ -12,6 +12,9 @@ struct AppView: View {
     @State private var lastNonRecordTab: MainTab = .activity
     @State private var showingCreateTasting = false
     
+    // Tunable tab icon sizing (smaller scale reduces visual crowding)
+    private let tabIconScale: UIImage.SymbolScale = .small
+    
     // Navigation destinations for the Profile tab
     enum ProfileDestination: Hashable {
         case userProfile(userId: String)
@@ -52,10 +55,10 @@ struct AppView: View {
         tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.brand)
         tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
 
-        // Slightly increase perceived vertical padding for tab items by
-        // nudging title lower relative to icon. This gives more breathing room.
-        tabAppearance.stackedLayoutAppearance.normal.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 2)
-        tabAppearance.stackedLayoutAppearance.selected.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 2)
+        // Tighten icon–label gap and keep the pair visually centered
+        // Negative moves the title up, closer to the icon.
+        tabAppearance.stackedLayoutAppearance.normal.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: -2)
+        tabAppearance.stackedLayoutAppearance.selected.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: -2)
         tabAppearance.inlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
         tabAppearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
         tabAppearance.compactInlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
@@ -71,6 +74,13 @@ struct AppView: View {
         // Keep the rest of UIAppearance minimal to avoid UIKit bugs during trait changes.
 
         // Rely on SwiftUI's preferredColorScheme(.dark) instead of overriding windows
+    }
+
+    // Helper to produce a tab icon with a desired SF Symbol scale
+    private func tabIcon(_ systemName: String) -> Image {
+        let config = UIImage.SymbolConfiguration(scale: tabIconScale)
+        let uiImage = UIImage(systemName: systemName, withConfiguration: config) ?? UIImage()
+        return Image(uiImage: uiImage)
     }
 
     // Pre-warm assets that commonly flicker (e.g., current user's avatar)
@@ -105,7 +115,11 @@ struct AppView: View {
                     TabView(selection: $selectedTab) {
                         FeedView()
                             .tabItem {
-                                Label("Activity", systemImage: "house.fill")
+                                Label {
+                                    Text("Activity")
+                                } icon: {
+                                    tabIcon("house.fill")
+                                }
                             }
                             .tag(MainTab.activity)
 
@@ -113,14 +127,22 @@ struct AppView: View {
                             SearchView()
                         }
                         .tabItem {
-                            Label("Search", systemImage: "magnifyingglass")
+                            Label {
+                                Text("Search")
+                            } icon: {
+                                tabIcon("magnifyingglass")
+                            }
                         }
                         .tag(MainTab.search)
 
                         // Record Tasting middle tab triggers sheet
                         Color.clear
                             .tabItem {
-                                Label("Record", systemImage: "plus.circle.fill")
+                                Label {
+                                    Text("Record")
+                                } icon: {
+                                    tabIcon("plus.circle.fill")
+                                }
                             }
                             .tag(MainTab.record)
 
@@ -128,7 +150,11 @@ struct AppView: View {
                             LibraryView()
                         }
                         .tabItem {
-                            Label("Library", systemImage: "books.vertical.fill")
+                            Label {
+                                Text("Library")
+                            } icon: {
+                                tabIcon("books.vertical.fill")
+                            }
                         }
                         .tag(MainTab.library)
 
@@ -177,7 +203,11 @@ struct AppView: View {
                             }
                         }
                         .tabItem {
-                            Label("Profile", systemImage: "person.fill")
+                            Label {
+                                Text("Profile")
+                            } icon: {
+                                tabIcon("person.fill")
+                            }
                           }
                         .tag(MainTab.profile)
                     }
