@@ -151,6 +151,31 @@ extension DatabaseManager {
   public func updateCachedTasting(_ tasting: TastingFeedItem) async throws {
     try await cacheTasting(tasting) // insert or replace handles updates
   }
+
+  // MARK: - Pruning
+  /// Keep at most `maxEntries` tastings in the tasting_cache table by evicting oldest rows.
+  public func pruneTastingCache(maxEntries: Int = 2000) async throws {
+    guard maxEntries > 0 else { return }
+    let count = try connection.scalar(Tables.tastingCache.count)
+    guard count > maxEntries else { return }
+    let overflow = count - maxEntries
+    let query = Tables.tastingCache
+      .order(Tables.TastingCache.lastUpdated.asc)
+      .limit(overflow)
+    for row in try connection.prepare(query) {
+      let id = row[Tables.TastingCache.id]
+      let del = Tables.tastingCache.filter(Tables.TastingCache.id == id).delete()
+      _ = try connection.run(del)
+    }
+  }
+
+  /// Delete tasting cache entries older than the given number of days.
+  public func pruneTastingCache(olderThanDays days: Int) async throws {
+    guard days > 0 else { return }
+    let cutoff = Date().addingTimeInterval(-Double(days) * 24 * 60 * 60)
+    let del = Tables.tastingCache.filter(Tables.TastingCache.lastUpdated < cutoff).delete()
+    _ = try connection.run(del)
+  }
   
   // MARK: - Clear All Caches
   

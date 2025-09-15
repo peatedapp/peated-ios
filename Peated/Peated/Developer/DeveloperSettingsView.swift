@@ -71,6 +71,17 @@ struct DeveloperSettingsView: View {
                         Label("Wipe Cache", systemImage: "trash")
                     }
                     .help("Clears the in-app normalized cache and the URL cache. App behavior is unchanged; next reads will rehydrate on demand.")
+
+                    Button {
+                        Task {
+                            let m = await NormalizedStore.shared.metricsSnapshot()
+                            let stats = try? await DatabaseManager.shared.getCacheStatistics()
+                            print("[CacheMetrics] gets=\(m.gets) hits=\(m.hits) misses=\(m.misses) upserts=\(m.upserts) removes=\(m.removes) clears=\(m.clears) saves=\(m.saves) prunedExpired=\(m.prunedExpired) prunedPrefix=\(m.prunedPrefix) prunedTotal=\(m.prunedTotal) | tastingEntries=\(stats?.tastingEntries ?? 0) feedEntries=\(stats?.feedEntries ?? 0) sizeMB=\(String(format: "%.2f", stats?.totalSizeMB ?? 0))")
+                            // TODO: Forward metrics to Sentry as breadcrumbs or custom measurements
+                        }
+                    } label: {
+                        Label("Log Cache Metrics", systemImage: "gauge.with.dots")
+                    }
                 }
                 
                 FormSection("App Info") {

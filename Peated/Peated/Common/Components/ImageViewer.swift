@@ -10,9 +10,14 @@ struct ImageViewer: View {
   @GestureState private var magnifyBy = 1.0
   
   var body: some View {
+    // Compute a subtle fade based on vertical pull distance
+    let dismissProgress = min(1, max(0, abs(offset.height) / 240))
+    let bgOpacity = 1 - (0.6 * dismissProgress)
+    
     ZStack {
       // Background: use app standard dark background so edges match the app
       Color.background
+        .opacity(bgOpacity)
         .ignoresSafeArea()
         .onTapGesture {
           withAnimation {
@@ -45,23 +50,36 @@ struct ImageViewer: View {
                       scale = min(max(scale, 1), 4) // Limit zoom between 1x and 4x
                     },
                   
-                  // Pan gesture
+                  // Pan / drag gesture
                   DragGesture()
                     .onChanged { value in
-                      offset = CGSize(
-                        width: lastOffset.width + value.translation.width,
-                        height: lastOffset.height + value.translation.height
-                      )
-                    }
-                    .onEnded { _ in
-                      lastOffset = offset
-                      
-                      // Reset to center if zoomed out
                       if scale == 1 {
-                        withAnimation {
-                          offset = .zero
-                          lastOffset = .zero
+                        // When not zoomed, treat vertical drag as a potential dismiss gesture
+                        offset = CGSize(width: 0, height: value.translation.height)
+                      } else {
+                        // When zoomed, allow panning in both directions
+                        offset = CGSize(
+                          width: lastOffset.width + value.translation.width,
+                          height: lastOffset.height + value.translation.height
+                        )
+                      }
+                    }
+                    .onEnded { value in
+                      if scale == 1 {
+                        // Close if dragged down sufficiently
+                        if value.translation.height > 120 {
+                          withAnimation(.spring(response: 0.25, dampingFraction: 0.9)) {
+                            isPresented = false
+                          }
+                        } else {
+                          withAnimation(.spring(response: 0.3, dampingFraction: 0.9)) {
+                            offset = .zero
+                            lastOffset = .zero
+                          }
                         }
+                      } else {
+                        // Persist panning offset while zoomed
+                        lastOffset = offset
                       }
                     }
                 )

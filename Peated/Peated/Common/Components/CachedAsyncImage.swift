@@ -4,22 +4,39 @@ import SwiftUI
 // Uses in-memory NSCache and URLCache-backed network requests with
 // `.returnCacheDataElseLoad` to avoid unnecessary re-fetching.
 
-final class ImageMemoryCache {
+final class ImageMemoryCache: NSObject, NSCacheDelegate {
   static let shared = ImageMemoryCache()
   private let cache = NSCache<NSURL, UIImage>()
+  struct Metrics {
+    var hits = 0
+    var misses = 0
+    var inserts = 0
+    var evictions = 0
+  }
+  private(set) var metrics = Metrics()
 
-  private init() {
+  private override init() {
+    super.init()
     cache.countLimit = 1000 // generous for small avatars
     cache.totalCostLimit = 50 * 1024 * 1024 // ~50 MB
+    cache.delegate = self
   }
 
   func image(for url: URL) -> UIImage? {
-    cache.object(forKey: url as NSURL)
+    let img = cache.object(forKey: url as NSURL)
+    if img != nil { metrics.hits += 1 } else { metrics.misses += 1 }
+    return img
   }
 
   func insert(_ image: UIImage, for url: URL) {
     let cost = image.jpegData(compressionQuality: 0.7)?.count ?? 0
     cache.setObject(image, forKey: url as NSURL, cost: cost)
+    metrics.inserts += 1
+  }
+
+  // NSCacheDelegate
+  func cache(_ cache: NSCache<AnyObject, AnyObject>, willEvictObject obj: Any) {
+    metrics.evictions += 1
   }
 }
 

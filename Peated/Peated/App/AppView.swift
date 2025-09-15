@@ -218,6 +218,10 @@ struct AppView: View {
         .task {
             await model.checkAuthStatus()
             if model.isAuthenticated { prewarmCurrentUserAssets() }
+            // Prune caches on startup
+            await SnapshotStore.pruneAll()
+            try? await DatabaseManager.shared.pruneTastingCache(maxEntries: 2000)
+            try? await DatabaseManager.shared.pruneTastingCache(olderThanDays: 180)
         }
         .onChange(of: model.isAuthenticated) { newVal in
             if newVal { prewarmCurrentUserAssets() }

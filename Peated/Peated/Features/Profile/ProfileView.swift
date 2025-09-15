@@ -353,7 +353,15 @@ struct ProfileView: View {
   }
   
   private var activitySection: some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: 12) {
+      HStack {
+        Text("Recent Activity")
+          .font(.headline)
+          .foregroundColor(.text)
+        Spacer()
+      }
+      .padding(.horizontal)
+
       // Reuse the feed content from FeedView
       if feedModel.isLoading && feedModel.tastings.isEmpty {
         // Loading state

@@ -107,6 +107,18 @@ public enum SnapshotStore {
     let ids = await NormalizedStore.shared.get(userRecentKey(userId), as: [String].self)?.0 ?? []
     return Array(ids.prefix(limit))
   }
+
+  // MARK: - Pruning
+  public static func pruneAll(defaultCap: Int = 2000,
+                              userSnapshotCap: Int = 500,
+                              bottleSnapshotCap: Int = 1000,
+                              entitySnapshotCap: Int = 1000) async {
+    await NormalizedStore.shared.pruneExpired()
+    await NormalizedStore.shared.pruneByPrefix(prefix: "userSnapshot:", maxEntries: userSnapshotCap)
+    await NormalizedStore.shared.pruneByPrefix(prefix: "bottleSnapshot:", maxEntries: bottleSnapshotCap)
+    await NormalizedStore.shared.pruneByPrefix(prefix: "entitySnapshot:", maxEntries: entitySnapshotCap)
+    await NormalizedStore.shared.pruneTotal(maxEntries: defaultCap)
+  }
 }
 
 // MARK: - Merging helpers (prefer non-nil from cached)
@@ -146,4 +158,3 @@ extension SnapshotStore {
     return out
   }
 }
-
