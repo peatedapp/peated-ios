@@ -3,23 +3,38 @@ import PeatedCore
 
 /// Displays network status indicator when offline or in limited connectivity
 struct OfflineIndicator: View {
-  @State private var networkMonitor = NetworkMonitor.shared
+  // Hold shared singletons; UI changes are driven by `isConnected`
+  private let networkMonitor = NetworkMonitor.shared
   @State private var queueManager = OfflineQueueManager.shared
+  // Drive the banner from a simple Bool that we explicitly update on notifications.
+  // This avoids any edge cases where Observation doesn't trigger a re-render.
+  @State private var isConnected: Bool = NetworkMonitor.shared.isConnected
   
   var body: some View {
     VStack(spacing: 0) {
       // Main offline indicator
-      if !networkMonitor.isConnected {
+      if !isConnected {
         offlineBar
       }
       
       // Sync status indicator
-      if networkMonitor.isConnected && queueManager.isSyncing {
+      if isConnected && queueManager.isSyncing {
         syncingBar
       }
     }
-    .animation(.easeInOut(duration: 0.3), value: networkMonitor.isConnected)
+    .animation(.easeInOut(duration: 0.3), value: isConnected)
     .animation(.easeInOut(duration: 0.3), value: queueManager.isSyncing)
+    // Listen for connectivity changes from NetworkMonitor to keep `isConnected` in sync
+    .onReceive(NotificationCenter.default.publisher(for: .networkStatusChanged)) { _ in
+      // Ensure updates happen on main actor
+      Task { @MainActor in
+        isConnected = networkMonitor.isConnected
+      }
+    }
+    // Also refresh when the view appears (covers launch and returning from background)
+    .onAppear {
+      isConnected = networkMonitor.isConnected
+    }
   }
   
   // MARK: - Offline Bar
