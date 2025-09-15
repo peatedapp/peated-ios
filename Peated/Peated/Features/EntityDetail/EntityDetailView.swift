@@ -19,7 +19,7 @@ struct EntityDetailView: View {
     Group {
       switch model.state {
       case .loading:
-        LoadingView()
+        EntityDetailSkeleton()
       case .loaded(let entity):
         ScrollView {
           VStack(spacing: 0) {

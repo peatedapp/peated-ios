@@ -142,7 +142,7 @@ struct LibraryView: View {
   private var favoritesList: some View {
     Group {
       if viewModel.isLoading {
-        ProgressView().tint(.brand)
+        LibraryFavoritesSkeleton()
       } else if let err = viewModel.error {
         VStack(spacing: 12) {
           Text("Couldn't load favorites")

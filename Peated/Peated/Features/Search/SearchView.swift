@@ -445,23 +445,7 @@ struct SearchView: View {
     .padding(.vertical, 12)
   }
 
-  private var loadingView: some View {
-    VStack(spacing: 16) {
-      ForEach(0..<5, id: \.self) { _ in
-        HStack(spacing: 12) {
-          RoundedRectangle(cornerRadius: 8).fill(Color.border.opacity(0.3)).frame(width: 44, height: 44)
-          VStack(alignment: .leading, spacing: 4) {
-            RoundedRectangle(cornerRadius: 4).fill(Color.border.opacity(0.3)).frame(width: 150, height: 16)
-            RoundedRectangle(cornerRadius: 4).fill(Color.border.opacity(0.3)).frame(width: 100, height: 12)
-          }
-          Spacer()
-        }
-        .padding(.horizontal)
-        .shimmer()
-      }
-    }
-    .padding(.vertical)
-  }
+  private var loadingView: some View { SearchResultsSkeleton() }
 
   private var noResultsView: some View {
     VStack(spacing: 16) {

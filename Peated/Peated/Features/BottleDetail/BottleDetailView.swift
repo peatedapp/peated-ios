@@ -63,32 +63,7 @@ struct BottleDetailView: View {
   // MARK: - Loading View
   @ViewBuilder
   private var loadingView: some View {
-    ScrollView {
-      VStack(spacing: 20) {
-        // Image placeholder
-        RoundedRectangle(cornerRadius: 12)
-          .fill(Color.border.opacity(0.3))
-          .frame(height: 300)
-          .padding(.horizontal)
-        
-        // Content placeholders
-        VStack(alignment: .leading, spacing: 12) {
-          RoundedRectangle(cornerRadius: 8)
-            .fill(Color.border.opacity(0.3))
-            .frame(height: 24)
-            .frame(maxWidth: 200)
-          
-          RoundedRectangle(cornerRadius: 8)
-            .fill(Color.border.opacity(0.3))
-            .frame(height: 20)
-            .frame(maxWidth: 150)
-        }
-        .padding(.horizontal)
-      }
-      .redacted(reason: .placeholder)
-    }
-    .scrollContentBackground(.hidden)
-    .background(Color.background)
+    BottleDetailSkeleton()
   }
   
   // MARK: - Loaded View

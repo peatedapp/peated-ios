@@ -97,36 +97,7 @@ struct TastingDetailView: View {
   
   @ViewBuilder
   private var loadingView: some View {
-    ScrollView {
-      VStack(spacing: 16) {
-        // Tasting card skeleton
-        RoundedRectangle(cornerRadius: 12)
-          .fill(Color.surface)
-          .frame(height: 300)
-          .shimmer()
-        
-        // Comment skeletons
-        ForEach(0..<3, id: \.self) { _ in
-          HStack(alignment: .top, spacing: 12) {
-            Circle()
-              .fill(Color.surface)
-              .frame(width: 32, height: 32)
-            
-            VStack(alignment: .leading, spacing: 8) {
-              RoundedRectangle(cornerRadius: 4)
-                .fill(Color.surface)
-                .frame(width: 120, height: 14)
-              
-              RoundedRectangle(cornerRadius: 4)
-                .fill(Color.surface)
-                .frame(height: 40)
-            }
-          }
-          .shimmer()
-        }
-      }
-      .padding()
-    }
+    TastingDetailSkeleton()
   }
   
   // MARK: - Loaded View
