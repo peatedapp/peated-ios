@@ -30,6 +30,17 @@ public actor APIClient {
             transport: transport,
             middlewares: [loggingMiddleware, cacheConditionals, authMiddleware]
         )
+
+        // Observe environment changes and update server URL for all instances
+        Task { [currentURL = currentServerURL] in
+            // Start by ensuring we match the latest selected environment if provided later
+            for await note in NotificationCenter.default.notifications(named: .apiEnvironmentDidChange) {
+                if let url = note.userInfo?["url"] as? URL {
+                    await self.updateServerURL(url)
+                }
+            }
+            _ = currentURL // silence capture warning
+        }
     }
     
     /// Update the server URL dynamically

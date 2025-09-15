@@ -125,6 +125,12 @@ struct ProfileView: View {
           profileHeader
         }
 
+        if shouldShowVerifyBanner {
+          verifyEmailBanner
+            .padding(.horizontal)
+            .padding(.top, 8)
+        }
+
         if model.statsPrimed, let _ = model.user {
           statsSection
             .padding(.horizontal)
@@ -284,6 +290,68 @@ struct ProfileView: View {
     }
     .padding(.top, 20)
     .padding(.horizontal)
+  }
+
+  private var shouldShowVerifyBanner: Bool {
+    guard let current = AuthenticationManager.shared.currentUser,
+          let u = model.user else { return false }
+    return current.id == u.id && !u.verified
+  }
+
+  @ViewBuilder
+  private var verifyEmailBanner: some View {
+    VStack(alignment: .leading, spacing: 8) {
+      HStack(alignment: .top, spacing: 10) {
+        Image(systemName: "envelope.badge")
+          .foregroundColor(.warning)
+        VStack(alignment: .leading, spacing: 4) {
+          Text("Verify your email")
+            .font(.headline)
+            .foregroundColor(.text)
+          Text("Please verify your email to secure your account and enable full features.")
+            .font(.footnote)
+            .foregroundColor(.textSecondary)
+        }
+        Spacer(minLength: 0)
+      }
+      HStack {
+        Button(action: { Task { await resendVerification() } }) {
+          if isResendingVerification {
+            ProgressView().tint(.onBrand)
+              .frame(maxWidth: .infinity)
+          } else {
+            Text("Resend verification email")
+              .font(.subheadline)
+              .fontWeight(.semibold)
+              .foregroundColor(.onBrand)
+              .frame(maxWidth: .infinity)
+          }
+        }
+        .padding(.vertical, 10)
+        .background(Color.brand)
+        .cornerRadius(10)
+      }
+    }
+    .padding(12)
+    .background(Color.surface)
+    .cornerRadius(12)
+    .overlay(
+      RoundedRectangle(cornerRadius: 12)
+        .stroke(Color.border.opacity(0.4), lineWidth: 1)
+    )
+  }
+
+  @State private var isResendingVerification = false
+  private func resendVerification() async {
+    guard !isResendingVerification else { return }
+    isResendingVerification = true
+    do {
+      try await AuthenticationManager.shared.resendVerificationEmail()
+      ToastManager.shared.showSuccess("Verification email sent. Check your inbox.")
+    } catch {
+      ToastManager.shared.showAPIError(error)
+    }
+    isResendingVerification = false
   }
   
   private var statsSection: some View {

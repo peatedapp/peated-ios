@@ -176,6 +176,59 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     throw AuthError.noPresentingViewController
     #endif
   }
+
+  public func register(username: String, email: String, password: String) async throws -> User {
+    isLoading = true
+    error = nil
+
+    do {
+      let client = await apiClient.generatedClient
+
+      let body = Operations.register.Input.Body.json(
+        .init(username: username, email: email, password: password)
+      )
+
+      let response = try await client.register(body: body)
+
+      if case .ok(let okResponse) = response,
+         case .json(let jsonPayload) = okResponse.body {
+        if let accessToken = jsonPayload.accessToken {
+          try keychain.saveToken(accessToken)
+        }
+
+        let apiUser = jsonPayload.user
+        var user = User(from: apiUser)
+
+        // Enrich with stats similar to login flow
+        do {
+          let detailsResponse = try await client.getUser(
+            path: .init(user: .init(value1: apiUser.id))
+          )
+          if case .ok(let detailsOk) = detailsResponse,
+             case .json(let detailsJson) = detailsOk.body {
+            user.tastingsCount = Int(detailsJson.stats.tastings)
+            user.bottlesCount = Int(detailsJson.stats.bottles)
+            user.collectedCount = Int(detailsJson.stats.collected)
+            user.contributionsCount = Int(detailsJson.stats.contributions)
+          }
+        } catch {
+          // Non-fatal
+          print("Failed to fetch user details after register: \(error)")
+        }
+
+        authState = .authenticated(user)
+        isLoading = false
+        return user
+      } else {
+        throw AuthError.invalidResponse
+      }
+    } catch {
+      self.error = error
+      authState = .unauthenticated
+      isLoading = false
+      throw error
+    }
+  }
   
   public func logout() async {
     isLoading = true
@@ -189,6 +242,26 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     }
     
     isLoading = false
+  }
+  
+  // MARK: - Email Verification
+  public func resendVerificationEmail() async throws {
+    let client = await apiClient.generatedClient
+    _ = try await client.resendVerificationEmail()
+  }
+
+  public func verifyEmail(token: String) async throws {
+    let client = await apiClient.generatedClient
+    let body = Operations.verifyEmail.Input.Body.json(.init(token: token))
+    _ = try await client.verifyEmail(body: body)
+    // Refresh current user to update verified flag
+    do {
+      let user = try await userRepository.getCurrentUser()
+      authState = .authenticated(user)
+    } catch {
+      // Non-fatal
+      print("Failed to refresh user after verify: \(error)")
+    }
   }
   
   // MARK: - Helper Methods

@@ -15,6 +15,13 @@ public class APIManager: ObservableObject {
         Task {
             await observeAPIEnvironmentChanges()
         }
+
+        // Broadcast initial environment so other APIClient instances align on launch
+        NotificationCenter.default.post(
+            name: .apiEnvironmentDidChange,
+            object: self,
+            userInfo: ["url": initialURL]
+        )
     }
     
     private func observeAPIEnvironmentChanges() async {
@@ -31,5 +38,10 @@ public class APIManager: ObservableObject {
     public func refreshFromSettings() async {
         let newURL = DeveloperSettings.shared.currentAPIURL
         await apiClient.updateServerURL(newURL)
+        NotificationCenter.default.post(
+            name: .apiEnvironmentDidChange,
+            object: self,
+            userInfo: ["url": newURL]
+        )
     }
 }

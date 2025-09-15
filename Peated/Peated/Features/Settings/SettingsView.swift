@@ -36,7 +36,10 @@ struct SettingsView: View {
                     Button(action: {
                         showingDeveloperSettings = true
                     }) {
+                        // Make row full-width and left-aligned
                         Label("Developer Settings", systemImage: "hammer")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
                     }
                     .foregroundColor(.text)
                 }
@@ -45,7 +48,10 @@ struct SettingsView: View {
                 // Support Section
                 FormSection("Support") {
                     Link(destination: URL(string: "https://github.com/dcramer/peated")!) {
+                        // Make row full-width and left-aligned
                         Label("Help & Support", systemImage: "questionmark.circle")
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .contentShape(Rectangle())
                     }
                 }
                 

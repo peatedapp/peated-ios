@@ -205,12 +205,16 @@ struct LoginViewSimple: View {
         .font(.peatedBody)
         .foregroundColor(.textSecondary)
       
-      Button("Sign up") {
-        // TODO: Navigate to registration
+      NavigationLink(
+        destination: SignUpView { user in
+          onLoginSuccess(user)
+        }
+      ) {
+        Text("Sign up")
+          .font(.peatedBody)
+          .fontWeight(.medium)
+          .foregroundColor(.brand)
       }
-      .font(.peatedBody)
-      .fontWeight(.medium)
-      .foregroundColor(.brand)
     }
   }
   

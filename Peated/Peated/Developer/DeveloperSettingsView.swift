@@ -54,6 +54,7 @@ struct DeveloperSettingsView: View {
                             Text(copiedToClipboard ? "Copied!" : "Copy API URL")
                         }
                     }
+                    .fullWidth()
                     Text("Changes take effect immediately for new API calls")
                         .font(.caption)
                         .foregroundColor(.textSecondary)
@@ -71,6 +72,7 @@ struct DeveloperSettingsView: View {
                         Label("Wipe Cache", systemImage: "trash")
                     }
                     .help("Clears the in-app normalized cache and the URL cache. App behavior is unchanged; next reads will rehydrate on demand.")
+                    .fullWidth()
 
                     Button {
                         Task {
@@ -82,6 +84,7 @@ struct DeveloperSettingsView: View {
                     } label: {
                         Label("Log Cache Metrics", systemImage: "gauge.with.dots")
                     }
+                    .fullWidth()
                 }
                 
                 FormSection("App Info") {
@@ -139,6 +142,7 @@ struct DeveloperSettingsView: View {
                     } label: {
                         Label("Reset All Settings", systemImage: "arrow.counterclockwise")
                     }
+                    .fullWidth()
                 }
             }
             }
