@@ -9,7 +9,7 @@
     },
     "sentry": {
       "type": "http",
-      "url": "https://mcp.sentry.dev/mcp"
+      "url": "https://mcp.sentry.dev/mcp/peated/ios"
     }
   }
 }
