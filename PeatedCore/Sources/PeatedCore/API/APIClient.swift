@@ -4,10 +4,13 @@ import HTTPTypes
 
 /// Main API client for Peated
 public actor APIClient {
+    /// Shared singleton instance
+    public static let shared = APIClient()
+
     private var client: Client
     private let transport: URLSessionTransport
     private var currentServerURL: URL
-    
+
     public init(serverURL: URL? = nil, configuration: URLSessionTransport.Configuration = .init()) {
         // Use provided URL or default production
         self.currentServerURL = serverURL ?? URL(string: "https://api.peated.com/v1")!

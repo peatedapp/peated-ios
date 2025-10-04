@@ -10,9 +10,7 @@ public actor SearchRepository: SearchRepositoryProtocol, BaseRepositoryProtocol 
   private let bottleRepository: BottleRepository
 
   public init(apiClient: APIClient? = nil) {
-    let client = apiClient ?? APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    let client = apiClient ?? APIClient.shared
     self.apiClient = client
     self.bottleRepository = BottleRepository(apiClient: client)
   }

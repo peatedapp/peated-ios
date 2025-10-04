@@ -81,13 +81,14 @@ struct BottleDetailView: View {
             .padding(.top, 16)
         }
 
-        // Stats and about sections
-        aboutSection(bottle)
-          .padding(.vertical, 20)
-        
-        // Action button
+        // Action buttons
         actionButtons(bottle)
           .padding(.horizontal)
+          .padding(.top, 20)
+          .padding(.bottom, 12)
+
+        // Stats and about sections
+        aboutSection(bottle)
           .padding(.bottom, 20)
         
         // Recent activity
@@ -124,18 +125,23 @@ struct BottleDetailView: View {
             .frame(height: 390)
             .clipped()
 
-            // Removed background scrim behind the title to avoid
-            // any background appearing around the bottle name.
+            // Dark gradient overlay for text legibility
+            LinearGradient(
+              gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.85)]),
+              startPoint: .top,
+              endPoint: .bottom
+            )
 
             // Title + brand link + status icons
             VStack(spacing: 8) {
               Text(bottle.fullName)
                 .font(.peatedDisplaySerifLarge)
-                .foregroundColor(.onBrand)
+                .foregroundColor(.white)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
+                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
 
               NavigationLink(
                 destination: EntityDetailView(
@@ -157,7 +163,8 @@ struct BottleDetailView: View {
                   Text(bottle.brandName)
                 }
                 .font(.system(size: DesignSystem.FontSize.small))
-                .foregroundColor(.onBrand)
+                .foregroundColor(.white.opacity(0.9))
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
               }
               .buttonStyle(.plain)
 
@@ -168,27 +175,28 @@ struct BottleDetailView: View {
                     HStack(spacing: 4) {
                       Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 12))
-                        .foregroundColor(.textSecondary)
+                        .foregroundColor(.white.opacity(0.9))
                       Text("Tasted")
                         .font(.system(size: DesignSystem.FontSize.small))
-                        .foregroundColor(.onBrand)
+                        .foregroundColor(.white.opacity(0.9))
                     }
                   }
                   if bottle.hasTasted && bottle.isFavorite {
                     Text("•")
-                      .foregroundColor(.onBrand.opacity(0.7))
+                      .foregroundColor(.white.opacity(0.7))
                   }
                   if bottle.isFavorite {
                     HStack(spacing: 4) {
                       Image(systemName: "star.fill")
                         .font(.system(size: 12))
-                        .foregroundColor(.textSecondary)
+                        .foregroundColor(.white.opacity(0.9))
                       Text("Favorited")
                         .font(.system(size: DesignSystem.FontSize.small))
-                        .foregroundColor(.onBrand)
+                        .foregroundColor(.white.opacity(0.9))
                     }
                   }
                 }
+                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
               }
             }
             .padding(.bottom, 16)
@@ -336,8 +344,8 @@ struct BottleDetailView: View {
           .padding(.horizontal)
       }
       
-      // Bottle characteristics if present
-      if bottle.caskStrength || bottle.singleCask {
+      // Bottle characteristics and rating if present
+      if bottle.caskStrength || bottle.singleCask || bottle.totalRatings > 0 {
         characteristicsSection(bottle)
           .padding(.horizontal)
       }
@@ -464,23 +472,55 @@ struct BottleDetailView: View {
   // MARK: - Characteristics Section
   @ViewBuilder
   private func characteristicsSection(_ bottle: Bottle) -> some View {
-    VStack(alignment: .leading, spacing: 8) {
+    VStack(alignment: .leading, spacing: 12) {
       Text("CHARACTERISTICS")
         .font(.system(size: DesignSystem.FontSize.small))
         .fontWeight(.semibold)
         .foregroundColor(.textSecondary)
-      
-      HStack(spacing: 12) {
-        if bottle.caskStrength {
-          Label("Cask Strength", systemImage: "checkmark.circle.fill")
-            .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.success)
+
+      VStack(alignment: .leading, spacing: 8) {
+        // Cask properties
+        if bottle.caskStrength || bottle.singleCask {
+          HStack(spacing: 12) {
+            if bottle.caskStrength {
+              Label("Cask Strength", systemImage: "checkmark.circle.fill")
+                .font(.system(size: DesignSystem.FontSize.small))
+                .foregroundColor(.success)
+            }
+
+            if bottle.singleCask {
+              Label("Single Cask", systemImage: "checkmark.circle.fill")
+                .font(.system(size: DesignSystem.FontSize.small))
+                .foregroundColor(.success)
+            }
+          }
         }
-        
-        if bottle.singleCask {
-          Label("Single Cask", systemImage: "checkmark.circle.fill")
-            .font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.success)
+
+        // Community rating
+        if bottle.totalRatings > 0 {
+          VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 4) {
+              Image(systemName: "star.fill")
+                .font(.system(size: 14))
+                .foregroundColor(.brand)
+              Text(String(format: "%.1f", bottle.avgRating))
+                .font(.system(size: 18))
+                .fontWeight(.semibold)
+                .foregroundColor(.text)
+              Text("average rating")
+                .font(.system(size: DesignSystem.FontSize.small))
+                .foregroundColor(.textSecondary)
+            }
+
+            Text("\(bottle.totalRatings) \(bottle.totalRatings == 1 ? "rating" : "ratings") from the community")
+              .font(.system(size: DesignSystem.FontSize.small))
+              .foregroundColor(.textSecondary)
+          }
+          .padding(.vertical, 8)
+          .padding(.horizontal, 12)
+          .frame(maxWidth: .infinity, alignment: .leading)
+          .background(Color.surface.opacity(0.5))
+          .cornerRadius(8)
         }
       }
     }

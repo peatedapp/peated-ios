@@ -1,6 +1,7 @@
 import SwiftUI
 import PeatedCore
 import GoogleSignIn
+import Foundation
 
 @main
 struct PeatedApp: App {
@@ -29,6 +30,7 @@ struct PeatedApp: App {
             AppView()
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in
+                    // Google Sign-In handler
                     GIDSignIn.sharedInstance.handle(url)
                 }
         }

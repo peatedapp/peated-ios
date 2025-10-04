@@ -8,16 +8,10 @@ struct LoginViewSimple: View {
   
   @State private var email = ""
   @State private var password = ""
-  @State private var isPasswordVisible = false
   @State private var isLoading = false
   @State private var error: String?
-  @FocusState private var focusedField: Field?
-  
+
   let authManager = AuthenticationManager.shared
-  
-  enum Field {
-    case email, password
-  }
   
   var body: some View {
     ZStack {
@@ -44,45 +38,23 @@ struct LoginViewSimple: View {
             Rectangle()
               .fill(Color.border)
               .frame(height: 1)
-            
+
             Text("OR")
               .font(.peatedCaption)
               .foregroundColor(.textMuted)
               .padding(.horizontal, 16)
-            
+
             Rectangle()
               .fill(Color.border)
               .frame(height: 1)
           }
           .padding(.horizontal)
-          
-          // Email/Password form
-          VStack(spacing: 16) {
-            TextInput(
-              label: "Email",
-              placeholder: "you@example.com",
-              text: $email,
-              keyboard: .emailAddress,
-              submitLabel: .next,
-              autocorrection: false,
-              capitalization: .never,
-              onSubmit: { focusedField = .password }
-            )
 
-            PasswordInput(
-              label: "Password",
-              placeholder: "Password",
-              text: $password,
-              submitLabel: .done,
-              onSubmit: { handleEmailSignIn() }
-            )
+          loginForm
+            .padding(.horizontal)
 
-            forgotPasswordLink
-          }
-          .padding(.horizontal)
-          
-          // Sign In button
-          signInButton
+          // Login button
+          loginButton
             .padding(.horizontal)
             .padding(.top, 8)
           
@@ -96,24 +68,7 @@ struct LoginViewSimple: View {
       .scrollDismissesKeyboard(.interactively)
     }
     .navigationBarHidden(true)
-    .alert(
-      "Sign In Failed",
-      isPresented: Binding(
-        get: {
-          if let e = error {
-            return !e.lowercased().contains("cancel")
-          }
-          return false
-        },
-        set: { newValue in
-          if !newValue { error = nil }
-        }
-      )
-    ) {
-      Button("OK") { error = nil }
-    } message: {
-      Text(error ?? "An error occurred")
-    }
+    .alert("Sign In Failed", isPresented: Binding(get: { error != nil }, set: { if !$0 { error = nil } })) { Button("OK") { error = nil } } message: { Text(error ?? "An error occurred") }
     .overlay(loadingOverlay)
   }
   
@@ -145,46 +100,47 @@ struct LoginViewSimple: View {
         Image(systemName: "g.circle.fill")
           .font(.system(size: 20, weight: .semibold))
           .foregroundColor(.onBrand)
-        if isLoading {
-          ProgressView()
-            .progressViewStyle(CircularProgressViewStyle(tint: .onBrand))
-        } else {
-          Text("Continue with Google")
-            .font(.peatedBody)
-            .fontWeight(.semibold)
-            .foregroundColor(.onBrand)
-        }
+        Text("Continue with Google")
+          .font(.peatedBody)
+          .fontWeight(.semibold)
+          .foregroundColor(.onBrand)
       }
       .frame(maxWidth: .infinity)
       .padding(.vertical, 16)
-      .background(isLoading ? Color.brand.opacity(0.6) : Color.brand)
+      .background(Color.brand)
       .cornerRadius(12)
-      .animation(.easeInOut(duration: 0.1), value: isLoading)
     }
     .disabled(isLoading)
   }
   
-  // Removed old field builders in favor of TextInput/Modifier usage
-  
-  // MARK: - Forgot Password
+  // MARK: - Login Form
   @ViewBuilder
-  private var forgotPasswordLink: some View {
-    HStack {
-      Spacer()
-      Button("Forgot password?") {
-        // TODO: Handle forgot password
-      }
-      .font(.peatedCaption)
-      .foregroundColor(.brand)
+  private var loginForm: some View {
+    VStack(spacing: 16) {
+      TextInput(
+        label: "Email",
+        placeholder: "you@example.com",
+        text: $email,
+        keyboard: .emailAddress,
+        submitLabel: .next,
+        autocorrection: false,
+        capitalization: .never
+      )
+
+      PasswordInput(
+        label: "Password",
+        placeholder: "Enter your password",
+        text: $password,
+        submitLabel: .go,
+        onSubmit: { handleLogin() }
+      )
     }
   }
 
-  // Password handled via PasswordInput abstraction
-  
-  // MARK: - Sign In Button
+  // MARK: - Login Button
   @ViewBuilder
-  private var signInButton: some View {
-    Button(action: handleEmailSignIn) {
+  private var loginButton: some View {
+    Button(action: handleLogin) {
       Text("Sign In")
         .font(.peatedBody)
         .fontWeight(.semibold)
@@ -233,14 +189,17 @@ struct LoginViewSimple: View {
   }
   
   // MARK: - Actions
-  private func handleEmailSignIn() {
+  private func handleLogin() {
+    let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !trimmedEmail.isEmpty, !password.isEmpty else { return }
+
     Task {
       isLoading = true
       error = nil
-      
       do {
-        let user = try await authManager.login(email: email, password: password)
+        let user = try await authManager.login(email: trimmedEmail, password: password)
         await MainActor.run {
+          isLoading = false
           onLoginSuccess(user)
         }
       } catch {
@@ -251,15 +210,16 @@ struct LoginViewSimple: View {
       }
     }
   }
-  
+
   private func handleGoogleSignIn() {
     Task {
       isLoading = true
       error = nil
-      
+
       do {
         let user = try await authManager.loginWithGoogle()
         await MainActor.run {
+          isLoading = false
           onLoginSuccess(user)
         }
       } catch {

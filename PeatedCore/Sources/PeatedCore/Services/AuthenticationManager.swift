@@ -33,9 +33,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
   }
   
   public init() {
-    self.apiClient = APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    self.apiClient = APIClient.shared
     self.userRepository = UserRepository(apiClient: apiClient)
   }
   
@@ -262,6 +260,22 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
       // Non-fatal
       print("Failed to refresh user after verify: \(error)")
     }
+  }
+  
+  // MARK: - Password Reset
+  public func requestPasswordReset(email: String) async throws {
+    let client = await apiClient.generatedClient
+    let body = Operations.createPasswordReset.Input.Body.json(.init(email: email))
+    _ = try await client.createPasswordReset(body: body)
+  }
+
+  public func confirmPasswordReset(token: String, newPassword: String) async throws {
+    let client = await apiClient.generatedClient
+    let body = Operations.confirmPasswordReset.Input.Body.json(
+      .init(token: token, password: newPassword)
+    )
+    _ = try await client.confirmPasswordReset(body: body)
+    // After reset, user is verified; we do not auto-login here (token may not be issued)
   }
   
   // MARK: - Helper Methods

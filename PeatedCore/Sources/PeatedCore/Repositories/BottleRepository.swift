@@ -15,9 +15,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
   public let apiClient: APIClient
   
   public init(apiClient: APIClient? = nil) {
-    self.apiClient = apiClient ?? APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    self.apiClient = apiClient ?? APIClient.shared
   }
   
   public func searchBottles(query: String, limit: Int = 20) async throws -> [Bottle] {

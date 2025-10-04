@@ -11,9 +11,7 @@ public actor CollectionRepository: BaseRepositoryProtocol {
   public let apiClient: APIClient
 
   public init(apiClient: APIClient? = nil) {
-    self.apiClient = apiClient ?? APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    self.apiClient = apiClient ?? APIClient.shared
   }
 
   public func listUserCollections(user: String = "me", limit: Int = 50) async throws -> [UserCollection] {

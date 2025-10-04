@@ -58,10 +58,8 @@ class CreateTastingViewModel: ObservableObject {
         bottleRepository: BottleRepository? = nil,
         imageUploadService: ImageUploadService? = nil
     ) {
-        // Create shared API client
-        let apiClient = APIClient(
-            serverURL: URL(string: "https://api.peated.com/v1")!
-        )
+        // Use shared API client to ensure proper request handling
+        let apiClient = APIClient.shared
         self.tastingRepository = tastingRepository ?? TastingRepository(apiClient: apiClient)
         self.bottleRepository = bottleRepository ?? BottleRepository(apiClient: apiClient)
         self.imageUploadService = imageUploadService ?? ImageUploadService(apiClient: apiClient)
@@ -111,10 +109,16 @@ class CreateTastingViewModel: ObservableObject {
             
             submissionSuccessful = true
         } catch {
+            // Log detailed error information for debugging
+            print("CreateTastingViewModel: Failed to submit tasting - \(error)")
+            if let apiError = error as? APIError {
+                print("CreateTastingViewModel: API Error type: \(apiError)")
+            }
+
             errorMessage = error.localizedDescription
             showingError = true
         }
-        
+
         isSubmitting = false
     }
     

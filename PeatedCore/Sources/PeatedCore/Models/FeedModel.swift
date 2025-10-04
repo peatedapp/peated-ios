@@ -100,8 +100,14 @@ public class FeedModel {
   private func handleFeedRefreshNotification() async {
     // This method is called on MainActor, so we can safely access properties
     // Note: We can't access the notification userInfo here due to Sendable constraints
-    // Instead, we'll just reload if it's the current feed
-    await reloadFromCache()
+    // When we receive a feed refresh notification (e.g., after creating a tasting),
+    // we need to invalidate the cache and fetch fresh data from the API
+
+    // Invalidate current feed cache
+    feedCaches[selectedFeedType] = nil
+
+    // Refresh current feed from API
+    await refreshCurrentFeed()
   }
   
   // Note: We don't need explicit deinit cleanup because:

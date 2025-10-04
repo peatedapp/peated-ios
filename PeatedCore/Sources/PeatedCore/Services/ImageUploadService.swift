@@ -14,9 +14,7 @@ public actor ImageUploadService: ImageUploadServiceProtocol {
   private let apiClient: APIClient
   
   public init(apiClient: APIClient? = nil) {
-    self.apiClient = apiClient ?? APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    self.apiClient = apiClient ?? APIClient.shared
   }
   
   /// Upload a single image for a tasting

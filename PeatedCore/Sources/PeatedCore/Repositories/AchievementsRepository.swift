@@ -9,9 +9,7 @@ public actor AchievementsRepository: AchievementsRepositoryProtocol, BaseReposit
   public let apiClient: APIClient
   
   public init(apiClient: APIClient? = nil) {
-    self.apiClient = apiClient ?? APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    self.apiClient = apiClient ?? APIClient.shared
   }
   
   public func getUserBadges(userId: String) async throws -> [Achievement] {

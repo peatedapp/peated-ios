@@ -33,9 +33,9 @@ public class OfflineQueueManager {
   /// Private initializer to enforce singleton pattern
   private init() {
     self.database = DatabaseManager.shared
-    
-    // Create repositories with shared API client
-    let apiClient = APIClient(serverURL: URL(string: "https://api.peated.com/v1")!)
+
+    // Use shared API client for all network operations
+    let apiClient = APIClient.shared
     self.tastingRepository = TastingRepository(apiClient: apiClient)
     self.userRepository = UserRepository(apiClient: apiClient)
     

@@ -25,9 +25,7 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
   public let apiClient: APIClient
   
   public init(apiClient: APIClient? = nil) {
-    self.apiClient = apiClient ?? APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    self.apiClient = apiClient ?? APIClient.shared
   }
   
   public func getCurrentUser() async throws -> User {

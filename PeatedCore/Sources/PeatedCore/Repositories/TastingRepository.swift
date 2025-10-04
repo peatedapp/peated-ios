@@ -40,9 +40,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
   public let apiClient: APIClient
   
   public init(apiClient: APIClient? = nil) {
-    self.apiClient = apiClient ?? APIClient(
-      serverURL: URL(string: "https://api.peated.com/v1")!
-    )
+    self.apiClient = apiClient ?? APIClient.shared
   }
   
   public func getTasting(id: String) async throws -> TastingFeedItem {

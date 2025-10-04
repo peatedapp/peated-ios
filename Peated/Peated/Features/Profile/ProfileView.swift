@@ -13,6 +13,11 @@ struct ProfileView: View {
   @State private var showingLogoutAlert = false
   @State private var selectedTab = 0
   @State private var showingSettings = false
+  @State private var activityTastings: [TastingFeedItem] = []
+  @State private var activityCursor: String?
+  @State private var activityHasMore = true
+  @State private var isLoadingActivity = false
+  @State private var activityError: Error?
   
   init(
     userId: String? = nil,
@@ -38,30 +43,23 @@ struct ProfileView: View {
       // Always default to Activity when loading a profile
       selectedTab = 0
       await model.loadUser()
-      
+
       // Only load feed if user loaded successfully
-      if model.user != nil {
+      if let user = model.user {
         // Warm the profile avatar into memory cache to avoid placeholder
-        if let s = model.user?.pictureUrl, let u = URL(string: s) {
+        if let s = user.pictureUrl, let u = URL(string: s) {
           ImagePrefetcher.prefetch(urls: [u], max: 1)
         }
-        // For the current user, use personal feed
-        // For other users, we need to filter the global feed by user (not ideal but API limitation)
-        if userId == nil {
-          feedModel.selectedFeedType = .personal
-        } else {
-          // TODO: When API supports filtering by user, update this
-          feedModel.selectedFeedType = .global
-        }
-        // Load from network (personal for self; global fallback for others)
-        await feedModel.loadFeed(refresh: true)
+
+        // Load activity for this specific user
+        await loadActivity(userId: user.id, refresh: true)
 
         // Preload favorites for this profile
         await model.loadFavorites()
 
         // Prefetch avatars and bottle images for profile feed
         var urls: [URL] = []
-        for item in feedModel.tastings.prefix(40) {
+        for item in activityTastings.prefix(40) {
           if let s = item.userAvatarUrl, let u = URL(string: s) { urls.append(u) }
           if let s = item.bottleImageUrl, let u = URL(string: s) { urls.append(u) }
           if let s = item.imageUrl, let u = URL(string: s) { urls.append(u) }
@@ -293,7 +291,9 @@ struct ProfileView: View {
   }
 
   private var shouldShowVerifyBanner: Bool {
-    guard let current = AuthenticationManager.shared.currentUser,
+    // Only show banner after profile is fully loaded to avoid flickering
+    guard model.isPrimed,
+          let current = AuthenticationManager.shared.currentUser,
           let u = model.user else { return false }
     return current.id == u.id && !u.verified
   }
@@ -423,13 +423,13 @@ struct ProfileView: View {
   private var activitySection: some View {
     VStack(alignment: .leading, spacing: 12) {
       // Reuse the feed content from FeedView
-      if feedModel.isLoading && feedModel.tastings.isEmpty {
+      if isLoadingActivity && activityTastings.isEmpty {
         // Loading state
         VStack(spacing: 0) {
           ForEach(0..<3) { index in
             VStack(spacing: 0) {
               SkeletonTastingCard()
-              
+
               if index < 2 {
                 Divider()
                   .background(Color.border.opacity(0.2))
@@ -438,14 +438,14 @@ struct ProfileView: View {
           }
         }
         .padding(.horizontal)
-      } else if feedModel.error != nil && feedModel.tastings.isEmpty {
+      } else if activityError != nil && activityTastings.isEmpty {
         // Error state with no data
         Text("Unable to load activity")
           .foregroundColor(.textSecondary)
           .frame(maxWidth: .infinity, alignment: .center)
           .padding(.vertical, 40)
           .padding(.horizontal)
-      } else if feedModel.tastings.isEmpty {
+      } else if activityTastings.isEmpty {
         // Empty state
         Text("No tastings yet")
           .foregroundColor(.textSecondary)
@@ -456,12 +456,12 @@ struct ProfileView: View {
         // Show tastings using unified feed card design
         VStack(spacing: 0) {
           ActivityList(
-            tastings: feedModel.tastings,
+            tastings: activityTastings,
             showBottle: true,
             showUserHeader: false,
             limit: 5,
             onToast: { tasting in
-              Task { await feedModel.toggleToast(for: tasting.id) }
+              Task { await toggleActivityToast(for: tasting.id) }
             },
             onComment: { tasting in
               onNavigateToTasting?(tasting.id)
@@ -478,7 +478,7 @@ struct ProfileView: View {
           )
 
           // Show more button if there are more than 5 tastings
-          if feedModel.tastings.count > 5 {
+          if activityTastings.count > 5 {
             Button(action: {
               // TODO: Navigate to full activity view
             }) {
@@ -534,6 +534,133 @@ struct ProfileView: View {
           }
           .refreshable { await model.loadFavorites() }
         }
+      }
+    }
+  }
+
+  // MARK: - Activity Loading
+
+  private func loadActivity(userId: String, refresh: Bool = false) async {
+    guard !isLoadingActivity else { return }
+
+    isLoadingActivity = true
+    activityError = nil
+
+    if refresh {
+      activityCursor = nil
+      activityHasMore = true
+    }
+
+    do {
+      let feedRepository = FeedRepository()
+      let feedPage = try await feedRepository.getUserTastings(
+        userId: userId,
+        cursor: activityCursor,
+        limit: 20
+      )
+
+      if refresh {
+        activityTastings = feedPage.tastings
+      } else {
+        activityTastings.append(contentsOf: feedPage.tastings)
+      }
+
+      activityCursor = feedPage.cursor
+      activityHasMore = feedPage.hasMore
+    } catch {
+      activityError = error
+    }
+
+    isLoadingActivity = false
+  }
+
+  private func toggleActivityToast(for tastingId: String) async {
+    // Find the tasting in activity list
+    guard let tastingIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) else {
+      return
+    }
+
+    let currentTasting = activityTastings[tastingIndex]
+    let newToastedState = !currentTasting.hasToasted
+    let newToastCount = newToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1)
+
+    // Create updated tasting for optimistic update
+    let updatedTasting = TastingFeedItem(
+      id: currentTasting.id,
+      rating: currentTasting.rating,
+      notes: currentTasting.notes,
+      servingStyle: currentTasting.servingStyle,
+      imageUrl: currentTasting.imageUrl,
+      createdAt: currentTasting.createdAt,
+      userId: currentTasting.userId,
+      username: currentTasting.username,
+      userDisplayName: currentTasting.userDisplayName,
+      userAvatarUrl: currentTasting.userAvatarUrl,
+      bottleId: currentTasting.bottleId,
+      bottleName: currentTasting.bottleName,
+      bottleBrandName: currentTasting.bottleBrandName,
+      bottleCategory: currentTasting.bottleCategory,
+      bottleImageUrl: currentTasting.bottleImageUrl,
+      toastCount: newToastCount,
+      commentCount: currentTasting.commentCount,
+      hasToasted: newToastedState,
+      tags: currentTasting.tags,
+      location: currentTasting.location,
+      friendUsernames: currentTasting.friendUsernames
+    )
+
+    // Optimistic update
+    activityTastings[tastingIndex] = updatedTasting
+
+    // Perform actual API call
+    let tastingRepository = TastingRepository()
+    do {
+      let actualToastedState = try await tastingRepository.toggleToast(tastingId: tastingId)
+
+      if actualToastedState {
+        ToastManager.shared.showSuccess("Cheers! 🥃")
+      }
+
+      // Update with correct state from API
+      let correctTasting = TastingFeedItem(
+        id: currentTasting.id,
+        rating: currentTasting.rating,
+        notes: currentTasting.notes,
+        servingStyle: currentTasting.servingStyle,
+        imageUrl: currentTasting.imageUrl,
+        createdAt: currentTasting.createdAt,
+        userId: currentTasting.userId,
+        username: currentTasting.username,
+        userDisplayName: currentTasting.userDisplayName,
+        userAvatarUrl: currentTasting.userAvatarUrl,
+        bottleId: currentTasting.bottleId,
+        bottleName: currentTasting.bottleName,
+        bottleBrandName: currentTasting.bottleBrandName,
+        bottleCategory: currentTasting.bottleCategory,
+        bottleImageUrl: currentTasting.bottleImageUrl,
+        toastCount: actualToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1),
+        commentCount: currentTasting.commentCount,
+        hasToasted: actualToastedState,
+        tags: currentTasting.tags,
+        location: currentTasting.location,
+        friendUsernames: currentTasting.friendUsernames
+      )
+
+      if let currentIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) {
+        activityTastings[currentIndex] = correctTasting
+      }
+    } catch {
+      // Revert on error
+      if let revertIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) {
+        activityTastings[revertIndex] = currentTasting
+      }
+
+      if let apiError = error as? APIError,
+         case .requestFailed(let message) = apiError,
+         message == "Cannot toast this tasting" {
+        ToastManager.shared.showError("You can't toast your own tastings")
+      } else {
+        ToastManager.shared.showError("Failed to update toast")
       }
     }
   }

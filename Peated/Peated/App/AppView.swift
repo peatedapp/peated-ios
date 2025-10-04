@@ -223,7 +223,8 @@ struct AppView: View {
                     }
                     .sheet(isPresented: $showingCreateTasting) {
                         CreateTastingFlow(onSuccess: {
-                            // Dismiss handled automatically; FeedView will refresh itself when visible
+                            // Post notification to refresh feed after tasting creation
+                            NotificationCenter.default.post(name: .feedDataRefreshed, object: nil)
                         })
                         .interactiveDismissDisabled()
                     }
