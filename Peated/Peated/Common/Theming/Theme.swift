@@ -53,8 +53,8 @@ struct CreamTheme: AppTheme {
     static let surface = Color(hex: "#1E293B")     // slate-800
     static let surfaceSubtle = Color(hex: "#334155")// slate-700
     static let border = Color(hex: "#475569")       // slate-600
-    // App chrome (nav/tab bars)
-    static let chrome = Color(hex: "#020617")      // near-black navy
+    // App chrome (nav/tab bars) - 95% opaque
+    static let chrome = Color(hex: "#020617").opacity(0.95)
     // Text
     static let text = Color.white
     static let textSecondary = Color(hex: "#CBD5E1") // slate-300

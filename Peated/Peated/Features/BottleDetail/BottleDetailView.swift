@@ -127,7 +127,7 @@ struct BottleDetailView: View {
 
             // Dark gradient overlay for text legibility
             LinearGradient(
-              gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.85)]),
+              gradient: Gradient(colors: [Color.clear, Color.black.opacity(0.95)]),
               startPoint: .top,
               endPoint: .bottom
             )
@@ -140,8 +140,6 @@ struct BottleDetailView: View {
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)
                 .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal)
-                .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
 
               NavigationLink(
                 destination: EntityDetailView(
@@ -164,7 +162,6 @@ struct BottleDetailView: View {
                 }
                 .font(.system(size: DesignSystem.FontSize.small))
                 .foregroundColor(.white.opacity(0.9))
-                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
               }
               .buttonStyle(.plain)
 
@@ -196,10 +193,14 @@ struct BottleDetailView: View {
                     }
                   }
                 }
-                .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
               }
             }
-            .padding(.bottom, 16)
+            .padding(.vertical, 16)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity)
+            .background(Color.black)
+            .padding(.horizontal, 16)
+            .padding(.bottom, 4)
         }
         .contentShape(Rectangle())
         .onTapGesture { showingHeroImageViewer = true }
