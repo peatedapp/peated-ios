@@ -8,6 +8,9 @@ import Foundation
 @main
 struct PeatedApp: App {
     init() {
+        // Skip initialization when running tests
+        guard !isRunningTests else { return }
+
         // Configure Google Sign-In on app launch
         setupGoogleSignIn()
 
@@ -29,19 +32,23 @@ struct PeatedApp: App {
         // Initialize Sentry
         SentrySDK.start { options in
             options.dsn = "https://768306340a5c4721d816c33502f7e06e@o4505211758706688.ingest.us.sentry.io/4510132027457536"
-            options.debug = true // Enabled debug when first installing is always helpful
+
+            #if DEBUG
+            options.debug = true // Enable debug logging in development builds
+            #else
+            options.debug = false // Disable in production
+            #endif
 
             // Adds IP for users.
             // For more information, visit: https://docs.sentry.io/platforms/apple/data-management/data-collected/
             options.sendDefaultPii = true
 
-            // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-            // We recommend adjusting this value in production.
-            options.tracesSampleRate = 1.0
+            // Sample 20% of transactions for performance monitoring in production
+            options.tracesSampleRate = 0.2
 
-            // Configure profiling. Visit https://docs.sentry.io/platforms/apple/profiling/ to learn more.
+            // Configure profiling - sample 10% of sessions
             options.configureProfiling = {
-                $0.sessionSampleRate = 1.0 // We recommend adjusting this value in production.
+                $0.sessionSampleRate = 0.1
                 $0.lifecycle = .trace
             }
 
@@ -52,8 +59,6 @@ struct PeatedApp: App {
             // Enable experimental logging features
             options.experimental.enableLogs = true
         }
-        // Remove the next line after confirming that your Sentry integration is working.
-        SentrySDK.capture(message: "This app uses Sentry! :)")
     }
     
     var body: some Scene {
@@ -73,5 +78,10 @@ struct PeatedApp: App {
            !clientID.isEmpty {
             GIDSignIn.sharedInstance.configuration = GIDConfiguration(clientID: clientID)
         }
+    }
+
+    /// Detect if we're running in a test environment
+    private var isRunningTests: Bool {
+        return ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
 }
