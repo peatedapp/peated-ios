@@ -6,24 +6,33 @@ import Combine
 @Observable
 class AppModel {
     var authState: AuthState = .unknown
+    var needsTermsAcceptance: Bool = false
     let authManager = AuthenticationManager.shared
     private var cancellables = Set<AnyCancellable>()
-    
+
     var isLoading: Bool {
         authState == .unknown
     }
-    
+
     var isAuthenticated: Bool {
         if case .authenticated = authState { return true }
         return false
     }
-    
+
     init() {
         // Observe auth state changes
         authManager.$authState
             .sink { [weak self] peatedAuthState in
                 guard let self = self else { return }
                 self.authState = peatedAuthState
+            }
+            .store(in: &cancellables)
+
+        // Observe terms acceptance requirement
+        authManager.$needsTermsAcceptance
+            .sink { [weak self] needsAcceptance in
+                guard let self = self else { return }
+                self.needsTermsAcceptance = needsAcceptance
             }
             .store(in: &cancellables)
     }

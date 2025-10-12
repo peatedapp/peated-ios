@@ -209,7 +209,7 @@ struct SignUpView: View {
       isLoading = true
       error = nil
       do {
-        let user = try await authManager.register(username: username, email: email, password: password)
+        let user = try await authManager.register(username: username, email: email, password: password, tosAccepted: acceptedTerms)
         await MainActor.run { onSignUpSuccess(user) }
       } catch {
         await MainActor.run {

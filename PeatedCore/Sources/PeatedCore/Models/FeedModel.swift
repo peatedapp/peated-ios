@@ -206,7 +206,7 @@ public class FeedModel {
     } catch {
       // Check for cancellation
       guard !Task.isCancelled else { return }
-      
+
       if updateUI {
         self.error = error
         // IMPORTANT: Don't clear cache on error - preserve stale data

@@ -15,7 +15,8 @@ public enum APIError: LocalizedError {
   case decodingError(Error)
   case timeout
   case notImplemented
-  
+  case termsAcceptanceRequired
+
   public var errorDescription: String? {
     switch self {
     case .invalidResponse:
@@ -38,6 +39,8 @@ public enum APIError: LocalizedError {
       return "Request timed out"
     case .notImplemented:
       return "This feature is not yet implemented"
+    case .termsAcceptanceRequired:
+      return "Terms of service acceptance required"
     }
   }
 }
@@ -121,7 +124,7 @@ extension Operations.listTastings.Output {
     case .unauthorized:
       throw APIError.unauthorized
     case .forbidden:
-      throw APIError.requestFailed("Forbidden")
+      throw APIError.requestFailed("Access forbidden - your request may have been blocked by security filters")
     case .notFound:
       throw APIError.notFound
     case .conflict:

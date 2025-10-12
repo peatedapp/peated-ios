@@ -30,15 +30,15 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
   
   public func getFeed(type: FeedType, cursor: String?, limit: Int = 20) async throws -> FeedPage {
     let client = await self.client
-    
+
     // Build the query parameters
     var query = Operations.listTastings.Input.Query()
     query.limit = Double(limit)
-    
+
     if let cursor = cursor {
       query.cursor = Double(cursor)
     }
-    
+
     // Add feed type filtering
     switch type {
     case .friends:
@@ -54,9 +54,20 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
       // No additional filtering for global feed
       break
     }
-    
-    let response = try await client.listTastings(query: query)
-    let payload = try response.extractPayload()
+
+    let response: Operations.listTastings.Output
+    let payload: Operations.listTastings.Output.Ok.Body.jsonPayload
+
+    do {
+      response = try await client.listTastings(Operations.listTastings.Input(query: query))
+      Logger.api.info("✅ Received listTastings response")
+
+      payload = try response.extractPayload()
+      Logger.api.info("✅ Extracted payload with \(payload.results.count) results")
+    } catch {
+      Logger.api.error("❌ FeedRepository ERROR: \(error.localizedDescription)")
+      throw error
+    }
     
     let tastings = payload.results.map { item -> TastingFeedItem in
       let t = TastingFeedItem.from(item)
@@ -123,7 +134,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
       query.cursor = Double(cursor)
     }
     
-    let response = try await client.listTastings(query: query)
+    let response = try await client.listTastings(Operations.listTastings.Input(query: query))
     let payload = try response.extractPayload()
     
     let tastings = payload.results.map { item -> TastingFeedItem in
@@ -184,7 +195,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
       query.cursor = Double(cursor)
     }
 
-    let response = try await client.listTastings(query: query)
+    let response = try await client.listTastings(Operations.listTastings.Input(query: query))
     let payload = try response.extractPayload()
 
     let tastings = payload.results.map { item -> TastingFeedItem in
@@ -245,7 +256,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
       query.cursor = Double(cursor)
     }
 
-    let response = try await client.listTastings(query: query)
+    let response = try await client.listTastings(Operations.listTastings.Input(query: query))
     let payload = try response.extractPayload()
 
     let tastings = payload.results.map { item -> TastingFeedItem in

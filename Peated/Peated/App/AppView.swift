@@ -111,7 +111,7 @@ struct AppView: View {
                 VStack(spacing: 0) {
                     // Offline indicator at the top
                     OfflineIndicator()
-                    
+
                     TabView(selection: $selectedTab) {
                         FeedView()
                             .tabItem {
@@ -233,6 +233,16 @@ struct AppView: View {
                             Task { await NormalizedStore.shared.flush() }
                         }
                     }
+                }
+                .fullScreenCover(isPresented: Binding(
+                    get: { model.needsTermsAcceptance },
+                    set: { _ in }
+                )) {
+                    TermsAcceptanceView {
+                        // After accepting, clear the flag and dismiss
+                        model.authManager.needsTermsAcceptance = false
+                    }
+                    .environmentObject(model.authManager)
                 }
             } else {
                 // Auth flow

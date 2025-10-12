@@ -86,20 +86,20 @@ struct ErrorBanner: View {
 // Error state for empty feed
 struct ErrorEmptyView: View {
   let onRefresh: () -> Void
-  
+
   var body: some View {
     VStack {
       Spacer().frame(height: 100)
-      
+
       VStack(spacing: 16) {
         Image(systemName: "exclamationmark.icloud")
           .font(.system(size: 60))
           .foregroundColor(.textSecondary)
-        
+
         Text("Unable to Load Feed")
           .font(.title2)
           .fontWeight(.semibold)
-        
+
         Text("We couldn't load your feed. Please check your connection and try again.")
           .font(.subheadline)
           .foregroundColor(.textSecondary)

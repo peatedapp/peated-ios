@@ -13,7 +13,8 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
   @Published public private(set) var authState: AuthState = .unknown
   @Published public private(set) var isLoading = false
   @Published public var error: Error?
-  
+  @Published public var needsTermsAcceptance = false
+
   private let apiClient: APIClient
   private let keychain = KeychainService.shared
   private let userRepository: UserRepository
@@ -175,7 +176,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     #endif
   }
 
-  public func register(username: String, email: String, password: String) async throws -> User {
+  public func register(username: String, email: String, password: String, tosAccepted: Bool = true) async throws -> User {
     isLoading = true
     error = nil
 
@@ -183,7 +184,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
       let client = await apiClient.generatedClient
 
       let body = Operations.register.Input.Body.json(
-        .init(username: username, email: email, password: password)
+        .init(username: username, email: email, password: password, tosAccepted: tosAccepted)
       )
 
       let response = try await client.register(body: body)
@@ -242,6 +243,20 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     isLoading = false
   }
   
+  // MARK: - Terms of Service
+  public func acceptTerms() async throws {
+    let client = await apiClient.generatedClient
+    _ = try await client.acceptTos()
+    // Refresh current user to update TOS acceptance status
+    do {
+      let user = try await userRepository.getCurrentUser()
+      authState = .authenticated(user)
+    } catch {
+      // Non-fatal
+      print("Failed to refresh user after accepting terms: \(error)")
+    }
+  }
+
   // MARK: - Email Verification
   public func resendVerificationEmail() async throws {
     let client = await apiClient.generatedClient

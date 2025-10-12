@@ -88,6 +88,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `POST /auth/magic-link`.
     /// - Remark: Generated from `#/paths//auth/magic-link/post(createMagicLink)`.
     func createMagicLink(_ input: Operations.createMagicLink.Input) async throws -> Operations.createMagicLink.Output
+    /// Accept Terms of Service
+    ///
+    /// Marks the current user as having accepted the Terms of Service.
+    ///
+    /// - Remark: HTTP `POST /auth/tos/accept`.
+    /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)`.
+    func acceptTos(_ input: Operations.acceptTos.Input) async throws -> Operations.acceptTos.Output
     /// Confirm password reset
     ///
     /// Confirm password reset using token from email and set new password. Automatically verifies the user account
@@ -1084,6 +1091,15 @@ extension APIProtocol {
             headers: headers,
             body: body
         ))
+    }
+    /// Accept Terms of Service
+    ///
+    /// Marks the current user as having accepted the Terms of Service.
+    ///
+    /// - Remark: HTTP `POST /auth/tos/accept`.
+    /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)`.
+    public func acceptTos(headers: Operations.acceptTos.Input.Headers = .init()) async throws -> Operations.acceptTos.Output {
+        try await acceptTos(Operations.acceptTos.Input(headers: headers))
     }
     /// Confirm password reset
     ///
@@ -3565,6 +3581,10 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/User/createdAt`.
             public var createdAt: Foundation.Date?
+            /// Timestamp when user accepted the Terms of Service
+            ///
+            /// - Remark: Generated from `#/components/schemas/User/termsAcceptedAt`.
+            public var termsAcceptedAt: Foundation.Date?
             /// Friendship status with the current user
             ///
             /// - Remark: Generated from `#/components/schemas/User/friendStatus`.
@@ -3581,6 +3601,7 @@ public enum Components {
             ///   - admin: Whether the user has admin privileges
             ///   - mod: Whether the user has moderator privileges
             ///   - createdAt: Timestamp when the user account was created
+            ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
             ///   - friendStatus: Friendship status with the current user
             public init(
                 id: Swift.Double,
@@ -3592,6 +3613,7 @@ public enum Components {
                 admin: Swift.Bool? = nil,
                 mod: Swift.Bool? = nil,
                 createdAt: Foundation.Date? = nil,
+                termsAcceptedAt: Foundation.Date? = nil,
                 friendStatus: OpenAPIRuntime.OpenAPIValueContainer? = nil
             ) {
                 self.id = id
@@ -3603,6 +3625,7 @@ public enum Components {
                 self.admin = admin
                 self.mod = mod
                 self.createdAt = createdAt
+                self.termsAcceptedAt = termsAcceptedAt
                 self.friendStatus = friendStatus
             }
             public enum CodingKeys: String, CodingKey {
@@ -3615,6 +3638,7 @@ public enum Components {
                 case admin
                 case mod
                 case createdAt
+                case termsAcceptedAt
                 case friendStatus
             }
         }
@@ -4958,6 +4982,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Comment/createdBy/createdAt`.
                 public var createdAt: Foundation.Date?
+                /// Timestamp when user accepted the Terms of Service
+                ///
+                /// - Remark: Generated from `#/components/schemas/Comment/createdBy/termsAcceptedAt`.
+                public var termsAcceptedAt: Foundation.Date?
                 /// Friendship status with the current user
                 ///
                 /// - Remark: Generated from `#/components/schemas/Comment/createdBy/friendStatus`.
@@ -4974,6 +5002,7 @@ public enum Components {
                 ///   - admin: Whether the user has admin privileges
                 ///   - mod: Whether the user has moderator privileges
                 ///   - createdAt: Timestamp when the user account was created
+                ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                 ///   - friendStatus: Friendship status with the current user
                 public init(
                     id: Swift.Double,
@@ -4985,6 +5014,7 @@ public enum Components {
                     admin: Swift.Bool? = nil,
                     mod: Swift.Bool? = nil,
                     createdAt: Foundation.Date? = nil,
+                    termsAcceptedAt: Foundation.Date? = nil,
                     friendStatus: OpenAPIRuntime.OpenAPIValueContainer? = nil
                 ) {
                     self.id = id
@@ -4996,6 +5026,7 @@ public enum Components {
                     self.admin = admin
                     self.mod = mod
                     self.createdAt = createdAt
+                    self.termsAcceptedAt = termsAcceptedAt
                     self.friendStatus = friendStatus
                 }
                 public enum CodingKeys: String, CodingKey {
@@ -5008,6 +5039,7 @@ public enum Components {
                     case admin
                     case mod
                     case createdAt
+                    case termsAcceptedAt
                     case friendStatus
                 }
             }
@@ -7375,6 +7407,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Auth/user/createdAt`.
                 public var createdAt: Foundation.Date?
+                /// Timestamp when user accepted the Terms of Service
+                ///
+                /// - Remark: Generated from `#/components/schemas/Auth/user/termsAcceptedAt`.
+                public var termsAcceptedAt: Foundation.Date?
                 /// Friendship status with the current user
                 ///
                 /// - Remark: Generated from `#/components/schemas/Auth/user/friendStatus`.
@@ -7391,6 +7427,7 @@ public enum Components {
                 ///   - admin: Whether the user has admin privileges
                 ///   - mod: Whether the user has moderator privileges
                 ///   - createdAt: Timestamp when the user account was created
+                ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                 ///   - friendStatus: Friendship status with the current user
                 public init(
                     id: Swift.Double,
@@ -7402,6 +7439,7 @@ public enum Components {
                     admin: Swift.Bool? = nil,
                     mod: Swift.Bool? = nil,
                     createdAt: Foundation.Date? = nil,
+                    termsAcceptedAt: Foundation.Date? = nil,
                     friendStatus: OpenAPIRuntime.OpenAPIValueContainer? = nil
                 ) {
                     self.id = id
@@ -7413,6 +7451,7 @@ public enum Components {
                     self.admin = admin
                     self.mod = mod
                     self.createdAt = createdAt
+                    self.termsAcceptedAt = termsAcceptedAt
                     self.friendStatus = friendStatus
                 }
                 public enum CodingKeys: String, CodingKey {
@@ -7425,6 +7464,7 @@ public enum Components {
                     case admin
                     case mod
                     case createdAt
+                    case termsAcceptedAt
                     case friendStatus
                 }
             }
@@ -17088,15 +17128,25 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value2/code`.
                         public var code: Swift.String
+                        /// User accepted Terms of Service
+                        ///
+                        /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value2/tosAccepted`.
+                        public var tosAccepted: Swift.Bool?
                         /// Creates a new `Value2Payload`.
                         ///
                         /// - Parameters:
                         ///   - code: Google OAuth authorization code
-                        public init(code: Swift.String) {
+                        ///   - tosAccepted: User accepted Terms of Service
+                        public init(
+                            code: Swift.String,
+                            tosAccepted: Swift.Bool? = nil
+                        ) {
                             self.code = code
+                            self.tosAccepted = tosAccepted
                         }
                         public enum CodingKeys: String, CodingKey {
                             case code
+                            case tosAccepted
                         }
                     }
                     /// Google OAuth (code)
@@ -17111,15 +17161,25 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value3/idToken`.
                         public var idToken: Swift.String
+                        /// User accepted Terms of Service
+                        ///
+                        /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value3/tosAccepted`.
+                        public var tosAccepted: Swift.Bool?
                         /// Creates a new `Value3Payload`.
                         ///
                         /// - Parameters:
                         ///   - idToken: Google idToken
-                        public init(idToken: Swift.String) {
+                        ///   - tosAccepted: User accepted Terms of Service
+                        public init(
+                            idToken: Swift.String,
+                            tosAccepted: Swift.Bool? = nil
+                        ) {
                             self.idToken = idToken
+                            self.tosAccepted = tosAccepted
                         }
                         public enum CodingKeys: String, CodingKey {
                             case idToken
+                            case tosAccepted
                         }
                     }
                     /// Google OAuth (idToken)
@@ -19989,25 +20049,33 @@ public enum Operations {
                     public var email: Swift.String
                     /// - Remark: Generated from `#/paths/auth/register/POST/requestBody/json/password`.
                     public var password: Swift.String
+                    /// User accepted Terms of Service
+                    ///
+                    /// - Remark: Generated from `#/paths/auth/register/POST/requestBody/json/tosAccepted`.
+                    public var tosAccepted: Swift.Bool
                     /// Creates a new `jsonPayload`.
                     ///
                     /// - Parameters:
                     ///   - username:
                     ///   - email:
                     ///   - password:
+                    ///   - tosAccepted: User accepted Terms of Service
                     public init(
                         username: Swift.String,
                         email: Swift.String,
-                        password: Swift.String
+                        password: Swift.String,
+                        tosAccepted: Swift.Bool
                     ) {
                         self.username = username
                         self.email = email
                         self.password = password
+                        self.tosAccepted = tosAccepted
                     }
                     public enum CodingKeys: String, CodingKey {
                         case username
                         case email
                         case password
+                        case tosAccepted
                     }
                 }
                 /// - Remark: Generated from `#/paths/auth/register/POST/requestBody/content/application\/json`.
@@ -24177,6 +24245,1396 @@ public enum Operations {
             /// - Throws: An error if `self` is not `.internalServerError`.
             /// - SeeAlso: `.internalServerError`.
             public var internalServerError: Operations.createMagicLink.Output.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// Accept Terms of Service
+    ///
+    /// Marks the current user as having accepted the Terms of Service.
+    ///
+    /// - Remark: HTTP `POST /auth/tos/accept`.
+    /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)`.
+    public enum acceptTos {
+        public static let id: Swift.String = "acceptTos"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.acceptTos.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.acceptTos.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.acceptTos.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - headers:
+            public init(headers: Operations.acceptTos.Input.Headers = .init()) {
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/200/content/application\/json`.
+                    case json(Components.Schemas.User)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.User {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// OK
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.acceptTos.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.acceptTos.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct BadRequest: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case1`.
+                        case case1(Operations.acceptTos.Output.BadRequest.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/json/case2`.
+                        case case2(Operations.acceptTos.Output.BadRequest.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/400/content/application\/json`.
+                    case json(Operations.acceptTos.Output.BadRequest.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.acceptTos.Output.BadRequest.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.BadRequest.Body
+                /// Creates a new `BadRequest`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.BadRequest.Body) {
+                    self.body = body
+                }
+            }
+            /// 400
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Operations.acceptTos.Output.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Operations.acceptTos.Output.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Unauthorized: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case1`.
+                        case case1(Operations.acceptTos.Output.Unauthorized.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/json/case2`.
+                        case case2(Operations.acceptTos.Output.Unauthorized.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/401/content/application\/json`.
+                    case json(Operations.acceptTos.Output.Unauthorized.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.acceptTos.Output.Unauthorized.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.Unauthorized.Body
+                /// Creates a new `Unauthorized`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.Unauthorized.Body) {
+                    self.body = body
+                }
+            }
+            /// 401
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Operations.acceptTos.Output.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Operations.acceptTos.Output.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Forbidden: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case1`.
+                        case case1(Operations.acceptTos.Output.Forbidden.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/json/case2`.
+                        case case2(Operations.acceptTos.Output.Forbidden.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/403/content/application\/json`.
+                    case json(Operations.acceptTos.Output.Forbidden.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.acceptTos.Output.Forbidden.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.Forbidden.Body
+                /// Creates a new `Forbidden`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.Forbidden.Body) {
+                    self.body = body
+                }
+            }
+            /// 403
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/403`.
+            ///
+            /// HTTP response code: `403 forbidden`.
+            case forbidden(Operations.acceptTos.Output.Forbidden)
+            /// The associated value of the enum case if `self` is `.forbidden`.
+            ///
+            /// - Throws: An error if `self` is not `.forbidden`.
+            /// - SeeAlso: `.forbidden`.
+            public var forbidden: Operations.acceptTos.Output.Forbidden {
+                get throws {
+                    switch self {
+                    case let .forbidden(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "forbidden",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct NotFound: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case1`.
+                        case case1(Operations.acceptTos.Output.NotFound.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/json/case2`.
+                        case case2(Operations.acceptTos.Output.NotFound.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/404/content/application\/json`.
+                    case json(Operations.acceptTos.Output.NotFound.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.acceptTos.Output.NotFound.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.NotFound.Body
+                /// Creates a new `NotFound`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.NotFound.Body) {
+                    self.body = body
+                }
+            }
+            /// 404
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Operations.acceptTos.Output.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Operations.acceptTos.Output.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Conflict: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case1`.
+                        case case1(Operations.acceptTos.Output.Conflict.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/json/case2`.
+                        case case2(Operations.acceptTos.Output.Conflict.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/409/content/application\/json`.
+                    case json(Operations.acceptTos.Output.Conflict.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.acceptTos.Output.Conflict.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.Conflict.Body
+                /// Creates a new `Conflict`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.Conflict.Body) {
+                    self.body = body
+                }
+            }
+            /// 409
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/409`.
+            ///
+            /// HTTP response code: `409 conflict`.
+            case conflict(Operations.acceptTos.Output.Conflict)
+            /// The associated value of the enum case if `self` is `.conflict`.
+            ///
+            /// - Throws: An error if `self` is not `.conflict`.
+            /// - SeeAlso: `.conflict`.
+            public var conflict: Operations.acceptTos.Output.Conflict {
+                get throws {
+                    switch self {
+                    case let .conflict(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "conflict",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct ContentTooLarge: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case1`.
+                        case case1(Operations.acceptTos.Output.ContentTooLarge.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/json/case2`.
+                        case case2(Operations.acceptTos.Output.ContentTooLarge.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/413/content/application\/json`.
+                    case json(Operations.acceptTos.Output.ContentTooLarge.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.acceptTos.Output.ContentTooLarge.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.ContentTooLarge.Body
+                /// Creates a new `ContentTooLarge`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.ContentTooLarge.Body) {
+                    self.body = body
+                }
+            }
+            /// 413
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/413`.
+            ///
+            /// HTTP response code: `413 contentTooLarge`.
+            case contentTooLarge(Operations.acceptTos.Output.ContentTooLarge)
+            /// The associated value of the enum case if `self` is `.contentTooLarge`.
+            ///
+            /// - Throws: An error if `self` is not `.contentTooLarge`.
+            /// - SeeAlso: `.contentTooLarge`.
+            public var contentTooLarge: Operations.acceptTos.Output.ContentTooLarge {
+                get throws {
+                    switch self {
+                    case let .contentTooLarge(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "contentTooLarge",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct InternalServerError: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case1`.
+                        case case1(Operations.acceptTos.Output.InternalServerError.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case2/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case2/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case2`.
+                        case case2(Operations.acceptTos.Output.InternalServerError.Body.jsonPayload.Case2Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case3`.
+                        public struct Case3Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case3/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case3/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case3/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case3/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case3/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case3Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case3`.
+                        case case3(Operations.acceptTos.Output.InternalServerError.Body.jsonPayload.Case3Payload)
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case4`.
+                        public struct Case4Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case4/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case4/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case4/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case4/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case4/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case4Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/json/case4`.
+                        case case4(Operations.acceptTos.Output.InternalServerError.Body.jsonPayload.Case4Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case3(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case4(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            case let .case3(value):
+                                try value.encode(to: encoder)
+                            case let .case4(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/auth/tos/accept/POST/responses/500/content/application\/json`.
+                    case json(Operations.acceptTos.Output.InternalServerError.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.acceptTos.Output.InternalServerError.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.acceptTos.Output.InternalServerError.Body
+                /// Creates a new `InternalServerError`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.acceptTos.Output.InternalServerError.Body) {
+                    self.body = body
+                }
+            }
+            /// 500
+            ///
+            /// - Remark: Generated from `#/paths//auth/tos/accept/post(acceptTos)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Operations.acceptTos.Output.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Operations.acceptTos.Output.InternalServerError {
                 get throws {
                     switch self {
                     case let .internalServerError(response):
@@ -142176,6 +143634,10 @@ public enum Operations {
                                 ///
                                 /// - Remark: Generated from `#/paths/friends/GET/responses/200/content/json/resultsPayload/user/createdAt`.
                                 public var createdAt: Foundation.Date?
+                                /// Timestamp when user accepted the Terms of Service
+                                ///
+                                /// - Remark: Generated from `#/paths/friends/GET/responses/200/content/json/resultsPayload/user/termsAcceptedAt`.
+                                public var termsAcceptedAt: Foundation.Date?
                                 /// Friendship status with the current user
                                 ///
                                 /// - Remark: Generated from `#/paths/friends/GET/responses/200/content/json/resultsPayload/user/friendStatus`.
@@ -142192,6 +143654,7 @@ public enum Operations {
                                 ///   - admin: Whether the user has admin privileges
                                 ///   - mod: Whether the user has moderator privileges
                                 ///   - createdAt: Timestamp when the user account was created
+                                ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                                 ///   - friendStatus: Friendship status with the current user
                                 public init(
                                     id: Swift.Double,
@@ -142203,6 +143666,7 @@ public enum Operations {
                                     admin: Swift.Bool? = nil,
                                     mod: Swift.Bool? = nil,
                                     createdAt: Foundation.Date? = nil,
+                                    termsAcceptedAt: Foundation.Date? = nil,
                                     friendStatus: OpenAPIRuntime.OpenAPIValueContainer? = nil
                                 ) {
                                     self.id = id
@@ -142214,6 +143678,7 @@ public enum Operations {
                                     self.admin = admin
                                     self.mod = mod
                                     self.createdAt = createdAt
+                                    self.termsAcceptedAt = termsAcceptedAt
                                     self.friendStatus = friendStatus
                                 }
                                 public enum CodingKeys: String, CodingKey {
@@ -142226,6 +143691,7 @@ public enum Operations {
                                     case admin
                                     case mod
                                     case createdAt
+                                    case termsAcceptedAt
                                     case friendStatus
                                 }
                             }
@@ -190234,6 +191700,10 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/users/{user}/GET/responses/200/content/json/createdAt`.
                         public var createdAt: Foundation.Date?
+                        /// Timestamp when user accepted the Terms of Service
+                        ///
+                        /// - Remark: Generated from `#/paths/users/{user}/GET/responses/200/content/json/termsAcceptedAt`.
+                        public var termsAcceptedAt: Foundation.Date?
                         /// Friendship status with the current user
                         ///
                         /// - Remark: Generated from `#/paths/users/{user}/GET/responses/200/content/json/friendStatus`.
@@ -190287,6 +191757,7 @@ public enum Operations {
                         ///   - admin: Whether the user has admin privileges
                         ///   - mod: Whether the user has moderator privileges
                         ///   - createdAt: Timestamp when the user account was created
+                        ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                         ///   - friendStatus: Friendship status with the current user
                         ///   - stats:
                         public init(
@@ -190299,6 +191770,7 @@ public enum Operations {
                             admin: Swift.Bool? = nil,
                             mod: Swift.Bool? = nil,
                             createdAt: Foundation.Date? = nil,
+                            termsAcceptedAt: Foundation.Date? = nil,
                             friendStatus: OpenAPIRuntime.OpenAPIValueContainer? = nil,
                             stats: Operations.getUser.Output.Ok.Body.jsonPayload.statsPayload
                         ) {
@@ -190311,6 +191783,7 @@ public enum Operations {
                             self.admin = admin
                             self.mod = mod
                             self.createdAt = createdAt
+                            self.termsAcceptedAt = termsAcceptedAt
                             self.friendStatus = friendStatus
                             self.stats = stats
                         }
@@ -190324,6 +191797,7 @@ public enum Operations {
                             case admin
                             case mod
                             case createdAt
+                            case termsAcceptedAt
                             case friendStatus
                             case stats
                         }
@@ -191806,6 +193280,10 @@ public enum Operations {
                     ///
                     /// - Remark: Generated from `#/paths/users/{user}/PATCH/requestBody/json/mod`.
                     public var mod: Swift.Bool?
+                    /// Timestamp when user accepted the Terms of Service
+                    ///
+                    /// - Remark: Generated from `#/paths/users/{user}/PATCH/requestBody/json/termsAcceptedAt`.
+                    public var termsAcceptedAt: Foundation.Date?
                     /// User's password (minimum 8 characters)
                     ///
                     /// - Remark: Generated from `#/paths/users/{user}/PATCH/requestBody/json/password`.
@@ -191823,6 +193301,7 @@ public enum Operations {
                     ///   - email: User's email address
                     ///   - admin: Whether the user has admin privileges
                     ///   - mod: Whether the user has moderator privileges
+                    ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                     ///   - password: User's password (minimum 8 characters)
                     ///   - notifyComments: Whether to notify user of comments on their content
                     public init(
@@ -191832,6 +193311,7 @@ public enum Operations {
                         email: Swift.String? = nil,
                         admin: Swift.Bool? = nil,
                         mod: Swift.Bool? = nil,
+                        termsAcceptedAt: Foundation.Date? = nil,
                         password: Swift.String? = nil,
                         notifyComments: Swift.Bool? = nil
                     ) {
@@ -191841,6 +193321,7 @@ public enum Operations {
                         self.email = email
                         self.admin = admin
                         self.mod = mod
+                        self.termsAcceptedAt = termsAcceptedAt
                         self.password = password
                         self.notifyComments = notifyComments
                     }
@@ -191851,6 +193332,7 @@ public enum Operations {
                         case email
                         case admin
                         case mod
+                        case termsAcceptedAt
                         case password
                         case notifyComments
                     }
