@@ -18,6 +18,8 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
   private let apiClient: APIClient
   private let keychain = KeychainService.shared
   private let userRepository: UserRepository
+  private let deleteStoredToken: @Sendable () throws -> Void
+  private let googleSignOut: @Sendable () -> Void
   
   public var isAuthenticated: Bool {
     if case .authenticated = authState {
@@ -33,9 +35,19 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     return nil
   }
   
-  public init() {
-    self.apiClient = APIClient.shared
+  public init(
+    apiClient: APIClient = .shared,
+    deleteStoredToken: @escaping @Sendable () throws -> Void = {
+      try KeychainService.shared.deleteToken()
+    },
+    googleSignOut: @escaping @Sendable () -> Void = {
+      GIDSignIn.sharedInstance.signOut()
+    }
+  ) {
+    self.apiClient = apiClient
     self.userRepository = UserRepository(apiClient: apiClient)
+    self.deleteStoredToken = deleteStoredToken
+    self.googleSignOut = googleSignOut
   }
   
   // MARK: - Public Methods
@@ -232,14 +244,19 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
   public func logout() async {
     isLoading = true
     error = nil
-    
+
+    var logoutError: Error?
+
     do {
-      try keychain.deleteToken()
-      authState = .unauthenticated
+      try deleteStoredToken()
     } catch {
-      self.error = error
+      logoutError = error
     }
-    
+
+    googleSignOut()
+    needsTermsAcceptance = false
+    authState = .unauthenticated
+    error = logoutError
     isLoading = false
   }
   
