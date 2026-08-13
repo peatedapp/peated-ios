@@ -48,18 +48,7 @@ public class MockFeedRepository: FeedRepositoryProtocol {
             timestamp: Date()
         ))
 
-        // Simulate network delay if configured
-        if networkDelay > 0 {
-            try await Task.sleep(for: .seconds(networkDelay))
-        }
-
-        // Throw error if configured
-        if let error = mockError {
-            throw error
-        }
-
-        // Return mock data or empty page
-        return mockFeedPage ?? FeedPage(tastings: [], cursor: nil, hasMore: false)
+        return try await response()
     }
 
     public func refreshFeed(type: FeedType) async throws -> FeedPage {
@@ -73,8 +62,7 @@ public class MockFeedRepository: FeedRepositoryProtocol {
             timestamp: Date()
         ))
 
-        // Refresh is just a getFeed with no cursor
-        return try await getFeed(type: type, cursor: nil, limit: 20)
+        return try await response()
     }
 
     public func getBottleTastings(
@@ -118,5 +106,17 @@ public class MockFeedRepository: FeedRepositoryProtocol {
 
     public var totalCallCount: Int {
         getFeedCallCount + refreshFeedCallCount
+    }
+
+    private func response() async throws -> FeedPage {
+        if networkDelay > 0 {
+            try await Task.sleep(for: .seconds(networkDelay))
+        }
+
+        if let error = mockError {
+            throw error
+        }
+
+        return mockFeedPage ?? FeedPage(tastings: [], cursor: nil, hasMore: false)
     }
 }

@@ -197,8 +197,9 @@ public class FeedModel {
 
             // Update UI state if this is for the current feed and we're updating UI
             if updateUI {
-                cursor = feedPage.cursor
-                hasMore = feedPage.hasMore
+                tastings = feedCaches[feedType]?.tastings ?? []
+                cursor = feedCaches[feedType]?.cursor
+                hasMore = feedCaches[feedType]?.hasMore ?? false
             }
 
             // If this background load was for the currently selected feed, update UI
@@ -269,7 +270,7 @@ public class FeedModel {
             hasMore = true
             error = nil
 
-            await loadFeed(refresh: true)
+            await loadFeed()
 
             isSwitchingFeed = false
         }
