@@ -5,6 +5,24 @@ set -euo pipefail
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPOSITORY_ROOT"
 
+if [ -n "${LINT_BASE_REF:-}" ]; then
+    if ! git rev-parse --verify "${LINT_BASE_REF}^{commit}" >/dev/null 2>&1; then
+        echo "error: LINT_BASE_REF does not resolve to a commit: $LINT_BASE_REF" >&2
+        exit 1
+    fi
+fi
+
+changed_files() {
+    local pattern="$1"
+
+    if [ -n "${LINT_BASE_REF:-}" ]; then
+        git diff --name-only --diff-filter=ACMR -z "$LINT_BASE_REF...HEAD" -- "$pattern"
+    else
+        git diff --name-only --diff-filter=ACMR -z HEAD -- "$pattern"
+        git ls-files --others --exclude-standard -z -- "$pattern"
+    fi
+}
+
 swift_files=()
 while IFS= read -r -d '' file; do
     case "$file" in
@@ -14,18 +32,12 @@ while IFS= read -r -d '' file; do
             swift_files+=("$file")
             ;;
     esac
-done < <(
-    git diff --name-only --diff-filter=ACMR -z HEAD -- '*.swift'
-    git ls-files --others --exclude-standard -z -- '*.swift'
-)
+done < <(changed_files '*.swift')
 
 shell_files=()
 while IFS= read -r -d '' file; do
     shell_files+=("$file")
-done < <(
-    git diff --name-only --diff-filter=ACMR -z HEAD -- '*.sh'
-    git ls-files --others --exclude-standard -z -- '*.sh'
-)
+done < <(changed_files '*.sh')
 
 if [ "${#swift_files[@]}" -gt 0 ]; then
     command -v swiftlint >/dev/null 2>&1 || {

@@ -48,6 +48,12 @@ make lint
 
 Changed-file linting keeps existing cleanup debt from blocking unrelated work. Use `make lint-all` to audit the whole repository.
 
+Set `LINT_BASE_REF` to lint committed changes against another commit or branch. GitHub Actions uses the pull request base SHA:
+
+```bash
+LINT_BASE_REF=origin/main make lint-docker
+```
+
 Run `make format` separately when an intentional repository-wide formatting change is desired. Generated OpenAPI client files are excluded from formatting and linting.
 
 ## Swift package checks
@@ -81,6 +87,15 @@ Run the complete local suite with:
 ```bash
 make verify
 ```
+
+## GitHub Actions
+
+The `CI` workflow runs for pull requests and pushes to `main`:
+
+- `Repository checks` runs portable validation and changed-file linting on Ubuntu.
+- `Apple build and tests` runs package tests and the iOS test scheme on macOS 15 with Xcode 16.4 and an iPhone 16 Pro simulator.
+
+The workflow uses read-only repository permissions, cancels superseded runs, and pins third-party actions to reviewed commits. Dependabot checks weekly for GitHub Actions updates.
 
 ## Limited environments
 
