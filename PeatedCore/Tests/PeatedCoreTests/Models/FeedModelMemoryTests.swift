@@ -64,7 +64,6 @@ struct FeedModelMemoryTests {
         mockRepository.mockFeedPage = veryLargePage
 
         await model.switchFeedType(.friends)
-        let initialMemory = model.cacheMemoryUsage
 
         await model.switchFeedType(.personal)
         await model.switchFeedType(.global)

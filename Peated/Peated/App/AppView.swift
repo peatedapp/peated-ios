@@ -1,6 +1,6 @@
+import PeatedCore
 import SwiftUI
 import UIKit
-import PeatedCore
 
 struct AppView: View {
     @State private var model = AppModel()
@@ -11,20 +11,20 @@ struct AppView: View {
     @State private var selectedTab: MainTab = .activity
     @State private var lastNonRecordTab: MainTab = .activity
     @State private var showingCreateTasting = false
-    
-    // Tunable tab icon sizing (smaller scale reduces visual crowding)
+
+    /// Tunable tab icon sizing (smaller scale reduces visual crowding)
     private let tabIconScale: UIImage.SymbolScale = .small
-    
-    // Navigation destinations for the Profile tab
+
+    /// Navigation destinations for the Profile tab
     enum ProfileDestination: Hashable {
         case userProfile(userId: String)
         case tastingDetail(tastingId: String)
         case bottleDetail(bottleId: String)
-                }
+    }
 
     //
-    
-    // Configure global UIAppearance for consistent chrome/tints
+
+    /// Configure global UIAppearance for consistent chrome/tints
     private func configureAppearance() {
         // Navigation bar
         let navAppearance = UINavigationBarAppearance()
@@ -76,31 +76,32 @@ struct AppView: View {
         // Rely on SwiftUI's preferredColorScheme(.dark) instead of overriding windows
     }
 
-    // Helper to produce a tab icon with a desired SF Symbol scale
+    /// Helper to produce a tab icon with a desired SF Symbol scale
     private func tabIcon(_ systemName: String) -> Image {
         let config = UIImage.SymbolConfiguration(scale: tabIconScale)
         let uiImage = UIImage(systemName: systemName, withConfiguration: config) ?? UIImage()
         return Image(uiImage: uiImage)
     }
 
-    // Pre-warm assets that commonly flicker (e.g., current user's avatar)
+    /// Pre-warm assets that commonly flicker (e.g., current user's avatar)
     private func prewarmCurrentUserAssets() {
         if let urlString = AuthenticationManager.shared.currentUser?.pictureUrl,
-           let url = URL(string: urlString) {
+           let url = URL(string: urlString)
+        {
             ImagePrefetcher.prefetch(urls: [url], max: 1)
         }
     }
-    
+
     var body: some View {
         Group {
             if model.isLoading {
                 // Splash screen
                 ZStack {
                     ScreenBackground()
-                    
+
                     VStack(spacing: 20) {
                         PeatedLogo(height: 80)
-                        
+
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .brand))
                             .scaleEffect(1.5)
@@ -174,7 +175,7 @@ struct AppView: View {
                             .navigationBarTitleDisplayMode(.inline)
                             .navigationDestination(for: ProfileDestination.self) { destination in
                                 switch destination {
-                                case .userProfile(let userId):
+                                case let .userProfile(userId):
                                     ProfileView(
                                         userId: userId,
                                         onNavigateToProfile: { targetUserId in
@@ -187,7 +188,7 @@ struct AppView: View {
                                             profileNavigationPath.append(ProfileDestination.bottleDetail(bottleId: bottleId))
                                         }
                                     )
-                                case .tastingDetail(let tastingId):
+                                case let .tastingDetail(tastingId):
                                     TastingDetailView(
                                         tastingId: tastingId,
                                         onNavigateToProfile: { userId in
@@ -197,7 +198,7 @@ struct AppView: View {
                                             profileNavigationPath.append(ProfileDestination.bottleDetail(bottleId: bottleId))
                                         }
                                     )
-                                case .bottleDetail(let bottleId):
+                                case let .bottleDetail(bottleId):
                                     BottleDetailView(bottleId: bottleId, bottleName: nil)
                                 }
                             }
@@ -208,11 +209,11 @@ struct AppView: View {
                             } icon: {
                                 tabIcon("person.fill")
                             }
-                          }
+                        }
                         .tag(MainTab.profile)
                     }
                     .screenBackground()
-                    .onChange(of: selectedTab) { newValue in
+                    .onChange(of: selectedTab) { _, newValue in
                         if newValue == .record {
                             showingCreateTasting = true
                             // revert to last used non-record tab so the modal closes back there
@@ -228,7 +229,7 @@ struct AppView: View {
                         })
                         .interactiveDismissDisabled()
                     }
-                    .onChange(of: scenePhase) { newPhase in
+                    .onChange(of: scenePhase) { _, newPhase in
                         if newPhase == .background {
                             Task { await NormalizedStore.shared.flush() }
                         }
@@ -258,24 +259,28 @@ struct AppView: View {
         .appTheme(ThemeManager.shared.theme) // Provide theme via Environment
         .task {
             await model.checkAuthStatus()
-            if model.isAuthenticated { prewarmCurrentUserAssets() }
+            if model.isAuthenticated {
+                prewarmCurrentUserAssets()
+            }
             // Prune caches on startup
             await SnapshotStore.pruneAll()
             try? await DatabaseManager.shared.pruneTastingCache(maxEntries: 2000)
             try? await DatabaseManager.shared.pruneTastingCache(olderThanDays: 180)
         }
-        .onChange(of: model.isAuthenticated) { newVal in
-            if newVal { prewarmCurrentUserAssets() }
+        .onChange(of: model.isAuthenticated) { _, newVal in
+            if newVal {
+                prewarmCurrentUserAssets()
+            }
         }
         .withToastContainer() // Add toast container at root level
         .onAppear { configureAppearance() } // Ensure appearance is also applied for auth flow
         #if DEBUG
-        .onShake {
-            showingDeveloperSettings = true
-        }
-        .sheet(isPresented: $showingDeveloperSettings) {
-            DeveloperSettingsView()
-        }
+            .onShake {
+                showingDeveloperSettings = true
+            }
+            .sheet(isPresented: $showingDeveloperSettings) {
+                DeveloperSettingsView()
+            }
         #endif
     }
 }
