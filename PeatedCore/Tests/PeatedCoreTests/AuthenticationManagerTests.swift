@@ -3,11 +3,13 @@ import Foundation
 import Testing
 
 struct AuthenticationManagerTests {
+    private let apiServerURLString = "https://api.peated.com/v1"
+
     @Test
     func logoutSignsOutGoogleAndClearsLocalState() async throws {
         let signOutSpy = SignOutSpy()
         let manager = try AuthenticationManager(
-            apiClient: APIClient(serverURL: #require(URL(string: "https://api.peated.com/v1"))),
+            apiClient: APIClient(serverURL: #require(URL(string: apiServerURLString))),
             deleteStoredToken: {},
             googleSignOut: {
                 signOutSpy.callCount += 1
@@ -33,7 +35,7 @@ struct AuthenticationManagerTests {
     func logoutStillSignsOutGoogleWhenTokenDeletionFails() async throws {
         let signOutSpy = SignOutSpy()
         let manager = try AuthenticationManager(
-            apiClient: APIClient(serverURL: #require(URL(string: "https://api.peated.com/v1"))),
+            apiClient: APIClient(serverURL: #require(URL(string: apiServerURLString))),
             deleteStoredToken: {
                 throw LogoutFailure()
             },

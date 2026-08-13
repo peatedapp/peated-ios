@@ -3,7 +3,7 @@ SHELL := /bin/bash
 PROJECT := Peated/Peated.xcodeproj
 SCHEME := Peated
 SIMULATOR := iPhone 16 Pro
-DESTINATION := platform=iOS Simulator,name=$(SIMULATOR)
+DESTINATION := platform=iOS Simulator,name=$(SIMULATOR),OS=latest
 
 .DEFAULT_GOAL := help
 
