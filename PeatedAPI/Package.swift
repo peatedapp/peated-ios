@@ -5,32 +5,36 @@ let package = Package(
     name: "PeatedAPI",
     platforms: [
         .iOS(.v18),
-        .macOS(.v14)
+        .macOS(.v14),
     ],
     products: [
         .library(
             name: "PeatedAPI",
             targets: ["PeatedAPI"]
-        )
+        ),
     ],
     dependencies: [
         // Runtime dependencies
         .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-openapi-urlsession", from: "1.0.0"),
         // Generator for development
-        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0")
+        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.0.0"),
     ],
     targets: [
         .target(
             name: "PeatedAPI",
             dependencies: [
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
-                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession")
+                .product(name: "OpenAPIURLSession", package: "swift-openapi-urlsession"),
+            ],
+            exclude: [
+                "openapi-generator-config.yaml",
+                "openapi.json",
             ]
         ),
         .testTarget(
             name: "PeatedAPITests",
             dependencies: ["PeatedAPI"]
-        )
+        ),
     ]
 )
