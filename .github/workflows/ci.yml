@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repository-checks:
+    name: Repository checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Run portable checks
+        run: make check
+
+      - name: Lint changed files
+        env:
+          LINT_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: make lint-docker
+
+  apple-tests:
+    name: Apple build and tests
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Select Xcode 16.4
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Test Swift packages
+        run: make test-packages
+
+      - name: Test iOS app
+        run: make test-ios
