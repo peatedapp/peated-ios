@@ -1,0 +1,9 @@
+# Match the repository's documented style while preserving Swift 5 language mode.
+--swiftversion 6.0
+--language-mode 5
+--indent 4
+--linebreaks lf
+--trimwhitespace always
+
+# Generated API types are regenerated from the OpenAPI specification.
+--exclude PeatedAPI/Sources/PeatedAPI/Generated

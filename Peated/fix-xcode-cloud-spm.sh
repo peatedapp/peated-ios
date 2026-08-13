@@ -5,7 +5,7 @@
 echo "🔧 Fixing Xcode Cloud SPM dependency resolution..."
 
 PROJECT_DIR="/Users/dcramer/src/peated-ios/Peated"
-cd "$PROJECT_DIR"
+cd "$PROJECT_DIR" || exit 1
 
 # 1. Remove Package.resolved to force fresh resolution
 echo "📦 Removing Package.resolved..."
