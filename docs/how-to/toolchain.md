@@ -32,6 +32,14 @@ make lint-docker
 
 The first run downloads SwiftFormat 0.62.1, SwiftLint 0.65.0, and ShellCheck 0.11.0 images. Override `SWIFTFORMAT_IMAGE`, `SWIFTLINT_IMAGE`, or `SHELLCHECK_IMAGE` when an internally mirrored image is required.
 
+Run the repository-wide SwiftLint ratchet with:
+
+```bash
+make lint-swift-docker
+```
+
+`.swiftlint-baseline.json` records existing violations, while strict mode rejects every violation outside that baseline. This keeps existing cleanup debt from blocking unrelated changes without allowing the debt to grow.
+
 ## macOS setup
 
 Xcode supplies the Apple SDKs and Swift toolchain. Install the auxiliary command-line tools declared in `Brewfile` with:
@@ -46,7 +54,7 @@ Then lint files changed from `HEAD` without modifying them:
 make lint
 ```
 
-Changed-file linting keeps existing cleanup debt from blocking unrelated work. Use `make lint-all` to audit the whole repository.
+Changed-file linting applies the same strict baseline to edited Swift files. Use `make lint-all` to check all hand-written sources with native macOS tools.
 
 Set `LINT_BASE_REF` to lint committed changes against another commit or branch. GitHub Actions uses the pull request base SHA:
 
@@ -55,6 +63,14 @@ LINT_BASE_REF=origin/main make lint-docker
 ```
 
 Run `make format` separately when an intentional repository-wide formatting change is desired. Generated OpenAPI client files are excluded from formatting and linting.
+
+After removing existing SwiftLint violations, regenerate the baseline with:
+
+```bash
+make update-swiftlint-baseline
+```
+
+Review the generated diff before committing it. Routine cleanup should only remove baseline entries; additions require an explicit decision because they expand accepted debt.
 
 ## Swift package checks
 
@@ -92,7 +108,7 @@ make verify
 
 The `CI` workflow runs for pull requests and pushes to `main`:
 
-- `Repository checks` runs portable validation and changed-file linting on Ubuntu.
+- `Repository checks` runs portable validation, enforces the repository-wide SwiftLint baseline, and lints changed files on Ubuntu.
 - `Apple build and tests` runs package tests and the iOS test scheme on macOS 15 with Xcode 16.4 and an iPhone 16 Pro simulator.
 
 The workflow uses read-only repository permissions, cancels superseded runs, and pins third-party actions to reviewed commits. Dependabot checks weekly for GitHub Actions updates.

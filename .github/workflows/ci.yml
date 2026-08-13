@@ -29,6 +29,9 @@ jobs:
       - name: Run portable checks
         run: make check
 
+      - name: Enforce SwiftLint baseline
+        run: make lint-swift-docker
+
       - name: Lint changed files
         env:
           LINT_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}

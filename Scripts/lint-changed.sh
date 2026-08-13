@@ -50,7 +50,7 @@ if [ "${#swift_files[@]}" -gt 0 ]; then
     }
 
     echo "Linting ${#swift_files[@]} changed Swift file(s)..."
-    swiftlint lint --config .swiftlint.yml "${swift_files[@]}"
+    swiftlint lint --config .swiftlint.yml --baseline .swiftlint-baseline.json "${swift_files[@]}"
     swiftformat "${swift_files[@]}" --config .swiftformat --lint
 else
     echo 'No changed hand-written Swift files to lint.'

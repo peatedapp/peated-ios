@@ -7,8 +7,11 @@ DESTINATION := platform=iOS Simulator,name=$(SIMULATOR)
 
 .DEFAULT_GOAL := help
 
-.PHONY: help doctor bootstrap check lint lint-docker lint-all lint-swift lint-shell \
-	format format-check test-api test-core test-packages build-ios test-ios verify
+SWIFTLINT_IMAGE ?= ghcr.io/realm/swiftlint:0.65.0
+
+.PHONY: help doctor bootstrap check lint lint-docker lint-all lint-swift \
+	lint-swift-docker lint-shell update-swiftlint-baseline format format-check \
+	test-api test-core test-packages build-ios test-ios verify
 
 help:
 	@printf '%s\n' \
@@ -19,7 +22,9 @@ help:
 		'  make check         Run portable repository checks' \
 		'  make lint          Lint files changed from HEAD' \
 		'  make lint-docker   Lint changed files with pinned Linux containers' \
-		'  make lint-all      Audit all hand-written source files' \
+		'  make lint-all      Check all hand-written source files' \
+		'  make lint-swift-docker  Check all Swift files against the baseline' \
+		'  make update-swiftlint-baseline  Regenerate the reviewed lint baseline' \
 		'  make format        Format hand-written Swift sources' \
 		'  make format-check  Check repository-wide Swift formatting' \
 		'  make test-api      Test the PeatedAPI Swift package' \
@@ -59,7 +64,18 @@ lint-swift:
 		echo 'error: swiftlint is unavailable; run make bootstrap on macOS' >&2; \
 		exit 1; \
 	}
-	swiftlint lint --config .swiftlint.yml
+	swiftlint lint --config .swiftlint.yml --baseline .swiftlint-baseline.json
+
+lint-swift-docker:
+	@command -v docker >/dev/null 2>&1 || { \
+		echo 'error: docker is required for containerized linting' >&2; \
+		exit 1; \
+	}
+	docker run --rm -v "$(CURDIR):/work:ro" -w /work "$(SWIFTLINT_IMAGE)" \
+		lint --config /work/.swiftlint.yml --baseline /work/.swiftlint-baseline.json
+
+update-swiftlint-baseline:
+	@./Scripts/update-swiftlint-baseline.sh
 
 lint-shell:
 	@command -v shellcheck >/dev/null 2>&1 || { \
