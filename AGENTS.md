@@ -28,6 +28,11 @@
 
 Run the strongest verification supported by the current host and relevant to the change. If a required Apple tool is unavailable, report that portion as unverified; missing tooling is not a test failure.
 
+- Inspect available capabilities with `make doctor`.
+- Run portable checks with `make check`.
+- Lint changed files with `make lint`, or use `make lint-docker` on Linux.
+- Run the complete macOS suite with `make verify`.
+
 ### Portable checks
 
 - Shell syntax: `bash -n Scripts/*.sh PeatedAPI/*.sh Peated/ci_scripts/*.sh Peated/*.sh`
@@ -62,6 +67,7 @@ Run the strongest verification supported by the current host and relevant to the
 ## Documentation
 
 - Documentation rules: @docs/AGENTS.md
+- Development toolchain: @docs/how-to/toolchain.md
 - Testing strategy: @docs/how-to/testing-strategy.md
 - API workflow: @docs/specs/openapi-workflow.md
 - API integration: @docs/how-to/api-integration.md

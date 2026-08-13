@@ -29,7 +29,7 @@ for i in {1..3}; do
         break
     else
         echo "⚠️  Package resolution failed on attempt $i"
-        if [ $i -eq 3 ]; then
+        if [ "$i" -eq 3 ]; then
             echo "❌ Package resolution failed after 3 attempts"
             cat resolve.log
             exit 1

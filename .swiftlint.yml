@@ -1,0 +1,47 @@
+included:
+  - Peated/Peated
+  - Peated/PeatedTests
+  - Peated/PeatedUITests
+  - PeatedCore/Sources
+  - PeatedCore/Tests
+  - PeatedAPI/Sources
+  - PeatedAPI/Tests
+  - Scripts
+
+excluded:
+  - PeatedAPI/Sources/PeatedAPI/Generated
+
+disabled_rules:
+  - todo
+  # SwiftFormat owns whitespace normalization.
+  - trailing_newline
+  - trailing_whitespace
+  - vertical_whitespace
+
+line_length:
+  warning: 120
+  error: 200
+  ignores_comments: true
+  ignores_urls: true
+
+file_length:
+  warning: 750
+  error: 1500
+
+type_body_length:
+  warning: 400
+  error: 800
+
+function_body_length:
+  warning: 80
+  error: 160
+
+identifier_name:
+  min_length:
+    warning: 2
+  excluded:
+    - id
+    - x
+    - y
+
+reporter: xcode
