@@ -192,15 +192,13 @@ struct TastingFeedCard: View {
 
                 Spacer()
 
-                // Share button
-                Button(action: {
-                    // TODO: Implement share
-                }) {
+                ShareLink(item: PeatedWebURL.tasting(id: tasting.id)) {
                     Image(systemName: "square.and.arrow.up")
                         .font(.system(size: 17, weight: .light))
                         .foregroundColor(.textSecondary)
                 }
                 .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Share tasting")
             }
 
             // Friends who also tasted - elegant presentation

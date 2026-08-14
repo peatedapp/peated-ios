@@ -9,7 +9,6 @@ struct BottleDetailView: View {
 
     @State private var model: BottleDetailModel
     @State private var showingCreateTasting = false
-    @State private var showingShareSheet = false
     @State private var isDescriptionExpanded = false
     @State private var showingHeroImageViewer = false
 
@@ -38,11 +37,6 @@ struct BottleDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showingShareSheet) {
-            if model.bottle != nil {
-                ShareSheet(activityItems: [URL(string: "https://peated.com/bottles/\(bottleId)")!])
-            }
-        }
         .task {
             await model.loadBottle()
         }
@@ -312,8 +306,7 @@ extension BottleDetailView {
                     .cornerRadius(12)
             }
 
-            // Share button
-            Button(action: { showingShareSheet = true }) {
+            ShareLink(item: PeatedWebURL.bottle(id: bottle.id)) {
                 Image(systemName: "square.and.arrow.up")
                     .font(.system(size: 20))
                     .fontWeight(.medium)
@@ -322,6 +315,7 @@ extension BottleDetailView {
                     .background(Color.border.opacity(0.3))
                     .cornerRadius(12)
             }
+            .accessibilityLabel("Share bottle")
 
             // Library button
             Button(action: {
@@ -692,16 +686,4 @@ struct SimilarBottleCard: View {
         .background(Color.surface)
         .cornerRadius(12)
     }
-}
-
-// MARK: - ShareSheet
-
-struct ShareSheet: UIViewControllerRepresentable {
-    let activityItems: [Any]
-
-    func makeUIViewController(context _: Context) -> UIActivityViewController {
-        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-    }
-
-    func updateUIViewController(_: UIActivityViewController, context _: Context) {}
 }
