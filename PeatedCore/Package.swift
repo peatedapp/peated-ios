@@ -7,13 +7,13 @@ let package = Package(
     name: "PeatedCore",
     platforms: [
         .iOS("18.0"),
-        .macOS(.v14),
+        .macOS(.v14)
     ],
     products: [
         .library(
             name: "PeatedCore",
             targets: ["PeatedCore"]
-        ),
+        )
     ],
     dependencies: [
         // Database
@@ -41,7 +41,7 @@ let package = Package(
         ),
 
         // Local PeatedAPI package
-        .package(path: "../PeatedAPI"),
+        .package(path: "../PeatedAPI")
     ],
     targets: [
         // Macro target
@@ -49,7 +49,7 @@ let package = Package(
             name: "PeatedCoreMacros",
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
-                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
             ]
         ),
 
@@ -61,15 +61,15 @@ let package = Package(
                 .product(name: "SQLite", package: "SQLite.swift"),
                 .product(name: "PeatedAPI", package: "PeatedAPI"),
                 .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
-                .product(name: "KeychainAccess", package: "KeychainAccess"),
+                .product(name: "KeychainAccess", package: "KeychainAccess")
             ],
             exclude: [
                 "API/openapi-backup.json",
                 "API/openapi-generator-config.yaml",
-                "API/openapi.json",
+                "API/openapi.json"
             ],
             swiftSettings: [
-                .enableUpcomingFeature("StrictConcurrency"),
+                .enableUpcomingFeature("StrictConcurrency")
             ]
             // OpenAPI code is pre-generated and committed
             // plugins: []
@@ -80,11 +80,12 @@ let package = Package(
             name: "PeatedCoreTests",
             dependencies: [
                 "PeatedCore",
-                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
+                .product(name: "SQLite", package: "SQLite.swift"),
+                .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax")
             ],
             swiftSettings: [
-                .enableUpcomingFeature("StrictConcurrency"),
+                .enableUpcomingFeature("StrictConcurrency")
             ]
-        ),
+        )
     ]
 )

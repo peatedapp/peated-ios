@@ -161,7 +161,7 @@ public class CacheManager {
             }
         } else {
             // 4. Queue for offline sync
-            let operation = OfflineOperation.toggleToast(
+            let operation = try OfflineOperation.toggleToast(
                 tastingId: tastingId,
                 isToasted: newToastState
             )

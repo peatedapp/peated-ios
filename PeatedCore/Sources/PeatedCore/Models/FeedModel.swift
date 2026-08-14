@@ -414,6 +414,22 @@ public class FeedModel {
         let currentTasting = tastings[tastingIndex]
         let newToastedState = !currentTasting.hasToasted
         let newToastCount = newToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1)
+        let isConnected = NetworkMonitor.shared.isConnected
+        let offlineOperation: OfflineOperation?
+
+        if isConnected {
+            offlineOperation = nil
+        } else {
+            do {
+                offlineOperation = try OfflineOperation.toggleToast(
+                    tastingId: tastingId,
+                    isToasted: newToastedState
+                )
+            } catch {
+                ToastManager.shared.showError("Failed to prepare offline toast")
+                return
+            }
+        }
 
         // Create updated tasting for optimistic update
         let updatedTasting = TastingFeedItem(
@@ -451,10 +467,8 @@ public class FeedModel {
         }
 
         // Check network status
-        if !NetworkMonitor.shared.isConnected {
-            // Queue for offline sync
-            let operation = OfflineOperation.toggleToast(tastingId: tastingId, isToasted: newToastedState)
-            await OfflineQueueManager.shared.queueOperation(operation)
+        if let offlineOperation {
+            await OfflineQueueManager.shared.queueOperation(offlineOperation)
 
             // Show offline notification
             ToastManager.shared.showInfo("Toast will sync when online")
@@ -517,11 +531,29 @@ public class FeedModel {
             } catch {
                 // Check if it's a network error that should be queued
                 if isNetworkError(error) {
-                    // Queue for offline sync
-                    let operation = OfflineOperation.toggleToast(tastingId: tastingId, isToasted: newToastedState)
-                    await OfflineQueueManager.shared.queueOperation(operation)
+                    do {
+                        let operation = try OfflineOperation.toggleToast(
+                            tastingId: tastingId,
+                            isToasted: newToastedState
+                        )
+                        await OfflineQueueManager.shared.queueOperation(operation)
+                        ToastManager.shared.showWarning("Toast queued for sync")
+                    } catch {
+                        await MainActor.run {
+                            if let revertIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
+                                tastings[revertIndex] = currentTasting
 
-                    ToastManager.shared.showWarning("Toast queued for sync")
+                                for feedType in feedCaches.keys {
+                                    if let cacheIndex = feedCaches[feedType]?.tastings
+                                        .firstIndex(where: { $0.id == tastingId }) {
+                                        feedCaches[feedType]?.tastings[cacheIndex] = currentTasting
+                                    }
+                                }
+                            }
+
+                            ToastManager.shared.showError("Failed to prepare offline toast")
+                        }
+                    }
                 } else {
                     // Revert optimistic update on error
                     await MainActor.run {

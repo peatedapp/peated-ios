@@ -44,11 +44,21 @@ struct CustomDateTranscoder: DateTranscoder {
 
     func encode(_ date: Date) throws -> String {
         let data = try encoder.encode(date)
-        return String(data: data, encoding: .utf8)!.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+        guard let encodedDate = String(bytes: data, encoding: .utf8) else {
+            throw EncodingError.invalidValue(
+                date,
+                EncodingError.Context(
+                    codingPath: [],
+                    debugDescription: "Expected the encoded date to contain valid UTF-8"
+                )
+            )
+        }
+
+        return encodedDate.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
     }
 
     func decode(_ dateString: String) throws -> Date {
-        let data = "\"\(dateString)\"".data(using: .utf8)!
+        let data = Data("\"\(dateString)\"".utf8)
         return try decoder.decode(Date.self, from: data)
     }
 }

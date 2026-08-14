@@ -194,17 +194,30 @@ public class TastingDetailModel {
 
         // Optimistic update
         let newToastedState = !detail.hasToasted
+        let isConnected = NetworkMonitor.shared.isConnected
+        let offlineOperation: OfflineOperation?
+
+        if isConnected {
+            offlineOperation = nil
+        } else {
+            do {
+                offlineOperation = try OfflineOperation.toggleToast(
+                    tastingId: tastingId,
+                    isToasted: newToastedState
+                )
+            } catch {
+                ToastManager.shared.showError("Failed to prepare offline toast")
+                return
+            }
+        }
+
         detail.hasToasted = newToastedState
         detail.toastCount += newToastedState ? 1 : -1
         state = .loaded(detail)
 
         // Check network status for offline support
-        if !NetworkMonitor.shared.isConnected {
-            let operation = OfflineOperation.toggleToast(
-                tastingId: tastingId,
-                isToasted: newToastedState
-            )
-            await OfflineQueueManager.shared.queueOperation(operation)
+        if let offlineOperation {
+            await OfflineQueueManager.shared.queueOperation(offlineOperation)
             ToastManager.shared.showInfo("Toast will sync when online")
             return
         }
@@ -242,12 +255,16 @@ public class TastingDetailModel {
 
         // Check network status for offline support
         if !NetworkMonitor.shared.isConnected {
-            let operation = OfflineOperation.addComment(
-                tastingId: tastingId,
-                text: text
-            )
-            await OfflineQueueManager.shared.queueOperation(operation)
-            ToastManager.shared.showInfo("Comment will post when online")
+            do {
+                let operation = try OfflineOperation.addComment(
+                    tastingId: tastingId,
+                    text: text
+                )
+                await OfflineQueueManager.shared.queueOperation(operation)
+                ToastManager.shared.showInfo("Comment will post when online")
+            } catch {
+                ToastManager.shared.showError("Failed to prepare offline comment")
+            }
             return
         }
 

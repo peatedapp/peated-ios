@@ -152,7 +152,7 @@ public extension OfflineOperation {
         tags: [String],
         imageData: Data?,
         location: CreateTastingPayload.Location?
-    ) -> OfflineOperation {
+    ) throws -> OfflineOperation {
         let payload = CreateTastingPayload(
             bottleId: bottleId,
             rating: rating,
@@ -163,28 +163,28 @@ public extension OfflineOperation {
             location: location
         )
 
-        let data = try! JSONEncoder().encode(payload)
+        let data = try JSONEncoder().encode(payload)
         return OfflineOperation(type: .createTasting, payload: data)
     }
 
     /// Creates a toast toggle operation
-    static func toggleToast(tastingId: String, isToasted: Bool) -> OfflineOperation {
+    static func toggleToast(tastingId: String, isToasted: Bool) throws -> OfflineOperation {
         let payload = ToggleToastPayload(tastingId: tastingId, isToasted: isToasted)
-        let data = try! JSONEncoder().encode(payload)
+        let data = try JSONEncoder().encode(payload)
         return OfflineOperation(type: .toggleToast, payload: data)
     }
 
     /// Creates an add comment operation
-    static func addComment(tastingId: String, text: String) -> OfflineOperation {
+    static func addComment(tastingId: String, text: String) throws -> OfflineOperation {
         let payload = AddCommentPayload(tastingId: tastingId, text: text)
-        let data = try! JSONEncoder().encode(payload)
+        let data = try JSONEncoder().encode(payload)
         return OfflineOperation(type: .addComment, payload: data)
     }
 
     /// Creates a follow user operation
-    static func followUser(userId: String, isFollowing: Bool) -> OfflineOperation {
+    static func followUser(userId: String, isFollowing: Bool) throws -> OfflineOperation {
         let payload = FollowUserPayload(userId: userId, isFollowing: isFollowing)
-        let data = try! JSONEncoder().encode(payload)
+        let data = try JSONEncoder().encode(payload)
         return OfflineOperation(type: isFollowing ? .followUser : .unfollowUser, payload: data)
     }
 }
