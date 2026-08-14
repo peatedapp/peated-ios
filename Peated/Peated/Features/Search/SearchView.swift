@@ -1,113 +1,5 @@
-import Observation
 import PeatedCore
 import SwiftUI
-
-@Observable
-final class SearchModel {
-    var searchText: String = ""
-    var isSearching: Bool = false
-    var recentSearches: [String] = []
-    var state: State = .idle
-    var popularBottles: [Bottle] = []
-    var topRatedBottles: [Bottle] = []
-
-    enum State: Equatable {
-        case idle
-        case loading
-        case results([SearchResult])
-        case error(String)
-    }
-
-    private let repository: SearchRepository
-    private let bottleRepository: BottleRepository
-    private var task: Task<Void, Never>?
-
-    init(repository: SearchRepository = SearchRepository(), bottleRepository: BottleRepository = BottleRepository()) {
-        self.repository = repository
-        self.bottleRepository = bottleRepository
-        loadRecent()
-        loadPopularContent()
-    }
-
-    func onChange(query: String) {
-        task?.cancel()
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else {
-            state = .idle
-            return
-        }
-        state = .loading
-        task = Task { [weak self] in
-            do {
-                try await Task.sleep(nanoseconds: 300_000_000) // 300ms debounce
-                guard !Task.isCancelled else { return }
-                let results = try await self?.repository.search(query: trimmed, limit: 50) ?? []
-                guard !Task.isCancelled else { return }
-                self?.state = .results(results)
-            } catch {
-                guard !Task.isCancelled else { return }
-                self?.state = .error(error.localizedDescription)
-            }
-        }
-    }
-
-    func submit() {
-        let q = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !q.isEmpty else { return }
-        addRecent(q)
-    }
-
-    func clear() {
-        task?.cancel()
-        state = .idle
-    }
-
-    // MARK: Recent
-
-    private func loadRecent() {
-        recentSearches = UserDefaults.standard.stringArray(forKey: "recentSearches") ?? []
-    }
-
-    private func persistRecent() {
-        UserDefaults.standard.set(recentSearches, forKey: "recentSearches")
-    }
-
-    func addRecent(_ query: String) {
-        var list = recentSearches
-        list.removeAll { $0.caseInsensitiveCompare(query) == .orderedSame }
-        list.insert(query, at: 0)
-        if list.count > 10 {
-            list = Array(list.prefix(10))
-        }
-        recentSearches = list
-        persistRecent()
-    }
-
-    func removeRecent(_ query: String) {
-        recentSearches.removeAll { $0 == query }
-        persistRecent()
-    }
-
-    func clearAllRecent() {
-        recentSearches = []
-        persistRecent()
-    }
-
-    private func loadPopularContent() {
-        Task {
-            do {
-                async let popular = bottleRepository.getPopularBottles(limit: 5)
-                async let topRated = bottleRepository.getTopRatedBottles(limit: 5)
-
-                popularBottles = try await popular
-                topRatedBottles = try await topRated
-            } catch {
-                // Silently fail for non-critical content
-                print("Failed to load popular content: \(error)")
-            }
-        }
-    }
-}
 
 struct SearchView: View {
     @State private var model = SearchModel()
@@ -207,6 +99,11 @@ struct SearchView: View {
             .tastingActivityNavigationDestinations(path: $navigationPath)
         }
         .screenBackground()
+        .onChange(of: model.friendshipErrorMessage) { _, message in
+            guard let message else { return }
+            ToastManager.shared.showError(message)
+            model.friendshipErrorMessage = nil
+        }
     }
 }
 
@@ -359,10 +256,14 @@ extension SearchView {
 
             VStack(spacing: 0) {
                 ForEach(results) { result in
-                    Button(action: { handleTap(result) }) {
-                        resultRow(result)
+                    if result.type == .user {
+                        userResultRow(result)
+                    } else {
+                        Button(action: { handleTap(result) }, label: {
+                            resultRow(result)
+                        })
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                     if result.id != results.last?.id {
                         Divider().padding(.leading, 60)
                     }
@@ -446,40 +347,6 @@ extension SearchView {
                     }
                 }
                 Image(systemName: "chevron.right").font(.caption).foregroundColor(.textSecondary)
-            } else if result.type == .user {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(result.name).font(.body).foregroundColor(.text)
-                    if let subtitle = result.subtitle, !subtitle.isEmpty {
-                        Text(subtitle).font(.subheadline).foregroundColor(.textSecondary)
-                    }
-                }
-                Spacer()
-
-                // Follow/Following button for users
-                if let isFollowing = result.isFollowing {
-                    if isFollowing {
-                        Text("Following")
-                            .font(.caption)
-                            .foregroundColor(.textSecondary)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(Color.surfaceSubtle)
-                            .cornerRadius(8)
-                    } else {
-                        Button("Follow") {
-                            // TODO: Implement follow action
-                        }
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(.brand)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 4)
-                        .background(Color.brand.opacity(0.1))
-                        .cornerRadius(12)
-                    }
-                } else {
-                    Image(systemName: "chevron.right").font(.caption).foregroundColor(.textSecondary)
-                }
             } else {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(result.name).font(.body).foregroundColor(.text)
@@ -493,6 +360,82 @@ extension SearchView {
         }
         .padding(.horizontal)
         .padding(.vertical, 12)
+    }
+
+    private func userResultRow(_ result: SearchResult) -> some View {
+        HStack(spacing: 12) {
+            Button(action: { handleTap(result) }, label: {
+                HStack(spacing: 12) {
+                    AvatarImage(urlString: result.imageUrl, size: 44)
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(result.name)
+                            .font(.body)
+                            .foregroundColor(.text)
+                        if let subtitle = result.subtitle, !subtitle.isEmpty {
+                            Text(subtitle)
+                                .font(.subheadline)
+                                .foregroundColor(.textSecondary)
+                        }
+                    }
+
+                    Spacer()
+                }
+                .contentShape(Rectangle())
+            })
+            .buttonStyle(.plain)
+
+            if result.id == AuthenticationManager.shared.currentUser?.id {
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.textSecondary)
+            } else if model.updatingFriendIds.contains(result.id) {
+                ProgressView()
+                    .tint(.brand)
+                    .frame(width: 72)
+                    .accessibilityLabel("Updating friendship")
+            } else {
+                Button(friendshipButtonTitle(for: result)) {
+                    Task { await model.toggleFriendship(for: result) }
+                }
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(
+                    result.friendStatus == .none || result.friendStatus == nil ? .brand : .textSecondary
+                )
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(friendshipButtonBackground(for: result))
+                .clipShape(Capsule())
+                .buttonStyle(.plain)
+                .accessibilityLabel(friendshipAccessibilityLabel(for: result))
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+    }
+
+    private func friendshipButtonTitle(for result: SearchResult) -> String {
+        switch result.friendStatus ?? .none {
+        case .none: "Add Friend"
+        case .pending: "Request Pending"
+        case .friends: "Remove Friend"
+        }
+    }
+
+    private func friendshipButtonBackground(for result: SearchResult) -> Color {
+        switch result.friendStatus ?? .none {
+        case .none: Color.brand.opacity(0.1)
+        case .pending, .friends: Color.surfaceSubtle
+        }
+    }
+
+    private func friendshipAccessibilityLabel(for result: SearchResult) -> String {
+        switch result.friendStatus ?? .none {
+        case .none: "Follow \(result.name)"
+        case .pending: "Cancel friend request to \(result.name)"
+        case .friends: "Unfollow \(result.name)"
+        }
     }
 
     private var loadingView: some View {
@@ -672,8 +615,8 @@ extension SearchView {
             let e = EntitySeed(id: result.id, name: result.name, type: .brand)
             navigationPath.append(SearchDestination.entityDetail(seed: e))
         case .user:
-            let u = UserSeed(id: result.id, username: result.name, pictureUrl: nil)
-            navigationPath.append(SearchDestination.userProfile(seed: u))
+            let userSeed = UserSeed(id: result.id, username: result.name, pictureUrl: result.imageUrl)
+            navigationPath.append(SearchDestination.userProfile(seed: userSeed))
         }
     }
 

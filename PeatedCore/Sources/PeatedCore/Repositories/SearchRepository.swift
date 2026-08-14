@@ -16,94 +16,9 @@ public actor SearchRepository: SearchRepositoryProtocol, BaseRepositoryProtocol 
     }
 
     public func search(query: String, limit: Int = 50) async throws -> [SearchResult] {
-        let client = await apiClient.generatedClient
-
-        async let bottlesTask: [SearchResult] = {
-            do {
-                let bottles = try await bottleRepository.searchBottles(query: query, limit: limit)
-                return bottles.map { b in
-                    SearchResult(
-                        id: b.id,
-                        type: .bottle,
-                        name: b.fullName,
-                        subtitle: [b.category, b.statedAge.map { "\($0) years" }].compactMap(\.self)
-                            .joined(separator: " • "),
-                        imageUrl: b.imageUrl,
-                        rating: b.avgRating,
-                        ratingCount: b.totalRatings,
-                        isFollowing: nil,
-                        bottle: b
-                    )
-                }
-            } catch {
-                return []
-            }
-        }()
-
-        async let entitiesTask: [SearchResult] = {
-            do {
-                let response = try await client.listEntities(
-                    query: .init(query: query, limit: Double(limit))
-                )
-                switch response {
-                case let .ok(ok):
-                    if case let .json(payload) = ok.body {
-                        return payload.results.map { e in
-                            SearchResult(
-                                id: String(Int(e.id)),
-                                type: .entity,
-                                name: e.name,
-                                subtitle: e.shortName,
-                                imageUrl: nil,
-                                rating: nil,
-                                ratingCount: nil,
-                                isFollowing: nil
-                            )
-                        }
-                    }
-                    return []
-                case .unauthorized, .forbidden:
-                    return []
-                default:
-                    return []
-                }
-            } catch {
-                return []
-            }
-        }()
-
-        async let usersTask: [SearchResult] = {
-            do {
-                let response = try await client.listUsers(
-                    query: .init(query: query, limit: Double(limit))
-                )
-                switch response {
-                case let .ok(ok):
-                    if case let .json(payload) = ok.body {
-                        return payload.results.map { u in
-                            SearchResult(
-                                id: String(Int(u.id)),
-                                type: .user,
-                                name: u.username,
-                                subtitle: nil,
-                                imageUrl: u.pictureUrl,
-                                rating: nil,
-                                ratingCount: nil,
-                                isFollowing: nil
-                            )
-                        }
-                    }
-                    return []
-                case .unauthorized, .forbidden:
-                    // Endpoint requires auth; if not available, just omit users
-                    return []
-                default:
-                    return []
-                }
-            } catch {
-                return []
-            }
-        }()
+        async let bottlesTask = searchBottles(query: query, limit: limit)
+        async let entitiesTask = searchEntities(query: query, limit: limit)
+        async let usersTask = searchUsers(query: query, limit: limit)
 
         var results = await bottlesTask + entitiesTask + usersTask
 
@@ -116,5 +31,69 @@ public actor SearchRepository: SearchRepositoryProtocol, BaseRepositoryProtocol 
         }
 
         return results
+    }
+
+    private func searchBottles(query: String, limit: Int) async -> [SearchResult] {
+        do {
+            let bottles = try await bottleRepository.searchBottles(query: query, limit: limit)
+            return bottles.map { bottle in
+                SearchResult(
+                    id: bottle.id,
+                    type: .bottle,
+                    name: bottle.fullName,
+                    subtitle: [bottle.category, bottle.statedAge.map { "\($0) years" }].compactMap(\.self)
+                        .joined(separator: " • "),
+                    imageUrl: bottle.imageUrl,
+                    rating: bottle.avgRating,
+                    ratingCount: bottle.totalRatings,
+                    bottle: bottle
+                )
+            }
+        } catch {
+            return []
+        }
+    }
+
+    private func searchEntities(query: String, limit: Int) async -> [SearchResult] {
+        do {
+            let client = await apiClient.generatedClient
+            let response = try await client.listEntities(query: .init(query: query, limit: Double(limit)))
+            guard case let .ok(ok) = response,
+                  case let .json(payload) = ok.body else {
+                return []
+            }
+            return payload.results.map { entity in
+                SearchResult(
+                    id: String(Int(entity.id)),
+                    type: .entity,
+                    name: entity.name,
+                    subtitle: entity.shortName
+                )
+            }
+        } catch {
+            return []
+        }
+    }
+
+    private func searchUsers(query: String, limit: Int) async -> [SearchResult] {
+        do {
+            let client = await apiClient.generatedClient
+            let response = try await client.listUsers(query: .init(query: query, limit: Double(limit)))
+            guard case let .ok(ok) = response,
+                  case let .json(payload) = ok.body else {
+                return []
+            }
+            return payload.results.map { user in
+                SearchResult(
+                    id: String(Int(user.id)),
+                    type: .user,
+                    name: user.username,
+                    imageUrl: user.pictureUrl,
+                    friendStatus: user.friendStatus.flatMap { User.FriendStatus(rawValue: $0.rawValue) }
+                )
+            }
+        } catch {
+            return []
+        }
     }
 }

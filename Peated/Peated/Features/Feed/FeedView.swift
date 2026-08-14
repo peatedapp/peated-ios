@@ -2,9 +2,15 @@ import PeatedCore
 import SwiftUI
 
 struct FeedView: View {
+    let onFindFriends: () -> Void
+
     @State private var model = FeedModel()
     @State private var navigationPath = NavigationPath()
     @State private var showingSuccessToast = false
+
+    init(onFindFriends: @escaping () -> Void = {}) {
+        self.onFindFriends = onFindFriends
+    }
 
     private func prefetchFeedImages() {
         var urls: [URL] = []
@@ -76,7 +82,7 @@ struct FeedView: View {
                             }
                         }
                     } else if model.tastings.isEmpty, !model.isLoading, !model.isSwitchingFeed {
-                        EmptyFeedView(feedType: model.selectedFeedType)
+                        EmptyFeedView(feedType: model.selectedFeedType, onFindFriends: onFindFriends)
                     } else {
                         ScrollView {
                             LazyVStack(spacing: 0) {
@@ -193,6 +199,7 @@ struct LoadingView: View {
 
 struct EmptyFeedView: View {
     let feedType: FeedType
+    let onFindFriends: () -> Void
 
     var body: some View {
         VStack {
@@ -215,9 +222,7 @@ struct EmptyFeedView: View {
                     .padding(.horizontal, 40)
 
                 if feedType == .friends {
-                    Button(action: {
-                        // TODO: Navigate to find friends
-                    }) {
+                    Button(action: onFindFriends) {
                         Text("Find Friends")
                             .fontWeight(.medium)
                             .foregroundColor(.onBrand)
