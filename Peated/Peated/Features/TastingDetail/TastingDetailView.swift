@@ -49,9 +49,7 @@ struct TastingDetailView: View {
                 if let tasting = model.tasting,
                    tasting.userId == AuthenticationManager.shared.currentUser?.id {
                     Menu {
-                        Button {
-                            // TODO: Implement share
-                        } label: {
+                        ShareLink(item: PeatedWebURL.tasting(id: tasting.id)) {
                             Label("Share", systemImage: "square.and.arrow.up")
                         }
 
