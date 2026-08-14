@@ -300,16 +300,16 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
 
     public func requestPasswordReset(email: String) async throws {
         let client = await apiClient.generatedClient
-        let body = Operations.createPasswordReset.Input.Body.json(.init(email: email))
-        _ = try await client.createPasswordReset(body: body)
+        let body = Operations.createRecovery.Input.Body.json(.init(email: email))
+        _ = try await client.createRecovery(body: body)
     }
 
     public func confirmPasswordReset(token: String, newPassword: String) async throws {
         let client = await apiClient.generatedClient
-        let body = Operations.confirmPasswordReset.Input.Body.json(
+        let body = Operations.confirmRecovery.Input.Body.json(
             .init(token: token, password: newPassword)
         )
-        _ = try await client.confirmPasswordReset(body: body)
+        _ = try await client.confirmRecovery(body: body)
         // After reset, user is verified; we do not auto-login here (token may not be issued)
     }
 

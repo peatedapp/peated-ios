@@ -40,7 +40,7 @@ extension TastingFeedItem {
         let id = String(Int(apiTasting.id))
         let rating = extractRating(from: apiTasting.rating)
         let notes = apiTasting.notes
-        let servingStyle: String? = apiTasting.servingStyle?.value as? String
+        let servingStyle = apiTasting.servingStyle?.rawValue
         let imageUrl: String? = apiTasting.imageUrl
         let createdAt = apiTasting.createdAt
         let userId = String(Int(apiUser.id))
@@ -50,7 +50,7 @@ extension TastingFeedItem {
         let bottleId = String(Int(apiBottle.id))
         let bottleName = apiBottle.fullName
         let bottleBrandName = apiBottle.brand.name
-        let bottleCategory: String? = apiBottle.category?.value as? String
+        let bottleCategory = apiBottle.category?.rawValue
         let bottleImageUrl: String? = apiBottle.imageUrl
         let toastCount = Int(apiTasting.toasts)
         let commentCount = Int(apiTasting.comments)
@@ -104,7 +104,7 @@ extension Achievement {
 
 extension Bottle {
     init(from apiBottle: Components.Schemas.Bottle) {
-        let category: String? = apiBottle.category?.value as? String
+        let category = apiBottle.category?.rawValue
 
         self.init(
             id: String(Int(apiBottle.id)),

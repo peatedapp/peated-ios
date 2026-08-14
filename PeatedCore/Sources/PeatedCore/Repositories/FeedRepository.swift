@@ -188,13 +188,13 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     public func getBottleTastings(bottleId: String, cursor: String?, limit: Int = 20) async throws -> FeedPage {
         let client = await client
 
-        guard let bottleIdDouble = Double(bottleId) else {
+        guard let bottleId = Int(bottleId) else {
             throw APIError.requestFailed("Invalid bottle ID")
         }
 
         // Build the query parameters
         var query = Operations.listTastings.Input.Query()
-        query.bottle = bottleIdDouble
+        query.bottle = bottleId
         query.limit = Double(limit)
 
         if let cursor {

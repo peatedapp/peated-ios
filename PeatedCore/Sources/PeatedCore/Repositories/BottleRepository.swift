@@ -41,7 +41,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                             id: String(Int(apiBottle.brand.id)),
                             name: apiBottle.brand.name
                         ),
-                        category: apiBottle.category?.value as? String,
+                        category: apiBottle.category?.rawValue,
                         caskStrength: apiBottle.caskStrength ?? false,
                         singleCask: apiBottle.singleCask ?? false,
                         statedAge: apiBottle.statedAge.map { Int($0) },
@@ -111,7 +111,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         let response = try await client.listBottles(
             query: .init(
                 limit: Double(limit),
-                sort: "tastings"
+                sort: .tastings
             )
         )
 
@@ -123,7 +123,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                     let bottleId = String(Int(apiBottle.id))
                     let brandId = String(Int(apiBottle.brand.id))
                     let brand = Brand(id: brandId, name: apiBottle.brand.name)
-                    let category = apiBottle.category?.value as? String
+                    let category = apiBottle.category?.rawValue
                     let statedAge = apiBottle.statedAge.map { Int($0) }
                     let avgRating = apiBottle.avgRating ?? 0.0
                     let totalRatings = Int(apiBottle.totalTastings)
@@ -166,7 +166,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         let response = try await client.listBottles(
             query: .init(
                 limit: Double(limit),
-                sort: "rating"
+                sort: .rating
             )
         )
 
@@ -178,7 +178,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                     let bottleId = String(Int(apiBottle.id))
                     let brandId = String(Int(apiBottle.brand.id))
                     let brand = Brand(id: brandId, name: apiBottle.brand.name)
-                    let category = apiBottle.category?.value as? String
+                    let category = apiBottle.category?.rawValue
                     let statedAge = apiBottle.statedAge.map { Int($0) }
                     let avgRating = apiBottle.avgRating ?? 0.0
                     let totalRatings = Int(apiBottle.totalTastings)
@@ -240,7 +240,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                             id: String(Int(apiBottle.brand.id)),
                             name: apiBottle.brand.name
                         ),
-                        category: apiBottle.category?.value as? String,
+                        category: apiBottle.category?.rawValue,
                         caskStrength: apiBottle.caskStrength ?? false,
                         singleCask: apiBottle.singleCask ?? false,
                         statedAge: apiBottle.statedAge.map { Int($0) },

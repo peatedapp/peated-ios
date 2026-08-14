@@ -64,7 +64,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
                     id: String(Int(payload.id)),
                     rating: extractRating(from: payload.rating),
                     notes: payload.notes,
-                    servingStyle: payload.servingStyle?.value as? String,
+                    servingStyle: payload.servingStyle?.rawValue,
                     imageUrl: payload.imageUrl,
                     createdAt: payload.createdAt,
                     userId: String(Int(payload.createdBy.id)),
@@ -74,7 +74,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
                     bottleId: String(Int(payload.bottle.id)),
                     bottleName: payload.bottle.fullName,
                     bottleBrandName: payload.bottle.brand.name,
-                    bottleCategory: payload.bottle.category?.value as? String,
+                    bottleCategory: payload.bottle.category?.rawValue,
                     bottleImageUrl: payload.bottle.imageUrl,
                     toastCount: Int(payload.toasts),
                     commentCount: Int(payload.comments),
@@ -98,28 +98,31 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
     public func createTasting(_ input: CreateTastingInput) async throws -> TastingFeedItem {
         let client = await client
 
-        // Convert string bottleId to double
-        guard let bottleId = Double(input.bottleId) else {
+        guard let bottleId = Int(input.bottleId) else {
             throw APIError.requestFailed("Invalid bottle ID")
         }
+
+        let rating = Operations.createTasting.Input.Body.jsonPayload
+            .makeRating(RatingValue(rawValue: Int(input.rating)) ?? .none)
+        let servingStyle: Operations.createTasting.Input.Body.jsonPayload.servingStylePayload? =
+            input.servingStyle.flatMap { style in
+                switch style {
+                case "neat": .neat
+                case "rocks": .rocks
+                case "water", "splash": .splash
+                default: nil
+                }
+            }
 
         // Build the request body
         let body = Operations.createTasting.Input.Body.json(
             .init(
                 notes: input.notes,
-                bottle: bottleId,
-                rating: Operations.createTasting.Input.Body.jsonPayload
-                    .makeRating(RatingValue(rawValue: Int(input.rating)) ?? .none),
+                rating: rating,
                 tags: input.tags.isEmpty ? nil : input.tags,
                 color: input.color.flatMap { Double($0) },
-                servingStyle: input.servingStyle.flatMap { style in
-                    switch style {
-                    case "neat": OpenAPIRuntime.OpenAPIValueContainer("neat")
-                    case "rocks": OpenAPIRuntime.OpenAPIValueContainer("rocks")
-                    case "water": OpenAPIRuntime.OpenAPIValueContainer("water")
-                    default: nil
-                    }
-                }
+                servingStyle: servingStyle,
+                bottle: bottleId
             )
         )
 
@@ -138,7 +141,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
                     id: String(Int(tasting.id)),
                     rating: extractRating(from: tasting.rating),
                     notes: tasting.notes,
-                    servingStyle: tasting.servingStyle?.value as? String,
+                    servingStyle: tasting.servingStyle?.rawValue,
                     imageUrl: tasting.imageUrl,
                     createdAt: tasting.createdAt,
                     userId: String(Int(apiUser.id)),
@@ -148,7 +151,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
                     bottleId: String(Int(apiBottle.id)),
                     bottleName: apiBottle.fullName,
                     bottleBrandName: apiBottle.brand.name,
-                    bottleCategory: apiBottle.category?.value as? String,
+                    bottleCategory: apiBottle.category?.rawValue,
                     bottleImageUrl: apiBottle.imageUrl,
                     toastCount: Int(tasting.toasts),
                     commentCount: Int(tasting.comments),
