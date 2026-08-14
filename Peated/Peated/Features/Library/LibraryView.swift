@@ -6,7 +6,9 @@ private enum LibraryFilter: Hashable, CaseIterable {
     case status(LibraryBottleStatus)
 
     static var allCases: [LibraryFilter] {
-        [.all] + LibraryBottleStatus.allCases.map(.status)
+        [.all] + LibraryBottleStatus.allCases.map { status in
+            LibraryFilter.status(status)
+        }
     }
 
     var title: String {
