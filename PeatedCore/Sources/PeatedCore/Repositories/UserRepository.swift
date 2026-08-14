@@ -115,7 +115,7 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
                 )
                 user.pictureUrl = payload.pictureUrl
                 // Map friendship status if available
-                if let status = payload.friendStatus?.value as? String {
+                if let status = payload.friendStatus?.rawValue {
                     user.friendStatus = User.FriendStatus(rawValue: status)
                 }
 

@@ -21,9 +21,17 @@ echo "🔄 Updating Peated API Client..."
 echo "📥 Downloading OpenAPI spec..."
 curl --fail --location --show-error --output "$TEMP_SPEC" https://api.peated.com/spec.json
 
-# Fix OpenAPI version if needed
-echo "🔧 Fixing OpenAPI version..."
-jq 'if .openapi == "3.1.1" then .openapi = "3.1.0" else . end' \
+# Normalize fields that swift-openapi-generator cannot represent directly.
+echo "🔧 Normalizing OpenAPI compatibility..."
+jq '
+  (if .openapi == "3.1.1" then .openapi = "3.1.0" else . end)
+  | walk(
+      if type == "object" and (.properties?.file?.not == {})
+      then .properties.file = ((.properties.file | del(.not)) + {"type": "string"})
+      else .
+      end
+    )
+' \
     "$TEMP_SPEC" > "$TEMP_NORMALIZED"
 mv "$TEMP_NORMALIZED" "$TEMP_SPEC"
 

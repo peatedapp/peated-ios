@@ -30,10 +30,8 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
             case let .json(payload):
                 // Map entity type from the _type array
                 let entityType: Entity.EntityType = if let types = payload._type, !types.isEmpty {
-                    // Extract string value from OpenAPIValueContainer
-                    if let firstType = types.first,
-                       let typeString = firstType.value as? String {
-                        mapEntityType(typeString)
+                    if let firstType = types.first {
+                        mapEntityType(firstType.rawValue)
                     } else {
                         .brand // Default if extraction fails
                     }

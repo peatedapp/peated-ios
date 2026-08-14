@@ -44655,7 +44655,7 @@
                 "type": "object",
                 "properties": {
                   "file": {
-                    "not": {}
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -56683,7 +56683,7 @@
                 "type": "object",
                 "properties": {
                   "file": {
-                    "not": {}
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -99563,8 +99563,8 @@
                 "type": "object",
                 "properties": {
                   "file": {
-                    "not": {},
-                    "description": "Image file to store as a pending upload"
+                    "description": "Image file to store as a pending upload",
+                    "type": "string"
                   },
                   "purpose": {
                     "enum": [
@@ -121811,7 +121811,7 @@
                 "type": "object",
                 "properties": {
                   "file": {
-                    "not": {}
+                    "type": "string"
                   }
                 },
                 "required": [
@@ -122829,8 +122829,8 @@
                 "type": "object",
                 "properties": {
                   "file": {
-                    "not": {},
-                    "description": "Bottle label image to identify"
+                    "description": "Bottle label image to identify",
+                    "type": "string"
                   },
                   "idempotencyKey": {
                     "type": "string",
@@ -128016,7 +128016,7 @@
                 "type": "object",
                 "properties": {
                   "file": {
-                    "not": {}
+                    "type": "string"
                   }
                 },
                 "required": [

@@ -75,7 +75,7 @@ public actor CollectionRepository: BaseRepositoryProtocol {
                             id: String(Int(b.brand.id)),
                             name: b.brand.name
                         ),
-                        category: b.category?.value as? String,
+                        category: b.category?.rawValue,
                         description: b.description,
                         caskStrength: b.caskStrength ?? false,
                         singleCask: b.singleCask ?? false,
@@ -105,7 +105,7 @@ public extension CollectionRepository {
             throw APIError.requestFailed("Favorites collection not found")
         }
         let client = await client
-        guard let cid = Double(collectionId), let bid = Double(bottleId) else {
+        guard let cid = Double(collectionId), let bid = Int(bottleId) else {
             throw APIError.requestFailed("Invalid id(s)")
         }
         _ = try await client.addBottleToCollection(
@@ -124,14 +124,14 @@ public extension CollectionRepository {
             throw APIError.requestFailed("Favorites collection not found")
         }
         let client = await client
-        guard let cid = Double(collectionId), let bid = Double(bottleId) else {
+        guard let cid = Double(collectionId), let bid = Int(bottleId) else {
             throw APIError.requestFailed("Invalid id(s)")
         }
         _ = try await client.removeBottleFromCollection(
             .init(
                 path: .init(
                     user: .init(value3: user),
-                    collection: Operations.removeBottleFromCollection.Input.Path.collectionPayload(value1: cid)
+                    collection: Operations.removeBottleFromCollection.Input.Path.collectionPayload(value2: cid)
                 ),
                 body: .json(.init(bottle: bid))
             )
