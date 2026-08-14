@@ -29,7 +29,7 @@ struct SearchFriendshipTests {
         await model.toggleFriendship(for: result)
 
         let unfollowedUserIds = await repository.unfollowedUserIds
-        #expect(friendStatus(in: model) == .none)
+        #expect(friendStatus(in: model) == User.FriendStatus.none)
         #expect(unfollowedUserIds == [result.id])
     }
 
@@ -42,7 +42,7 @@ struct SearchFriendshipTests {
 
         await model.toggleFriendship(for: result)
 
-        #expect(friendStatus(in: model) == .none)
+        #expect(friendStatus(in: model) == User.FriendStatus.none)
         #expect(model.friendshipErrorMessage != nil)
         #expect(model.updatingFriendIds.isEmpty)
     }

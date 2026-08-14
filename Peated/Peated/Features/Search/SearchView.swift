@@ -400,9 +400,7 @@ extension SearchView {
                 }
                 .font(.caption)
                 .fontWeight(.medium)
-                .foregroundColor(
-                    result.friendStatus == .none || result.friendStatus == nil ? .brand : .textSecondary
-                )
+                .foregroundColor(friendshipButtonForegroundColor(for: result))
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
                 .background(friendshipButtonBackground(for: result))
@@ -427,6 +425,13 @@ extension SearchView {
         switch result.friendStatus ?? .none {
         case .none: Color.brand.opacity(0.1)
         case .pending, .friends: Color.surfaceSubtle
+        }
+    }
+
+    private func friendshipButtonForegroundColor(for result: SearchResult) -> Color {
+        switch result.friendStatus ?? .none {
+        case .none: .brand
+        case .pending, .friends: .textSecondary
         }
     }
 
