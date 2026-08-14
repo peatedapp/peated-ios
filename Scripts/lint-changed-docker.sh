@@ -54,7 +54,7 @@ if [ "${#swift_files[@]}" -gt 0 ]; then
         -v "$REPOSITORY_ROOT:/work:ro" \
         -w /work \
         "$SWIFTLINT_IMAGE" \
-        lint --config /work/.swiftlint.yml "${swift_files[@]}"
+        lint --config /work/.swiftlint.yml --baseline /work/.swiftlint-baseline.json "${swift_files[@]}"
     docker run --rm \
         -v "$REPOSITORY_ROOT:/work:ro" \
         -w /work \

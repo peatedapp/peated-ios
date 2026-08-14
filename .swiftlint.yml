@@ -11,6 +11,10 @@ included:
 excluded:
   - PeatedAPI/Sources/PeatedAPI/Generated
 
+# Existing violations are tracked in .swiftlint-baseline.json. Treat every
+# violation outside that baseline as an error so the backlog can only shrink.
+strict: true
+
 disabled_rules:
   - todo
   # SwiftFormat owns whitespace normalization.
