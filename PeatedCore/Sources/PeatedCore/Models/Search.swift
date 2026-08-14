@@ -14,7 +14,7 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
     public let imageUrl: String?
     public let rating: Double?
     public let ratingCount: Int?
-    public let isFollowing: Bool?
+    public let friendStatus: User.FriendStatus?
     public let bottle: Bottle?
 
     public init(
@@ -25,7 +25,7 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
         imageUrl: String? = nil,
         rating: Double? = nil,
         ratingCount: Int? = nil,
-        isFollowing: Bool? = nil,
+        friendStatus: User.FriendStatus? = nil,
         bottle: Bottle? = nil
     ) {
         self.id = id
@@ -35,8 +35,22 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
         self.imageUrl = imageUrl
         self.rating = rating
         self.ratingCount = ratingCount
-        self.isFollowing = isFollowing
+        self.friendStatus = friendStatus
         self.bottle = bottle
+    }
+
+    public func withFriendStatus(_ friendStatus: User.FriendStatus) -> SearchResult {
+        SearchResult(
+            id: id,
+            type: type,
+            name: name,
+            subtitle: subtitle,
+            imageUrl: imageUrl,
+            rating: rating,
+            ratingCount: ratingCount,
+            friendStatus: friendStatus,
+            bottle: bottle
+        )
     }
 }
 

@@ -115,15 +115,17 @@ struct AppView: View {
                     OfflineIndicator()
 
                     TabView(selection: $selectedTab) {
-                        FeedView()
-                            .tabItem {
-                                Label {
-                                    Text("Activity")
-                                } icon: {
-                                    tabIcon("house.fill")
-                                }
+                        FeedView(onFindFriends: {
+                            selectedTab = .search
+                        })
+                        .tabItem {
+                            Label {
+                                Text("Activity")
+                            } icon: {
+                                tabIcon("house.fill")
                             }
-                            .tag(MainTab.activity)
+                        }
+                        .tag(MainTab.activity)
 
                         NavigationStack {
                             SearchView()
