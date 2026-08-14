@@ -2,6 +2,8 @@ import Foundation
 @testable import PeatedCore
 import Testing
 
+private typealias TastingComment = PeatedCore.Comment
+
 @MainActor
 struct TastingDetailModelTests {
     @Test("Posting a comment updates the loaded tasting")
@@ -130,13 +132,13 @@ struct TastingDetailModelTests {
         #expect(deletedTastingIds == [seed.id])
     }
 
-    private func loadedComments(from model: TastingDetailModel) -> [Comment] {
+    private func loadedComments(from model: TastingDetailModel) -> [TastingComment] {
         guard case let .loaded(comments) = model.commentState else { return [] }
         return comments
     }
 
-    private func makeComment(id: String, text: String) -> Comment {
-        Comment(
+    private func makeComment(id: String, text: String) -> TastingComment {
+        TastingComment(
             id: id,
             text: text,
             createdAt: Date(timeIntervalSince1970: 1_700_000_000),
@@ -151,8 +153,8 @@ struct TastingDetailModelTests {
 
 private actor MockTastingRepository: TastingRepositoryProtocol {
     let tasting: TastingFeedItem
-    let comments: [Comment]
-    let createdComment: Comment
+    let comments: [TastingComment]
+    let createdComment: TastingComment
     let shouldFailCreateComment: Bool
     let shouldFailDeleteComment: Bool
 
@@ -162,14 +164,14 @@ private actor MockTastingRepository: TastingRepositoryProtocol {
 
     init(
         tasting: TastingFeedItem,
-        comments: [Comment] = [],
-        createdComment: Comment? = nil,
+        comments: [TastingComment] = [],
+        createdComment: TastingComment? = nil,
         shouldFailCreateComment: Bool = false,
         shouldFailDeleteComment: Bool = false
     ) {
         self.tasting = tasting
         self.comments = comments
-        self.createdComment = createdComment ?? Comment(
+        self.createdComment = createdComment ?? TastingComment(
             id: "created",
             text: "Created",
             createdAt: Date(timeIntervalSince1970: 1_700_000_000),
@@ -191,11 +193,11 @@ private actor MockTastingRepository: TastingRepositoryProtocol {
         tasting
     }
 
-    func listComments(tastingId _: String) async throws -> [Comment] {
+    func listComments(tastingId _: String) async throws -> [TastingComment] {
         comments
     }
 
-    func createComment(tastingId _: String, text: String) async throws -> Comment {
+    func createComment(tastingId _: String, text: String) async throws -> TastingComment {
         createdCommentTexts.append(text)
         if shouldFailCreateComment {
             throw MockError.requestFailed
