@@ -56,7 +56,7 @@ struct BottleDetailSkeleton: View {
                     }
                     .padding(.horizontal)
 
-                    // Action buttons placeholder (Record, Share, Favorite)
+                    // Action buttons placeholder (Record, Share, Library)
                     HStack(spacing: 12) {
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color.border.opacity(0.25))

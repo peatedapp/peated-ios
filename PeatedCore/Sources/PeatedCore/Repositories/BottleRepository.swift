@@ -50,6 +50,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                         avgRating: apiBottle.avgRating ?? 0.0,
                         totalRatings: Int(apiBottle.totalTastings),
                         isFavorite: apiBottle.isFavorite,
+                        isLibrary: apiBottle.isLibrary,
                         hasTasted: apiBottle.hasTasted
                     )
                     Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
@@ -142,6 +143,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                         avgRating: avgRating,
                         totalRatings: totalRatings,
                         isFavorite: apiBottle.isFavorite,
+                        isLibrary: apiBottle.isLibrary,
                         hasTasted: apiBottle.hasTasted
                     )
                     Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
@@ -197,6 +199,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                         avgRating: avgRating,
                         totalRatings: totalRatings,
                         isFavorite: apiBottle.isFavorite,
+                        isLibrary: apiBottle.isLibrary,
                         hasTasted: apiBottle.hasTasted
                     )
                 }

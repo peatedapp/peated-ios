@@ -174,7 +174,7 @@ extension BottleDetailView {
                         .buttonStyle(.plain)
 
                         // Status badges with labels for clarity (hero)
-                        if bottle.hasTasted || bottle.isFavorite {
+                        if bottle.hasTasted || bottle.isLibrary {
                             HStack(spacing: 10) {
                                 if bottle.hasTasted {
                                     HStack(spacing: 4) {
@@ -186,16 +186,16 @@ extension BottleDetailView {
                                             .foregroundColor(.white.opacity(0.9))
                                     }
                                 }
-                                if bottle.hasTasted, bottle.isFavorite {
+                                if bottle.hasTasted, bottle.isLibrary {
                                     Text("•")
                                         .foregroundColor(.white.opacity(0.7))
                                 }
-                                if bottle.isFavorite {
+                                if bottle.isLibrary {
                                     HStack(spacing: 4) {
-                                        Image(systemName: "star.fill")
+                                        Image(systemName: "books.vertical.fill")
                                             .font(.system(size: 12))
                                             .foregroundColor(.white.opacity(0.9))
-                                        Text("Favorited")
+                                        Text("In Library")
                                             .font(.system(size: DesignSystem.FontSize.small))
                                             .foregroundColor(.white.opacity(0.9))
                                     }
@@ -257,7 +257,7 @@ extension BottleDetailView {
             .buttonStyle(.plain)
 
             // Status badges with labels for clarity (no-image fallback)
-            if bottle.hasTasted || bottle.isFavorite {
+            if bottle.hasTasted || bottle.isLibrary {
                 HStack(spacing: 10) {
                     if bottle.hasTasted {
                         HStack(spacing: 4) {
@@ -269,16 +269,16 @@ extension BottleDetailView {
                                 .foregroundColor(.textSecondary)
                         }
                     }
-                    if bottle.hasTasted, bottle.isFavorite {
+                    if bottle.hasTasted, bottle.isLibrary {
                         Text("•")
                             .foregroundColor(.textSecondary)
                     }
-                    if bottle.isFavorite {
+                    if bottle.isLibrary {
                         HStack(spacing: 4) {
-                            Image(systemName: "star.fill")
+                            Image(systemName: "books.vertical.fill")
                                 .font(.system(size: 12))
                                 .foregroundColor(.textSecondary)
-                            Text("Favorited")
+                            Text("In Library")
                                 .font(.system(size: DesignSystem.FontSize.small))
                                 .foregroundColor(.textSecondary)
                         }
@@ -323,17 +323,19 @@ extension BottleDetailView {
                     .cornerRadius(12)
             }
 
-            // Favorite button
-            Button(action: { Task { await model.toggleFavorite() } }) {
-                Image(systemName: bottle.isFavorite ? "star.fill" : "star")
+            // Library button
+            Button(action: {
+                Task(operation: { await model.toggleLibrary() })
+            }, label: {
+                Image(systemName: bottle.isLibrary ? "books.vertical.fill" : "books.vertical")
                     .font(.system(size: 20))
                     .fontWeight(.medium)
-                    .foregroundColor(bottle.isFavorite ? .brand : .text)
+                    .foregroundColor(bottle.isLibrary ? .brand : .text)
                     .frame(width: 50, height: 50)
                     .background(Color.border.opacity(0.3))
                     .cornerRadius(12)
-                    .accessibilityLabel(bottle.isFavorite ? "Unfavorite" : "Favorite")
-            }
+                    .accessibilityLabel(bottle.isLibrary ? "Remove from Library" : "Save to Library")
+            })
         }
     }
 

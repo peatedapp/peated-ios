@@ -124,6 +124,7 @@ extension Bottle {
             avgRating: apiBottle.avgRating ?? 0.0,
             totalRatings: Int(apiBottle.totalTastings),
             isFavorite: apiBottle.isFavorite,
+            isLibrary: apiBottle.isLibrary,
             hasTasted: apiBottle.hasTasted
         )
     }

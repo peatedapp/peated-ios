@@ -91,6 +91,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     category: t.bottleCategory,
                     imageUrl: t.bottleImageUrl,
                     isFavorite: b.isFavorite,
+                    isLibrary: b.isLibrary,
                     hasTasted: b.hasTasted
                 ))
                 // Persist tasting into DB tasting cache for instant detail seeding
@@ -161,6 +162,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     category: t.bottleCategory,
                     imageUrl: t.bottleImageUrl,
                     isFavorite: b.isFavorite,
+                    isLibrary: b.isLibrary,
                     hasTasted: b.hasTasted
                 ))
                 try? await DatabaseManager.shared.cacheTasting(t)
@@ -225,6 +227,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     category: t.bottleCategory,
                     imageUrl: t.bottleImageUrl,
                     isFavorite: b.isFavorite,
+                    isLibrary: b.isLibrary,
                     hasTasted: b.hasTasted
                 ))
                 try? await DatabaseManager.shared.cacheTasting(t)
@@ -289,6 +292,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     category: t.bottleCategory,
                     imageUrl: t.bottleImageUrl,
                     isFavorite: b.isFavorite,
+                    isLibrary: b.isLibrary,
                     hasTasted: b.hasTasted
                 ))
                 try? await DatabaseManager.shared.cacheTasting(t)

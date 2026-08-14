@@ -20,19 +20,25 @@ public final class BottleDetailModel {
     private let seed: Bottle?
     private let bottleRepository = BottleRepository()
     private let feedRepository = FeedRepository()
-    private let collectionRepository = CollectionRepository()
+    private let collectionRepository: any CollectionRepositoryProtocol
     private let tastingRepository: any TastingRepositoryProtocol
 
     public init(
         bottleId: String,
         seed: Bottle? = nil,
         recentTastings: [TastingFeedItem] = [],
+        collectionRepository: (any CollectionRepositoryProtocol)? = nil,
         tastingRepository: (any TastingRepositoryProtocol)? = nil
     ) {
         self.bottleId = bottleId
         self.seed = seed
         self.recentTastings = recentTastings
+        self.collectionRepository = collectionRepository ?? CollectionRepository()
         self.tastingRepository = tastingRepository ?? TastingRepository()
+        if let seed {
+            bottle = seed
+            state = .loaded(seed)
+        }
     }
 
     public func loadBottle() async {
@@ -68,11 +74,11 @@ public final class BottleDetailModel {
         await loadBottle()
     }
 
-    public func toggleFavorite() async {
+    public func toggleLibrary() async {
         guard var current = bottle else { return }
-        let target = !current.isFavorite
+        let target = !current.isLibrary
         // Optimistic update
-        current.isFavorite = target
+        current.isLibrary = target
         bottle = current
         if case .loaded = state {
             state = .loaded(current)
@@ -81,19 +87,19 @@ public final class BottleDetailModel {
 
         do {
             if target {
-                try await collectionRepository.addBottleToFavorites(bottleId: bottleId)
+                try await collectionRepository.addBottleToLibrary(bottleId: bottleId, user: "me")
             } else {
-                try await collectionRepository.removeBottleFromFavorites(bottleId: bottleId)
+                try await collectionRepository.removeBottleFromLibrary(bottleId: bottleId, user: "me")
             }
         } catch {
             // Revert on failure
-            current.isFavorite.toggle()
+            current.isLibrary.toggle()
             bottle = current
             if case .loaded = state {
                 state = .loaded(current)
             }
             await NormalizedStore.shared.upsert(.bottle(current.id), value: current)
-            print("Failed to toggle favorite: \(error)")
+            print("Failed to toggle library: \(error)")
         }
     }
 

@@ -3,7 +3,7 @@ import SwiftUI
 
 struct BottleStatusIcons: View {
     let bottleId: String
-    @State private var isFavorite: Bool = false
+    @State private var isLibrary: Bool = false
     @State private var hasTasted: Bool = false
 
     var body: some View {
@@ -14,19 +14,19 @@ struct BottleStatusIcons: View {
                     .foregroundColor(.textSecondary)
                     .accessibilityLabel("Tasted")
             }
-            if isFavorite {
-                Image(systemName: "star.fill")
+            if isLibrary {
+                Image(systemName: "books.vertical.fill")
                     .font(.system(size: 11))
                     .foregroundColor(.textSecondary)
-                    .accessibilityLabel("Favorited")
+                    .accessibilityLabel("In Library")
             }
         }
         .task(id: bottleId) {
             if let (bottle, _) = await NormalizedStore.shared.get(.bottle(bottleId), as: Bottle.self) {
-                isFavorite = bottle.isFavorite
+                isLibrary = bottle.isLibrary
                 hasTasted = bottle.hasTasted
             } else {
-                isFavorite = false
+                isLibrary = false
                 hasTasted = false
             }
         }
