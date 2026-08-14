@@ -331,10 +331,10 @@ struct TastingDetailView: View {
         let text = commentText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
 
-        commentText = ""
-        isCommentFieldFocused = false
-
-        await model.postComment(text)
+        if await model.postComment(text) {
+            commentText = ""
+            isCommentFieldFocused = false
+        }
     }
 }
 

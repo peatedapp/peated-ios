@@ -1,9 +1,12 @@
 import Foundation
 import PeatedAPI
 
-public protocol TastingRepositoryProtocol {
+public protocol TastingRepositoryProtocol: Sendable {
     func getTasting(id: String) async throws -> TastingFeedItem
     func createTasting(_ input: CreateTastingInput) async throws -> TastingFeedItem
+    func listComments(tastingId: String) async throws -> [Comment]
+    func createComment(tastingId: String, text: String) async throws -> Comment
+    func deleteComment(id: String) async throws
     func deleteTasting(id: String) async throws
     func toggleToast(tastingId: String) async throws -> Bool
 }
@@ -169,6 +172,100 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
             throw APIError.unexpectedResponse(statusCode)
         default:
             throw APIError.invalidResponse
+        }
+    }
+
+    public func listComments(tastingId: String) async throws -> [Comment] {
+        let client = await client
+
+        guard let id = Double(tastingId) else {
+            throw APIError.requestFailed("Invalid tasting ID")
+        }
+
+        let response = try await client.listComments(
+            query: .init(tasting: id, limit: 100)
+        )
+
+        guard case let .ok(okResponse) = response else {
+            switch response {
+            case .unauthorized:
+                throw APIError.unauthorized
+            case .notFound:
+                throw APIError.notFound
+            case let .undocumented(statusCode, _):
+                throw APIError.unexpectedResponse(statusCode)
+            default:
+                throw APIError.requestFailed("Unable to load comments")
+            }
+        }
+
+        switch okResponse.body {
+        case let .json(payload):
+            return payload.results.map { Comment(from: $0, tastingId: tastingId) }
+        }
+    }
+
+    public func createComment(tastingId: String, text: String) async throws -> Comment {
+        let client = await client
+
+        guard let id = Double(tastingId) else {
+            throw APIError.requestFailed("Invalid tasting ID")
+        }
+
+        let response = try await client.createComment(
+            path: .init(tasting: id),
+            body: .json(.init(comment: text, createdAt: Date()))
+        )
+
+        guard case let .ok(okResponse) = response else {
+            switch response {
+            case .unauthorized:
+                throw APIError.unauthorized
+            case .notFound:
+                throw APIError.notFound
+            case let .undocumented(statusCode, _):
+                throw APIError.unexpectedResponse(statusCode)
+            default:
+                throw APIError.requestFailed("Unable to post comment")
+            }
+        }
+
+        switch okResponse.body {
+        case let .json(payload):
+            return Comment(from: payload, tastingId: tastingId)
+        }
+    }
+
+    public func deleteComment(id: String) async throws {
+        let client = await client
+
+        guard let commentId = Double(id) else {
+            throw APIError.requestFailed("Invalid comment ID")
+        }
+
+        let response = try await client.deleteComment(
+            path: .init(comment: commentId)
+        )
+
+        switch response {
+        case .ok:
+            return
+        case .badRequest:
+            throw APIError.requestFailed("Invalid comment request")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("You cannot delete this comment")
+        case .notFound:
+            throw APIError.notFound
+        case .conflict:
+            throw APIError.requestFailed("Comment could not be deleted")
+        case .contentTooLarge:
+            throw APIError.requestFailed("Comment response was too large")
+        case .internalServerError:
+            throw APIError.serverError(500, "Unable to delete comment")
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
         }
     }
 

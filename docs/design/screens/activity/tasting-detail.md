@@ -610,7 +610,7 @@ class TastingDetailViewModel: ObservableObject {
 ### API Endpoints
 - `GET /tastings/{id}` - Full tasting details
 - `POST /tastings/{id}/comments` - Add comment
-- `DELETE /tastings/{id}/comments/{commentId}` - Delete comment
+- `DELETE /comments/{commentId}` - Delete comment
 - `DELETE /tastings/{id}` - Delete tasting
 
 ### Data Loading

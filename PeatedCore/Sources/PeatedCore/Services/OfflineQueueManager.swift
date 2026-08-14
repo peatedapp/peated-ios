@@ -212,9 +212,11 @@ public class OfflineQueueManager {
             _ = try await tastingRepository.toggleToast(tastingId: payload.tastingId)
 
         case .addComment:
-            _ = try JSONDecoder().decode(AddCommentPayload.self, from: operation.payload)
-            // TODO: Implement when comment API is available
-            throw OfflineQueueError.notImplemented
+            let payload = try JSONDecoder().decode(AddCommentPayload.self, from: operation.payload)
+            _ = try await tastingRepository.createComment(
+                tastingId: payload.tastingId,
+                text: payload.text
+            )
 
         case .followUser, .unfollowUser:
             let payload = try JSONDecoder().decode(FollowUserPayload.self, from: operation.payload)

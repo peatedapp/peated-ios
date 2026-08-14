@@ -2,7 +2,7 @@ import Foundation
 import PeatedAPI
 
 /// Represents a comment on a tasting
-public struct Comment: Identifiable, Codable, Equatable {
+public struct Comment: Identifiable, Codable, Equatable, Sendable {
     public let id: String
     public let text: String
     public let createdAt: Date
@@ -54,8 +54,16 @@ public struct Comment: Identifiable, Codable, Equatable {
 
 public extension Comment {
     /// Creates a Comment from API response
-    init?(from _: Any?) {
-        // TODO: Implement when API comment structure is documented
-        nil
+    init(from apiComment: Components.Schemas.Comment, tastingId: String) {
+        self.init(
+            id: String(Int(apiComment.id)),
+            text: apiComment.comment,
+            createdAt: apiComment.createdAt,
+            userId: String(Int(apiComment.createdBy.id)),
+            username: apiComment.createdBy.username,
+            userDisplayName: nil,
+            userAvatarUrl: apiComment.createdBy.pictureUrl,
+            tastingId: tastingId
+        )
     }
 }
