@@ -80,6 +80,12 @@ Review the generated diff before committing it. Routine cleanup should only remo
 make test-api
 ```
 
+Linux and CI use the pinned Swift 6.1.2 container:
+
+```bash
+make test-api-docker
+```
+
 `PeatedCore` imports Apple-platform dependencies and should be tested on macOS:
 
 ```bash
@@ -108,8 +114,11 @@ make verify
 
 The `CI` workflow runs for pull requests and pushes to `main`:
 
-- `Repository checks` runs portable validation, enforces the repository-wide SwiftLint baseline, and lints changed files on Ubuntu.
-- `Apple build and tests` runs package tests and the iOS test scheme on macOS 15 with Xcode 16.4 and an iPhone 16 Pro simulator.
+- `Repository checks` runs portable validation, enforces the repository-wide SwiftLint baseline, lints changed files, and runs the containerized `PeatedAPI` package tests on Ubuntu.
+- `PeatedCore package tests` and `iOS app tests` run concurrently on macOS 15 with Xcode 16.4.
+- `Apple build and tests` aggregates both Apple jobs so branch protection retains one stable required check.
+
+SwiftPM build directories and Xcode DerivedData are cached with keys that include the host, toolchain, dependency manifests, lockfiles, and source hashes. A source change restores the closest dependency-compatible cache and lets SwiftPM or Xcode rebuild affected artifacts. The iOS test command disables parallel testing because the suite targets one simulator and does not benefit from cloned devices.
 
 The workflow uses read-only repository permissions, cancels superseded runs, and pins third-party actions to reviewed commits. Dependabot checks weekly for GitHub Actions updates.
 

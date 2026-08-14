@@ -37,8 +37,19 @@ jobs:
           LINT_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: make lint-docker
 
-  apple-tests:
-    name: Apple build and tests
+      - name: Cache PeatedAPI build
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: PeatedAPI/.build
+          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-api-${{ hashFiles('PeatedAPI/Package.*') }}-${{ hashFiles('PeatedAPI/Sources/**/*.swift', 'PeatedAPI/Tests/**/*.swift') }}
+          restore-keys: |
+            swiftpm-${{ runner.os }}-${{ runner.arch }}-api-${{ hashFiles('PeatedAPI/Package.*') }}-
+
+      - name: Test PeatedAPI package
+        run: make test-api-docker
+
+  core-tests:
+    name: PeatedCore package tests
     runs-on: macos-15
     timeout-minutes: 60
 
@@ -54,8 +65,65 @@ jobs:
       - name: Show Xcode version
         run: xcodebuild -version
 
-      - name: Test Swift packages
-        run: make test-packages
+      - name: Cache PeatedCore build
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: PeatedCore/.build
+          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-xcode-16.4-core-${{ hashFiles('PeatedCore/Package.*', 'PeatedAPI/Package.*') }}-${{ hashFiles('PeatedCore/Sources/**/*.swift', 'PeatedCore/Tests/**/*.swift', 'PeatedAPI/Sources/**/*.swift') }}
+          restore-keys: |
+            swiftpm-${{ runner.os }}-${{ runner.arch }}-xcode-16.4-core-${{ hashFiles('PeatedCore/Package.*', 'PeatedAPI/Package.*') }}-
+
+      - name: Test PeatedCore package
+        run: make test-core
+
+  ios-tests:
+    name: iOS app tests
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Select Xcode 16.4
+        run: sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Cache Xcode build
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            .derived_data/Build
+            .derived_data/ModuleCache.noindex
+            .derived_data/SourcePackages
+          key: xcode-${{ runner.os }}-${{ runner.arch }}-16.4-${{ hashFiles('Peated/Peated.xcodeproj/project.pbxproj', '**/Package.*') }}-${{ hashFiles('Peated/**/*.swift', 'PeatedCore/**/*.swift', 'PeatedAPI/**/*.swift') }}
+          restore-keys: |
+            xcode-${{ runner.os }}-${{ runner.arch }}-16.4-${{ hashFiles('Peated/Peated.xcodeproj/project.pbxproj', '**/Package.*') }}-
 
       - name: Test iOS app
         run: make test-ios
+
+  apple-tests:
+    name: Apple build and tests
+    if: ${{ always() }}
+    needs:
+      - core-tests
+      - ios-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Require successful Apple test jobs
+        env:
+          CORE_TESTS_RESULT: ${{ needs.core-tests.result }}
+          IOS_TESTS_RESULT: ${{ needs.ios-tests.result }}
+        run: |
+          if [ "$CORE_TESTS_RESULT" != 'success' ] || [ "$IOS_TESTS_RESULT" != 'success' ]; then
+              echo "PeatedCore package tests: $CORE_TESTS_RESULT" >&2
+              echo "iOS app tests: $IOS_TESTS_RESULT" >&2
+              exit 1
+          fi
