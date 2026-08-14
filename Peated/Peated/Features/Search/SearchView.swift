@@ -171,12 +171,17 @@ struct SearchView: View {
                         userId: seed.id,
                         seed: user,
                         onNavigateToProfile: { userId in
-                            navigationPath.append(SearchDestination.userProfile(seed: UserSeed(id: userId, username: "", pictureUrl: nil)))
+                            navigationPath.append(SearchDestination.userProfile(seed: UserSeed(
+                                id: userId,
+                                username: "",
+                                pictureUrl: nil
+                            )))
                         },
                         onNavigateToTasting: nil,
                         onNavigateToBottle: { bottleId in
                             navigationPath.append(SearchDestination.bottleDetail(seed: BottleSeed(
-                                id: bottleId, name: "", fullName: "", brandId: "", brandName: "", category: nil, imageUrl: nil, isFavorite: true, hasTasted: false
+                                id: bottleId, name: "", fullName: "", brandId: "", brandName: "", category: nil,
+                                imageUrl: nil, isFavorite: true, hasTasted: false
                             )))
                         }
                     )
@@ -362,7 +367,10 @@ struct SearchView: View {
                     if let bottle = result.bottle {
                         // Reuse app-wide bottle presentation
                         BottleImage(imageUrl: bottle.imageUrl)
-                            .frame(width: DesignSystem.ImageSize.bottleThumb.width, height: DesignSystem.ImageSize.bottleThumb.height)
+                            .frame(
+                                width: DesignSystem.ImageSize.bottleThumb.width,
+                                height: DesignSystem.ImageSize.bottleThumb.height
+                            )
                     } else {
                         Image(systemName: "wineglass").font(.title2).foregroundColor(.textSecondary)
                             .frame(width: 44, height: 44)
@@ -548,7 +556,10 @@ struct SearchView: View {
     private func bottleRow(_ bottle: Bottle) -> some View {
         HStack(spacing: 12) {
             BottleImage(imageUrl: bottle.imageUrl)
-                .frame(width: DesignSystem.ImageSize.bottleThumb.width, height: DesignSystem.ImageSize.bottleThumb.height)
+                .frame(
+                    width: DesignSystem.ImageSize.bottleThumb.width,
+                    height: DesignSystem.ImageSize.bottleThumb.height
+                )
 
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
                 Text(bottle.fullName)

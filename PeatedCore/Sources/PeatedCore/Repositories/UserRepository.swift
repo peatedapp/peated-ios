@@ -45,8 +45,7 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
                     )
 
                     if case let .ok(detailsOk) = detailsResponse,
-                       case let .json(detailsJson) = detailsOk.body
-                    {
+                       case let .json(detailsJson) = detailsOk.body {
                         user.tastingsCount = Int(detailsJson.stats.tastings)
                         user.bottlesCount = Int(detailsJson.stats.bottles)
                         user.collectedCount = Int(detailsJson.stats.collected)

@@ -3,7 +3,13 @@
 --language-mode 5
 --indent 4
 --linebreaks lf
+--maxwidth 120
 --trimwhitespace always
 
-# Generated API types are regenerated from the OpenAPI specification.
---exclude PeatedAPI/Sources/PeatedAPI/Generated
+# Keep SwiftFormat from producing syntax rejected by SwiftLint's
+# opening_brace and trailing_comma rules.
+--disable trailingCommas,wrapMultilineStatementBraces
+
+# Generated API types are regenerated from the OpenAPI specification. The
+# executable Swift script keeps its shebang and mode outside SwiftFormat.
+--exclude PeatedAPI/Sources/PeatedAPI/Generated,Scripts/recolor-png.swift

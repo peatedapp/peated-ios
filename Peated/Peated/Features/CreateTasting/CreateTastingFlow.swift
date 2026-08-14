@@ -1,22 +1,22 @@
-import SwiftUI
 import PeatedCore
+import SwiftUI
 
 struct CreateTastingFlow: View {
     @StateObject private var viewModel = CreateTastingViewModel()
-    @State private var currentStep = 1  // Start at bottle selection
+    @State private var currentStep = 1 // Start at bottle selection
     @Environment(\.dismiss) private var dismiss
-    
+
     // Pre-filled data (optional)
     let preselectedBottle: Bottle?
     let preselectedLocation: Location?
     let onSuccess: (() -> Void)?
-    
+
     init(preselectedBottle: Bottle? = nil, preselectedLocation: Location? = nil, onSuccess: (() -> Void)? = nil) {
         self.preselectedBottle = preselectedBottle
         self.preselectedLocation = preselectedLocation
         self.onSuccess = onSuccess
     }
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -24,7 +24,7 @@ struct CreateTastingFlow: View {
                 ProgressBar(currentStep: currentStep, totalSteps: 6)
                     .padding(.horizontal)
                     .padding(.top, 8)
-                
+
                 // Step content
                 TabView(selection: $currentStep) {
                     BottleSelectionStep(viewModel: viewModel) {
@@ -34,26 +34,26 @@ struct CreateTastingFlow: View {
                         }
                     }
                     .tag(1)
-                    
+
                     RatingServingStep(viewModel: viewModel)
                         .tag(2)
-                    
+
                     NotesStep(viewModel: viewModel)
                         .tag(3)
-                    
+
                     LocationStep(viewModel: viewModel)
                         .tag(4)
-                    
+
                     PhotosStep(viewModel: viewModel)
                         .tag(5)
-                    
+
                     ConfirmationStep(viewModel: viewModel)
                         .tag(6)
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .animation(.easeInOut, value: currentStep)
                 .ignoresSafeArea(.keyboard)
-                
+
                 // Navigation buttons
                 navigationButtons
                     .padding()
@@ -73,7 +73,7 @@ struct CreateTastingFlow: View {
                         showCancelConfirmation()
                     }
                 }
-                
+
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Text("\(currentStep)/6")
                         .font(.caption)
@@ -85,12 +85,12 @@ struct CreateTastingFlow: View {
                 Button("Discard", role: .destructive) {
                     dismiss()
                 }
-                Button("Keep Editing", role: .cancel) { }
+                Button("Keep Editing", role: .cancel) {}
             } message: {
                 Text("You'll lose any information you've entered.")
             }
             .alert("Error", isPresented: $viewModel.showingError) {
-                Button("OK") { }
+                Button("OK") {}
             } message: {
                 Text(viewModel.errorMessage)
             }
@@ -100,9 +100,9 @@ struct CreateTastingFlow: View {
             setupPreselectedData()
         }
     }
-    
+
     // MARK: - Navigation Buttons
-    @ViewBuilder
+
     private var navigationButtons: some View {
         HStack(spacing: 16) {
             if currentStep > 1 {
@@ -116,9 +116,9 @@ struct CreateTastingFlow: View {
                     .foregroundColor(.brand)
                 }
             }
-            
+
             Spacer()
-            
+
             if currentStep < 6 {
                 Button(action: nextStep) {
                     HStack {
@@ -164,40 +164,42 @@ struct CreateTastingFlow: View {
             }
         }
     }
-    
+
     // MARK: - Computed Properties
+
     private var canProceed: Bool {
         switch currentStep {
         case 1:
-            return viewModel.selectedBottle != nil
+            viewModel.selectedBottle != nil
         case 2:
-            return true // Rating is optional
+            true // Rating is optional
         case 3:
-            return true // Notes and flavors are optional
+            true // Notes and flavors are optional
         case 4:
-            return true // Location is optional
+            true // Location is optional
         case 5:
-            return true // Photos are optional
+            true // Photos are optional
         case 6:
-            return !viewModel.isSubmitting
+            !viewModel.isSubmitting
         default:
-            return false
+            false
         }
     }
-    
+
     // MARK: - Actions
+
     private func previousStep() {
         withAnimation {
             currentStep -= 1
         }
     }
-    
+
     private func nextStep() {
         withAnimation {
             currentStep += 1
         }
     }
-    
+
     private func submitTasting() {
         Task {
             await viewModel.submitTasting()
@@ -208,7 +210,7 @@ struct CreateTastingFlow: View {
             }
         }
     }
-    
+
     private func showCancelConfirmation() {
         if viewModel.hasUnsavedChanges {
             viewModel.showingCancelAlert = true
@@ -216,14 +218,14 @@ struct CreateTastingFlow: View {
             dismiss()
         }
     }
-    
+
     private func setupPreselectedData() {
         if let bottle = preselectedBottle {
             viewModel.selectedBottle = bottle
             // Skip to step 2 if bottle is preselected
             currentStep = 2
         }
-        
+
         if let location = preselectedLocation {
             viewModel.selectedLocation = location
         }
@@ -231,10 +233,11 @@ struct CreateTastingFlow: View {
 }
 
 // MARK: - Progress Bar
+
 struct ProgressBar: View {
     let currentStep: Int
     let totalSteps: Int
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
@@ -242,7 +245,7 @@ struct ProgressBar: View {
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.border.opacity(0.3))
                     .frame(height: 4)
-                
+
                 // Progress
                 RoundedRectangle(cornerRadius: 2)
                     .fill(Color.brand)

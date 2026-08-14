@@ -32,6 +32,15 @@ make lint-docker
 
 The first run downloads SwiftFormat 0.62.1, SwiftLint 0.65.0, and ShellCheck 0.11.0 images. Override `SWIFTFORMAT_IMAGE`, `SWIFTLINT_IMAGE`, or `SHELLCHECK_IMAGE` when an internally mirrored image is required.
 
+Apply or verify repository-wide Swift formatting on Linux with the pinned formatter:
+
+```bash
+make format-docker
+make format-check-docker
+```
+
+Generated OpenAPI sources and the executable `Scripts/recolor-png.swift` helper are excluded. The script retains its shebang and executable mode because SwiftFormat import sorting does not preserve them.
+
 Run the repository-wide SwiftLint ratchet with:
 
 ```bash

@@ -1,10 +1,10 @@
-import SwiftUI
 import PeatedCore
+import SwiftUI
 
 struct RatingNotesStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
     @FocusState private var isNotesFocused: Bool
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
@@ -13,7 +13,7 @@ struct RatingNotesStep: View {
                     Text("Rate your experience")
                         .font(.title2)
                         .fontWeight(.bold)
-                    
+
                     if let bottle = viewModel.selectedBottle {
                         Text("How was the \(bottle.name)?")
                             .font(.subheadline)
@@ -22,14 +22,14 @@ struct RatingNotesStep: View {
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                
+
                 VStack(spacing: 24) {
                     // Rating Section
                     VStack(spacing: 16) {
                         Text("Rating")
                             .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        
+
                         // Pass/Sip/Savor Rating
                         HStack(spacing: 12) {
                             // Pass button
@@ -40,7 +40,7 @@ struct RatingNotesStep: View {
                                 selectedValue: $viewModel.rating,
                                 color: .danger
                             )
-                            
+
                             // Sip button
                             RatingButton(
                                 title: "Sip",
@@ -49,7 +49,7 @@ struct RatingNotesStep: View {
                                 selectedValue: $viewModel.rating,
                                 color: .info
                             )
-                            
+
                             // Savor button
                             RatingButton(
                                 title: "Savor",
@@ -60,7 +60,7 @@ struct RatingNotesStep: View {
                             )
                         }
                         .frame(maxWidth: .infinity)
-                        
+
                         // Rating description
                         if viewModel.rating != 0 {
                             Text(ratingDescription)
@@ -69,16 +69,16 @@ struct RatingNotesStep: View {
                                 .transition(.opacity)
                         }
                     }
-                    
+
                     // Notes Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Tasting Notes")
                             .font(.headline)
-                        
+
                         Text("What did you taste? (Optional)")
                             .font(.subheadline)
                             .foregroundColor(.textSecondary)
-                        
+
                         TextArea(
                             label: nil,
                             placeholder: "Describe the aroma, taste, and finish...",
@@ -86,7 +86,7 @@ struct RatingNotesStep: View {
                             minHeight: 120
                         )
                         .focused($isNotesFocused)
-                        
+
                         // Character count
                         HStack {
                             Spacer()
@@ -95,12 +95,12 @@ struct RatingNotesStep: View {
                                 .foregroundColor(viewModel.notes.count > 500 ? .danger : .textSecondary)
                         }
                     }
-                    
+
                     // Serving Style Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("How did you drink it?")
                             .font(.headline)
-                        
+
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                             ForEach(ServingStyle.allCases, id: \.self) { style in
                                 ServingStyleButton(
@@ -116,16 +116,16 @@ struct RatingNotesStep: View {
                             }
                         }
                     }
-                    
+
                     // Flavor Tags Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Flavor Tags")
                             .font(.headline)
-                        
+
                         Text("What flavors did you detect? (Optional)")
                             .font(.subheadline)
                             .foregroundColor(.textSecondary)
-                        
+
                         FlavorTagsView(
                             selectedTags: $viewModel.selectedTags,
                             availableTags: flavorTags
@@ -138,20 +138,20 @@ struct RatingNotesStep: View {
         }
         .scrollDismissesKeyboard(.interactively)
     }
-    
+
     private var ratingDescription: String {
         switch Int(viewModel.rating) {
         case -1:
-            return "Pass - Not to your taste"
+            "Pass - Not to your taste"
         case 1:
-            return "Sip - Worth trying, decent dram"
+            "Sip - Worth trying, decent dram"
         case 2:
-            return "Savor - Exceptional, highly recommended"
+            "Savor - Exceptional, highly recommended"
         default:
-            return ""
+            ""
         }
     }
-    
+
     private var flavorTags: [String] {
         [
             "Sweet", "Spicy", "Smoky", "Fruity", "Floral",
@@ -164,18 +164,19 @@ struct RatingNotesStep: View {
 }
 
 // MARK: - Serving Style Button
+
 struct ServingStyleButton: View {
     let style: ServingStyle
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 8) {
                 Image(systemName: iconName)
                     .font(.title2)
                     .foregroundColor(isSelected ? .onBrand : .brand)
-                
+
                 Text(style.displayName)
                     .font(.caption)
                     .fontWeight(.medium)
@@ -189,31 +190,32 @@ struct ServingStyleButton: View {
                     .fill(isSelected ? Color.brand : Color.surface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                                .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
+                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
         }
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.05 : 1.0)
     }
-    
+
     private var iconName: String {
         switch style {
         case .neat:
-            return "wineglass"
+            "wineglass"
         case .rocks:
-            return "cube"
+            "cube"
         case .water:
-            return "drop"
+            "drop"
         }
     }
 }
 
 // MARK: - Flavor Tags View
+
 struct FlavorTagsView: View {
     @Binding var selectedTags: Set<String>
     let availableTags: [String]
-    
+
     var body: some View {
         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 8) {
             ForEach(availableTags, id: \.self) { tag in
@@ -237,11 +239,12 @@ struct FlavorTagsView: View {
 }
 
 // MARK: - Flavor Tag Button
+
 struct FlavorTagButton: View {
     let tag: String
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             Text(tag)
@@ -265,17 +268,18 @@ struct FlavorTagButton: View {
 }
 
 // MARK: - Rating Button
+
 struct RatingButton: View {
     let title: String
     let iconName: String
     let value: Double
     @Binding var selectedValue: Double
     let color: Color
-    
+
     private var isSelected: Bool {
         selectedValue == value
     }
-    
+
     var body: some View {
         Button(action: {
             withAnimation(.spring(response: 0.3)) {

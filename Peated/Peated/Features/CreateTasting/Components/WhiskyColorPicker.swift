@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WhiskyColorPicker: View {
     @Binding var selectedColor: Int?
-    
+
     let colors: [(value: Int, name: String, hex: String)] = [
         (0, "Clear", "#ffffff"),
         (1, "White Wine", "#fff7e6"),
@@ -26,16 +26,16 @@ struct WhiskyColorPicker: View {
         (19, "Burnt Umber", "#470700"),
         (20, "Black Bowmore", "#3b1d12")
     ]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header with selected color name
             HStack {
                 Text("Color")
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 if let selected = selectedColor,
                    let colorData = colors.first(where: { $0.value == selected }) {
                     Text(colorData.name)
@@ -47,7 +47,7 @@ struct WhiskyColorPicker: View {
                         .foregroundColor(.textSecondary)
                 }
             }
-            
+
             // Color swatches
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -65,14 +65,14 @@ struct WhiskyColorPicker: View {
                                     .fill(Color.surfaceSubtle)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .stroke(selectedColor == -1 ? Color.brand : Color(.separator), 
-                                                   lineWidth: selectedColor == -1 ? 2 : 1)
+                                            .stroke(selectedColor == -1 ? Color.brand : Color(.separator),
+                                                    lineWidth: selectedColor == -1 ? 2 : 1)
                                     )
                             )
                             .scaleEffect(selectedColor == -1 ? 1.1 : 1.0)
                     }
                     .buttonStyle(.plain)
-                    
+
                     // Color options
                     ForEach(colors, id: \.value) { colorData in
                         Button(action: {
@@ -84,8 +84,11 @@ struct WhiskyColorPicker: View {
                                 .frame(width: 44, height: 44)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
-                                        .stroke(selectedColor == colorData.value ? Color.brand : Color(.separator).opacity(0.3), 
-                                               lineWidth: selectedColor == colorData.value ? 2 : 1)
+                                        .stroke(
+                                            selectedColor == colorData.value ? Color.brand : Color(.separator)
+                                                .opacity(0.3),
+                                            lineWidth: selectedColor == colorData.value ? 2 : 1
+                                        )
                                 )
                                 .scaleEffect(selectedColor == colorData.value ? 1.1 : 1.0)
                         }

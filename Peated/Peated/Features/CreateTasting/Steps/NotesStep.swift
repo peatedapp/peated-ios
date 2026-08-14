@@ -1,11 +1,11 @@
-import SwiftUI
 import PeatedCore
+import SwiftUI
 
 struct NotesStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
     @FocusState private var isNotesFocused: Bool
     @State private var showFlavorPicker = false
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 0) {
@@ -15,7 +15,7 @@ struct NotesStep: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.text)
-                    
+
                     if let bottle = viewModel.selectedBottle {
                         Text("Describe your experience with \(bottle.name)")
                             .font(.subheadline)
@@ -25,19 +25,19 @@ struct NotesStep: View {
                 .padding(.horizontal)
                 .padding(.top)
                 .padding(.bottom, 32)
-                
+
                 // Flavor Profile Section
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Flavor Profile")
                         .font(.headline)
-                    
+
                     Button(action: {
                         showFlavorPicker = true
                     }) {
                         HStack {
                             Image(systemName: "sparkles")
                                 .font(.body)
-                            
+
                             if viewModel.selectedTags.isEmpty {
                                 Text("Select flavor notes")
                                     .foregroundColor(.textSecondary)
@@ -45,9 +45,9 @@ struct NotesStep: View {
                                 Text("\(viewModel.selectedTags.count) flavors selected")
                                     .foregroundColor(.text)
                             }
-                            
+
                             Spacer()
-                            
+
                             Image(systemName: "chevron.right")
                                 .font(.caption)
                                 .foregroundColor(.textSecondary)
@@ -61,7 +61,7 @@ struct NotesStep: View {
                         )
                     }
                     .buttonStyle(.plain)
-                    
+
                     // Show selected flavors as chips
                     if !viewModel.selectedTags.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
@@ -72,7 +72,7 @@ struct NotesStep: View {
                                             .font(.caption)
                                             .fontWeight(.medium)
                                             .foregroundColor(.text)
-                                        
+
                                         Button(action: {
                                             viewModel.selectedTags.remove(tag)
                                         }) {
@@ -92,13 +92,13 @@ struct NotesStep: View {
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 32)
-                
+
                 // Notes Section
                 VStack(alignment: .leading, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Tasting Notes")
                             .font(.headline)
-                        
+
                         Text("What did you taste? (Optional)")
                             .font(.subheadline)
                             .foregroundColor(.textSecondary)
@@ -122,16 +122,16 @@ struct NotesStep: View {
                             .foregroundColor(viewModel.notes.count > 500 ? .danger : .textSecondary)
                     }
                     .padding(.horizontal)
-                    
+
                     // Quick suggestions styled like photo tips
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Need inspiration?")
                             .font(.headline)
-                        
+
                         Text("Consider describing:")
                             .font(.subheadline)
                             .foregroundColor(.textSecondary)
-                        
+
                         VStack(alignment: .leading, spacing: 8) {
                             HStack(spacing: 12) {
                                 Image(systemName: "wind")
@@ -142,7 +142,7 @@ struct NotesStep: View {
                                     .font(.caption)
                                     .foregroundColor(.text)
                             }
-                            
+
                             HStack(spacing: 12) {
                                 Image(systemName: "mouth")
                                     .font(.caption)
@@ -152,7 +152,7 @@ struct NotesStep: View {
                                     .font(.caption)
                                     .foregroundColor(.text)
                             }
-                            
+
                             HStack(spacing: 12) {
                                 Image(systemName: "timer")
                                     .font(.caption)
@@ -162,7 +162,7 @@ struct NotesStep: View {
                                     .font(.caption)
                                     .foregroundColor(.text)
                             }
-                            
+
                             HStack(spacing: 12) {
                                 Image(systemName: "arrow.left.arrow.right")
                                     .font(.caption)

@@ -2,15 +2,19 @@ import SwiftUI
 import UIKit
 
 // MARK: - Color Opacity Helper
+
 extension Color {
-    func withOpacity(_ value: Double) -> Color { self.opacity(value) }
+    func withOpacity(_ value: Double) -> Color {
+        opacity(value)
+    }
 }
 
 // MARK: - Simplified Flavor Wheel Component
+
 struct SimpleFlavorWheel: View {
     @Binding var selectedTags: Set<String>
     @State private var expandedCategory: String?
-    
+
     let flavorCategories: [(category: String, emoji: String, color: Color, flavors: [String])] = [
         ("Sweet", "🍯", .flavorSweet, ["Honey", "Caramel", "Vanilla", "Toffee", "Butterscotch"]),
         ("Fruity", "🍎", .flavorFruity, ["Apple", "Pear", "Citrus", "Berry", "Tropical"]),
@@ -21,23 +25,23 @@ struct SimpleFlavorWheel: View {
         ("Nutty", "🥜", .flavorNutty, ["Almond", "Walnut", "Hazelnut", "Pecan", "Marzipan"]),
         ("Other", "✨", .flavorOther, ["Maritime", "Medicinal", "Herbal", "Earthy", "Mineral"])
     ]
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             // Header
             HStack {
                 Text("Flavor Profile")
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 if !selectedTags.isEmpty {
                     Text("\(selectedTags.count) selected")
                         .font(.caption)
                         .foregroundColor(.textSecondary)
                 }
             }
-            
+
             // Category bubbles
             LazyVGrid(columns: [
                 GridItem(.flexible()),
@@ -65,7 +69,7 @@ struct SimpleFlavorWheel: View {
                     }
                 }
             }
-            
+
             // Expanded flavors
             if let expanded = expandedCategory,
                let categoryData = flavorCategories.first(where: { $0.category == expanded }) {
@@ -74,9 +78,9 @@ struct SimpleFlavorWheel: View {
                         Text(expanded)
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
                             withAnimation {
                                 expandedCategory = nil
@@ -86,7 +90,7 @@ struct SimpleFlavorWheel: View {
                                 .foregroundColor(.secondary)
                         }
                     }
-                    
+
                     // Flavor tags
                     FlexibleView(data: categoryData.flavors, spacing: 8) { flavor in
                         SimpleFlavorTag(
@@ -104,7 +108,7 @@ struct SimpleFlavorWheel: View {
                         .fill(Color.surface)
                 )
             }
-            
+
             // Selected tags
             if !selectedTags.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
@@ -112,22 +116,22 @@ struct SimpleFlavorWheel: View {
                         Text("Selected")
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        
+
                         Spacer()
-                        
+
                         Button("Clear") {
                             selectedTags.removeAll()
                         }
                         .font(.caption)
                         .foregroundColor(.brand)
                     }
-                    
+
                     FlexibleView(data: selectedTags.sorted(), spacing: 6) { tag in
                         HStack(spacing: 4) {
                             Text(tag)
                                 .font(.caption)
                                 .fontWeight(.medium)
-                            
+
                             Button(action: {
                                 selectedTags.remove(tag)
                             }) {
@@ -145,7 +149,7 @@ struct SimpleFlavorWheel: View {
             }
         }
     }
-    
+
     private func toggleFlavor(_ flavor: String) {
         withAnimation {
             if selectedTags.contains(flavor) {
@@ -159,6 +163,7 @@ struct SimpleFlavorWheel: View {
 }
 
 // MARK: - Category Button
+
 struct CategoryButton: View {
     let emoji: String
     let name: String
@@ -166,7 +171,7 @@ struct CategoryButton: View {
     let isExpanded: Bool
     let hasSelection: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 4) {
@@ -175,15 +180,18 @@ struct CategoryButton: View {
                         .fill(hasSelection ? color.withOpacity(0.2) : color.withOpacity(0.1))
                         .overlay(
                             Circle()
-                                .stroke(hasSelection ? color.withOpacity(0.8) : color.withOpacity(0.3), lineWidth: hasSelection ? 2 : 1)
+                                .stroke(
+                                    hasSelection ? color.withOpacity(0.8) : color.withOpacity(0.3),
+                                    lineWidth: hasSelection ? 2 : 1
+                                )
                         )
-                    
+
                     Text(emoji)
                         .font(.title2)
                 }
                 .frame(width: 60, height: 60)
                 .scaleEffect(isExpanded ? 1.1 : 1.0)
-                
+
                 Text(name)
                     .font(.caption2)
                     .fontWeight(hasSelection ? .semibold : .regular)
@@ -195,12 +203,13 @@ struct CategoryButton: View {
 }
 
 // MARK: - Simple Flavor Tag
+
 struct SimpleFlavorTag: View {
     let name: String
     let isSelected: Bool
     let color: Color
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             Text(name)
@@ -220,18 +229,19 @@ struct SimpleFlavorTag: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     private func textColorForBackground(_ backgroundColor: Color) -> Color {
-        return (backgroundColor == .flavorSweet || backgroundColor == .flavorFruity) ? .onSurface : .onStatus
+        (backgroundColor == .flavorSweet || backgroundColor == .flavorFruity) ? .onSurface : .onStatus
     }
 }
 
 // MARK: - Flexible View (Simple Grid Layout)
+
 struct FlexibleView<Data: Collection, Content: View>: View where Data.Element: Hashable {
     let data: Data
     let spacing: CGFloat
     let content: (Data.Element) -> Content
-    
+
     var body: some View {
         LazyVGrid(columns: [
             GridItem(.adaptive(minimum: 80), spacing: spacing)

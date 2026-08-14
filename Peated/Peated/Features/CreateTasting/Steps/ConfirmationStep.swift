@@ -1,9 +1,9 @@
-import SwiftUI
 import PeatedCore
+import SwiftUI
 
 struct ConfirmationStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -13,24 +13,24 @@ struct ConfirmationStep: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.text)
-                    
+
                     Text("Quick check before sharing")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                
+
                 // Tasting Preview - Clean card style
                 TastingPreviewCard(viewModel: viewModel)
                     .padding(.horizontal)
-                
+
                 // Privacy Settings
                 PrivacySettingsSection(
                     isPublic: $viewModel.isPublic
                 )
                 .padding(.horizontal)
-                
+
                 // Social Sharing (if enabled)
                 if viewModel.isPublic {
                     SocialSharingSection(
@@ -47,9 +47,10 @@ struct ConfirmationStep: View {
 }
 
 // MARK: - Tasting Preview Card (Redesigned)
+
 struct TastingPreviewCard: View {
     let viewModel: CreateTastingViewModel
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             // Card content
@@ -64,21 +65,21 @@ struct TastingPreviewCard: View {
                                 .foregroundColor(.textSecondary.opacity(0.5))
                         )
                         .frame(width: 32, height: 32)
-                    
+
                     Text("You")
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.text)
-                    
+
                     Text("•")
                         .font(.system(size: 14))
                         .foregroundColor(.textSecondary.opacity(0.5))
-                    
+
                     Text("now")
                         .font(.system(size: 14))
                         .foregroundColor(.textSecondary)
-                    
+
                     Spacer()
-                    
+
                     // Rating icon
                     if viewModel.rating != 0 {
                         if Int(viewModel.rating) == 2 {
@@ -86,10 +87,10 @@ struct TastingPreviewCard: View {
                             HStack(spacing: 2) {
                                 Image(systemName: "hand.thumbsup.fill")
                                     .font(.system(size: 14))
-                        .foregroundColor(.brand)
+                                    .foregroundColor(.brand)
                                 Image(systemName: "hand.thumbsup.fill")
                                     .font(.system(size: 14))
-                                .foregroundColor(.brand)
+                                    .foregroundColor(.brand)
                             }
                         } else {
                             Image(systemName: getRatingIcon(viewModel.rating))
@@ -98,39 +99,39 @@ struct TastingPreviewCard: View {
                         }
                     }
                 }
-                
+
                 // Bottle info card-within-card
                 if let bottle = viewModel.selectedBottle {
                     HStack(spacing: 12) {
                         // Bottle image or icon
                         BottleImage(imageUrl: bottle.imageUrl)
                             .frame(width: 28, height: 36)
-                        
+
                         VStack(alignment: .leading, spacing: 3) {
                             // Bottle name
                             Text(bottle.name)
                                 .font(.system(size: 16, weight: .semibold))
                                 .foregroundColor(.text)
                                 .lineLimit(1)
-                            
+
                             // Brand • Category on one line
                             HStack(spacing: 4) {
                                 Text(bottle.brandName)
                                     .font(.system(size: 14))
                                     .foregroundColor(.textSecondary)
                                     .lineLimit(1)
-                                
+
                                 Text("•")
                                     .font(.system(size: 14))
                                     .foregroundColor(.textSecondary.opacity(0.5))
-                                
+
                                 Text(bottle.category ?? "Whisky")
                                     .font(.system(size: 14))
                                     .foregroundColor(.textSecondary)
                                     .lineLimit(1)
                             }
                         }
-                        
+
                         Spacer()
                     }
                     .padding(12)
@@ -141,7 +142,7 @@ struct TastingPreviewCard: View {
                             .stroke(Color.border.opacity(0.3), lineWidth: 1)
                     )
                 }
-                
+
                 // Notes
                 if !viewModel.notes.isEmpty {
                     Text(viewModel.notes)
@@ -150,7 +151,7 @@ struct TastingPreviewCard: View {
                         .lineLimit(3)
                         .multilineTextAlignment(.leading)
                 }
-                
+
                 // Tags
                 if !viewModel.selectedTags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -167,7 +168,7 @@ struct TastingPreviewCard: View {
                         }
                     }
                 }
-                
+
                 // Photo thumbnails
                 if !viewModel.photos.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
@@ -183,7 +184,7 @@ struct TastingPreviewCard: View {
                         }
                     }
                 }
-                
+
                 // Additional info (compact)
                 HStack(spacing: 16) {
                     // Serving style
@@ -197,7 +198,7 @@ struct TastingPreviewCard: View {
                                 .foregroundColor(.textSecondary)
                         }
                     }
-                    
+
                     // Location
                     if let location = viewModel.selectedLocation {
                         HStack(spacing: 4) {
@@ -219,7 +220,7 @@ struct TastingPreviewCard: View {
                                 .foregroundColor(.textSecondary)
                         }
                     }
-                    
+
                     Spacer()
                 }
                 .padding(.top, 4)
@@ -236,14 +237,15 @@ struct TastingPreviewCard: View {
 }
 
 // MARK: - Privacy Settings Section (Updated)
+
 struct PrivacySettingsSection: View {
     @Binding var isPublic: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Privacy")
                 .font(.headline)
-            
+
             HStack(spacing: 12) {
                 PrivacyOption(
                     title: "Public",
@@ -252,7 +254,7 @@ struct PrivacySettingsSection: View {
                     isSelected: isPublic,
                     onTap: { isPublic = true }
                 )
-                
+
                 PrivacyOption(
                     title: "Private",
                     subtitle: "Just for you",
@@ -266,13 +268,14 @@ struct PrivacySettingsSection: View {
 }
 
 // MARK: - Privacy Option (Simplified)
+
 struct PrivacyOption: View {
     let title: String
     let subtitle: String
     let icon: String
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 8) {
@@ -280,11 +283,11 @@ struct PrivacyOption: View {
                     .font(.title2)
                     .symbolRenderingMode(isSelected ? .multicolor : .monochrome)
                     .foregroundColor(isSelected ? .brand : .secondary)
-                
+
                 Text(title)
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(isSelected ? .primary : .secondary)
-                
+
                 Text(subtitle)
                     .font(.system(size: 11))
                     .foregroundColor(.textSecondary)
@@ -306,22 +309,23 @@ struct PrivacyOption: View {
 }
 
 // MARK: - Social Sharing Section (Cleaner)
+
 struct SocialSharingSection: View {
     @Binding var postToFacebook: Bool
     @Binding var postToTwitter: Bool
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Share to")
                 .font(.headline)
-            
+
             VStack(spacing: 8) {
                 SocialToggle(
                     platform: "Facebook",
                     icon: "f.circle.fill",
                     isEnabled: $postToFacebook
                 )
-                
+
                 SocialToggle(
                     platform: "X (Twitter)",
                     icon: "x.circle.fill",
@@ -333,23 +337,24 @@ struct SocialSharingSection: View {
 }
 
 // MARK: - Social Toggle (Simplified)
+
 struct SocialToggle: View {
     let platform: String
     let icon: String
     @Binding var isEnabled: Bool
-    
+
     var body: some View {
         HStack {
             Image(systemName: icon)
                 .font(.title3)
                 .foregroundColor(.textSecondary)
                 .frame(width: 24)
-            
+
             Text(platform)
                 .font(.system(size: 14))
-            
+
             Spacer()
-            
+
             Toggle("", isOn: $isEnabled)
                 .toggleStyle(SwitchToggleStyle(tint: .brand))
         }
@@ -361,15 +366,16 @@ struct SocialToggle: View {
 }
 
 // MARK: - Helper Functions
+
 private func getRatingIcon(_ rating: Double) -> String {
     switch Int(rating) {
     case -1:
-        return "hand.thumbsdown.fill"
+        "hand.thumbsdown.fill"
     case 1:
-        return "hand.thumbsup.fill"
+        "hand.thumbsup.fill"
     case 2:
-        return "hand.thumbsup.fill" // Will show two
+        "hand.thumbsup.fill" // Will show two
     default:
-        return "minus.circle"
+        "minus.circle"
     }
 }

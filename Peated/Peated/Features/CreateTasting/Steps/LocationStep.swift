@@ -1,6 +1,6 @@
-import SwiftUI
 import CoreLocation
 import PeatedCore
+import SwiftUI
 
 struct LocationStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
@@ -10,7 +10,7 @@ struct LocationStep: View {
     @State private var currentLocationInfo: Location?
     @State private var searchTask: Task<Void, Never>?
     @FocusState private var isSearchFocused: Bool
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
@@ -20,14 +20,14 @@ struct LocationStep: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.text)
-                    
+
                     Text("Help others discover great spots")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                
+
                 VStack(spacing: 16) {
                     // At Home Option
                     HomeLocationButton(
@@ -42,24 +42,24 @@ struct LocationStep: View {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         }
                     )
-                    
+
                     // Divider with "OR"
                     HStack {
                         Rectangle()
                             .fill(Color(.separator))
                             .frame(height: 1)
-                        
+
                         Text("OR")
                             .font(.caption)
                             .foregroundColor(.textSecondary)
                             .padding(.horizontal, 8)
-                        
+
                         Rectangle()
                             .fill(Color(.separator))
                             .frame(height: 1)
                     }
                     .padding(.horizontal)
-                    
+
                     // Current Location Button
                     CurrentLocationButton(
                         isLoading: locationService.isLoadingLocation,
@@ -73,7 +73,7 @@ struct LocationStep: View {
                             }
                         }
                     )
-                    
+
                     // Search Bar
                     LocationSearchBar(
                         searchText: $searchText,
@@ -82,7 +82,7 @@ struct LocationStep: View {
                             Task { await searchLocations() }
                         }
                     )
-                    
+
                     // Search Results
                     if !searchResults.isEmpty {
                         LocationSearchResults(
@@ -91,7 +91,7 @@ struct LocationStep: View {
                             onLocationSelected: selectLocation
                         )
                     }
-                    
+
                     // Selected Location Display
                     if let selectedLocation = viewModel.selectedLocation,
                        !viewModel.isDrinkingAtHome {
@@ -114,10 +114,10 @@ struct LocationStep: View {
         .onAppear {
             locationService.requestLocationPermission()
         }
-        .onChange(of: searchText) { _, newValue in
+        .onChange(of: searchText) { _, _ in
             // Cancel previous search task
             searchTask?.cancel()
-            
+
             // Start new search with debounce
             searchTask = Task {
                 try? await Task.sleep(nanoseconds: 500_000_000) // 500ms debounce
@@ -134,7 +134,7 @@ struct LocationStep: View {
             }
         }
     }
-    
+
     private func selectLocation(_ location: Location) {
         withAnimation {
             viewModel.selectedLocation = location
@@ -145,20 +145,20 @@ struct LocationStep: View {
         }
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
     }
-    
+
     private func requestCurrentLocation() {
         locationService.requestCurrentLocation()
     }
-    
+
     private func searchLocations() async {
         guard !searchText.isEmpty else {
             searchResults = []
             return
         }
-        
+
         // Use MapKit to search for places
         let results = await locationService.searchPlaces(query: searchText)
-        
+
         // Update on main thread
         await MainActor.run {
             searchResults = results
@@ -167,10 +167,11 @@ struct LocationStep: View {
 }
 
 // MARK: - Home Location Button
+
 struct HomeLocationButton: View {
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
@@ -178,20 +179,20 @@ struct HomeLocationButton: View {
                     .font(.title2)
                     .foregroundColor(isSelected ? .onBrand : .brand)
                     .frame(width: 32)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text("At Home")
                         .font(.body)
                         .fontWeight(.medium)
                         .foregroundColor(isSelected ? .onBrand : .text)
-                    
+
                     Text("Just chilling")
                         .font(.caption)
                         .foregroundColor(isSelected ? .onBrand.opacity(0.9) : .textSecondary)
                 }
-                
+
                 Spacer()
-                
+
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
@@ -213,12 +214,13 @@ struct HomeLocationButton: View {
 }
 
 // MARK: - Current Location Button
+
 struct CurrentLocationButton: View {
     let isLoading: Bool
     let currentLocation: Location?
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 16) {
@@ -234,13 +236,13 @@ struct CurrentLocationButton: View {
                     }
                 }
                 .frame(width: 32)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(currentLocation?.name ?? "Use Current Location")
                         .font(.body)
                         .fontWeight(.medium)
                         .foregroundColor(isSelected ? .onBrand : .text)
-                    
+
                     if let address = currentLocation?.address {
                         Text(address)
                             .font(.caption)
@@ -252,9 +254,9 @@ struct CurrentLocationButton: View {
                             .foregroundColor(isSelected ? .onBrand.opacity(0.9) : .textSecondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
@@ -277,28 +279,30 @@ struct CurrentLocationButton: View {
 }
 
 // MARK: - Location Search Bar
+
 struct LocationSearchBar: View {
     @Binding var searchText: String
     @FocusState.Binding var isSearchFocused: Bool
     let onSearch: () -> Void
-    
+
     var body: some View {
         SearchInput(placeholder: "Search for a place...", text: $searchText, onSubmit: onSearch)
     }
 }
 
 // MARK: - Location Search Results
+
 struct LocationSearchResults: View {
     let results: [Location]
     let selectedLocationId: String?
     let onLocationSelected: (Location) -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Search Results")
                 .font(.headline)
                 .foregroundColor(.textSecondary)
-            
+
             ForEach(results) { location in
                 LocationRow(
                     location: location,
@@ -311,25 +315,26 @@ struct LocationSearchResults: View {
 }
 
 // MARK: - Location Row
+
 struct LocationRow: View {
     let location: Location
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 12) {
                 Image(systemName: "mappin.circle.fill")
                     .font(.title2)
                     .foregroundColor(isSelected ? .onBrand : .brand)
-                
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(location.name)
                         .font(.body)
                         .fontWeight(.medium)
                         .foregroundColor(isSelected ? .onBrand : .text)
                         .lineLimit(1)
-                    
+
                     if let address = location.address {
                         Text(address)
                             .font(.caption)
@@ -337,9 +342,9 @@ struct LocationRow: View {
                             .lineLimit(2)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 if isSelected {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.title3)
@@ -361,31 +366,32 @@ struct LocationRow: View {
 }
 
 // MARK: - Selected Location View
+
 struct SelectedLocationView: View {
     let location: Location
     let onRemove: () -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Selected Location")
                 .font(.headline)
                 .foregroundColor(.textSecondary)
-            
+
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(location.name)
                         .font(.body)
                         .fontWeight(.medium)
-                    
+
                     if let address = location.address {
                         Text(address)
                             .font(.caption)
                             .foregroundColor(.textSecondary)
                     }
                 }
-                
+
                 Spacer()
-                
+
                 Button(action: onRemove) {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundColor(.textSecondary)

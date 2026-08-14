@@ -13,7 +13,12 @@ struct TastingDetailView: View {
     @FocusState private var isCommentFieldFocused: Bool
     @Environment(\.dismiss) private var dismiss
 
-    init(tastingId: String, seed: TastingFeedItem? = nil, onNavigateToProfile: ((String) -> Void)? = nil, onNavigateToBottle: ((String) -> Void)? = nil) {
+    init(
+        tastingId: String,
+        seed: TastingFeedItem? = nil,
+        onNavigateToProfile: ((String) -> Void)? = nil,
+        onNavigateToBottle: ((String) -> Void)? = nil
+    ) {
         self.tastingId = tastingId
         self.seed = seed
         self.onNavigateToProfile = onNavigateToProfile
@@ -42,8 +47,7 @@ struct TastingDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 if let tasting = model.tasting,
-                   tasting.userId == AuthenticationManager.shared.currentUser?.id
-                {
+                   tasting.userId == AuthenticationManager.shared.currentUser?.id {
                     Menu {
                         Button {
                             // TODO: Implement share
@@ -273,7 +277,12 @@ struct TastingDetailView: View {
                     .disabled(model.isPostingComment)
                 }
             }
-            .inputBox(state: isCommentFieldFocused ? .focused : .normal, cornerRadius: 20, horizontalPadding: 16, verticalPadding: 10)
+            .inputBox(
+                state: isCommentFieldFocused ? .focused : .normal,
+                cornerRadius: 20,
+                horizontalPadding: 16,
+                verticalPadding: 10
+            )
         }
         .padding(.vertical, 8)
         .background(Color.background)
@@ -580,7 +589,7 @@ struct ShimmeringView: ViewModifier {
                     gradient: Gradient(colors: [
                         Color.clear,
                         Color.surface.opacity(0.3),
-                        Color.clear,
+                        Color.clear
                     ]),
                     startPoint: .leading,
                     endPoint: .trailing

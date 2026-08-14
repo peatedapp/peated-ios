@@ -5,85 +5,85 @@ import Foundation
 public class TastingFeedItemBuilder {
     private var id = "1"
     private var rating = 4.0
-    private var notes: String? = nil
+    private var notes: String?
     private var servingStyle: String? = "neat"
-    private var imageUrl: String? = nil
+    private var imageUrl: String?
     private var createdAt = Date()
     private var userId = "user1"
     private var username = "testuser"
-    private var userDisplayName: String? = nil
-    private var userAvatarUrl: String? = nil
+    private var userDisplayName: String?
+    private var userAvatarUrl: String?
     private var bottleId = "bottle1"
     private var bottleName = "Test Whisky"
     private var bottleBrandName = "Test Distillery"
     private var bottleCategory: String? = "scotch"
-    private var bottleImageUrl: String? = nil
+    private var bottleImageUrl: String?
     private var toastCount = 0
     private var commentCount = 0
     private var hasToasted = false
     private var tags: [String] = []
-    private var location: String? = nil
+    private var location: String?
     private var friendUsernames: [String] = []
-    
+
     public init() {}
-    
+
     public func withId(_ id: String) -> TastingFeedItemBuilder {
         self.id = id
         return self
     }
-    
+
     public func withRating(_ rating: Double) -> TastingFeedItemBuilder {
         self.rating = rating
         return self
     }
-    
+
     public func withNotes(_ notes: String?) -> TastingFeedItemBuilder {
         self.notes = notes
         return self
     }
-    
+
     public func withBottleName(_ name: String) -> TastingFeedItemBuilder {
-        self.bottleName = name
+        bottleName = name
         return self
     }
-    
+
     public func withBrandName(_ brandName: String) -> TastingFeedItemBuilder {
-        self.bottleBrandName = brandName
+        bottleBrandName = brandName
         return self
     }
-    
+
     public func withUsername(_ username: String) -> TastingFeedItemBuilder {
         self.username = username
         return self
     }
-    
+
     public func withCreatedAt(_ date: Date) -> TastingFeedItemBuilder {
-        self.createdAt = date
+        createdAt = date
         return self
     }
-    
+
     public func withToastCount(_ count: Int) -> TastingFeedItemBuilder {
-        self.toastCount = count
+        toastCount = count
         return self
     }
-    
+
     public func withCommentCount(_ count: Int) -> TastingFeedItemBuilder {
-        self.commentCount = count
+        commentCount = count
         return self
     }
-    
+
     public func withTags(_ tags: [String]) -> TastingFeedItemBuilder {
         self.tags = tags
         return self
     }
-    
+
     public func hasToasted(_ toasted: Bool = true) -> TastingFeedItemBuilder {
-        self.hasToasted = toasted
+        hasToasted = toasted
         return self
     }
-    
+
     public func build() -> TastingFeedItem {
-        return TastingFeedItem(
+        TastingFeedItem(
             id: id,
             rating: rating,
             notes: notes,
@@ -111,15 +111,15 @@ public class TastingFeedItemBuilder {
 
 // MARK: - Convenience Extensions
 
-extension TastingFeedItem {
+public extension TastingFeedItem {
     /// Create a new builder instance
-    public static func builder() -> TastingFeedItemBuilder {
-        return TastingFeedItemBuilder()
+    static func builder() -> TastingFeedItemBuilder {
+        TastingFeedItemBuilder()
     }
-    
+
     /// Sample tasting for tests
-    public static var sample1: TastingFeedItem {
-        return builder()
+    static var sample1: TastingFeedItem {
+        builder()
             .withId("sample1")
             .withBottleName("Lagavulin 16-year-old")
             .withBrandName("Lagavulin")
@@ -131,10 +131,10 @@ extension TastingFeedItem {
             .withTags(["peaty", "smoky", "islay"])
             .build()
     }
-    
+
     /// Another sample for variety
-    public static var sample2: TastingFeedItem {
-        return builder()
+    static var sample2: TastingFeedItem {
+        builder()
             .withId("sample2")
             .withBottleName("Glenfiddich 12-year-old")
             .withBrandName("Glenfiddich")
@@ -146,10 +146,10 @@ extension TastingFeedItem {
             .withTags(["fruity", "light", "speyside"])
             .build()
     }
-    
+
     /// Sample for a different user
-    public static var sample3: TastingFeedItem {
-        return builder()
+    static var sample3: TastingFeedItem {
+        builder()
             .withId("sample3")
             .withBottleName("Macallan 18-year-old")
             .withBrandName("Macallan")
@@ -166,24 +166,24 @@ extension TastingFeedItem {
 
 // MARK: - FeedPage Test Helpers
 
-extension FeedPage {
+public extension FeedPage {
     /// Empty feed page for tests
-    public static var empty: FeedPage {
-        return FeedPage(tastings: [], cursor: nil, hasMore: false)
+    static var empty: FeedPage {
+        FeedPage(tastings: [], cursor: nil, hasMore: false)
     }
-    
+
     /// Single item feed page
-    public static var singleItem: FeedPage {
-        return FeedPage(
+    static var singleItem: FeedPage {
+        FeedPage(
             tastings: [TastingFeedItem.sample1],
             cursor: "123",
             hasMore: true
         )
     }
-    
+
     /// Multiple items feed page
-    public static var multipleItems: FeedPage {
-        return FeedPage(
+    static var multipleItems: FeedPage {
+        FeedPage(
             tastings: [
                 TastingFeedItem.sample1,
                 TastingFeedItem.sample2,
@@ -193,15 +193,15 @@ extension FeedPage {
             hasMore: true
         )
     }
-    
+
     /// Full page (20 items) for pagination testing
-    public static var fullPage: FeedPage {
-        let tastings = (1...20).map { index in
+    static var fullPage: FeedPage {
+        let tastings = (1 ... 20).map { index in
             TastingFeedItem.builder()
                 .withId("item\(index)")
                 .withBottleName("Test Bottle \(index)")
                 .withUsername("user\(index)")
-                .withRating(Double.random(in: 3.0...5.0))
+                .withRating(Double.random(in: 3.0 ... 5.0))
                 .build()
         }
         return FeedPage(tastings: tastings, cursor: "999", hasMore: true)

@@ -73,7 +73,7 @@ struct FeedModelRaceConditionTests {
             FeedType.friends,
             FeedType.personal,
             FeedType.global,
-            FeedType.friends,
+            FeedType.friends
         ]
 
         for feedType in switches {

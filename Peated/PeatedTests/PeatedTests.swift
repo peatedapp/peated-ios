@@ -1,9 +1,9 @@
-import Testing
 @testable import Peated
+import Testing
 
 struct PeatedTests {
     @Test
-    func testExample() {
+    func example() {
         #expect(true)
     }
 }

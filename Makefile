@@ -9,10 +9,12 @@ SWIFT_DOCKER_IMAGE := swift:6.1.2-jammy@sha256:5910655d205a5a54b0b9efdf72c4066a8
 
 .DEFAULT_GOAL := help
 
+SWIFTFORMAT_IMAGE ?= ghcr.io/nicklockwood/swiftformat:0.62.1
 SWIFTLINT_IMAGE ?= ghcr.io/realm/swiftlint:0.65.0
 
 .PHONY: help doctor bootstrap check lint lint-docker lint-all lint-swift \
-	lint-swift-docker lint-shell update-swiftlint-baseline format format-check \
+	lint-swift-docker lint-shell update-swiftlint-baseline format format-docker \
+	format-check format-check-docker \
 	test-api test-api-docker test-core test-packages build-ios \
 	test-ios verify
 
@@ -29,7 +31,9 @@ help:
 		'  make lint-swift-docker  Check all Swift files against the baseline' \
 		'  make update-swiftlint-baseline  Regenerate the reviewed lint baseline' \
 		'  make format        Format hand-written Swift sources' \
+		'  make format-docker  Format Swift sources with the pinned container' \
 		'  make format-check  Check repository-wide Swift formatting' \
+		'  make format-check-docker  Check formatting with the pinned container' \
 		'  make test-api      Test the PeatedAPI Swift package' \
 		'  make test-api-docker  Test PeatedAPI with the pinned Linux toolchain' \
 		'  make test-core     Test the PeatedCore Swift package (Apple host)' \
@@ -95,12 +99,29 @@ format:
 	}
 	swiftformat Peated PeatedCore PeatedAPI Scripts --config .swiftformat
 
+format-docker:
+	@command -v docker >/dev/null 2>&1 || { \
+		echo 'error: docker is required for containerized formatting' >&2; \
+		exit 1; \
+	}
+	docker run --rm --user "$$(id -u):$$(id -g)" \
+		-v "$(CURDIR):/work" -w /work "$(SWIFTFORMAT_IMAGE)" \
+		Peated PeatedCore PeatedAPI Scripts --config /work/.swiftformat --cache ignore
+
 format-check:
 	@command -v swiftformat >/dev/null 2>&1 || { \
 		echo 'error: swiftformat is unavailable; run make bootstrap on macOS' >&2; \
 		exit 1; \
 	}
 	swiftformat Peated PeatedCore PeatedAPI Scripts --config .swiftformat --lint
+
+format-check-docker:
+	@command -v docker >/dev/null 2>&1 || { \
+		echo 'error: docker is required for containerized formatting' >&2; \
+		exit 1; \
+	}
+	docker run --rm -v "$(CURDIR):/work:ro" -w /work "$(SWIFTFORMAT_IMAGE)" \
+		Peated PeatedCore PeatedAPI Scripts --config /work/.swiftformat --lint --cache ignore
 
 test-api:
 	@command -v swift >/dev/null 2>&1 || { \

@@ -1,9 +1,9 @@
-import SwiftUI
 import PeatedCore
+import SwiftUI
 
 struct RatingServingStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
-    
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
@@ -13,7 +13,7 @@ struct RatingServingStep: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.text)
-                    
+
                     if let bottle = viewModel.selectedBottle {
                         Text("How was the \(bottle.name)?")
                             .font(.subheadline)
@@ -22,14 +22,14 @@ struct RatingServingStep: View {
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                
+
                 VStack(spacing: 24) {
                     // Rating Section
                     VStack(spacing: 16) {
                         Text("Rating")
                             .font(.headline)
                             .frame(maxWidth: .infinity, alignment: .leading)
-                        
+
                         // Pass/Sip/Savor Rating
                         HStack(spacing: 12) {
                             // Pass button
@@ -40,7 +40,7 @@ struct RatingServingStep: View {
                                 selectedValue: $viewModel.rating,
                                 color: .danger
                             )
-                            
+
                             // Sip button
                             RatingSelectionButton(
                                 title: "Sip",
@@ -49,7 +49,7 @@ struct RatingServingStep: View {
                                 selectedValue: $viewModel.rating,
                                 color: .info
                             )
-                            
+
                             // Savor button
                             RatingSelectionButton(
                                 title: "Savor",
@@ -60,7 +60,7 @@ struct RatingServingStep: View {
                             )
                         }
                         .frame(maxWidth: .infinity)
-                        
+
                         // Rating description
                         if viewModel.rating != 0 {
                             Text(ratingDescription)
@@ -69,15 +69,15 @@ struct RatingServingStep: View {
                                 .transition(.opacity)
                         }
                     }
-                    
+
                     // Color Picker Section
                     WhiskyColorPicker(selectedColor: $viewModel.color)
-                    
+
                     // Serving Style Section
                     VStack(alignment: .leading, spacing: 12) {
                         Text("How did you drink it?")
                             .font(.headline)
-                        
+
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                             ForEach(ServingStyle.allCases, id: \.self) { style in
                                 RatingServingStyleButton(
@@ -101,34 +101,35 @@ struct RatingServingStep: View {
         .background(Color.background)
         .scrollDismissesKeyboard(.interactively)
     }
-    
+
     private var ratingDescription: String {
         switch Int(viewModel.rating) {
         case -1:
-            return "Pass - Not to your taste"
+            "Pass - Not to your taste"
         case 1:
-            return "Sip - Worth trying, decent dram"
+            "Sip - Worth trying, decent dram"
         case 2:
-            return "Savor - Exceptional, highly recommended"
+            "Savor - Exceptional, highly recommended"
         default:
-            return ""
+            ""
         }
     }
 }
 
 // MARK: - Serving Style Button
+
 private struct RatingServingStyleButton: View {
     let style: ServingStyle
     let isSelected: Bool
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             VStack(spacing: 8) {
                 Image(systemName: iconName)
                     .font(.title2)
                     .foregroundColor(isSelected ? .onBrand : .brand)
-                
+
                 Text(style.displayName)
                     .font(.caption)
                     .fontWeight(.medium)
@@ -149,31 +150,32 @@ private struct RatingServingStyleButton: View {
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.05 : 1.0)
     }
-    
+
     private var iconName: String {
         switch style {
         case .neat:
-            return "wineglass"
+            "wineglass"
         case .rocks:
-            return "cube"
+            "cube"
         case .water:
-            return "drop"
+            "drop"
         }
     }
 }
 
 // MARK: - Rating Button
+
 private struct RatingSelectionButton: View {
     let title: String
     let iconName: String
     let value: Double
     @Binding var selectedValue: Double
     let color: Color
-    
+
     private var isSelected: Bool {
         selectedValue == value
     }
-    
+
     var body: some View {
         Button(action: {
             withAnimation(.spring(response: 0.3)) {

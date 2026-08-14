@@ -50,7 +50,8 @@ struct AppView: View {
         tabAppearance.inlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
         tabAppearance.inlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
         tabAppearance.compactInlineLayoutAppearance.normal.iconColor = UIColor(Color.textMuted)
-        tabAppearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
+        tabAppearance.compactInlineLayoutAppearance.normal
+            .titleTextAttributes = [.foregroundColor: UIColor(Color.textMuted)]
 
         tabAppearance.stackedLayoutAppearance.selected.iconColor = UIColor(Color.brand)
         tabAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
@@ -62,7 +63,8 @@ struct AppView: View {
         tabAppearance.inlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
         tabAppearance.inlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
         tabAppearance.compactInlineLayoutAppearance.selected.iconColor = UIColor(Color.brand)
-        tabAppearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
+        tabAppearance.compactInlineLayoutAppearance.selected
+            .titleTextAttributes = [.foregroundColor: UIColor(Color.brand)]
 
         UITabBar.appearance().standardAppearance = tabAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabAppearance
@@ -86,8 +88,7 @@ struct AppView: View {
     /// Pre-warm assets that commonly flicker (e.g., current user's avatar)
     private func prewarmCurrentUserAssets() {
         if let urlString = AuthenticationManager.shared.currentUser?.pictureUrl,
-           let url = URL(string: urlString)
-        {
+           let url = URL(string: urlString) {
             ImagePrefetcher.prefetch(urls: [url], max: 1)
         }
     }
@@ -179,13 +180,16 @@ struct AppView: View {
                                     ProfileView(
                                         userId: userId,
                                         onNavigateToProfile: { targetUserId in
-                                            profileNavigationPath.append(ProfileDestination.userProfile(userId: targetUserId))
+                                            profileNavigationPath
+                                                .append(ProfileDestination.userProfile(userId: targetUserId))
                                         },
                                         onNavigateToTasting: { tastingId in
-                                            profileNavigationPath.append(ProfileDestination.tastingDetail(tastingId: tastingId))
+                                            profileNavigationPath
+                                                .append(ProfileDestination.tastingDetail(tastingId: tastingId))
                                         },
                                         onNavigateToBottle: { bottleId in
-                                            profileNavigationPath.append(ProfileDestination.bottleDetail(bottleId: bottleId))
+                                            profileNavigationPath
+                                                .append(ProfileDestination.bottleDetail(bottleId: bottleId))
                                         }
                                     )
                                 case let .tastingDetail(tastingId):
@@ -195,7 +199,8 @@ struct AppView: View {
                                             profileNavigationPath.append(ProfileDestination.userProfile(userId: userId))
                                         },
                                         onNavigateToBottle: { bottleId in
-                                            profileNavigationPath.append(ProfileDestination.bottleDetail(bottleId: bottleId))
+                                            profileNavigationPath
+                                                .append(ProfileDestination.bottleDetail(bottleId: bottleId))
                                         }
                                     )
                                 case let .bottleDetail(bottleId):

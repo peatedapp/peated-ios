@@ -1,168 +1,168 @@
 import Foundation
-import PeatedAPI
 import OpenAPIRuntime
+import PeatedAPI
 
 // MARK: - Unified Error Types
 
 public enum APIError: LocalizedError {
-  case invalidResponse
-  case requestFailed(String)
-  case unexpectedResponse(Int)
-  case unauthorized
-  case notFound
-  case serverError(Int, String?)
-  case networkError(Error)
-  case decodingError(Error)
-  case timeout
-  case notImplemented
-  case termsAcceptanceRequired
+    case invalidResponse
+    case requestFailed(String)
+    case unexpectedResponse(Int)
+    case unauthorized
+    case notFound
+    case serverError(Int, String?)
+    case networkError(Error)
+    case decodingError(Error)
+    case timeout
+    case notImplemented
+    case termsAcceptanceRequired
 
-  public var errorDescription: String? {
-    switch self {
-    case .invalidResponse:
-      return "Invalid server response"
-    case .requestFailed(let message):
-      return message
-    case .unexpectedResponse(let statusCode):
-      return "Unexpected response: \(statusCode)"
-    case .unauthorized:
-      return "Authentication required"
-    case .notFound:
-      return "Resource not found"
-    case .serverError(let code, let message):
-      return message ?? "Server error (\(code))"
-    case .networkError(let error):
-      return "Network error: \(error.localizedDescription)"
-    case .decodingError:
-      return "Unable to process response"
-    case .timeout:
-      return "Request timed out"
-    case .notImplemented:
-      return "This feature is not yet implemented"
-    case .termsAcceptanceRequired:
-      return "Terms of service acceptance required"
+    public var errorDescription: String? {
+        switch self {
+        case .invalidResponse:
+            "Invalid server response"
+        case let .requestFailed(message):
+            message
+        case let .unexpectedResponse(statusCode):
+            "Unexpected response: \(statusCode)"
+        case .unauthorized:
+            "Authentication required"
+        case .notFound:
+            "Resource not found"
+        case let .serverError(code, message):
+            message ?? "Server error (\(code))"
+        case let .networkError(error):
+            "Network error: \(error.localizedDescription)"
+        case .decodingError:
+            "Unable to process response"
+        case .timeout:
+            "Request timed out"
+        case .notImplemented:
+            "This feature is not yet implemented"
+        case .termsAcceptanceRequired:
+            "Terms of service acceptance required"
+        }
     }
-  }
 }
 
 // MARK: - Response Handler Protocol
 
 public protocol APIResponseHandler {
-  func handleResponse<T>(_ response: T) throws -> T
+    func handleResponse<T>(_ response: T) throws -> T
 }
 
 // MARK: - Generic Response Handling
 
 public enum APIResponseHelper {
-  
-  /// Handle common response patterns for operations that return Ok/Error responses
-  public static func handleStandardResponse<SuccessBody>(
-    _ response: Any,
-    onOk: (SuccessBody) throws -> Void
-  ) throws {
-    // This is a simplified example - in reality, each operation has its own response type
-    // You would need to handle each operation's specific response cases
-    
-    // For now, we'll throw a generic error if not handled
-    throw APIError.invalidResponse
-  }
-  
-  /// Extract JSON payload from successful responses
-  public static func extractJSON<Response, JSONType>(
-    from response: Response,
-    okPath: KeyPath<Response, Any?>,
-    jsonPath: KeyPath<Any, JSONType?>
-  ) throws -> JSONType {
-    guard let okResponse = response[keyPath: okPath],
-          let jsonPayload = okResponse[keyPath: jsonPath] else {
-      throw APIError.invalidResponse
+    /// Handle common response patterns for operations that return Ok/Error responses
+    public static func handleStandardResponse<SuccessBody>(
+        _: Any,
+        onOk _: (SuccessBody) throws -> Void
+    ) throws {
+        // This is a simplified example - in reality, each operation has its own response type
+        // You would need to handle each operation's specific response cases
+
+        // For now, we'll throw a generic error if not handled
+        throw APIError.invalidResponse
     }
-    return jsonPayload
-  }
+
+    /// Extract JSON payload from successful responses
+    public static func extractJSON<Response, JSONType>(
+        from response: Response,
+        okPath: KeyPath<Response, Any?>,
+        jsonPath: KeyPath<Any, JSONType?>
+    ) throws -> JSONType {
+        guard let okResponse = response[keyPath: okPath],
+              let jsonPayload = okResponse[keyPath: jsonPath]
+        else {
+            throw APIError.invalidResponse
+        }
+        return jsonPayload
+    }
 }
 
 // MARK: - Response Extensions for Common Patterns
 
-extension Operations.login.Output {
-  public func extractPayload() throws -> Components.Schemas.Auth {
-    switch self {
-    case .ok(let okResponse):
-      switch okResponse.body {
-      case .json(let payload):
-        return payload
-      }
-    case .badRequest:
-      throw APIError.requestFailed("Invalid credentials")
-    case .unauthorized:
-      throw APIError.unauthorized
-    case .forbidden:
-      throw APIError.requestFailed("Forbidden")
-    case .notFound:
-      throw APIError.notFound
-    case .conflict:
-      throw APIError.requestFailed("Conflict")
-    case .contentTooLarge:
-      throw APIError.requestFailed("Content too large")
-    case .internalServerError:
-      throw APIError.serverError(500, "Internal server error")
-    case .undocumented(let statusCode, _):
-      throw APIError.unexpectedResponse(statusCode)
+public extension Operations.login.Output {
+    func extractPayload() throws -> Components.Schemas.Auth {
+        switch self {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                return payload
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Invalid credentials")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("Forbidden")
+        case .notFound:
+            throw APIError.notFound
+        case .conflict:
+            throw APIError.requestFailed("Conflict")
+        case .contentTooLarge:
+            throw APIError.requestFailed("Content too large")
+        case .internalServerError:
+            throw APIError.serverError(500, "Internal server error")
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        }
     }
-  }
 }
 
-extension Operations.listTastings.Output {
-  public func extractPayload() throws -> Operations.listTastings.Output.Ok.Body.jsonPayload {
-    switch self {
-    case .ok(let okResponse):
-      switch okResponse.body {
-      case .json(let payload):
-        return payload
-      }
-    case .badRequest:
-      throw APIError.requestFailed("Bad request")
-    case .unauthorized:
-      throw APIError.unauthorized
-    case .forbidden:
-      throw APIError.requestFailed("Access forbidden - your request may have been blocked by security filters")
-    case .notFound:
-      throw APIError.notFound
-    case .conflict:
-      throw APIError.requestFailed("Conflict")
-    case .contentTooLarge:
-      throw APIError.requestFailed("Content too large")
-    case .internalServerError:
-      throw APIError.serverError(500, "Internal server error")
-    case .undocumented(let statusCode, _):
-      throw APIError.unexpectedResponse(statusCode)
+public extension Operations.listTastings.Output {
+    func extractPayload() throws -> Operations.listTastings.Output.Ok.Body.jsonPayload {
+        switch self {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                return payload
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Bad request")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("Access forbidden - your request may have been blocked by security filters")
+        case .notFound:
+            throw APIError.notFound
+        case .conflict:
+            throw APIError.requestFailed("Conflict")
+        case .contentTooLarge:
+            throw APIError.requestFailed("Content too large")
+        case .internalServerError:
+            throw APIError.serverError(500, "Internal server error")
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        }
     }
-  }
 }
 
-extension Operations.listUserBadges.Output {
-  public func extractPayload() throws -> Operations.listUserBadges.Output.Ok.Body.jsonPayload {
-    switch self {
-    case .ok(let okResponse):
-      switch okResponse.body {
-      case .json(let payload):
-        return payload
-      }
-    case .badRequest:
-      throw APIError.requestFailed("Bad request")
-    case .unauthorized:
-      throw APIError.unauthorized
-    case .forbidden:
-      throw APIError.requestFailed("Forbidden")
-    case .notFound:
-      throw APIError.notFound
-    case .conflict:
-      throw APIError.requestFailed("Conflict")
-    case .contentTooLarge:
-      throw APIError.requestFailed("Content too large")
-    case .internalServerError:
-      throw APIError.serverError(500, "Internal server error")
-    case .undocumented(let statusCode, _):
-      throw APIError.unexpectedResponse(statusCode)
+public extension Operations.listUserBadges.Output {
+    func extractPayload() throws -> Operations.listUserBadges.Output.Ok.Body.jsonPayload {
+        switch self {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                return payload
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Bad request")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("Forbidden")
+        case .notFound:
+            throw APIError.notFound
+        case .conflict:
+            throw APIError.requestFailed("Conflict")
+        case .contentTooLarge:
+            throw APIError.requestFailed("Content too large")
+        case .internalServerError:
+            throw APIError.serverError(500, "Internal server error")
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        }
     }
-  }
 }

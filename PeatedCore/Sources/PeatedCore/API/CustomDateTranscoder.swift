@@ -4,7 +4,7 @@ import PeatedAPI
 struct CustomDateTranscoder: DateTranscoder {
     private let decoder: JSONDecoder
     private let encoder: JSONEncoder
-    
+
     init() {
         decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
@@ -32,7 +32,7 @@ struct CustomDateTranscoder: DateTranscoder {
                 debugDescription: "Expected date string to be ISO8601-formatted"
             )
         }
-        
+
         encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .custom { date, encoder in
             var container = encoder.singleValueContainer()
@@ -41,12 +41,12 @@ struct CustomDateTranscoder: DateTranscoder {
             try container.encode(formatter.string(from: date))
         }
     }
-    
+
     func encode(_ date: Date) throws -> String {
         let data = try encoder.encode(date)
         return String(data: data, encoding: .utf8)!.trimmingCharacters(in: CharacterSet(charactersIn: "\""))
     }
-    
+
     func decode(_ dateString: String) throws -> Date {
         let data = "\"\(dateString)\"".data(using: .utf8)!
         return try decoder.decode(Date.self, from: data)
