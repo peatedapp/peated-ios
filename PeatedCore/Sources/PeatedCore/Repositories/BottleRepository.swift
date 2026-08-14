@@ -111,7 +111,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         let response = try await client.listBottles(
             query: .init(
                 limit: Double(limit),
-                sort: "tastings"
+                sort: .tastings
             )
         )
 
@@ -166,7 +166,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         let response = try await client.listBottles(
             query: .init(
                 limit: Double(limit),
-                sort: "rating"
+                sort: .rating
             )
         )
 
