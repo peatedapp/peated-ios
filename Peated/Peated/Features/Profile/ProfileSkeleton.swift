@@ -71,7 +71,7 @@ struct ProfileSkeleton: View {
 
                 // Tabs
                 HStack(spacing: 0) {
-                    ForEach([(0, "Activity"), (1, "Favorites")], id: \.0) { pair in
+                    ForEach([(0, "Activity"), (1, "Library")], id: \.0) { pair in
                         let idx = pair.0
                         VStack(spacing: 0) {
                             RoundedRectangle(cornerRadius: 6).fill(Color.border.opacity(0.25)).frame(
@@ -98,7 +98,7 @@ struct ProfileSkeleton: View {
                     }
                 }
 
-                // Favorites skeleton list (2 rows)
+                // Library skeleton list (2 rows)
                 VStack(alignment: .leading, spacing: 12) {
                     ForEach(0 ..< 2) { _ in
                         HStack(spacing: 12) {

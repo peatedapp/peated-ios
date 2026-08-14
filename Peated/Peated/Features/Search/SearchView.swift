@@ -123,6 +123,7 @@ struct SearchView: View {
         let category: String?
         let imageUrl: String?
         let isFavorite: Bool
+        let isLibrary: Bool
         let hasTasted: Bool
     }
 
@@ -159,6 +160,7 @@ struct SearchView: View {
                         category: seed.category,
                         imageUrl: seed.imageUrl,
                         isFavorite: seed.isFavorite,
+                        isLibrary: seed.isLibrary,
                         hasTasted: seed.hasTasted
                     )
                     BottleDetailView(
@@ -196,7 +198,7 @@ struct SearchView: View {
                         onNavigateToBottle: { bottleId in
                             navigationPath.append(SearchDestination.bottleDetail(seed: BottleSeed(
                                 id: bottleId, name: "", fullName: "", brandId: "", brandName: "", category: nil,
-                                imageUrl: nil, isFavorite: true, hasTasted: false
+                                imageUrl: nil, isFavorite: false, isLibrary: false, hasTasted: false
                             )))
                         }
                     )
@@ -428,7 +430,7 @@ extension SearchView {
                     }
                 }
                 Spacer(minLength: DesignSystem.Spacing.small)
-                // Compact status icons: tasted + favorite
+                // Compact status icons: tasted + Library
                 if let bottle = result.bottle {
                     HStack(spacing: 6) {
                         if bottle.hasTasted {
@@ -436,8 +438,8 @@ extension SearchView {
                                 .font(.system(size: 12))
                                 .foregroundColor(.textSecondary)
                         }
-                        if bottle.isFavorite {
-                            Image(systemName: "star.fill")
+                        if bottle.isLibrary {
+                            Image(systemName: "books.vertical.fill")
                                 .font(.system(size: 11))
                                 .foregroundColor(.textSecondary)
                         }
@@ -609,15 +611,15 @@ extension SearchView {
 
             Spacer()
 
-            // Compact status icons: tasted + favorite
+            // Compact status icons: tasted + Library
             HStack(spacing: 6) {
                 if bottle.hasTasted {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 12))
                         .foregroundColor(.textSecondary)
                 }
-                if bottle.isFavorite {
-                    Image(systemName: "star.fill")
+                if bottle.isLibrary {
+                    Image(systemName: "books.vertical.fill")
                         .font(.system(size: 11))
                         .foregroundColor(.textSecondary)
                 }
@@ -646,6 +648,7 @@ extension SearchView {
                     category: b.category,
                     imageUrl: b.imageUrl,
                     isFavorite: b.isFavorite,
+                    isLibrary: b.isLibrary,
                     hasTasted: b.hasTasted
                 )
                 navigationPath.append(SearchDestination.bottleDetail(seed: s))
@@ -660,6 +663,7 @@ extension SearchView {
                     category: nil,
                     imageUrl: nil,
                     isFavorite: false,
+                    isLibrary: false,
                     hasTasted: false
                 )
                 navigationPath.append(SearchDestination.bottleDetail(seed: s))
@@ -684,6 +688,7 @@ extension SearchView {
             category: bottle.category,
             imageUrl: bottle.imageUrl,
             isFavorite: bottle.isFavorite,
+            isLibrary: bottle.isLibrary,
             hasTasted: bottle.hasTasted
         )
         navigationPath.append(SearchDestination.bottleDetail(seed: s))

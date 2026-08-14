@@ -10,6 +10,7 @@ struct BottleRow: View {
     enum BottleRowSubtitle {
         case rating
         case lastTasting(TastingFeedItem)
+        case libraryStatus(LibraryBottleStatus?)
 
         @ViewBuilder
         var view: some View {
@@ -43,6 +44,14 @@ struct BottleRow: View {
                         .font(.system(size: DesignSystem.FontSize.small))
                         .foregroundColor(.secondary)
                 }
+            case let .libraryStatus(status):
+                HStack(spacing: DesignSystem.Spacing.xSmall) {
+                    Image(systemName: "books.vertical.fill")
+                        .font(.system(size: DesignSystem.FontSize.tiny))
+                    Text(status?.displayName ?? "In Library")
+                        .font(.system(size: DesignSystem.FontSize.small))
+                }
+                .foregroundColor(.textSecondary)
             }
         }
     }
@@ -123,7 +132,7 @@ struct BottleRow: View {
 
                 Spacer(minLength: DesignSystem.Spacing.small)
 
-                // Compact status icons: favorite and has-tasted
+                // Compact status icons: Library membership and has-tasted
                 HStack(spacing: 6) {
                     if bottle.hasTasted {
                         Image(systemName: "checkmark.circle.fill")
@@ -131,11 +140,11 @@ struct BottleRow: View {
                             .foregroundColor(.textSecondary)
                             .accessibilityLabel("Tasted")
                     }
-                    if bottle.isFavorite {
-                        Image(systemName: "star.fill")
+                    if bottle.isLibrary {
+                        Image(systemName: "books.vertical.fill")
                             .font(.system(size: 11))
                             .foregroundColor(.textSecondary)
-                            .accessibilityLabel("Favorited")
+                            .accessibilityLabel("In Library")
                     }
                 }
 

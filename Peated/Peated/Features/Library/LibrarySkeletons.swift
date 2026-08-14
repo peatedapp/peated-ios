@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct LibraryFavoritesSkeleton: View {
+struct LibrarySkeleton: View {
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 12) {

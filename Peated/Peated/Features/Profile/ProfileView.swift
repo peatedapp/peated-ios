@@ -1,6 +1,8 @@
 import PeatedCore
 import SwiftUI
 
+// ProfileView predates the current type-size limit; keep this exception scoped to the type.
+// swiftlint:disable type_body_length
 struct ProfileView: View {
     let userId: String?
     let seed: User?
@@ -53,8 +55,8 @@ struct ProfileView: View {
                     // Load activity for this specific user
                     await loadActivity(userId: user.id, refresh: true)
 
-                    // Preload favorites for this profile
-                    await model.loadFavorites()
+                    // Preload the Library for this profile.
+                    await model.loadLibrary()
 
                     // Prefetch avatars and bottle images for profile feed
                     var urls: [URL] = []
@@ -149,7 +151,7 @@ struct ProfileView: View {
 
                 // Custom tabs to better match dark chrome and avoid gray segmented look
                 HStack(spacing: 0) {
-                    ForEach([(0, "Activity"), (1, "Favorites")], id: \.0) { pair in
+                    ForEach([(0, "Activity"), (1, "Library")], id: \.0) { pair in
                         let idx = pair.0
                         let title = pair.1
                         Button(action: { selectedTab = idx }) {
@@ -182,13 +184,13 @@ struct ProfileView: View {
                     if selectedTab == 0 {
                         activitySection
                     } else {
-                        favoritesSection
+                        librarySection
                             .padding(.horizontal)
                     }
                 }
                 .onChange(of: selectedTab) { _, newValue in
                     if newValue == 1 {
-                        Task { await model.loadFavorites() }
+                        Task { await model.loadLibrary() }
                     }
                 }
             }
@@ -500,27 +502,27 @@ struct ProfileView: View {
         }
     }
 
-    private var favoritesSection: some View {
+    private var librarySection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Group {
-                if model.isLoadingFavorites {
+                if model.isLoadingLibrary {
                     ProgressView().tint(.brand)
-                } else if let err = model.favoritesError {
+                } else if let err = model.libraryError {
                     VStack(spacing: 8) {
-                        Text("Couldn't load favorites")
+                        Text("Couldn't load library")
                             .font(.subheadline)
                         Text(err.localizedDescription)
                             .font(.footnote)
                             .foregroundColor(.textSecondary)
-                        Button("Retry") { Task { await model.loadFavorites() } }
+                        Button("Retry") { Task { await model.loadLibrary() } }
                             .buttonStyle(.borderedProminent)
                     }
                     .frame(maxWidth: .infinity)
-                } else if model.favorites.isEmpty {
+                } else if model.libraryEntries.isEmpty {
                     VStack(spacing: 8) {
-                        Text("No favorites yet")
+                        Text("No library bottles yet")
                             .foregroundColor(.textSecondary)
-                        Text("Tap the star on a bottle to save it here.")
+                        Text("Save bottles from their detail pages to build a library.")
                             .font(.footnote)
                             .foregroundColor(.textSecondary)
                     }
@@ -529,15 +531,18 @@ struct ProfileView: View {
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
-                            ForEach(model.favorites, id: \.id) { bottle in
-                                BottleRow(bottle: bottle) {
-                                    onNavigateToBottle?(bottle.id)
+                            ForEach(model.libraryEntries) { entry in
+                                BottleRow(
+                                    bottle: entry.bottle,
+                                    subtitle: .libraryStatus(entry.status)
+                                ) {
+                                    onNavigateToBottle?(entry.bottle.id)
                                 }
                             }
                         }
                         .padding(.top, 8)
                     }
-                    .refreshable { await model.loadFavorites() }
+                    .refreshable { await model.loadLibrary() }
                 }
             }
         }
@@ -703,6 +708,8 @@ struct ProfileView: View {
         }
     }
 }
+
+// swiftlint:enable type_body_length
 
 #Preview {
     ProfileView()

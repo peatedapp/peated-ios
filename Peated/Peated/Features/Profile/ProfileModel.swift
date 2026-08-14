@@ -13,10 +13,10 @@ class ProfileModel {
     var isPrimed = false
     var statsPrimed = false
 
-    // Favorites (for profile)
-    var favorites: [Bottle] = []
-    var isLoadingFavorites = false
-    var favoritesError: Error?
+    // Library (for profile)
+    var libraryEntries: [LibraryEntry] = []
+    var isLoadingLibrary = false
+    var libraryError: Error?
 
     // Optional userId - if nil, shows current user
     let userId: String?
@@ -236,27 +236,29 @@ class ProfileModel {
     }
 
     @MainActor
-    func loadFavorites() async {
-        isLoadingFavorites = true
-        favoritesError = nil
-        defer { isLoadingFavorites = false }
+    func loadLibrary() async {
+        isLoadingLibrary = true
+        libraryError = nil
+        defer { isLoadingLibrary = false }
 
-        // Determine which user to load favorites for
-        let userKey: String = if let targetId = userId ?? user?.id {
+        // Determine which user's Library to load.
+        let userKey: String = if let username = user?.username, !username.isEmpty {
+            username
+        } else if let targetId = userId ?? user?.id {
             targetId
         } else {
             "me"
         }
 
         do {
-            if let favId = try await collectionRepository.getFavoritesCollectionId(user: userKey) {
-                let items = try await collectionRepository.listBottles(in: favId, user: userKey)
-                favorites = items
-            } else {
-                favorites = []
-            }
+            libraryEntries = try await collectionRepository.listLibraryEntries(
+                user: userKey,
+                query: nil,
+                status: nil,
+                limit: 100
+            )
         } catch {
-            favoritesError = error
+            libraryError = error
         }
     }
 }
