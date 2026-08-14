@@ -5,6 +5,7 @@ struct BottleDetailView: View {
     let bottleId: String
     let bottleName: String?
     let seed: Bottle?
+    private let navigationPath: Binding<NavigationPath>?
 
     @State private var model: BottleDetailModel
     @State private var showingCreateTasting = false
@@ -12,10 +13,16 @@ struct BottleDetailView: View {
     @State private var isDescriptionExpanded = false
     @State private var showingHeroImageViewer = false
 
-    init(bottleId: String, bottleName: String? = nil, seed: Bottle? = nil) {
+    init(
+        bottleId: String,
+        bottleName: String? = nil,
+        seed: Bottle? = nil,
+        navigationPath: Binding<NavigationPath>? = nil
+    ) {
         self.bottleId = bottleId
         self.bottleName = bottleName
         self.seed = seed
+        self.navigationPath = navigationPath
         _model = State(initialValue: BottleDetailModel(bottleId: bottleId, seed: seed))
     }
 
@@ -57,7 +64,9 @@ struct BottleDetailView: View {
         .screenBackground()
         .navigationChrome()
     }
+}
 
+extension BottleDetailView {
     // MARK: - Loading View
 
     private var loadingView: some View {
@@ -545,13 +554,19 @@ struct BottleDetailView: View {
                             tasting: tasting,
                             showBottle: false, // Hide bottle info since we're on the bottle page
                             onToast: {
-                                // TODO: Implement toast functionality
+                                Task {
+                                    await model.toggleToast(for: tasting.id)
+                                }
                             },
                             onComment: {
-                                // TODO: Navigate to tasting detail
+                                navigate(to: .tasting(id: tasting.id, seed: tasting))
                             },
                             onUserTap: {
-                                // TODO: Navigate to user profile
+                                navigate(to: .profile(
+                                    id: tasting.userId,
+                                    username: tasting.username,
+                                    pictureUrl: tasting.userAvatarUrl
+                                ))
                             },
                             onBottleTap: {
                                 // No-op since we're already on the bottle page
@@ -583,7 +598,8 @@ struct BottleDetailView: View {
                     ForEach(model.similarBottles) { bottle in
                         NavigationLink(destination: BottleDetailView(
                             bottleId: bottle.id,
-                            bottleName: bottle.fullName
+                            bottleName: bottle.fullName,
+                            navigationPath: navigationPath
                         )) {
                             SimilarBottleCard(bottle: bottle)
                         }
@@ -629,6 +645,10 @@ struct BottleDetailView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func navigate(to destination: TastingActivityNavigationDestination) {
+        navigationPath?.wrappedValue.append(destination)
     }
 }
 

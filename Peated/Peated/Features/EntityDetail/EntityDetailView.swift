@@ -8,11 +8,18 @@ struct EntityDetailView: View {
     @Environment(\.dismiss) private var dismiss
     let entityName: String?
     let seed: Entity?
+    private let navigationPath: Binding<NavigationPath>?
 
-    init(entityId: String, entityName: String? = nil, seed: Entity? = nil) {
+    init(
+        entityId: String,
+        entityName: String? = nil,
+        seed: Entity? = nil,
+        navigationPath: Binding<NavigationPath>? = nil
+    ) {
         _model = State(initialValue: EntityDetailModel(entityId: entityId, seed: seed))
         self.entityName = entityName
         self.seed = seed
+        self.navigationPath = navigationPath
     }
 
     var body: some View {
@@ -287,10 +294,24 @@ struct EntityDetailView: View {
                 ActivityList(
                     tastings: model.recentTastings,
                     showBottle: true,
-                    onToast: { _ in /* TODO: Implement toasting */ },
-                    onComment: { _ in /* TODO: Implement comments */ },
-                    onUserTap: { _ in /* TODO: Navigate to user profile */ },
-                    onBottleTap: { _ in /* TODO: Navigate to bottle */ }
+                    onToast: { tasting in
+                        Task {
+                            await model.toggleToast(for: tasting.id)
+                        }
+                    },
+                    onComment: { tasting in
+                        navigate(to: .tasting(id: tasting.id, seed: tasting))
+                    },
+                    onUserTap: { tasting in
+                        navigate(to: .profile(
+                            id: tasting.userId,
+                            username: tasting.username,
+                            pictureUrl: tasting.userAvatarUrl
+                        ))
+                    },
+                    onBottleTap: { tasting in
+                        navigate(to: .bottle(id: tasting.bottleId))
+                    }
                 )
             }
         }
@@ -334,66 +355,75 @@ struct EntityDetailView: View {
             // Bottles grid
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
                 ForEach(model.bottles) { bottle in
-                    NavigationLink(destination: BottleDetailView(bottleId: bottle.id)) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            // Bottle Image
-                            ZStack {
-                                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                                    .fill(Color.border.opacity(0.1))
-                                    .aspectRatio(0.7, contentMode: .fit)
-
-                                if let imageUrl = bottle.imageUrl {
-                                    AsyncImage(url: URL(string: imageUrl)) { image in
-                                        image
-                                            .resizable()
-                                            .aspectRatio(contentMode: .fit)
-                                    } placeholder: {
-                                        ProgressView()
-                                    }
-                                } else {
-                                    Image(systemName: "wineglass")
-                                        .font(.system(size: 30))
-                                        .foregroundColor(.textSecondary.opacity(0.3))
-                                }
-                            }
-
-                            // Bottle Info
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(bottle.name)
-                                    .font(.system(size: DesignSystem.FontSize.small, weight: .semibold))
-                                    .foregroundColor(.primary)
-                                    .lineLimit(2)
-                                    .multilineTextAlignment(.leading)
-
-                                if let category = bottle.category {
-                                    Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                                        .font(.system(size: DesignSystem.FontSize.caption))
-                                        .foregroundColor(.textSecondary)
-                                        .lineLimit(1)
-                                }
-
-                                if bottle.totalRatings > 0 {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "star.fill")
-                                            .font(.system(size: 10))
-                                            .foregroundColor(.brand)
-
-                                        Text(String(format: "%.1f", bottle.avgRating))
-                                            .font(.system(size: DesignSystem.FontSize.caption))
-                                            .foregroundColor(.text)
-
-                                        Text("(\(bottle.totalRatings))")
-                                            .font(.system(size: DesignSystem.FontSize.caption))
-                                            .foregroundColor(.textSecondary)
-                                    }
-                                }
-                            }
-                        }
+                    NavigationLink(destination: BottleDetailView(
+                        bottleId: bottle.id,
+                        navigationPath: navigationPath
+                    )) {
+                        bottleCard(bottle)
                     }
                     .buttonStyle(PlainButtonStyle())
                 }
             }
             .padding(.vertical)
         }
+    }
+
+    private func bottleCard(_ bottle: Bottle) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ZStack {
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
+                    .fill(Color.border.opacity(0.1))
+                    .aspectRatio(0.7, contentMode: .fit)
+
+                if let imageUrl = bottle.imageUrl {
+                    AsyncImage(url: URL(string: imageUrl)) { image in
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                    } placeholder: {
+                        ProgressView()
+                    }
+                } else {
+                    Image(systemName: "wineglass")
+                        .font(.system(size: 30))
+                        .foregroundColor(.textSecondary.opacity(0.3))
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(bottle.name)
+                    .font(.system(size: DesignSystem.FontSize.small, weight: .semibold))
+                    .foregroundColor(.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+
+                if let category = bottle.category {
+                    Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
+                        .font(.system(size: DesignSystem.FontSize.caption))
+                        .foregroundColor(.textSecondary)
+                        .lineLimit(1)
+                }
+
+                if bottle.totalRatings > 0 {
+                    HStack(spacing: 4) {
+                        Image(systemName: "star.fill")
+                            .font(.system(size: 10))
+                            .foregroundColor(.brand)
+
+                        Text(String(format: "%.1f", bottle.avgRating))
+                            .font(.system(size: DesignSystem.FontSize.caption))
+                            .foregroundColor(.text)
+
+                        Text("(\(bottle.totalRatings))")
+                            .font(.system(size: DesignSystem.FontSize.caption))
+                            .foregroundColor(.textSecondary)
+                    }
+                }
+            }
+        }
+    }
+
+    private func navigate(to destination: TastingActivityNavigationDestination) {
+        navigationPath?.wrappedValue.append(destination)
     }
 }

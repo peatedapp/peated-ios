@@ -1,6 +1,6 @@
 import Foundation
 
-public struct TastingFeedItem: Identifiable, Equatable, Sendable, Codable {
+public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Codable {
     public let id: String
     public let rating: Double
     public let notes: String?
@@ -79,6 +79,40 @@ public struct TastingFeedItem: Identifiable, Equatable, Sendable, Codable {
 
     public var displayUsername: String {
         userDisplayName ?? username
+    }
+
+    public func updatingToast(to hasToasted: Bool) -> TastingFeedItem {
+        let updatedToastCount = if hasToasted == self.hasToasted {
+            toastCount
+        } else if hasToasted {
+            toastCount + 1
+        } else {
+            max(0, toastCount - 1)
+        }
+
+        return TastingFeedItem(
+            id: id,
+            rating: rating,
+            notes: notes,
+            servingStyle: servingStyle,
+            imageUrl: imageUrl,
+            createdAt: createdAt,
+            userId: userId,
+            username: username,
+            userDisplayName: userDisplayName,
+            userAvatarUrl: userAvatarUrl,
+            bottleId: bottleId,
+            bottleName: bottleName,
+            bottleBrandName: bottleBrandName,
+            bottleCategory: bottleCategory,
+            bottleImageUrl: bottleImageUrl,
+            toastCount: updatedToastCount,
+            commentCount: commentCount,
+            hasToasted: hasToasted,
+            tags: tags,
+            location: location,
+            friendUsernames: friendUsernames
+        )
     }
 
     public var timeAgo: String {
