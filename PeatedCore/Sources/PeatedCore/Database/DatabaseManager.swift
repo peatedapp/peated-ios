@@ -6,28 +6,27 @@ public final class DatabaseManager: @unchecked Sendable {
     public static let shared = DatabaseManager()
 
     private let db: Connection
-    private let databasePath: String
 
-    private init() {
+    private convenience init() {
+        guard let documentsPath = NSSearchPathForDirectoriesInDomains(
+            .documentDirectory,
+            .userDomainMask,
+            true
+        ).first else {
+            fatalError("Failed to locate the documents directory")
+        }
+
         do {
-            // Get documents directory for database file
-            let documentsPath = NSSearchPathForDirectoriesInDomains(
-                .documentDirectory,
-                .userDomainMask,
-                true
-            ).first!
-
-            databasePath = "\(documentsPath)/peated.sqlite3"
-            db = try Connection(databasePath)
-
-            // Enable foreign keys
-            try db.execute("PRAGMA foreign_keys = ON")
-
-            // Run migrations on init
-            try runMigrations()
+            try self.init(databasePath: "\(documentsPath)/peated.sqlite3")
         } catch {
             fatalError("Failed to initialize database: \(error)")
         }
+    }
+
+    init(databasePath: String) throws {
+        db = try Connection(databasePath)
+        try db.execute("PRAGMA foreign_keys = ON")
+        try runMigrations()
     }
 
     /// Get database connection for direct access
@@ -63,11 +62,15 @@ public final class DatabaseManager: @unchecked Sendable {
         let version = Expression<Int>("version")
 
         // Check if schema_version table exists
-        let tableExists = try db.scalar(
+        let tableCount = try db.scalar(
             "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='schema_version'"
-        ) as! Int64
+        )
 
-        if tableExists == 0 {
+        guard let tableCount = tableCount as? Int64 else {
+            throw DatabaseManagerError.invalidSchemaMetadata
+        }
+
+        if tableCount == 0 {
             // Create schema version table
             try db.run(versionTable.create { t in
                 t.column(version, primaryKey: true)
@@ -169,6 +172,10 @@ public final class DatabaseManager: @unchecked Sendable {
             ifNotExists: true
         ))
     }
+}
+
+private enum DatabaseManagerError: Error {
+    case invalidSchemaMetadata
 }
 
 // MARK: - Table Definitions

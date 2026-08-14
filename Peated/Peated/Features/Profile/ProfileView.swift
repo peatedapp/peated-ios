@@ -126,7 +126,7 @@ struct ProfileView: View {
     private var loadedView: some View {
         ScrollView {
             VStack(spacing: 0) {
-                if let _ = model.user {
+                if model.user != nil {
                     profileHeader
                 }
 
@@ -136,7 +136,7 @@ struct ProfileView: View {
                         .padding(.top, 8)
                 }
 
-                if model.statsPrimed, let _ = model.user {
+                if model.statsPrimed, model.user != nil {
                     statsSection
                         .padding(.horizontal)
                         .padding(.vertical, 20)
