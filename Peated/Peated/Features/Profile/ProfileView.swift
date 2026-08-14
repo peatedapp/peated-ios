@@ -478,7 +478,7 @@ struct ProfileView: View {
                             }
                         },
                         onBottleTap: { tasting in
-                            onNavigateToTasting?(tasting.id)
+                            onNavigateToBottle?(tasting.bottleId)
                         }
                     )
 

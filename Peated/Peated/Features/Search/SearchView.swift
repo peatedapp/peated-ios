@@ -161,10 +161,20 @@ struct SearchView: View {
                         isFavorite: seed.isFavorite,
                         hasTasted: seed.hasTasted
                     )
-                    BottleDetailView(bottleId: seed.id, bottleName: seed.fullName, seed: bottle)
+                    BottleDetailView(
+                        bottleId: seed.id,
+                        bottleName: seed.fullName,
+                        seed: bottle,
+                        navigationPath: $navigationPath
+                    )
                 case let .entityDetail(seed):
                     let entity = Entity(id: seed.id, name: seed.name, type: seed.type)
-                    EntityDetailView(entityId: seed.id, entityName: seed.name, seed: entity)
+                    EntityDetailView(
+                        entityId: seed.id,
+                        entityName: seed.name,
+                        seed: entity,
+                        navigationPath: $navigationPath
+                    )
                 case let .userProfile(seed):
                     let user = User(id: seed.id, email: "", username: seed.username).withPicture(seed.pictureUrl)
                     ProfileView(
@@ -177,7 +187,12 @@ struct SearchView: View {
                                 pictureUrl: nil
                             )))
                         },
-                        onNavigateToTasting: nil,
+                        onNavigateToTasting: { tastingId in
+                            navigationPath.append(TastingActivityNavigationDestination.tasting(
+                                id: tastingId,
+                                seed: nil
+                            ))
+                        },
                         onNavigateToBottle: { bottleId in
                             navigationPath.append(SearchDestination.bottleDetail(seed: BottleSeed(
                                 id: bottleId, name: "", fullName: "", brandId: "", brandName: "", category: nil,
@@ -187,10 +202,13 @@ struct SearchView: View {
                     )
                 }
             }
+            .tastingActivityNavigationDestinations(path: $navigationPath)
         }
         .screenBackground()
     }
+}
 
+extension SearchView {
     private var searchBar: some View {
         HStack(spacing: 12) {
             SearchInput(placeholder: "Search bottles, brands, users", text: $model.searchText, onSubmit: {

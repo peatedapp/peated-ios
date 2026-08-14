@@ -21,10 +21,18 @@ public final class EntityDetailModel {
     private let entityRepository = EntityRepository()
     private let bottleRepository = BottleRepository()
     private let feedRepository = FeedRepository()
+    private let tastingRepository: any TastingRepositoryProtocol
 
-    public init(entityId: String, seed: Entity? = nil) {
+    public init(
+        entityId: String,
+        seed: Entity? = nil,
+        recentTastings: [TastingFeedItem] = [],
+        tastingRepository: (any TastingRepositoryProtocol)? = nil
+    ) {
         self.entityId = entityId
         self.seed = seed
+        self.recentTastings = recentTastings
+        self.tastingRepository = tastingRepository ?? TastingRepository()
     }
 
     public func loadEntity() async {
@@ -93,5 +101,27 @@ public final class EntityDetailModel {
 
     public func retry() async {
         await loadEntity()
+    }
+
+    public func toggleToast(for tastingId: String) async {
+        guard let index = recentTastings.firstIndex(where: { $0.id == tastingId }) else { return }
+
+        let original = recentTastings[index]
+        recentTastings[index] = original.updatingToast(to: !original.hasToasted)
+
+        do {
+            let hasToasted = try await tastingRepository.toggleToast(tastingId: tastingId)
+            if let currentIndex = recentTastings.firstIndex(where: { $0.id == tastingId }) {
+                recentTastings[currentIndex] = original.updatingToast(to: hasToasted)
+            }
+            if hasToasted {
+                ToastManager.shared.showSuccess("Cheers! 🥃")
+            }
+        } catch {
+            if let currentIndex = recentTastings.firstIndex(where: { $0.id == tastingId }) {
+                recentTastings[currentIndex] = original
+            }
+            ToastManager.shared.showError("Failed to update toast")
+        }
     }
 }

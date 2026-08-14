@@ -121,8 +121,14 @@ struct LibraryView: View {
                     isFavorite: nav.isFavorite,
                     hasTasted: nav.hasTasted
                 )
-                BottleDetailView(bottleId: nav.id, bottleName: nav.fullName, seed: bottle)
+                BottleDetailView(
+                    bottleId: nav.id,
+                    bottleName: nav.fullName,
+                    seed: bottle,
+                    navigationPath: $navigationPath
+                )
             }
+            .tastingActivityNavigationDestinations(path: $navigationPath)
         }
         .screenBackground()
     }

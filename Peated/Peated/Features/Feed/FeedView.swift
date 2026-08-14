@@ -6,65 +6,6 @@ struct FeedView: View {
     @State private var navigationPath = NavigationPath()
     @State private var showingSuccessToast = false
 
-    /// Navigation destination types
-    struct TastingSeed: Hashable {
-        let id: String
-        let rating: Double
-        let notes: String?
-        let servingStyle: String?
-        let imageUrl: String?
-        let createdAt: Date
-        let userId: String
-        let username: String
-        let userDisplayName: String?
-        let userAvatarUrl: String?
-        let bottleId: String
-        let bottleName: String
-        let bottleBrandName: String
-        let bottleCategory: String?
-        let bottleImageUrl: String?
-        let toastCount: Int
-        let commentCount: Int
-        let hasToasted: Bool
-        let tags: [String]
-        let location: String?
-        let friendUsernames: [String]
-    }
-
-    struct UserSeed: Hashable { let id: String; let username: String; let pictureUrl: String? }
-
-    enum NavigationDestination: Hashable {
-        case userProfile(seed: UserSeed)
-        case tastingDetail(seed: TastingSeed)
-        case bottleDetail(bottleId: String)
-    }
-
-    private func makeSeed(from t: TastingFeedItem) -> TastingSeed {
-        TastingSeed(
-            id: t.id,
-            rating: t.rating,
-            notes: t.notes,
-            servingStyle: t.servingStyle,
-            imageUrl: t.imageUrl,
-            createdAt: t.createdAt,
-            userId: t.userId,
-            username: t.username,
-            userDisplayName: t.userDisplayName,
-            userAvatarUrl: t.userAvatarUrl,
-            bottleId: t.bottleId,
-            bottleName: t.bottleName,
-            bottleBrandName: t.bottleBrandName,
-            bottleCategory: t.bottleCategory,
-            bottleImageUrl: t.bottleImageUrl,
-            toastCount: t.toastCount,
-            commentCount: t.commentCount,
-            hasToasted: t.hasToasted,
-            tags: t.tags,
-            location: t.location,
-            friendUsernames: t.friendUsernames
-        )
-    }
-
     private func prefetchFeedImages() {
         var urls: [URL] = []
         for item in model.tastings.prefix(60) {
@@ -149,23 +90,24 @@ struct FeedView: View {
                                         },
                                         onComment: {
                                             navigationPath.append(
-                                                NavigationDestination.tastingDetail(seed: makeSeed(from: tasting))
+                                                TastingActivityNavigationDestination.tasting(
+                                                    id: tasting.id,
+                                                    seed: tasting
+                                                )
                                             )
                                         },
                                         onUserTap: {
                                             navigationPath.append(
-                                                NavigationDestination.userProfile(
-                                                    seed: UserSeed(
-                                                        id: tasting.userId,
-                                                        username: tasting.username,
-                                                        pictureUrl: tasting.userAvatarUrl
-                                                    )
+                                                TastingActivityNavigationDestination.profile(
+                                                    id: tasting.userId,
+                                                    username: tasting.username,
+                                                    pictureUrl: tasting.userAvatarUrl
                                                 )
                                             )
                                         },
                                         onBottleTap: {
                                             navigationPath.append(
-                                                NavigationDestination.tastingDetail(seed: makeSeed(from: tasting))
+                                                TastingActivityNavigationDestination.bottle(id: tasting.bottleId)
                                             )
                                         }
                                     )
@@ -216,76 +158,7 @@ struct FeedView: View {
                     await model.loadFeed(refresh: true)
                     prefetchFeedImages()
                 }
-                .navigationDestination(for: NavigationDestination.self) { destination in
-                    switch destination {
-                    case let .userProfile(seed):
-                        ProfileView(
-                            userId: seed.id,
-                            seed: User(id: seed.id, email: "", username: seed.username).withPicture(seed.pictureUrl),
-                            onNavigateToProfile: { userId in
-                                navigationPath.append(NavigationDestination.userProfile(seed: UserSeed(
-                                    id: userId,
-                                    username: "",
-                                    pictureUrl: nil
-                                )))
-                            },
-                            onNavigateToTasting: { tastingId in
-                                let fallback = TastingSeed(
-                                    id: tastingId, rating: 0, notes: nil, servingStyle: nil, imageUrl: nil,
-                                    createdAt: Date(), userId: "", username: "", userDisplayName: nil,
-                                    userAvatarUrl: nil,
-                                    bottleId: "", bottleName: "", bottleBrandName: "", bottleCategory: nil,
-                                    bottleImageUrl: nil,
-                                    toastCount: 0, commentCount: 0, hasToasted: false, tags: [], location: nil,
-                                    friendUsernames: []
-                                )
-                                navigationPath.append(NavigationDestination.tastingDetail(seed: fallback))
-                            },
-                            onNavigateToBottle: { bottleId in
-                                navigationPath.append(NavigationDestination.bottleDetail(bottleId: bottleId))
-                            }
-                        )
-                    case let .tastingDetail(seed):
-                        TastingDetailView(
-                            tastingId: seed.id,
-                            seed: TastingFeedItem(
-                                id: seed.id,
-                                rating: seed.rating,
-                                notes: seed.notes,
-                                servingStyle: seed.servingStyle,
-                                imageUrl: seed.imageUrl,
-                                createdAt: seed.createdAt,
-                                userId: seed.userId,
-                                username: seed.username,
-                                userDisplayName: seed.userDisplayName,
-                                userAvatarUrl: seed.userAvatarUrl,
-                                bottleId: seed.bottleId,
-                                bottleName: seed.bottleName,
-                                bottleBrandName: seed.bottleBrandName,
-                                bottleCategory: seed.bottleCategory,
-                                bottleImageUrl: seed.bottleImageUrl,
-                                toastCount: seed.toastCount,
-                                commentCount: seed.commentCount,
-                                hasToasted: seed.hasToasted,
-                                tags: seed.tags,
-                                location: seed.location,
-                                friendUsernames: seed.friendUsernames
-                            ),
-                            onNavigateToProfile: { userId in
-                                navigationPath.append(NavigationDestination.userProfile(seed: UserSeed(
-                                    id: userId,
-                                    username: "",
-                                    pictureUrl: nil
-                                )))
-                            },
-                            onNavigateToBottle: { bottleId in
-                                navigationPath.append(NavigationDestination.bottleDetail(bottleId: bottleId))
-                            }
-                        )
-                    case let .bottleDetail(bottleId):
-                        BottleDetailView(bottleId: bottleId, bottleName: nil)
-                    }
-                }
+                .tastingActivityNavigationDestinations(path: $navigationPath)
             }
             .screenBackground()
             .toast(

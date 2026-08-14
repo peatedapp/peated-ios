@@ -204,9 +204,14 @@ struct AppView: View {
                                         }
                                     )
                                 case let .bottleDetail(bottleId):
-                                    BottleDetailView(bottleId: bottleId, bottleName: nil)
+                                    BottleDetailView(
+                                        bottleId: bottleId,
+                                        bottleName: nil,
+                                        navigationPath: $profileNavigationPath
+                                    )
                                 }
                             }
+                            .tastingActivityNavigationDestinations(path: $profileNavigationPath)
                         }
                         .tabItem {
                             Label {
