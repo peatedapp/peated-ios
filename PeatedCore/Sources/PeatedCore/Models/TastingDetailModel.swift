@@ -1,5 +1,4 @@
 import Foundation
-import PeatedAPI
 
 /// Model for managing tasting detail view state and data
 @Observable
@@ -34,33 +33,25 @@ public class TastingDetailModel {
     // Dependencies
     private let tastingId: String
     private let seed: TastingFeedItem?
-    private let tastingRepository: TastingRepository
-    private let apiClient: APIClient
+    private let tastingRepository: any TastingRepositoryProtocol
+    private let isConnected: @MainActor () -> Bool
     private let cacheManager = CacheManager.shared
     private let database = DatabaseManager.shared
 
     public init(
         tastingId: String,
         seed: TastingFeedItem? = nil,
-        tastingRepository: TastingRepository? = nil
+        tastingRepository: (any TastingRepositoryProtocol)? = nil,
+        isConnected: @escaping @MainActor () -> Bool = { NetworkMonitor.shared.isConnected }
     ) {
         self.tastingId = tastingId
         self.seed = seed
-
-        // Create API client
-        let apiClient = APIClient(
-            serverURL: URL(string: "https://api.peated.com/v1")!
-        )
-        self.apiClient = apiClient
-        self.tastingRepository = tastingRepository ?? TastingRepository(apiClient: apiClient)
+        self.tastingRepository = tastingRepository ?? TastingRepository()
+        self.isConnected = isConnected
 
         // If we have a navigation seed, render it immediately to avoid any skeleton
         if let seed {
-            let seeded = TastingDetail(from: seed)
-            state = .loaded(seeded)
-            // Kick off background work without waiting for view lifecycle
-            Task { await self.loadComments() }
-            Task { await self.refreshFromNetworkAndUpdate() }
+            state = .loaded(TastingDetail(from: seed))
         }
     }
 
@@ -93,42 +84,12 @@ public class TastingDetailModel {
 
     private func refreshFromNetworkAndUpdate() async {
         do {
-            let client = await apiClient.generatedClient
-            let response = try await client.getTasting(
-                .init(path: .init(tasting: Double(tastingId) ?? 0))
-            )
-            guard case let .ok(okResponse) = response, case let .json(payload) = okResponse.body else {
-                state = .error("Failed to load tasting")
-                return
-            }
-            let detail = TastingDetail(
-                id: String(Int(payload.id)),
-                rating: extractRating(from: payload.rating),
-                notes: payload.notes,
-                servingStyle: payload.servingStyle?.rawValue,
-                imageUrl: payload.imageUrl,
-                createdAt: payload.createdAt,
-                userId: String(Int(payload.createdBy.id)),
-                username: payload.createdBy.username,
-                userDisplayName: nil,
-                userAvatarUrl: payload.createdBy.pictureUrl,
-                bottleId: String(Int(payload.bottle.id)),
-                bottleName: payload.bottle.fullName,
-                bottleBrandName: payload.bottle.brand.name,
-                bottleCategory: payload.bottle.category?.rawValue,
-                bottleImageUrl: payload.bottle.imageUrl,
-                toastCount: Int(payload.toasts),
-                commentCount: Int(payload.comments),
-                hasToasted: payload.hasToasted ?? false,
-                tags: payload.tags ?? [],
-                location: nil,
-                comments: [],
-                toasts: []
-            )
+            let tasting = try await tastingRepository.getTasting(id: tastingId)
+            let detail = TastingDetail(from: tasting)
             // Update state immediately (comments load separately)
             state = .loaded(detail)
             // Write-through cache for future loads/navigation
-            try? await database.updateCachedTasting(detail.toFeedItem())
+            try? await database.updateCachedTasting(tasting)
             // Ensure comments get loaded
             await loadComments()
         } catch {
@@ -141,37 +102,7 @@ public class TastingDetailModel {
         commentState = .loading
 
         do {
-            // Use the actual listComments API endpoint
-            let client = await apiClient.generatedClient
-            let response = try await client.listComments(
-                .init(
-                    query: .init(
-                        tasting: Double(tastingId) ?? 0,
-                        limit: 100 // Load up to 100 comments
-                    )
-                )
-            )
-
-            guard case let .ok(okResponse) = response,
-                  case let .json(payload) = okResponse.body
-            else {
-                commentState = .error("Failed to load comments")
-                return
-            }
-
-            // Map API comments to our Comment model
-            let comments = payload.results.map { apiComment in
-                Comment(
-                    id: String(Int(apiComment.id)),
-                    text: apiComment.comment,
-                    createdAt: apiComment.createdAt,
-                    userId: String(Int(apiComment.createdBy.id)),
-                    username: apiComment.createdBy.username,
-                    userDisplayName: nil, // API doesn't provide separate display name
-                    userAvatarUrl: apiComment.createdBy.pictureUrl,
-                    tastingId: tastingId
-                )
-            }
+            let comments = try await tastingRepository.listComments(tastingId: tastingId)
 
             commentState = .loaded(comments)
 
@@ -194,10 +125,10 @@ public class TastingDetailModel {
 
         // Optimistic update
         let newToastedState = !detail.hasToasted
-        let isConnected = NetworkMonitor.shared.isConnected
+        let connected = isConnected()
         let offlineOperation: OfflineOperation?
 
-        if isConnected {
+        if connected {
             offlineOperation = nil
         } else {
             do {
@@ -246,56 +177,97 @@ public class TastingDetailModel {
     }
 
     /// Posts a new comment on the tasting
-    public func postComment(_ text: String) async {
-        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        guard tasting != nil else { return }
+    @discardableResult
+    public func postComment(_ text: String) async -> Bool {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedText.isEmpty, tasting != nil, !isPostingComment else { return false }
 
         isPostingComment = true
         defer { isPostingComment = false }
 
         // Check network status for offline support
-        if !NetworkMonitor.shared.isConnected {
+        if !isConnected() {
             do {
                 let operation = try OfflineOperation.addComment(
                     tastingId: tastingId,
-                    text: text
+                    text: trimmedText
                 )
                 await OfflineQueueManager.shared.queueOperation(operation)
                 ToastManager.shared.showInfo("Comment will post when online")
+                return true
             } catch {
                 ToastManager.shared.showError("Failed to prepare offline comment")
+                return false
             }
-            return
         }
 
-        // TODO: Implement when createComment API is available
-        ToastManager.shared.showInfo("Comment posting not yet implemented")
+        do {
+            let comment = try await tastingRepository.createComment(
+                tastingId: tastingId,
+                text: trimmedText
+            )
+            appendComment(comment)
+            return true
+        } catch {
+            ToastManager.shared.showError("Failed to post comment")
+            return false
+        }
     }
 
     /// Deletes a comment
     public func deleteComment(_ comment: Comment) async {
-        guard var detail = tasting else { return }
+        guard var detail = tasting,
+              case let .loaded(comments) = commentState,
+              comments.contains(where: { $0.id == comment.id }),
+              !isDeletingComment
+        else { return }
 
         isDeletingComment = true
         defer { isDeletingComment = false }
 
         // Optimistic removal
-        detail.comments.removeAll { $0.id == comment.id }
-        detail.commentCount = max(0, detail.commentCount - 1)
+        let remainingComments = comments.filter { $0.id != comment.id }
+        commentState = .loaded(remainingComments)
+        detail.comments = remainingComments
+        detail.commentCount = remainingComments.count
         state = .loaded(detail)
 
-        // TODO: Implement when deleteComment API is available
-        ToastManager.shared.showInfo("Comment deletion not yet implemented")
+        do {
+            try await tastingRepository.deleteComment(id: comment.id)
+        } catch {
+            commentState = .loaded(comments)
+            detail.comments = comments
+            detail.commentCount = comments.count
+            state = .loaded(detail)
+            ToastManager.shared.showError("Failed to delete comment")
+        }
     }
 
     /// Deletes the tasting
     public func deleteTasting() async throws {
-        // TODO: Implement when deleteTasting API is available
-        throw APIError.notImplemented
+        try await tastingRepository.deleteTasting(id: tastingId)
     }
 
     /// Refreshes the tasting data
     public func refresh() async {
         await loadTasting()
+    }
+
+    private func appendComment(_ comment: Comment) {
+        var comments: [Comment] = if case let .loaded(existingComments) = commentState {
+            existingComments
+        } else {
+            []
+        }
+
+        guard !comments.contains(where: { $0.id == comment.id }) else { return }
+        comments.append(comment)
+        commentState = .loaded(comments)
+
+        if var detail = tasting {
+            detail.comments = comments
+            detail.commentCount = comments.count
+            state = .loaded(detail)
+        }
     }
 }
