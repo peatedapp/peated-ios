@@ -2,8 +2,6 @@ import Foundation
 @testable import PeatedCore
 import Testing
 
-private typealias TastingComment = PeatedCore.Comment
-
 @MainActor
 struct TastingDetailModelTests {
     @Test("Posting a comment updates the loaded tasting")
