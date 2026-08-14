@@ -30,30 +30,12 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
 
     public func getFeed(type: FeedType, cursor: String?, limit: Int = 20) async throws -> FeedPage {
         let client = await client
-
-        // Build the query parameters
-        var query = Operations.listTastings.Input.Query()
-        query.limit = Double(limit)
-
-        if let cursor {
-            query.cursor = Double(cursor)
-        }
-
-        // Add feed type filtering
-        switch type {
-        case .friends:
-            // TODO: API doesn't support friends filter yet, using global for now
-            break
-        case .personal:
-            guard let userId = authManager.currentUser?.id else {
-                throw APIError.requestFailed("Not authenticated")
-            }
-            // Use the userPayload union type
-            query.user = Operations.listTastings.Input.Query.userPayload(value1: Double(userId))
-        case .global:
-            // No additional filtering for global feed
-            break
-        }
+        let query = try Self.makeFeedQuery(
+            type: type,
+            cursor: cursor,
+            limit: limit,
+            currentUserId: authManager.currentUser?.id
+        )
 
         let response: Operations.listTastings.Output
         let payload: Operations.listTastings.Output.Ok.Body.jsonPayload
@@ -115,6 +97,32 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
             cursor: nextCursor,
             hasMore: hasMore
         )
+    }
+
+    static func makeFeedQuery(
+        type: FeedType,
+        cursor: String?,
+        limit: Int,
+        currentUserId: String?
+    ) throws -> Operations.listTastings.Input.Query {
+        var query = Operations.listTastings.Input.Query(
+            cursor: cursor.flatMap(Double.init),
+            limit: Double(limit)
+        )
+
+        switch type {
+        case .friends:
+            query.filter = .friends
+        case .personal:
+            guard let currentUserId, let numericUserId = Double(currentUserId) else {
+                throw APIError.requestFailed("Not authenticated")
+            }
+            query.user = .init(value1: numericUserId)
+        case .global:
+            query.filter = .global
+        }
+
+        return query
     }
 
     public func refreshFeed(type: FeedType) async throws -> FeedPage {
