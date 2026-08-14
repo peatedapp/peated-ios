@@ -1,5 +1,5 @@
-import Testing
 @testable import PeatedCore
+import Testing
 
 struct PeatedCoreTests {
     @Test

@@ -32,8 +32,7 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
                 let entityType: Entity.EntityType = if let types = payload._type, !types.isEmpty {
                     // Extract string value from OpenAPIValueContainer
                     if let firstType = types.first,
-                       let typeString = firstType.value as? String
-                    {
+                       let typeString = firstType.value as? String {
                         mapEntityType(typeString)
                     } else {
                         .brand // Default if extraction fails

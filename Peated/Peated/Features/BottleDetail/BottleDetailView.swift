@@ -510,9 +510,11 @@ struct BottleDetailView: View {
                                 .foregroundColor(.textSecondary)
                         }
 
-                        Text("\(bottle.totalRatings) \(bottle.totalRatings == 1 ? "rating" : "ratings") from the community")
-                            .font(.system(size: DesignSystem.FontSize.small))
-                            .foregroundColor(.textSecondary)
+                        Text(
+                            "\(bottle.totalRatings) \(bottle.totalRatings == 1 ? "rating" : "ratings") from the community"
+                        )
+                        .font(.system(size: DesignSystem.FontSize.small))
+                        .foregroundColor(.textSecondary)
                     }
                     .padding(.vertical, 8)
                     .padding(.horizontal, 12)
@@ -579,7 +581,10 @@ struct BottleDetailView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
                     ForEach(model.similarBottles) { bottle in
-                        NavigationLink(destination: BottleDetailView(bottleId: bottle.id, bottleName: bottle.fullName)) {
+                        NavigationLink(destination: BottleDetailView(
+                            bottleId: bottle.id,
+                            bottleName: bottle.fullName
+                        )) {
                             SimilarBottleCard(bottle: bottle)
                         }
                         .buttonStyle(.plain)

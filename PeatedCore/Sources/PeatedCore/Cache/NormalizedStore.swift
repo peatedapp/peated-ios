@@ -69,8 +69,7 @@ public actor NormalizedStore {
         storeURL = dir.appendingPathComponent("normalized_store.json")
         // Attempt to load snapshot from disk
         if let data = try? Data(contentsOf: storeURL),
-           let snap = try? decoder.decode(Snapshot.self, from: data)
-        {
+           let snap = try? decoder.decode(Snapshot.self, from: data) {
             values = snap.values
             metas = snap.metas
         }

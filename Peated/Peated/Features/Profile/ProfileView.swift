@@ -94,20 +94,22 @@ struct ProfileView: View {
                     Image(systemName: "gearshape").foregroundColor(.text)
                 }
             }
-        } else if let target = model.user, let current = AuthenticationManager.shared.currentUser, target.id != current.id {
+        } else if let target = model.user, let current = AuthenticationManager.shared.currentUser,
+                  target.id != current.id {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Menu {
-                    Button(role: (target.friendStatus == .friends || target.friendStatus == .pending) ? .destructive : .none) {
-                        Task { await model.toggleFriendship() }
-                    } label: {
-                        if target.friendStatus == .friends {
-                            Label("Unfriend", systemImage: "person.fill.xmark")
-                        } else if target.friendStatus == .pending {
-                            Label("Remove Friend", systemImage: "person.fill.xmark")
-                        } else {
-                            Label("Add Friend", systemImage: "person.badge.plus")
+                    Button(role: (target.friendStatus == .friends || target.friendStatus == .pending) ? .destructive :
+                        .none) {
+                            Task { await model.toggleFriendship() }
+                        } label: {
+                            if target.friendStatus == .friends {
+                                Label("Unfriend", systemImage: "person.fill.xmark")
+                            } else if target.friendStatus == .pending {
+                                Label("Remove Friend", systemImage: "person.fill.xmark")
+                            } else {
+                                Label("Add Friend", systemImage: "person.badge.plus")
+                            }
                         }
-                    }
                 } label: {
                     if model.isTogglingFriend {
                         ProgressView().tint(.brand)
@@ -660,8 +662,7 @@ struct ProfileView: View {
 
             if let apiError = error as? APIError,
                case let .requestFailed(message) = apiError,
-               message == "Cannot toast this tasting"
-            {
+               message == "Cannot toast this tasting" {
                 ToastManager.shared.showError("You can't toast your own tastings")
             } else {
                 ToastManager.shared.showError("Failed to update toast")

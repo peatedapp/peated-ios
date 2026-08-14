@@ -1,6 +1,6 @@
-import SwiftUI
 import AVFoundation
 import PeatedCore
+import SwiftUI
 
 struct BottleSelectionStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
@@ -8,8 +8,8 @@ struct BottleSelectionStep: View {
     @State private var showingScanner = false
     @State private var showingManualEntry = false
     @FocusState private var isSearchFocused: Bool
-    var onBottleSelected: (() -> Void)? = nil
-    
+    var onBottleSelected: (() -> Void)?
+
     var body: some View {
         VStack(spacing: 0) {
             ScrollView {
@@ -21,27 +21,29 @@ struct BottleSelectionStep: View {
                         .foregroundColor(.text)
                         .padding(.horizontal)
                         .padding(.top)
-                    
+
                     VStack(spacing: 12) {
                         // Search bar
                         searchBar
-                        
+
                         // Barcode scanner button
-                        if !viewModel.isSearching && searchText.isEmpty {
+                        if !viewModel.isSearching, searchText.isEmpty {
                             scanBarcodeButton
                         }
                     }
                     .padding(.horizontal)
-                    
+
                     // Content based on state
                     if viewModel.isSearching || !searchText.isEmpty {
                         searchResultsSection
                     } else {
                         recentBottlesSection
                     }
-                    
+
                     // Can't find bottle link
-                    if !viewModel.isSearching || (viewModel.isSearching && viewModel.searchResults.isEmpty && !searchText.isEmpty) {
+                    if !viewModel
+                        .isSearching ||
+                        (viewModel.isSearching && viewModel.searchResults.isEmpty && !searchText.isEmpty) {
                         cantFindBottleSection
                             .padding(.horizontal)
                             .padding(.vertical)
@@ -67,9 +69,9 @@ struct BottleSelectionStep: View {
             await loadRecentBottles()
         }
     }
-    
+
     // MARK: - Search Bar
-    @ViewBuilder
+
     private var searchBar: some View {
         SearchInput(placeholder: "Search for a bottle...", text: $searchText, onSubmit: {
             Task { await searchBottles() }
@@ -82,9 +84,9 @@ struct BottleSelectionStep: View {
             }
         }
     }
-    
+
     // MARK: - Scan Barcode Button
-    @ViewBuilder
+
     private var scanBarcodeButton: some View {
         Button(action: {
             checkCameraPermissionAndScan()
@@ -103,39 +105,39 @@ struct BottleSelectionStep: View {
             .cornerRadius(10)
         }
     }
-    
+
     // MARK: - Search Results
-    @ViewBuilder
+
     private var searchResultsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Search Results")
                 .font(.headline)
                 .foregroundColor(.textSecondary)
                 .padding(.horizontal)
-            
+
             if viewModel.isSearching {
                 // Loading state
                 VStack(spacing: 16) {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle())
                         .scaleEffect(1.2)
-                    
+
                     Text("Searching...")
                         .font(.body)
                         .foregroundColor(.textSecondary)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 40)
-            } else if viewModel.searchResults.isEmpty && searchText.count > 2 {
+            } else if viewModel.searchResults.isEmpty, searchText.count > 2 {
                 VStack(spacing: 16) {
                     Image(systemName: "magnifyingglass")
                         .font(.system(size: 40))
                         .foregroundColor(.textSecondary)
-                    
+
                     Text("No bottles found")
                         .font(.body)
                         .foregroundColor(.textSecondary)
-                    
+
                     Text("Try a different search or add it manually")
                         .font(.caption)
                         .foregroundColor(.textSecondary)
@@ -157,8 +159,9 @@ struct BottleSelectionStep: View {
             }
         }
     }
-    
+
     // MARK: - Recent Bottles
+
     @ViewBuilder
     private var recentBottlesSection: some View {
         if !viewModel.recentBottles.isEmpty {
@@ -167,7 +170,7 @@ struct BottleSelectionStep: View {
                     .font(.headline)
                     .foregroundColor(.textSecondary)
                     .padding(.horizontal)
-                
+
                 ForEach(viewModel.recentBottles) { bottle in
                     BottleRow(
                         bottle: bottle,
@@ -182,15 +185,15 @@ struct BottleSelectionStep: View {
             }
         }
     }
-    
+
     // MARK: - Can't Find Bottle
-    @ViewBuilder
+
     private var cantFindBottleSection: some View {
         VStack(spacing: 8) {
             Text("Can't find your bottle?")
                 .font(.body)
                 .foregroundColor(.textSecondary)
-            
+
             Button(action: {
                 showingManualEntry = true
             }) {
@@ -208,21 +211,22 @@ struct BottleSelectionStep: View {
         .background(Color.surface)
         .cornerRadius(12)
     }
-    
+
     // MARK: - Actions
+
     private func selectBottle(_ bottle: Bottle) {
         withAnimation {
             viewModel.selectedBottle = bottle
             isSearchFocused = false
         }
-        
+
         // Haptic feedback
         UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        
+
         // Automatically advance to next step
         onBottleSelected?()
     }
-    
+
     private func searchBottlesDebounced(_ query: String) {
         // Implement debounced search
         Task {
@@ -232,15 +236,15 @@ struct BottleSelectionStep: View {
             }
         }
     }
-    
+
     private func searchBottles() async {
         await viewModel.searchBottles(query: searchText)
     }
-    
+
     private func loadRecentBottles() async {
         await viewModel.loadRecentBottles()
     }
-    
+
     private func checkCameraPermissionAndScan() {
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
@@ -258,13 +262,13 @@ struct BottleSelectionStep: View {
             break
         }
     }
-    
+
     private func handleBarcodeScanned(_ barcode: String) {
         Task {
             // Search for bottle by barcode
             searchText = barcode
             await viewModel.searchBottles(query: barcode)
-            
+
             // If we found exactly one result, select it automatically
             if viewModel.searchResults.count == 1,
                let bottle = viewModel.searchResults.first {
@@ -272,10 +276,9 @@ struct BottleSelectionStep: View {
             }
         }
     }
-    
-    private func getLastTasting(for bottle: Bottle) -> TastingFeedItem? {
+
+    private func getLastTasting(for _: Bottle) -> TastingFeedItem? {
         // TODO: Get user's last tasting of this bottle
         nil
     }
 }
-

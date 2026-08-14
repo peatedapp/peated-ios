@@ -1,8 +1,8 @@
-import SwiftUI
 import PhotosUI
+import SwiftUI
 
 #if canImport(UIKit)
-import UIKit
+    import UIKit
 #endif
 
 struct PhotosStep: View {
@@ -11,9 +11,9 @@ struct PhotosStep: View {
     @State private var showingCamera = false
     @State private var showingImagePicker = false
     @State private var sourceType: UIImagePickerController.SourceType = .camera
-    
+
     private let maxPhotos = 4
-    
+
     var body: some View {
         SwiftUI.ScrollView(.vertical, showsIndicators: true) {
             VStack(alignment: .leading, spacing: 24) {
@@ -23,14 +23,14 @@ struct PhotosStep: View {
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.text)
-                    
+
                     Text("Share the moment with photos (optional)")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
                 }
                 .padding(.horizontal)
                 .padding(.top)
-                
+
                 VStack(spacing: 20) {
                     // Photo Grid
                     if !viewModel.photos.isEmpty {
@@ -43,7 +43,7 @@ struct PhotosStep: View {
                             }
                         )
                     }
-                    
+
                     // Add Photo Buttons
                     if viewModel.photos.count < maxPhotos {
                         VStack(spacing: 16) {
@@ -57,7 +57,7 @@ struct PhotosStep: View {
                                     showingImagePicker = true
                                 }
                             )
-                            
+
                             // Photo Library Button
                             PhotosPicker(
                                 selection: $selectedPhotos,
@@ -77,22 +77,22 @@ struct PhotosStep: View {
                             }
                         }
                     }
-                    
+
                     // Photo Count Info
                     if viewModel.photos.count > 0 {
                         HStack {
                             Image(systemName: "info.circle")
                                 .foregroundColor(.textSecondary)
-                            
+
                             Text("\(viewModel.photos.count) of \(maxPhotos) photos added")
                                 .font(.caption)
                                 .foregroundColor(.textSecondary)
-                            
+
                             Spacer()
                         }
                         .padding(.horizontal)
                     }
-                    
+
                     // Tips Section
                     if viewModel.photos.isEmpty {
                         PhotoTipsView()
@@ -114,7 +114,7 @@ struct PhotosStep: View {
             )
         }
     }
-    
+
     private func loadSelectedPhotos(_ items: [PhotosPickerItem]) async {
         for item in items {
             if let data = try? await item.loadTransferable(type: Data.self),
@@ -126,7 +126,7 @@ struct PhotosStep: View {
                 }
             }
         }
-        
+
         // Clear the selection
         await MainActor.run {
             selectedPhotos = []
@@ -135,18 +135,19 @@ struct PhotosStep: View {
 }
 
 // MARK: - Photo Grid
+
 struct PhotoGrid: View {
     let photos: [UIImage]
     let onRemove: (Int) -> Void
-    
+
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: 2)
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Photos")
                 .font(.headline)
                 .padding(.horizontal)
-            
+
             LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(Array(photos.enumerated()), id: \.offset) { index, photo in
                     PhotoGridItem(
@@ -161,10 +162,11 @@ struct PhotoGrid: View {
 }
 
 // MARK: - Photo Grid Item
+
 struct PhotoGridItem: View {
     let image: UIImage
     let onRemove: () -> Void
-    
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             Image(uiImage: image)
@@ -173,7 +175,7 @@ struct PhotoGridItem: View {
                 .frame(height: 120)
                 .clipped()
                 .cornerRadius(12)
-            
+
             Button(action: onRemove) {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title3)
@@ -187,12 +189,13 @@ struct PhotoGridItem: View {
 }
 
 // MARK: - Add Photo Button
+
 struct AddPhotoButton: View {
     let icon: String
     let title: String
     let subtitle: String
     let onTap: () -> Void
-    
+
     var body: some View {
         Button(action: onTap) {
             AddPhotoButtonContent(
@@ -206,31 +209,32 @@ struct AddPhotoButton: View {
 }
 
 // MARK: - Add Photo Button Content
+
 struct AddPhotoButtonContent: View {
     let icon: String
     let title: String
     let subtitle: String
-    
+
     var body: some View {
         HStack(spacing: 16) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(.brand)
                 .frame(width: 32)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
                     .font(.body)
                     .fontWeight(.medium)
                     .foregroundColor(.text)
-                
+
                 Text(subtitle)
                     .font(.caption)
                     .foregroundColor(.textSecondary)
             }
-            
+
             Spacer()
-            
+
             Image(systemName: "chevron.right")
                 .font(.caption)
                 .foregroundColor(.textSecondary)
@@ -246,28 +250,29 @@ struct AddPhotoButtonContent: View {
 }
 
 // MARK: - Photo Tips View
+
 struct PhotoTipsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Photo Tips")
                 .font(.headline)
-            
+
             VStack(alignment: .leading, spacing: 12) {
                 PhotoTipRow(
                     icon: "lightbulb",
                     text: "Good lighting makes your whisky look more appealing"
                 )
-                
+
                 PhotoTipRow(
                     icon: "viewfinder",
                     text: "Include the bottle label and your glass in the shot"
                 )
-                
+
                 PhotoTipRow(
                     icon: "square.grid.3x3",
                     text: "Try different angles - overhead, side view, or close-up"
                 )
-                
+
                 PhotoTipRow(
                     icon: "hand.raised",
                     text: "Keep hands steady for crisp, clear photos"
@@ -281,17 +286,18 @@ struct PhotoTipsView: View {
 }
 
 // MARK: - Photo Tip Row
+
 struct PhotoTipRow: View {
     let icon: String
     let text: String
-    
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
                 .font(.system(size: 16))
                 .foregroundColor(.brand)
                 .frame(width: 20)
-            
+
             Text(text)
                 .font(.caption)
                 .foregroundColor(.textSecondary)
@@ -301,11 +307,12 @@ struct PhotoTipRow: View {
 }
 
 // MARK: - Image Picker
+
 struct ImagePicker: UIViewControllerRepresentable {
     let sourceType: UIImagePickerController.SourceType
     let onImageSelected: (UIImage) -> Void
     @Environment(\.dismiss) private var dismiss
-    
+
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
@@ -313,28 +320,31 @@ struct ImagePicker: UIViewControllerRepresentable {
         picker.allowsEditing = true
         return picker
     }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
+
+    func updateUIViewController(_: UIImagePickerController, context _: Context) {}
+
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
-    
+
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let parent: ImagePicker
-        
+
         init(_ parent: ImagePicker) {
             self.parent = parent
         }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+
+        func imagePickerController(
+            _: UIImagePickerController,
+            didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]
+        ) {
             if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
                 parent.onImageSelected(image)
             }
             parent.dismiss()
         }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+
+        func imagePickerControllerDidCancel(_: UIImagePickerController) {
             parent.dismiss()
         }
     }

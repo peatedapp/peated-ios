@@ -71,7 +71,9 @@ struct DeveloperSettingsView: View {
                         } label: {
                             Label("Wipe Cache", systemImage: "trash")
                         }
-                        .help("Clears the in-app normalized cache and the URL cache. App behavior is unchanged; next reads will rehydrate on demand.")
+                        .help(
+                            "Clears the in-app normalized cache and the URL cache. App behavior is unchanged; next reads will rehydrate on demand."
+                        )
                         .fullWidth()
 
                         Button {
@@ -139,7 +141,10 @@ struct DeveloperSettingsView: View {
                             Label("Sample Tasting", systemImage: "pencil.and.list.clipboard")
                         }
 
-                        NavigationLink(destination: EntityDetailView(entityId: "1", entityName: "Lagavulin Distillery")) {
+                        NavigationLink(destination: EntityDetailView(
+                            entityId: "1",
+                            entityName: "Lagavulin Distillery"
+                        )) {
                             Label("Sample Entity (Lagavulin Distillery)", systemImage: "building.2")
                         }
                     }

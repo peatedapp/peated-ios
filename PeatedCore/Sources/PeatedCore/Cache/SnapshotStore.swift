@@ -37,7 +37,13 @@ public struct BottleSnapshot: Codable, Equatable, Sendable {
     public var brandId: String?
     public var brandName: String?
     public var imageUrl: String?
-    public init(id: String, fullName: String? = nil, brandId: String? = nil, brandName: String? = nil, imageUrl: String? = nil) {
+    public init(
+        id: String,
+        fullName: String? = nil,
+        brandId: String? = nil,
+        brandName: String? = nil,
+        imageUrl: String? = nil
+    ) {
         self.id = id
         self.fullName = fullName
         self.brandId = brandId
@@ -128,8 +134,7 @@ public enum SnapshotStore {
     public static func pruneAll(defaultCap: Int = 2000,
                                 userSnapshotCap: Int = 500,
                                 bottleSnapshotCap: Int = 1000,
-                                entitySnapshotCap: Int = 1000) async
-    {
+                                entitySnapshotCap: Int = 1000) async {
         await NormalizedStore.shared.pruneExpired()
         await NormalizedStore.shared.pruneByPrefix(prefix: "userSnapshot:", maxEntries: userSnapshotCap)
         await NormalizedStore.shared.pruneByPrefix(prefix: "bottleSnapshot:", maxEntries: bottleSnapshotCap)

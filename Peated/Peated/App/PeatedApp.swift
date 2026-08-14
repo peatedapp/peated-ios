@@ -1,9 +1,8 @@
-import SwiftUI
-import Sentry
-
-import PeatedCore
-import GoogleSignIn
 import Foundation
+import GoogleSignIn
+import PeatedCore
+import Sentry
+import SwiftUI
 
 @main
 struct PeatedApp: App {
@@ -18,7 +17,7 @@ struct PeatedApp: App {
         // This complements our in-memory cache and lets the system reuse
         // images across sessions when server cache headers permit it.
         let memoryCapacity = 100 * 1024 * 1024 // 100 MB
-        let diskCapacity = 500 * 1024 * 1024   // 500 MB
+        let diskCapacity = 500 * 1024 * 1024 // 500 MB
         if #available(iOS 13.0, *) {
             URLCache.shared = URLCache(memoryCapacity: memoryCapacity,
                                        diskCapacity: diskCapacity,
@@ -34,9 +33,9 @@ struct PeatedApp: App {
             options.dsn = "https://768306340a5c4721d816c33502f7e06e@o4505211758706688.ingest.us.sentry.io/4510132027457536"
 
             #if DEBUG
-            options.debug = true // Enable debug logging in development builds
+                options.debug = true // Enable debug logging in development builds
             #else
-            options.debug = false // Disable in production
+                options.debug = false // Disable in production
             #endif
 
             // Adds IP for users.
@@ -60,7 +59,7 @@ struct PeatedApp: App {
             options.experimental.enableLogs = true
         }
     }
-    
+
     var body: some Scene {
         WindowGroup {
             AppView()
@@ -71,7 +70,7 @@ struct PeatedApp: App {
                 }
         }
     }
-    
+
     private func setupGoogleSignIn() {
         // Prefer explicit configuration to avoid plist drift
         if let clientID = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String,
@@ -82,6 +81,6 @@ struct PeatedApp: App {
 
     /// Detect if we're running in a test environment
     private var isRunningTests: Bool {
-        return ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
 }

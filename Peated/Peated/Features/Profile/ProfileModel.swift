@@ -33,7 +33,14 @@ class ProfileModel {
         var u = seed
         // Prefer any non-default values from cache
         if !cached.email.isEmpty {
-            u = User(id: u.id, email: cached.email, username: u.username, verified: cached.verified, admin: cached.admin, mod: cached.mod)
+            u = User(
+                id: u.id,
+                email: cached.email,
+                username: u.username,
+                verified: cached.verified,
+                admin: cached.admin,
+                mod: cached.mod
+            )
         }
         u.pictureUrl = cached.pictureUrl ?? u.pictureUrl
         // Stats
@@ -190,7 +197,9 @@ class ProfileModel {
             u.friendStatus = v
         }
         user = u
-        statsPrimed = statsPrimed || (snap.tastingsCount != nil || snap.bottlesCount != nil || snap.collectedCount != nil || snap.contributionsCount != nil)
+        statsPrimed = statsPrimed ||
+            (snap.tastingsCount != nil || snap.bottlesCount != nil || snap.collectedCount != nil || snap
+                .contributionsCount != nil)
     }
 
     func logout() async {

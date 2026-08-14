@@ -249,8 +249,7 @@ public class FeedModel {
 
             // Optionally refresh in background if cache is getting old (> 2 minutes)
             if let lastUpdated = cache.lastUpdated,
-               Date().timeIntervalSince(lastUpdated) > 120
-            {
+               Date().timeIntervalSince(lastUpdated) > 120 {
                 // Cancel any existing background task for this feed type
                 backgroundRefreshTasks[type]?.cancel()
 
@@ -370,8 +369,7 @@ public class FeedModel {
         // If we're still over the limit, truncate the current feed cache
         if currentMemoryUsage > maxCacheSizeBytes,
            var currentCache = feedCaches[selectedFeedType],
-           currentCache.tastings.count > 50
-        { // Keep at least 50 items
+           currentCache.tastings.count > 50 { // Keep at least 50 items
 
             // Reduce current cache by half
             let targetCount = max(50, currentCache.tastings.count / 2)
@@ -490,7 +488,10 @@ public class FeedModel {
                     bottleBrandName: currentTasting.bottleBrandName,
                     bottleCategory: currentTasting.bottleCategory,
                     bottleImageUrl: currentTasting.bottleImageUrl,
-                    toastCount: actualToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1),
+                    toastCount: actualToastedState ? currentTasting.toastCount + 1 : max(
+                        0,
+                        currentTasting.toastCount - 1
+                    ),
                     commentCount: currentTasting.commentCount,
                     hasToasted: actualToastedState,
                     tags: currentTasting.tags,
@@ -505,7 +506,8 @@ public class FeedModel {
 
                         // Also update all feed caches
                         for feedType in feedCaches.keys {
-                            if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
+                            if let cacheIndex = feedCaches[feedType]?.tastings
+                                .firstIndex(where: { $0.id == tastingId }) {
                                 feedCaches[feedType]?.tastings[cacheIndex] = correctTasting
                             }
                         }
@@ -528,7 +530,8 @@ public class FeedModel {
 
                             // Also revert in all feed caches
                             for feedType in feedCaches.keys {
-                                if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
+                                if let cacheIndex = feedCaches[feedType]?.tastings
+                                    .firstIndex(where: { $0.id == tastingId }) {
                                     feedCaches[feedType]?.tastings[cacheIndex] = currentTasting
                                 }
                             }
@@ -538,8 +541,7 @@ public class FeedModel {
                         // Show specific error message via ToastManager
                         if let apiError = error as? APIError,
                            case let .requestFailed(message) = apiError,
-                           message == "Cannot toast this tasting"
-                        {
+                           message == "Cannot toast this tasting" {
                             ToastManager.shared.showError("You can't toast your own tastings")
                         } else {
                             ToastManager.shared.showError("Failed to update toast")

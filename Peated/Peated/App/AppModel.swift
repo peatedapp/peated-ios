@@ -1,7 +1,7 @@
-import SwiftUI
-import PeatedCore
-import Observation
 import Combine
+import Observation
+import PeatedCore
+import SwiftUI
 
 @Observable
 class AppModel {
@@ -15,7 +15,9 @@ class AppModel {
     }
 
     var isAuthenticated: Bool {
-        if case .authenticated = authState { return true }
+        if case .authenticated = authState {
+            return true
+        }
         return false
     }
 
@@ -23,25 +25,25 @@ class AppModel {
         // Observe auth state changes
         authManager.$authState
             .sink { [weak self] peatedAuthState in
-                guard let self = self else { return }
-                self.authState = peatedAuthState
+                guard let self else { return }
+                authState = peatedAuthState
             }
             .store(in: &cancellables)
 
         // Observe terms acceptance requirement
         authManager.$needsTermsAcceptance
             .sink { [weak self] needsAcceptance in
-                guard let self = self else { return }
-                self.needsTermsAcceptance = needsAcceptance
+                guard let self else { return }
+                needsTermsAcceptance = needsAcceptance
             }
             .store(in: &cancellables)
     }
-    
+
     func checkAuthStatus() async {
         // Wait for auth check to complete
         await authManager.checkAuthStatus()
     }
-    
+
     func handleAuthStateChanged(_ newState: AuthState) {
         print("AppModel: Updating auth state to: \(newState)")
         authState = newState

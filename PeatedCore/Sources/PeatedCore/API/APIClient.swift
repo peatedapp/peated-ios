@@ -1,6 +1,6 @@
 import Foundation
-import PeatedAPI
 import HTTPTypes
+import PeatedAPI
 
 /// Main API client for Peated
 public actor APIClient {
@@ -13,21 +13,21 @@ public actor APIClient {
 
     public init(serverURL: URL? = nil, configuration: URLSessionTransport.Configuration = .init()) {
         // Use provided URL or default production
-        self.currentServerURL = serverURL ?? URL(string: "https://api.peated.com/v1")!
-        
-        self.transport = URLSessionTransport(configuration: configuration)
-        
+        currentServerURL = serverURL ?? URL(string: "https://api.peated.com/v1")!
+
+        transport = URLSessionTransport(configuration: configuration)
+
         // Configure date transcoding to handle various date formats
         let runtimeConfiguration = OpenAPIRuntime.Configuration(
             dateTranscoder: CustomDateTranscoder()
         )
-        
+
         // Add middleware stack
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
         let cacheConditionals = CacheConditionalsMiddleware()
-        
-        self.client = Client(
+
+        client = Client(
             serverURL: currentServerURL,
             configuration: runtimeConfiguration,
             transport: transport,
@@ -45,33 +45,33 @@ public actor APIClient {
             _ = currentURL // silence capture warning
         }
     }
-    
+
     /// Update the server URL dynamically
     public func updateServerURL(_ url: URL) {
         guard url != currentServerURL else { return }
-        
+
         currentServerURL = url
-        
+
         let runtimeConfiguration = OpenAPIRuntime.Configuration(
             dateTranscoder: CustomDateTranscoder()
         )
-        
+
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
         let cacheConditionals = CacheConditionalsMiddleware()
-        
-        self.client = Client(
+
+        client = Client(
             serverURL: url,
             configuration: runtimeConfiguration,
             transport: transport,
             middlewares: [loggingMiddleware, cacheConditionals, authMiddleware]
         )
     }
-    
+
     /// Get the underlying generated client for direct access
     public var generatedClient: Client {
         client
     }
-    
+
     // Add convenience methods here as needed
 }
