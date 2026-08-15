@@ -22,10 +22,13 @@ An empty search result uses a dedicated no-results message. An empty unfiltered 
 
 ## Loading and errors
 
-- Initial loads and changed queries show the Library skeleton.
+- The initial load shows the Library skeleton. Later searches, filter changes, and refreshes preserve the current
+  content and show a compact progress indicator instead of replacing the screen.
 - Pull to refresh repeats the current search and status request.
 - Errors preserve a Retry action for the current request.
-- Overlapping loads use generation tracking so stale responses cannot replace newer search results.
+- Cancelled and overlapping loads are ignored so rapid typing cannot surface an error or let stale responses replace
+  newer search results.
+- Empty search and filtered states provide an action to clear the search or return to all bottles.
 
 ## Navigation
 

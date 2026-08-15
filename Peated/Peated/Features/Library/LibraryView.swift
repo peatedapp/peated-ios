@@ -37,6 +37,11 @@ final class LibraryViewModel: ObservableObject {
     @Published private(set) var isLoading = false
     @Published private(set) var error: String?
     @Published private(set) var entries: [LibraryEntry] = []
+    @Published private(set) var hasLoadedSuccessfully = false
+
+    var isInitialLoading: Bool {
+        isLoading && !hasLoadedSuccessfully
+    }
 
     private let repository: any CollectionRepositoryProtocol
     private var loadGeneration = 0
@@ -69,10 +74,13 @@ final class LibraryViewModel: ObservableObject {
                 status: status,
                 limit: 100
             )
-            guard generation == loadGeneration else { return }
+            guard !Task.isCancelled, generation == loadGeneration else { return }
+            hasLoadedSuccessfully = true
             self.entries = entries
+        } catch is CancellationError {
+            return
         } catch {
-            guard generation == loadGeneration else { return }
+            guard !Task.isCancelled, generation == loadGeneration else { return }
             self.error = error.localizedDescription
         }
     }
@@ -103,6 +111,14 @@ struct LibraryView: View {
                 libraryFilters
                 libraryContent
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .overlay(alignment: .top) {
+                        if viewModel.isLoading, !viewModel.isInitialLoading {
+                            ProgressView()
+                                .progressViewStyle(.linear)
+                                .tint(.brand)
+                                .accessibilityLabel(loadingAccessibilityLabel)
+                        }
+                    }
             }
             .navigationTitle("My Library")
             .navigationBarTitleDisplayMode(.inline)
@@ -175,7 +191,7 @@ struct LibraryView: View {
 
     @ViewBuilder
     private var libraryContent: some View {
-        if viewModel.isLoading {
+        if viewModel.isInitialLoading {
             LibrarySkeleton()
         } else if let error = viewModel.error {
             VStack(spacing: 12) {
@@ -206,6 +222,7 @@ struct LibraryView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 24)
             }
+            .scrollDismissesKeyboard(.interactively)
             .refreshable {
                 await viewModel.load(status: loadRequest.status, query: loadRequest.query)
             }
@@ -223,6 +240,17 @@ struct LibraryView: View {
                 .font(.footnote)
                 .foregroundColor(.textSecondary)
                 .multilineTextAlignment(.center)
+            if searchQuery != nil {
+                Button("Clear search") {
+                    searchText = ""
+                }
+                .buttonStyle(.bordered)
+            } else if selectedFilter != .all {
+                Button("Show all bottles") {
+                    selectedFilter = .all
+                }
+                .buttonStyle(.bordered)
+            }
         }
         .padding(.horizontal, 32)
     }
@@ -239,7 +267,9 @@ struct LibraryView: View {
 
     private var emptyLibraryMessage: String {
         if searchQuery != nil {
-            "Try a different search."
+            selectedFilter == .all
+                ? "Try a different search."
+                : "Try a different search or status."
         } else if selectedFilter == .all {
             "Save bottles from their detail pages, then track whether they are sealed, open, or empty."
         } else {
@@ -254,6 +284,10 @@ struct LibraryView: View {
 
     private var loadRequest: LibraryLoadRequest {
         LibraryLoadRequest(status: selectedFilter.status, query: searchQuery)
+    }
+
+    private var loadingAccessibilityLabel: String {
+        searchQuery == nil ? "Updating library" : "Searching library"
     }
 }
 
