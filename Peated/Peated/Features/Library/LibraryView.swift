@@ -51,7 +51,7 @@ final class LibraryViewModel: ObservableObject {
         isLoading = true
         error = nil
         let trimmedQuery = query?.trimmingCharacters(in: .whitespacesAndNewlines)
-        let normalizedQuery = if let trimmedQuery, !trimmedQuery.isEmpty {
+        let normalizedQuery: String? = if let trimmedQuery, !trimmedQuery.isEmpty {
             trimmedQuery
         } else {
             nil
