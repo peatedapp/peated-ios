@@ -1,3 +1,4 @@
+import Foundation
 import PeatedCore
 import SwiftUI
 
@@ -26,6 +27,11 @@ private enum LibraryFilter: Hashable, CaseIterable {
     }
 }
 
+private struct LibraryLoadRequest: Hashable {
+    let status: LibraryBottleStatus?
+    let query: String?
+}
+
 @MainActor
 final class LibraryViewModel: ObservableObject {
     @Published private(set) var isLoading = false
@@ -39,11 +45,17 @@ final class LibraryViewModel: ObservableObject {
         self.repository = repository ?? CollectionRepository()
     }
 
-    func load(status: LibraryBottleStatus? = nil) async {
+    func load(status: LibraryBottleStatus? = nil, query: String? = nil) async {
         loadGeneration += 1
         let generation = loadGeneration
         isLoading = true
         error = nil
+        let trimmedQuery = query?.trimmingCharacters(in: .whitespacesAndNewlines)
+        let normalizedQuery = if let trimmedQuery, !trimmedQuery.isEmpty {
+            trimmedQuery
+        } else {
+            nil
+        }
         defer {
             if generation == loadGeneration {
                 isLoading = false
@@ -53,7 +65,7 @@ final class LibraryViewModel: ObservableObject {
         do {
             let entries = try await repository.listLibraryEntries(
                 user: "me",
-                query: nil,
+                query: normalizedQuery,
                 status: status,
                 limit: 100
             )
@@ -69,6 +81,7 @@ final class LibraryViewModel: ObservableObject {
 struct LibraryView: View {
     @StateObject private var viewModel = LibraryViewModel()
     @State private var selectedFilter = LibraryFilter.all
+    @State private var searchText = ""
     @State private var navigationPath = NavigationPath()
 
     struct BottleNav: Hashable {
@@ -94,8 +107,21 @@ struct LibraryView: View {
             .navigationTitle("My Library")
             .navigationBarTitleDisplayMode(.inline)
             .navigationChrome()
-            .task(id: selectedFilter) {
-                await viewModel.load(status: selectedFilter.status)
+            .searchable(
+                text: $searchText,
+                placement: .navigationBarDrawer(displayMode: .always),
+                prompt: "Search your library"
+            )
+            .task(id: loadRequest) {
+                let request = loadRequest
+                if request.query != nil {
+                    do {
+                        try await Task.sleep(nanoseconds: 300_000_000)
+                    } catch {
+                        return
+                    }
+                }
+                await viewModel.load(status: request.status, query: request.query)
             }
             .navigationDestination(for: BottleNav.self) { nav in
                 let bottle = Bottle(
@@ -160,7 +186,7 @@ struct LibraryView: View {
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
                 Button("Retry") {
-                    Task { await viewModel.load(status: selectedFilter.status) }
+                    Task { await viewModel.load(status: loadRequest.status, query: loadRequest.query) }
                 }
                 .buttonStyle(.borderedProminent)
             }
@@ -171,10 +197,7 @@ struct LibraryView: View {
             ScrollView {
                 LazyVStack(spacing: 12) {
                     ForEach(viewModel.entries) { entry in
-                        BottleRow(
-                            bottle: entry.bottle,
-                            subtitle: .libraryStatus(entry.status)
-                        ) {
+                        BottleRow(bottle: entry.bottle) {
                             navigationPath.append(BottleNav(entry: entry))
                         }
                     }
@@ -184,17 +207,17 @@ struct LibraryView: View {
                 .padding(.bottom, 24)
             }
             .refreshable {
-                await viewModel.load(status: selectedFilter.status)
+                await viewModel.load(status: loadRequest.status, query: loadRequest.query)
             }
         }
     }
 
     private var emptyLibrary: some View {
         VStack(spacing: 12) {
-            Image(systemName: "books.vertical")
+            Image(systemName: searchQuery == nil ? "books.vertical" : "magnifyingglass")
                 .font(.system(size: 38))
                 .foregroundColor(.textSecondary)
-            Text(selectedFilter == .all ? "Build your bottle library" : "No matching bottles")
+            Text(emptyLibraryTitle)
                 .font(.headline)
             Text(emptyLibraryMessage)
                 .font(.footnote)
@@ -204,12 +227,33 @@ struct LibraryView: View {
         .padding(.horizontal, 32)
     }
 
+    private var emptyLibraryTitle: String {
+        if searchQuery != nil {
+            "No bottles found"
+        } else if selectedFilter == .all {
+            "Build your bottle library"
+        } else {
+            "No matching bottles"
+        }
+    }
+
     private var emptyLibraryMessage: String {
-        if selectedFilter == .all {
+        if searchQuery != nil {
+            "Try a different search."
+        } else if selectedFilter == .all {
             "Save bottles from their detail pages, then track whether they are sealed, open, or empty."
         } else {
             "No bottles in your library have this status."
         }
+    }
+
+    private var searchQuery: String? {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return query.isEmpty ? nil : query
+    }
+
+    private var loadRequest: LibraryLoadRequest {
+        LibraryLoadRequest(status: selectedFilter.status, query: searchQuery)
     }
 }
 

@@ -532,10 +532,7 @@ struct ProfileView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(model.libraryEntries) { entry in
-                                BottleRow(
-                                    bottle: entry.bottle,
-                                    subtitle: .libraryStatus(entry.status)
-                                ) {
+                                BottleRow(bottle: entry.bottle) {
                                     onNavigateToBottle?(entry.bottle.id)
                                 }
                             }
