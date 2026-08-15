@@ -30,11 +30,6 @@ class CreateTastingViewModel: ObservableObject {
     @Published var photos: [UIImage] = []
     @Published var uploadedPhotoIds: [String] = []
 
-    // Step 5: Confirmation
-    @Published var isPublic = true
-    @Published var postToFacebook = false
-    @Published var postToTwitter = false
-
     // State
     @Published var isSubmitting = false
     @Published var submissionSuccessful = false
@@ -102,11 +97,6 @@ class CreateTastingViewModel: ObservableObject {
                 }
             }
 
-            // Post to social media if requested
-            if postToFacebook || postToTwitter {
-                await postToSocialMedia(tasting)
-            }
-
             submissionSuccessful = true
         } catch {
             // Log detailed error information for debugging
@@ -144,10 +134,6 @@ class CreateTastingViewModel: ObservableObject {
         // TODO: Implement fetching user's recent bottles from their tasting history
         // For now, leave empty - users should use search to find bottles
         recentBottles = []
-    }
-
-    private func postToSocialMedia(_: TastingFeedItem) async {
-        // TODO: Implementation for social sharing
     }
 }
 

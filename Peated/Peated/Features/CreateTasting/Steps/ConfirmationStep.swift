@@ -14,7 +14,7 @@ struct ConfirmationStep: View {
                         .fontWeight(.bold)
                         .foregroundColor(.text)
 
-                    Text("Quick check before sharing")
+                    Text("Quick check before posting")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
                 }
@@ -24,21 +24,6 @@ struct ConfirmationStep: View {
                 // Tasting Preview - Clean card style
                 TastingPreviewCard(viewModel: viewModel)
                     .padding(.horizontal)
-
-                // Privacy Settings
-                PrivacySettingsSection(
-                    isPublic: $viewModel.isPublic
-                )
-                .padding(.horizontal)
-
-                // Social Sharing (if enabled)
-                if viewModel.isPublic {
-                    SocialSharingSection(
-                        postToFacebook: $viewModel.postToFacebook,
-                        postToTwitter: $viewModel.postToTwitter
-                    )
-                    .padding(.horizontal)
-                }
             }
             .padding(.bottom, 100) // Space for navigation buttons
         }
@@ -233,135 +218,6 @@ struct TastingPreviewCard: View {
                     .stroke(Color.border.opacity(0.3), lineWidth: 1)
             )
         }
-    }
-}
-
-// MARK: - Privacy Settings Section (Updated)
-
-struct PrivacySettingsSection: View {
-    @Binding var isPublic: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Privacy")
-                .font(.headline)
-
-            HStack(spacing: 12) {
-                PrivacyOption(
-                    title: "Public",
-                    subtitle: "Share with everyone",
-                    icon: "globe",
-                    isSelected: isPublic,
-                    onTap: { isPublic = true }
-                )
-
-                PrivacyOption(
-                    title: "Private",
-                    subtitle: "Just for you",
-                    icon: "lock.fill",
-                    isSelected: !isPublic,
-                    onTap: { isPublic = false }
-                )
-            }
-        }
-    }
-}
-
-// MARK: - Privacy Option (Simplified)
-
-struct PrivacyOption: View {
-    let title: String
-    let subtitle: String
-    let icon: String
-    let isSelected: Bool
-    let onTap: () -> Void
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.title2)
-                    .symbolRenderingMode(isSelected ? .multicolor : .monochrome)
-                    .foregroundColor(isSelected ? .brand : .secondary)
-
-                Text(title)
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(isSelected ? .primary : .secondary)
-
-                Text(subtitle)
-                    .font(.system(size: 11))
-                    .foregroundColor(.textSecondary)
-                    .opacity(isSelected ? 1 : 0.7)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.brand.opacity(0.1) : Color.surface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
-                    )
-            )
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - Social Sharing Section (Cleaner)
-
-struct SocialSharingSection: View {
-    @Binding var postToFacebook: Bool
-    @Binding var postToTwitter: Bool
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Share to")
-                .font(.headline)
-
-            VStack(spacing: 8) {
-                SocialToggle(
-                    platform: "Facebook",
-                    icon: "f.circle.fill",
-                    isEnabled: $postToFacebook
-                )
-
-                SocialToggle(
-                    platform: "X (Twitter)",
-                    icon: "x.circle.fill",
-                    isEnabled: $postToTwitter
-                )
-            }
-        }
-    }
-}
-
-// MARK: - Social Toggle (Simplified)
-
-struct SocialToggle: View {
-    let platform: String
-    let icon: String
-    @Binding var isEnabled: Bool
-
-    var body: some View {
-        HStack {
-            Image(systemName: icon)
-                .font(.title3)
-                .foregroundColor(.textSecondary)
-                .frame(width: 24)
-
-            Text(platform)
-                .font(.system(size: 14))
-
-            Spacer()
-
-            Toggle("", isOn: $isEnabled)
-                .toggleStyle(SwitchToggleStyle(tint: .brand))
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .background(Color.surface)
-        .cornerRadius(10)
     }
 }
 
