@@ -315,11 +315,6 @@ class CreateTastingViewModel: ObservableObject {
     @Published var photos: [UIImage] = []
     @Published var uploadedPhotoIds: [String] = []
     
-    // Step 5: Confirmation
-    @Published var isPublic = true
-    @Published var postToFacebook = false
-    @Published var postToTwitter = false
-    
     // State
     @Published var isSubmitting = false
     @Published var submissionSuccessful = false
@@ -359,16 +354,10 @@ class CreateTastingViewModel: ObservableObject {
                 servingStyle: servingStyle,
                 location: isDrinkingAtHome ? nil : selectedLocation,
                 taggedFriends: taggedFriends,
-                imageIds: uploadedPhotoIds,
-                isPublic: isPublic
+                imageIds: uploadedPhotoIds
             )
             
-            let tasting = try await repository.createTasting(input)
-            
-            // Post to social media if requested
-            if postToFacebook || postToTwitter {
-                await postToSocialMedia(tasting)
-            }
+            _ = try await repository.createTasting(input)
             
             submissionSuccessful = true
         } catch {
@@ -384,9 +373,6 @@ class CreateTastingViewModel: ObservableObject {
         []
     }
     
-    private func postToSocialMedia(_ tasting: Tasting) async {
-        // Implementation for social sharing
-    }
 }
 ```
 
@@ -439,7 +425,6 @@ class CreateTastingViewModel: ObservableObject {
 - Location
 - Tagged friends
 - Photos
-- Privacy settings
 
 ## State Management
 

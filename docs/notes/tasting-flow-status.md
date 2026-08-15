@@ -62,8 +62,6 @@ The tasting flow is fully implemented with the following capabilities:
 
 ### 7. Confirmation (Step 6)
 - [x] Review summary display
-- [x] Privacy settings (Public/Private)
-- [x] Social sharing toggles (Facebook/Twitter)
 - [x] Tasting preview card
 
 ### 8. API Integration
@@ -108,12 +106,7 @@ The tasting flow is fully implemented with the following capabilities:
    - Tags are passed to API but not selectable
 
 ### Low Priority
-7. **Social Sharing**
-   - Toggles exist but don't post
-   - Need Facebook/Twitter SDK integration
-   - Need sharing permissions
-
-8. **Offline Support**
+7. **Offline Support**
    - No draft saving
    - No offline queue for submissions
    - Lost data if app crashes
