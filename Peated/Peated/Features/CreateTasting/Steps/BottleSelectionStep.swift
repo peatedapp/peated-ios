@@ -208,7 +208,7 @@ struct BottleSelectionStep: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 20)
-        .background(Color.surface)
+        .background(Color.formSurface)
         .cornerRadius(12)
     }
 

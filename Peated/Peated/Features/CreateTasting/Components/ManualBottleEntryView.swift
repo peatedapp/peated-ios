@@ -94,7 +94,7 @@ struct ManualBottleEntryView: View {
                 autocorrection: true,
                 capitalization: .words,
                 onSubmit: { focusBrand = true },
-                isFocused: Binding(get: { focusName }, set: { focusName = $0 })
+                isFocused: $focusName
             )
 
             TextInput(
@@ -107,7 +107,7 @@ struct ManualBottleEntryView: View {
                 autocorrection: true,
                 capitalization: .words,
                 onSubmit: { focusAbv = true },
-                isFocused: Binding(get: { focusBrand }, set: { focusBrand = $0 })
+                isFocused: $focusBrand
             )
 
             Text("Enter the bottle name and brand as they appear on the label")
@@ -130,7 +130,7 @@ struct ManualBottleEntryView: View {
                 keyboard: .decimalPad,
                 submitLabel: .next,
                 onSubmit: { focusAge = true },
-                isFocused: Binding(get: { focusAbv }, set: { focusAbv = $0 })
+                isFocused: $focusAbv
             )
 
             // Age
@@ -142,7 +142,7 @@ struct ManualBottleEntryView: View {
                 unit: "years",
                 keyboard: .numberPad,
                 submitLabel: .done,
-                isFocused: Binding(get: { focusAge }, set: { focusAge = $0 })
+                isFocused: $focusAge
             )
         }
     }

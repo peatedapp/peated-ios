@@ -105,7 +105,7 @@ struct TastingPreviewCard: View {
                         Spacer()
                     }
                     .padding(12)
-                    .background(Color.surface.opacity(0.6))
+                    .background(Color.formSurface.opacity(0.6))
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
@@ -196,7 +196,7 @@ struct TastingPreviewCard: View {
                 .padding(.top, 4)
             }
             .padding()
-            .background(Color.surface)
+            .background(Color.formSurface)
             .cornerRadius(12)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)

@@ -57,11 +57,11 @@ struct NotesStep: View {
                                 .foregroundColor(.textSecondary)
                         }
                         .padding()
-                        .background(Color.surface)
+                        .background(Color.formSurface)
                         .cornerRadius(12)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color(.separator), lineWidth: 1)
+                                .stroke(Color.formBorder, lineWidth: 1)
                         )
                     }
                     .buttonStyle(.plain)
@@ -87,7 +87,7 @@ struct NotesStep: View {
                                     }
                                     .padding(.horizontal, 10)
                                     .padding(.vertical, 6)
-                                    .background(Color.surfaceSubtle)
+                                    .background(Color.formBorder)
                                     .cornerRadius(12)
                                 }
                             }
@@ -179,7 +179,7 @@ struct NotesStep: View {
                         }
                     }
                     .padding()
-                    .background(Color.surface)
+                    .background(Color.formSurface)
                     .cornerRadius(12)
                     .padding(.horizontal)
                     .padding(.top, 12)

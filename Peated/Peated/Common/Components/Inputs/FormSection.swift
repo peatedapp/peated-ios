@@ -25,10 +25,10 @@ struct FormSection<Content: View>: View {
                 content
             }
             .padding(12)
-            .background(Color.surface)
+            .background(Color.formSurface)
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.border.opacity(0.3), lineWidth: 1)
+                    .stroke(Color.formBorder, lineWidth: 1)
             )
             .cornerRadius(12)
         }

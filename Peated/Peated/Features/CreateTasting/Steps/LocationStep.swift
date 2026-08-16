@@ -46,7 +46,7 @@ struct LocationStep: View {
                     // Divider with "OR"
                     HStack {
                         Rectangle()
-                            .fill(Color(.separator))
+                            .fill(Color.formBorder)
                             .frame(height: 1)
 
                         Text("OR")
@@ -55,7 +55,7 @@ struct LocationStep: View {
                             .padding(.horizontal, 8)
 
                         Rectangle()
-                            .fill(Color(.separator))
+                            .fill(Color.formBorder)
                             .frame(height: 1)
                     }
                     .padding(.horizontal)
@@ -202,7 +202,7 @@ struct HomeLocationButton: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.brand : Color.surface)
+                    .fill(isSelected ? Color.brand : Color.formSurface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
@@ -266,7 +266,7 @@ struct CurrentLocationButton: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.brand : Color.surface)
+                    .fill(isSelected ? Color.brand : Color.formSurface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
@@ -286,7 +286,12 @@ struct LocationSearchBar: View {
     let onSearch: () -> Void
 
     var body: some View {
-        SearchInput(placeholder: "Search for a place...", text: $searchText, onSubmit: onSearch)
+        SearchInput(
+            placeholder: "Search for a place...",
+            text: $searchText,
+            isFocused: $isSearchFocused,
+            onSubmit: onSearch
+        )
     }
 }
 
@@ -354,7 +359,7 @@ struct LocationRow: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.brand : Color.surface)
+                    .fill(isSelected ? Color.brand : Color.formSurface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)

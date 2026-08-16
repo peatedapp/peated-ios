@@ -24,9 +24,9 @@ struct TextInput: View {
     var helper: String?
     var onSubmit: (() -> Void)?
 
-    // Focus (internal; external binding optional for integration if needed)
+    // Focus (internal; external binding optional for coordinated form navigation)
+    var isFocused: FocusState<Bool>.Binding?
     @FocusState private var internalFocused: Bool
-    var isFocused: Binding<Bool>?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -57,7 +57,7 @@ struct TextInput: View {
                 .textInputAutocapitalization(capitalization)
                 .textContentType(contentType)
                 .onSubmit { onSubmit?() }
-                .focused($internalFocused)
+                .focused(focusBinding)
 
                 if let unit, !unit.isEmpty {
                     Text(unit)
@@ -88,5 +88,9 @@ struct TextInput: View {
         }
         let focused = isFocused?.wrappedValue ?? internalFocused
         return focused ? .focused : .normal
+    }
+
+    private var focusBinding: FocusState<Bool>.Binding {
+        isFocused ?? $internalFocused
     }
 }

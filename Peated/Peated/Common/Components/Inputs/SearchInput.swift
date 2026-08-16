@@ -6,8 +6,9 @@ import SwiftUI
 struct SearchInput: View {
     let placeholder: String
     @Binding var text: String
-    @FocusState private var isFocused: Bool
+    var isFocused: FocusState<Bool>.Binding?
     var onSubmit: (() -> Void)?
+    @FocusState private var internalFocused: Bool
 
     var body: some View {
         HStack(spacing: 8) {
@@ -15,7 +16,7 @@ struct SearchInput: View {
             TextField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
                 .textFieldStyle(.plain)
                 .foregroundColor(.text)
-                .focused($isFocused)
+                .focused(focusBinding)
                 .submitLabel(.search)
                 .onSubmit { onSubmit?() }
             if !text.isEmpty {
@@ -25,6 +26,14 @@ struct SearchInput: View {
                 .buttonStyle(.plain)
             }
         }
-        .inputBox(state: isFocused ? .focused : .normal)
+        .inputBox(state: focused ? .focused : .normal)
+    }
+
+    private var focused: Bool {
+        isFocused?.wrappedValue ?? internalFocused
+    }
+
+    private var focusBinding: FocusState<Bool>.Binding {
+        isFocused ?? $internalFocused
     }
 }
