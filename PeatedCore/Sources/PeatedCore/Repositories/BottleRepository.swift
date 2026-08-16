@@ -1,8 +1,10 @@
 import Foundation
 import PeatedAPI
 
-public protocol BottleRepositoryProtocol {
+public protocol BottleRepositoryProtocol: Sendable {
     func searchBottles(query: String, limit: Int) async throws -> [Bottle]
+    func createBottle(_ input: CreateBottleInput) async throws -> Bottle
+    func getBottle(barcode: String) async throws -> Bottle
     func getBottle(id: String) async throws -> Bottle
     func getPopularBottles(limit: Int) async throws -> [Bottle]
     func getTopRatedBottles(limit: Int) async throws -> [Bottle]
@@ -70,6 +72,72 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         }
     }
 
+    public func createBottle(_ input: CreateBottleInput) async throws -> Bottle {
+        let client = await client
+        let response = try await client.createBottle(
+            body: .json(Self.makeCreatePayload(input))
+        )
+
+        switch response {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                let bottle = Bottle(from: payload)
+                await cache(bottle)
+                return bottle
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Check the bottle details and try again.")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("A verified account is required to add a bottle.")
+        case .notFound:
+            throw APIError.notFound
+        case .conflict:
+            throw APIError.requestFailed("A matching bottle already exists. Search for it instead.")
+        case .contentTooLarge:
+            throw APIError.requestFailed("The bottle data is too large.")
+        case .internalServerError:
+            throw APIError.serverError(500, nil)
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        }
+    }
+
+    public func getBottle(barcode: String) async throws -> Bottle {
+        let client = await client
+        let response = try await client.getBottleBarcode(
+            path: .init(barcode: barcode)
+        )
+
+        switch response {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                let bottle = Bottle(from: payload.bottle)
+                await cache(bottle)
+                return bottle
+            }
+        case .badRequest:
+            throw APIError.requestFailed("That barcode is not a valid GTIN.")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("Barcode lookup is unavailable for this account.")
+        case .notFound:
+            throw APIError.notFound
+        case .conflict:
+            throw APIError.requestFailed("That barcode has conflicting bottle matches.")
+        case .contentTooLarge:
+            throw APIError.requestFailed("That barcode is too long.")
+        case .internalServerError:
+            throw APIError.serverError(500, nil)
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        }
+    }
+
     public func getBottle(id: String) async throws -> Bottle {
         let client = await client
 
@@ -105,6 +173,46 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         default:
             throw APIError.invalidResponse
         }
+    }
+
+    static func makeCreatePayload(
+        _ input: CreateBottleInput
+    ) -> Operations.createBottle.Input.Body.jsonPayload {
+        typealias Payload = Operations.createBottle.Input.Body.jsonPayload
+
+        let category: Payload.categoryPayload? = switch input.category {
+        case .some(.blend): .blend
+        case .some(.bourbon): .bourbon
+        case .some(.rye): .rye
+        case .some(.singleGrain): .single_grain
+        case .some(.singleMalt): .single_malt
+        case .some(.singlePotStill): .single_pot_still
+        case .some(.spirit): .spirit
+        case .none: nil
+        }
+
+        let brand = Payload.brandPayload(
+            value1: .init(name: input.brandName, _type: [.brand])
+        )
+
+        return Payload(
+            name: input.name,
+            category: category,
+            brand: brand,
+            statedAge: input.statedAge,
+            abv: input.abv
+        )
+    }
+
+    private func cache(_ bottle: Bottle) async {
+        await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle)
+        await SnapshotStore.upsertBottle(BottleSnapshot(
+            id: bottle.id,
+            fullName: bottle.fullName,
+            brandId: bottle.brand.id,
+            brandName: bottle.brand.name,
+            imageUrl: bottle.imageUrl
+        ))
     }
 
     public func getPopularBottles(limit: Int = 10) async throws -> [Bottle] {

@@ -4,10 +4,11 @@ import SwiftUI
 struct ManualBottleEntryView: View {
     @Environment(\.dismiss) private var dismiss
     let onBottleCreated: (Bottle) -> Void
+    private let bottleRepository: any BottleRepositoryProtocol
 
     @State private var bottleName = ""
     @State private var brandName = ""
-    @State private var category: String = "scotch"
+    @State private var category: BottleCategory?
     @State private var abv = ""
     @State private var age = ""
     @State private var isCreating = false
@@ -20,16 +21,13 @@ struct ManualBottleEntryView: View {
     @FocusState private var focusAbv: Bool
     @FocusState private var focusAge: Bool
 
-    private let categories = [
-        ("scotch", "Scotch"),
-        ("bourbon", "Bourbon"),
-        ("rye", "Rye"),
-        ("irish", "Irish"),
-        ("japanese", "Japanese"),
-        ("single_malt", "Single Malt"),
-        ("blended", "Blended"),
-        ("other", "Other")
-    ]
+    init(
+        bottleRepository: any BottleRepositoryProtocol = BottleRepository(),
+        onBottleCreated: @escaping (Bottle) -> Void
+    ) {
+        self.bottleRepository = bottleRepository
+        self.onBottleCreated = onBottleCreated
+    }
 
     var body: some View {
         NavigationStack {
@@ -98,8 +96,8 @@ struct ManualBottleEntryView: View {
             )
 
             TextInput(
-                label: "Brand/Distillery",
-                placeholder: "Brand/Distillery",
+                label: "Brand",
+                placeholder: "Brand",
                 text: $brandName,
                 leadingSystemImage: "building.2",
                 keyboard: .default,
@@ -110,7 +108,7 @@ struct ManualBottleEntryView: View {
                 isFocused: $focusBrand
             )
 
-            Text("Enter the bottle name and brand as they appear on the label")
+            Text("Enter the bottle name without repeating the brand. Both are required.")
                 .font(.caption)
                 .foregroundColor(.textSecondary)
                 .padding(.top, 4)
@@ -129,6 +127,7 @@ struct ManualBottleEntryView: View {
                 unit: "%",
                 keyboard: .decimalPad,
                 submitLabel: .next,
+                error: abvError,
                 onSubmit: { focusAge = true },
                 isFocused: $focusAbv
             )
@@ -142,6 +141,7 @@ struct ManualBottleEntryView: View {
                 unit: "years",
                 keyboard: .numberPad,
                 submitLabel: .done,
+                error: ageError,
                 isFocused: $focusAge
             )
         }
@@ -151,16 +151,21 @@ struct ManualBottleEntryView: View {
 
     private var categoryPickerRow: some View {
         Menu {
-            ForEach(categories, id: \.0) { value, label in
-                Button(label) { category = value }
+            ForEach(BottleCategory.allCases, id: \.self) { value in
+                Button(value.displayName) { category = value }
+            }
+
+            if category != nil {
+                Divider()
+                Button("Not specified") { category = nil }
             }
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "tag")
                     .foregroundColor(.textSecondary)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Style").font(.caption).foregroundColor(.textSecondary)
-                    Text(categories.first(where: { $0.0 == category })?.1 ?? "")
+                    Text("Type (optional)").font(.caption).foregroundColor(.textSecondary)
+                    Text(category?.displayName ?? "Not specified")
                         .foregroundColor(.text)
                 }
                 Spacer()
@@ -174,48 +179,64 @@ struct ManualBottleEntryView: View {
 
     private var isValid: Bool {
         !bottleName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-            !brandName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            !brandName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+            abvError == nil &&
+            ageError == nil
+    }
+
+    private var abvValue: Double? {
+        let value = abv.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+        return Double(value.replacingOccurrences(of: ",", with: "."))
+    }
+
+    private var ageValue: Int? {
+        let value = age.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+        return Int(value)
+    }
+
+    private var abvError: String? {
+        let value = abv.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+        guard let abvValue, (0 ... 100).contains(abvValue) else {
+            return "Enter an ABV between 0 and 100."
+        }
+        return nil
+    }
+
+    private var ageError: String? {
+        let value = age.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !value.isEmpty else { return nil }
+        guard let ageValue, (0 ... 100).contains(ageValue) else {
+            return "Enter an age between 0 and 100."
+        }
+        return nil
     }
 
     private func createBottle() {
         guard isValid else { return }
 
         isCreating = true
-
-        // Parse ABV and age
-        let abvValue = Double(abv)
-        let ageValue = Int(age)
-
-        // Create a temporary bottle object
-        // In a real app, this would make an API call to create the bottle
         let trimmedName = bottleName.trimmingCharacters(in: .whitespacesAndNewlines)
         let trimmedBrand = brandName.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        let brand = Brand(
-            id: UUID().uuidString,
-            name: trimmedBrand
-        )
-
-        let newBottle = Bottle(
-            id: UUID().uuidString,
-            name: trimmedName,
-            fullName: "\(trimmedBrand) \(trimmedName)",
-            brand: brand,
-            category: category,
-            caskStrength: false,
-            singleCask: false,
-            statedAge: ageValue,
-            imageUrl: nil,
-            abv: abvValue,
-            avgRating: nil,
-            totalRatings: 0
-        )
-
-        // Simulate API delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        Task {
+            do {
+                let newBottle = try await bottleRepository.createBottle(CreateBottleInput(
+                    name: trimmedName,
+                    brandName: trimmedBrand,
+                    category: category,
+                    statedAge: ageValue,
+                    abv: abvValue
+                ))
+                onBottleCreated(newBottle)
+                dismiss()
+            } catch {
+                errorMessage = error.localizedDescription
+                showingError = true
+            }
             isCreating = false
-            onBottleCreated(newBottle)
-            dismiss()
         }
     }
 }
