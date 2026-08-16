@@ -59,7 +59,7 @@ struct CreateTastingFlow: View {
                     .padding()
                     .overlay(
                         Rectangle()
-                            .fill(Color(.separator))
+                            .fill(Color.formBorder)
                             .frame(height: 0.5),
                         alignment: .top
                     )

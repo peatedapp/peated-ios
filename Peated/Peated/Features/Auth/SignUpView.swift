@@ -129,6 +129,7 @@ struct SignUpView: View {
         HStack(alignment: .center, spacing: 10) {
             Toggle(isOn: $acceptedTerms) { EmptyView() }
                 .toggleStyle(.switch)
+                .tint(.brand)
                 .labelsHidden()
 
             HStack(spacing: 4) {

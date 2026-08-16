@@ -62,10 +62,10 @@ struct WhiskyColorPicker: View {
                             .frame(width: 44, height: 44)
                             .background(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.surfaceSubtle)
+                                    .fill(Color.formSurface)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 8)
-                                            .stroke(selectedColor == -1 ? Color.brand : Color(.separator),
+                                            .stroke(selectedColor == -1 ? Color.brand : Color.formBorder,
                                                     lineWidth: selectedColor == -1 ? 2 : 1)
                                     )
                             )
@@ -85,7 +85,7 @@ struct WhiskyColorPicker: View {
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 8)
                                         .stroke(
-                                            selectedColor == colorData.value ? Color.brand : Color(.separator)
+                                            selectedColor == colorData.value ? Color.brand : Color.formBorder
                                                 .opacity(0.3),
                                             lineWidth: selectedColor == colorData.value ? 2 : 1
                                         )

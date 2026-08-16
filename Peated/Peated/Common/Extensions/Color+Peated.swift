@@ -32,6 +32,14 @@ extension Color {
         ThemeProvider.current.border
     }
 
+    static var formSurface: Color {
+        ThemeProvider.current.formSurface
+    }
+
+    static var formBorder: Color {
+        ThemeProvider.current.formBorder
+    }
+
     static var chrome: Color {
         ThemeProvider.current.chrome
     }

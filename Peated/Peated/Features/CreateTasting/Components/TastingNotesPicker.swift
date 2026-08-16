@@ -36,54 +36,63 @@ struct TastingNotesPicker: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                if !tempSelection.isEmpty {
-                    Section("Selected") {
-                        ForEach(tempSelection.sorted(), id: \.self) { name in
-                            noteRow(name: name, category: nil)
-                        }
-                    }
-                }
+            VStack(spacing: 0) {
+                SearchInput(
+                    placeholder: "Search flavors and aromas",
+                    text: $query
+                )
+                .padding(.horizontal)
+                .padding(.vertical, 12)
 
-                if isLoading, tags.isEmpty {
-                    HStack {
-                        Spacer()
-                        ProgressView("Loading notes…")
-                        Spacer()
-                    }
-                    .listRowBackground(Color.clear)
-                } else if let errorMessage, tags.isEmpty {
-                    ContentUnavailableView(
-                        "Notes Unavailable",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text(errorMessage)
-                    )
-                    .listRowBackground(Color.clear)
-                } else if query.isEmpty {
-                    ForEach(groupedTags) { group in
-                        Section(categoryName(group.category)) {
-                            ForEach(group.tags) { tag in
-                                noteRow(name: tag.name, category: nil)
+                List {
+                    if !tempSelection.isEmpty {
+                        Section("Selected") {
+                            ForEach(tempSelection.sorted(), id: \.self) { name in
+                                noteRow(name: name, category: nil)
                             }
                         }
                     }
-                } else if filteredTags.isEmpty {
-                    ContentUnavailableView.search(text: query)
+
+                    if isLoading, tags.isEmpty {
+                        HStack {
+                            Spacer()
+                            ProgressView("Loading notes…")
+                            Spacer()
+                        }
                         .listRowBackground(Color.clear)
-                } else {
-                    Section("Results") {
-                        ForEach(filteredTags) { tag in
-                            noteRow(name: tag.name, category: categoryName(tag.category))
+                    } else if let errorMessage, tags.isEmpty {
+                        ContentUnavailableView(
+                            "Notes Unavailable",
+                            systemImage: "exclamationmark.triangle",
+                            description: Text(errorMessage)
+                        )
+                        .listRowBackground(Color.clear)
+                    } else if query.isEmpty {
+                        ForEach(groupedTags) { group in
+                            Section(categoryName(group.category)) {
+                                ForEach(group.tags) { tag in
+                                    noteRow(name: tag.name, category: nil)
+                                }
+                            }
+                        }
+                    } else if filteredTags.isEmpty {
+                        ContentUnavailableView.search(text: query)
+                            .listRowBackground(Color.clear)
+                    } else {
+                        Section("Results") {
+                            ForEach(filteredTags) { tag in
+                                noteRow(name: tag.name, category: categoryName(tag.category))
+                            }
                         }
                     }
                 }
+                .listStyle(.insetGrouped)
+                .scrollContentBackground(.hidden)
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
             .background(Color.background)
             .navigationTitle("Tasting Notes")
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $query, prompt: "Search flavors and aromas")
+            .navigationChrome()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -162,5 +171,7 @@ struct TastingNotesPicker: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .listRowBackground(Color.formSurface)
+        .listRowSeparatorTint(Color.formBorder)
     }
 }

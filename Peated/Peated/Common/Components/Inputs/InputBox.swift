@@ -20,7 +20,7 @@ struct InputBox: ViewModifier {
         content
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
-            .background(Color.surface)
+            .background(Color.formSurface)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(borderColor, lineWidth: lineWidth)
@@ -32,15 +32,14 @@ struct InputBox: ViewModifier {
     private var borderColor: Color {
         switch state {
         case .disabled:
-            Color.border.opacity(0.35)
+            Color.formBorder.opacity(0.35)
         case .error:
             Color.danger
         case .focused:
-            // Use muted tone to avoid bright halos on dark UI
-            Color.textMuted
+            Color.brand
         case .normal:
             // Match the input background so the outline is effectively hidden by default
-            Color.surface
+            Color.formSurface
         }
     }
 

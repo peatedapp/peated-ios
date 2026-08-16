@@ -26,6 +26,7 @@ struct TextArea: View {
                 TextEditor(text: $text)
                     .frame(minHeight: minHeight)
                     .foregroundColor(.text)
+                    .scrollContentBackground(.hidden)
                     .background(Color.clear)
                     .focused($isFocused)
 

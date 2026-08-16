@@ -132,7 +132,7 @@ private struct RatingServingStyleButton: View {
             .padding(.vertical, 16)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? Color.brand : Color.surface)
+                    .fill(isSelected ? Color.brand : Color.formSurface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
@@ -178,7 +178,7 @@ private struct RatingSelectionButton: View {
             VStack(spacing: 8) {
                 Image(systemName: iconName)
                     .font(.system(size: 28))
-                    .foregroundColor(isSelected ? color : .secondary)
+                    .foregroundColor(isSelected ? color : .textSecondary)
                 Text(title)
                     .font(.caption)
                     .fontWeight(.semibold)
@@ -187,7 +187,7 @@ private struct RatingSelectionButton: View {
             .frame(height: 80)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? color.opacity(0.2) : Color.surface)
+                    .fill(isSelected ? color.opacity(0.2) : Color.formSurface)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(isSelected ? color : Color.clear, lineWidth: 2)

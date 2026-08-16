@@ -255,6 +255,7 @@ struct TastingDetailView: View {
                     .foregroundColor(.text)
                     .frame(minHeight: 20, maxHeight: 80)
                     .focused($isCommentFieldFocused)
+                    .scrollContentBackground(.hidden)
                     .background(Color.clear)
                     .overlay(alignment: .topLeading) {
                         if commentText.isEmpty, !isCommentFieldFocused {

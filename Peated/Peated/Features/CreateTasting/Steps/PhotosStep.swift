@@ -240,11 +240,11 @@ struct AddPhotoButtonContent: View {
                 .foregroundColor(.textSecondary)
         }
         .padding()
-        .background(Color.surface)
+        .background(Color.formSurface)
         .cornerRadius(12)
         .overlay(
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color(.separator), lineWidth: 1)
+                .stroke(Color.formBorder, lineWidth: 1)
         )
     }
 }
@@ -280,7 +280,7 @@ struct PhotoTipsView: View {
             }
         }
         .padding()
-        .background(Color.surface)
+        .background(Color.formSurface)
         .cornerRadius(12)
     }
 }

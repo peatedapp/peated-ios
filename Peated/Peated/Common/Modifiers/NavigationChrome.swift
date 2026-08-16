@@ -8,8 +8,6 @@ struct NavigationChrome: ViewModifier {
             .toolbarBackground(Color.chrome, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
             .toolbarColorScheme(.dark, for: .navigationBar)
-            // Ensure nav items (back chevron/text) use our text color (white)
-            .tint(.text)
     }
 }
 
