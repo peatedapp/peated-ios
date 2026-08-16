@@ -405,19 +405,11 @@ struct EntityDetailView: View {
                 }
 
                 if bottle.totalRatings > 0 {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(.brand)
-
-                        Text(String(format: "%.1f", bottle.avgRating))
-                            .font(.system(size: DesignSystem.FontSize.caption))
-                            .foregroundColor(.text)
-
-                        Text("(\(bottle.totalRatings))")
-                            .font(.system(size: DesignSystem.FontSize.caption))
-                            .foregroundColor(.textSecondary)
-                    }
+                    CommunityRatingView(
+                        average: bottle.avgRating,
+                        total: bottle.totalRatings,
+                        fontSize: DesignSystem.FontSize.caption
+                    )
                 }
             }
         }

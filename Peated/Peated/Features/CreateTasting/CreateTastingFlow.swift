@@ -174,7 +174,7 @@ struct CreateTastingFlow: View {
         case 2:
             true // Rating is optional
         case 3:
-            true // Notes and flavors are optional
+            true // Notes and comments are optional
         case 4:
             true // Location is optional
         case 5:

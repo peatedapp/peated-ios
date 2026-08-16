@@ -7,6 +7,7 @@ public protocol BottleRepositoryProtocol {
     func getPopularBottles(limit: Int) async throws -> [Bottle]
     func getTopRatedBottles(limit: Int) async throws -> [Bottle]
     func getEntityBottles(entityId: String) async throws -> [Bottle]
+    func getSuggestedTags(bottleId: String) async throws -> [TastingTag]
     // TODO: Add when API endpoint is available
     // func getBottleSuggestions(prefix: String) async throws -> [Bottle]
 }
@@ -47,8 +48,9 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                         statedAge: apiBottle.statedAge.map { Int($0) },
                         imageUrl: apiBottle.imageUrl,
                         abv: apiBottle.abv,
-                        avgRating: apiBottle.avgRating ?? 0.0,
-                        totalRatings: Int(apiBottle.totalTastings),
+                        avgRating: apiBottle.avgRating,
+                        totalRatings: Int(apiBottle.ratingStats.total),
+                        totalTastings: Int(apiBottle.totalTastings),
                         isFavorite: apiBottle.isFavorite,
                         isLibrary: apiBottle.isLibrary,
                         hasTasted: apiBottle.hasTasted
@@ -126,8 +128,8 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                     let brand = Brand(id: brandId, name: apiBottle.brand.name)
                     let category = apiBottle.category?.rawValue
                     let statedAge = apiBottle.statedAge.map { Int($0) }
-                    let avgRating = apiBottle.avgRating ?? 0.0
-                    let totalRatings = Int(apiBottle.totalTastings)
+                    let avgRating = apiBottle.avgRating
+                    let totalRatings = Int(apiBottle.ratingStats.total)
 
                     let bottle = Bottle(
                         id: bottleId,
@@ -142,6 +144,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                         abv: apiBottle.abv,
                         avgRating: avgRating,
                         totalRatings: totalRatings,
+                        totalTastings: Int(apiBottle.totalTastings),
                         isFavorite: apiBottle.isFavorite,
                         isLibrary: apiBottle.isLibrary,
                         hasTasted: apiBottle.hasTasted
@@ -182,8 +185,8 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                     let brand = Brand(id: brandId, name: apiBottle.brand.name)
                     let category = apiBottle.category?.rawValue
                     let statedAge = apiBottle.statedAge.map { Int($0) }
-                    let avgRating = apiBottle.avgRating ?? 0.0
-                    let totalRatings = Int(apiBottle.totalTastings)
+                    let avgRating = apiBottle.avgRating
+                    let totalRatings = Int(apiBottle.ratingStats.total)
 
                     return Bottle(
                         id: bottleId,
@@ -198,6 +201,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                         abv: apiBottle.abv,
                         avgRating: avgRating,
                         totalRatings: totalRatings,
+                        totalTastings: Int(apiBottle.totalTastings),
                         isFavorite: apiBottle.isFavorite,
                         isLibrary: apiBottle.isLibrary,
                         hasTasted: apiBottle.hasTasted
@@ -249,8 +253,9 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
                         statedAge: apiBottle.statedAge.map { Int($0) },
                         imageUrl: apiBottle.imageUrl,
                         abv: apiBottle.abv,
-                        avgRating: apiBottle.avgRating ?? 0.0,
-                        totalRatings: Int(apiBottle.totalTastings)
+                        avgRating: apiBottle.avgRating,
+                        totalRatings: Int(apiBottle.ratingStats.total),
+                        totalTastings: Int(apiBottle.totalTastings)
                     )
                     Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
                     return bottle
@@ -260,6 +265,41 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             throw APIError.requestFailed("Failed to fetch entity bottles")
         case .unauthorized:
             throw APIError.unauthorized
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        default:
+            throw APIError.invalidResponse
+        }
+    }
+
+    public func getSuggestedTags(bottleId: String) async throws -> [TastingTag] {
+        let client = await client
+
+        guard let bottleId = Double(bottleId) else {
+            throw APIError.requestFailed("Invalid bottle ID")
+        }
+
+        let response = try await client.getBottleSuggestedTags(path: .init(bottle: bottleId))
+
+        switch response {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                return payload.results.map { result in
+                    TastingTag(
+                        name: result.tag.name,
+                        category: result.tag.tagCategory.rawValue,
+                        synonyms: result.tag.synonyms,
+                        usageCount: Int(result.count)
+                    )
+                }
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Invalid bottle ID")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .notFound:
+            throw APIError.notFound
         case let .undocumented(statusCode, _):
             throw APIError.unexpectedResponse(statusCode)
         default:

@@ -132,8 +132,9 @@ public actor CollectionRepository: BaseRepositoryProtocol, CollectionRepositoryP
                 statedAge: bottle.statedAge.map { Int($0) },
                 imageUrl: item.imageUrl ?? bottle.imageUrl,
                 abv: bottle.abv,
-                avgRating: bottle.avgRating ?? 0.0,
-                totalRatings: Int(bottle.totalTastings),
+                avgRating: bottle.avgRating,
+                totalRatings: Int(bottle.ratingStats.total),
+                totalTastings: Int(bottle.totalTastings),
                 isFavorite: bottle.isFavorite,
                 isLibrary: bottle.isLibrary,
                 hasTasted: item.hasTasted

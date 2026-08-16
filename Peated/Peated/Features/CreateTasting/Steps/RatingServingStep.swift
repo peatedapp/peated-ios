@@ -103,16 +103,8 @@ struct RatingServingStep: View {
     }
 
     private var ratingDescription: String {
-        switch Int(viewModel.rating) {
-        case -1:
-            "Pass - Not to your taste"
-        case 1:
-            "Sip - Worth trying, decent dram"
-        case 2:
-            "Savor - Exceptional, highly recommended"
-        default:
-            ""
-        }
+        guard let rating = RatingValue(rating: viewModel.rating) else { return "" }
+        return "\(rating.displayName) — \(rating.description)"
     }
 }
 

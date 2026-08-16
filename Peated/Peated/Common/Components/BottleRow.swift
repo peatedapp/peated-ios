@@ -18,26 +18,8 @@ struct BottleRow: View {
                 EmptyView() // Handled in main view
             case let .lastTasting(tasting):
                 HStack(spacing: DesignSystem.Spacing.xSmall) {
-                    // Show rating icon based on value
-                    if DesignSystem.isDoubleThumbsUp(tasting.rating) {
-                        // Two thumbs up for Savor
-                        HStack(spacing: 2) {
-                            Image(systemName: "hand.thumbsup")
-                                .font(.system(size: DesignSystem.FontSize.tiny))
-                                .foregroundColor(.textSecondary)
-                            Image(systemName: "hand.thumbsup")
-                                .font(.system(size: DesignSystem.FontSize.tiny))
-                                .foregroundColor(.textSecondary)
-                        }
-                    } else if Int(tasting.rating) == 1 {
-                        Image(systemName: "hand.thumbsup")
-                            .font(.system(size: DesignSystem.FontSize.tiny))
-                            .foregroundColor(.textSecondary)
-                    } else if Int(tasting.rating) == -1 {
-                        Image(systemName: "hand.thumbsdown")
-                            .font(.system(size: DesignSystem.FontSize.tiny))
-                            .foregroundColor(.textSecondary)
-                    }
+                    SimpleRatingView(rating: tasting.rating, iconSize: DesignSystem.FontSize.tiny)
+                        .foregroundColor(.textSecondary)
 
                     Text("Last: \(tasting.timeAgo)")
                         .font(.system(size: DesignSystem.FontSize.small))
@@ -101,20 +83,7 @@ struct BottleRow: View {
                     // Subtitle content
                     if let subtitle {
                         if case .rating = subtitle, bottle.totalRatings > 0 {
-                            // Rating stars
-                            HStack(spacing: DesignSystem.Spacing.xSmall) {
-                                ForEach(1 ... 5, id: \.self) { star in
-                                    Image(systemName: star <= Int(bottle.avgRating.rounded()) ? "star.fill" : "star")
-                                        .font(.system(size: DesignSystem.FontSize.tiny))
-                                        .foregroundColor(.yellow)
-                                }
-                                Text(String(format: "%.1f", bottle.avgRating))
-                                    .font(.system(size: DesignSystem.FontSize.small))
-                                    .foregroundColor(.textSecondary)
-                                Text("(\(bottle.totalRatings))")
-                                    .font(.system(size: DesignSystem.FontSize.small))
-                                    .foregroundColor(.textSecondary.opacity(DesignSystem.Opacity.dimmed))
-                            }
+                            CommunityRatingView(average: bottle.avgRating, total: bottle.totalRatings)
                         } else {
                             subtitle.view
                         }

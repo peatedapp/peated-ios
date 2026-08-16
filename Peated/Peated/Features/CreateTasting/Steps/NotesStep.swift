@@ -4,7 +4,7 @@ import SwiftUI
 struct NotesStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
     @FocusState private var isNotesFocused: Bool
-    @State private var showFlavorPicker = false
+    @State private var showNotesPicker = false
 
     var body: some View {
         ScrollView {
@@ -26,23 +26,27 @@ struct NotesStep: View {
                 .padding(.top)
                 .padding(.bottom, 32)
 
-                // Flavor Profile Section
+                // Structured tasting notes
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("Flavor Profile")
+                    Text("Notes")
                         .font(.headline)
 
+                    Text("What flavors and aromas come to mind? (Optional)")
+                        .font(.subheadline)
+                        .foregroundColor(.textSecondary)
+
                     Button(action: {
-                        showFlavorPicker = true
+                        showNotesPicker = true
                     }) {
                         HStack {
                             Image(systemName: "sparkles")
                                 .font(.body)
 
                             if viewModel.selectedTags.isEmpty {
-                                Text("Select flavor notes")
+                                Text("Select tasting notes")
                                     .foregroundColor(.textSecondary)
                             } else {
-                                Text("\(viewModel.selectedTags.count) flavors selected")
+                                Text("\(viewModel.selectedTags.count) notes selected")
                                     .foregroundColor(.text)
                             }
 
@@ -62,7 +66,7 @@ struct NotesStep: View {
                     }
                     .buttonStyle(.plain)
 
-                    // Show selected flavors as chips
+                    // Show selected notes as chips
                     if !viewModel.selectedTags.isEmpty {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 8) {
@@ -96,10 +100,10 @@ struct NotesStep: View {
                 // Notes Section
                 VStack(alignment: .leading, spacing: 12) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Tasting Notes")
+                        Text("Comments")
                             .font(.headline)
 
-                        Text("What did you taste? (Optional)")
+                        Text("Anything else you want to remember? (Optional)")
                             .font(.subheadline)
                             .foregroundColor(.textSecondary)
                     }
@@ -107,7 +111,7 @@ struct NotesStep: View {
 
                     TextArea(
                         label: nil,
-                        placeholder: "Describe the aroma, taste, and finish...",
+                        placeholder: "Tell us how you really feel.",
                         text: $viewModel.notes,
                         minHeight: 200
                     )
@@ -185,8 +189,17 @@ struct NotesStep: View {
         }
         .background(Color.background)
         .scrollDismissesKeyboard(.interactively)
-        .sheet(isPresented: $showFlavorPicker) {
-            FlavorPickerModal(selectedTags: $viewModel.selectedTags, isPresented: $showFlavorPicker)
+        .task(id: viewModel.selectedBottle?.id) {
+            await viewModel.loadSuggestedTags()
+        }
+        .sheet(isPresented: $showNotesPicker) {
+            TastingNotesPicker(
+                selectedTags: $viewModel.selectedTags,
+                isPresented: $showNotesPicker,
+                tags: viewModel.suggestedTags,
+                isLoading: viewModel.isLoadingSuggestedTags,
+                errorMessage: viewModel.suggestedTagsError
+            )
         }
     }
 }

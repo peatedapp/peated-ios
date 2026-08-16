@@ -2,7 +2,7 @@ import Foundation
 import OpenAPIRuntime
 import PeatedAPI
 
-public enum RatingValue: Int, CaseIterable {
+public enum RatingValue: Int, CaseIterable, Codable, Hashable, Sendable {
     case pass = -1
     case none = 0
     case sip = 1
@@ -24,6 +24,24 @@ public enum RatingValue: Int, CaseIterable {
         case .sip: "👍"
         case .savor: "👍👍"
         }
+    }
+
+    public var description: String {
+        switch self {
+        case .pass: "Not my thing"
+        case .none: "No rating"
+        case .sip: "Enjoyable, would drink again"
+        case .savor: "Amazing, would seek out"
+        }
+    }
+
+    public var iconCount: Int {
+        self == .savor ? 2 : 1
+    }
+
+    public init?(rating: Double) {
+        guard rating.rounded() == rating else { return nil }
+        self.init(rawValue: Int(rating))
     }
 }
 
