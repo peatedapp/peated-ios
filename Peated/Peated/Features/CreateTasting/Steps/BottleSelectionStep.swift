@@ -3,10 +3,12 @@ import PeatedCore
 import SwiftUI
 
 struct BottleSelectionStep: View {
+    @Environment(\.openURL) private var openURL
     @ObservedObject var viewModel: CreateTastingViewModel
     @State private var searchText = ""
     @State private var showingScanner = false
     @State private var showingManualEntry = false
+    @State private var showingCameraPermissionAlert = false
     @FocusState private var isSearchFocused: Bool
     var onBottleSelected: (() -> Void)?
 
@@ -62,8 +64,18 @@ struct BottleSelectionStep: View {
         }
         .sheet(isPresented: $showingManualEntry) {
             ManualBottleEntryView { bottle in
-                viewModel.selectedBottle = bottle
+                selectBottle(bottle)
             }
+        }
+        .alert("Camera Access Needed", isPresented: $showingCameraPermissionAlert) {
+            Button("Open Settings") {
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    openURL(settingsURL)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Allow camera access in Settings to scan bottle barcodes.")
         }
         .task {
             await loadRecentBottles()
@@ -251,27 +263,24 @@ struct BottleSelectionStep: View {
             showingScanner = true
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { granted in
-                if granted {
-                    DispatchQueue.main.async {
+                DispatchQueue.main.async {
+                    if granted {
                         showingScanner = true
+                    } else {
+                        showingCameraPermissionAlert = true
                     }
                 }
             }
-        default:
-            // TODO: Show alert to go to settings
-            break
+        case .denied, .restricted:
+            showingCameraPermissionAlert = true
+        @unknown default:
+            showingCameraPermissionAlert = true
         }
     }
 
     private func handleBarcodeScanned(_ barcode: String) {
         Task {
-            // Search for bottle by barcode
-            searchText = barcode
-            await viewModel.searchBottles(query: barcode)
-
-            // If we found exactly one result, select it automatically
-            if viewModel.searchResults.count == 1,
-               let bottle = viewModel.searchResults.first {
+            if let bottle = await viewModel.bottleForBarcode(barcode) {
                 selectBottle(bottle)
             }
         }

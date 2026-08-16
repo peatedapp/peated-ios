@@ -49,12 +49,12 @@ class CreateTastingViewModel: ObservableObject {
     }
 
     private let tastingRepository: TastingRepository
-    private let bottleRepository: BottleRepository
+    private let bottleRepository: any BottleRepositoryProtocol
     private let imageUploadService: ImageUploadService
 
     init(
         tastingRepository: TastingRepository? = nil,
-        bottleRepository: BottleRepository? = nil,
+        bottleRepository: (any BottleRepositoryProtocol)? = nil,
         imageUploadService: ImageUploadService? = nil
     ) {
         // Use shared API client to ensure proper request handling
@@ -151,21 +151,41 @@ class CreateTastingViewModel: ObservableObject {
     }
 
     func searchBottles(query: String) async {
+        let query = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !query.isEmpty else {
             searchResults = []
             return
         }
 
         isSearching = true
+        defer { isSearching = false }
 
         do {
             searchResults = try await bottleRepository.searchBottles(query: query, limit: 20)
+        } catch is CancellationError {
+            return
         } catch {
-            // Silently fail search, just show no results
             searchResults = []
+            errorMessage = "We couldn't search for bottles. \(error.localizedDescription)"
+            showingError = true
         }
+    }
 
-        isSearching = false
+    func bottleForBarcode(_ barcode: String) async -> Bottle? {
+        isSearching = true
+        defer { isSearching = false }
+
+        do {
+            return try await bottleRepository.getBottle(barcode: barcode)
+        } catch APIError.notFound {
+            errorMessage = "No bottle is linked to that barcode yet. Search by name or add it manually."
+            showingError = true
+            return nil
+        } catch {
+            errorMessage = "We couldn't look up that barcode. \(error.localizedDescription)"
+            showingError = true
+            return nil
+        }
     }
 
     func loadRecentBottles() async {

@@ -8,8 +8,6 @@ struct BarcodeScannerView: View {
 
     @State private var isScanning = false
     @State private var scannedCode: String?
-    @State private var showingAlert = false
-    @State private var alertMessage = ""
 
     var body: some View {
         NavigationStack {
@@ -64,13 +62,6 @@ struct BarcodeScannerView: View {
                         dismiss()
                     }
                 }
-            }
-            .alert("Barcode Scanned", isPresented: $showingAlert) {
-                Button("OK") {
-                    dismiss()
-                }
-            } message: {
-                Text(alertMessage)
             }
         }
     }
@@ -135,12 +126,8 @@ struct BarcodeScannerCameraView: UIViewRepresentable {
             metadataOutput.metadataObjectTypes = [
                 .ean8,
                 .ean13,
-                .pdf417,
-                .qr,
-                .code128,
-                .code39,
-                .code93,
-                .upce
+                .upce,
+                .itf14
             ]
         } else {
             return view
