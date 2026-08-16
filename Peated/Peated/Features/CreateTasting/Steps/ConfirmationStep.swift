@@ -65,24 +65,9 @@ struct TastingPreviewCard: View {
 
                     Spacer()
 
-                    // Rating icon
-                    if viewModel.rating != 0 {
-                        if Int(viewModel.rating) == 2 {
-                            // Show two thumbs up for Savor
-                            HStack(spacing: 2) {
-                                Image(systemName: "hand.thumbsup.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.brand)
-                                Image(systemName: "hand.thumbsup.fill")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.brand)
-                            }
-                        } else {
-                            Image(systemName: getRatingIcon(viewModel.rating))
-                                .font(.system(size: 14))
-                                .foregroundColor(viewModel.rating < 0 ? .danger : .brand)
-                        }
-                    }
+                    SimpleRatingView(rating: viewModel.rating, showLabel: true, iconSize: 14)
+                        .font(.system(size: 12))
+                        .foregroundColor(viewModel.rating < 0 ? .danger : .brand)
                 }
 
                 // Bottle info card-within-card
@@ -218,20 +203,5 @@ struct TastingPreviewCard: View {
                     .stroke(Color.border.opacity(0.3), lineWidth: 1)
             )
         }
-    }
-}
-
-// MARK: - Helper Functions
-
-private func getRatingIcon(_ rating: Double) -> String {
-    switch Int(rating) {
-    case -1:
-        "hand.thumbsdown.fill"
-    case 1:
-        "hand.thumbsup.fill"
-    case 2:
-        "hand.thumbsup.fill" // Will show two
-    default:
-        "minus.circle"
     }
 }

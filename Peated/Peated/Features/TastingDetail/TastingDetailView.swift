@@ -377,20 +377,12 @@ struct TastingDetailCard: View {
                         }
                     }
 
-                    // Rating
-                    HStack(spacing: 4) {
-                        ForEach(0 ..< 5) { index in
-                            Image(systemName: index < Int(tasting.rating) ? "star.fill" : "star")
-                                .font(.system(size: 14))
-                                .foregroundColor(.brand)
-                        }
-
-                        Text(String(format: "%.1f", tasting.rating))
+                    if tasting.rating != 0 {
+                        SimpleRatingView(rating: tasting.rating, showLabel: true, iconSize: 14)
                             .font(.peatedBody)
-                            .fontWeight(.medium)
-                            .foregroundColor(.text)
+                            .foregroundColor(.brand)
+                            .padding(.top, 4)
                     }
-                    .padding(.top, 4)
                 }
 
                 Spacer()

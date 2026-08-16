@@ -48,24 +48,8 @@ struct UnifiedTastingCard: View {
 
                 Spacer()
 
-                // Rating icon (right-aligned)
-                if tasting.rating != 0 {
-                    if Int(tasting.rating) == 2 {
-                        // Show two thumbs up for Savor
-                        HStack(spacing: 2) {
-                            Image(systemName: "hand.thumbsup")
-                                .font(.system(size: 14))
-                                .foregroundColor(.textSecondary)
-                            Image(systemName: "hand.thumbsup")
-                                .font(.system(size: 14))
-                                .foregroundColor(.textSecondary)
-                        }
-                    } else {
-                        Image(systemName: getRatingIcon(tasting.rating))
-                            .font(.system(size: 14))
-                            .foregroundColor(.textSecondary)
-                    }
-                }
+                SimpleRatingView(rating: tasting.rating, iconSize: 14)
+                    .foregroundColor(.textSecondary)
             }
 
             // Notes (truncated for feed)
@@ -245,24 +229,8 @@ struct UnifiedTastingListItem: View {
 
                 Spacer()
 
-                // Rating icon (right-aligned)
-                if tasting.rating != 0 {
-                    if Int(tasting.rating) == 2 {
-                        // Show two thumbs up for Savor
-                        HStack(spacing: 2) {
-                            Image(systemName: "hand.thumbsup")
-                                .font(.system(size: 14))
-                                .foregroundColor(.textSecondary)
-                            Image(systemName: "hand.thumbsup")
-                                .font(.system(size: 14))
-                                .foregroundColor(.textSecondary)
-                        }
-                    } else {
-                        Image(systemName: getRatingIcon(tasting.rating))
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                    }
-                }
+                SimpleRatingView(rating: tasting.rating, iconSize: 14)
+                    .foregroundColor(.textSecondary)
             }
 
             // Notes (truncated for feed)
@@ -386,18 +354,5 @@ struct UnifiedTastingListItem: View {
             }
         }
         .padding()
-    }
-}
-
-// MARK: - Helper Functions
-
-private func getRatingIcon(_ rating: Double) -> String {
-    switch Int(rating) {
-    case -1:
-        "hand.thumbsdown"
-    case 1:
-        "hand.thumbsup"
-    default:
-        "star"
     }
 }

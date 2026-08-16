@@ -69,27 +69,6 @@ enum DesignSystem {
     }
 }
 
-// MARK: - Rating Helpers
-
-extension DesignSystem {
-    static func ratingIcon(for rating: Double) -> String {
-        switch Int(rating) {
-        case -1:
-            "hand.thumbsdown.fill"
-        case 1:
-            "hand.thumbsup.fill"
-        case 2:
-            "hand.thumbsup.fill" // Will show two
-        default:
-            "minus.circle"
-        }
-    }
-
-    static func isDoubleThumbsUp(_ rating: Double) -> Bool {
-        Int(rating) == 2
-    }
-}
-
 // MARK: - View Extensions for Easy Access
 
 extension View {

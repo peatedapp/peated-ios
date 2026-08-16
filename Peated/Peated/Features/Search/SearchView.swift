@@ -545,14 +545,11 @@ extension SearchView {
 
                     if bottle.totalRatings > 0 {
                         Text("•").foregroundColor(.textMuted)
-                        HStack(spacing: 2) {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: DesignSystem.FontSize.tiny))
-                                .foregroundColor(.yellow)
-                            Text(String(format: "%.1f", bottle.avgRating))
-                                .font(.system(size: DesignSystem.FontSize.small))
-                                .foregroundColor(.textSecondary)
-                        }
+                        CommunityRatingView(
+                            average: bottle.avgRating,
+                            total: bottle.totalRatings,
+                            showCount: false
+                        )
                     }
                 }
             }

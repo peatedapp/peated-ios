@@ -207,7 +207,7 @@ struct ManualBottleEntryView: View {
             statedAge: ageValue,
             imageUrl: nil,
             abv: abvValue,
-            avgRating: 0,
+            avgRating: nil,
             totalRatings: 0
         )
 

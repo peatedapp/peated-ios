@@ -347,11 +347,8 @@ extension BottleDetailView {
                     .padding(.horizontal)
             }
 
-            // Bottle characteristics and rating if present
-            if bottle.caskStrength || bottle.singleCask || bottle.totalRatings > 0 {
-                characteristicsSection(bottle)
-                    .padding(.horizontal)
-            }
+            BottleSupplementalDetails(bottle: bottle)
+                .padding(.horizontal)
         }
     }
 
@@ -417,15 +414,12 @@ extension BottleDetailView {
             // Rating if exists
             if bottle.totalRatings > 0, bottle.category == nil, bottle.abv == nil, bottle.statedAge == nil {
                 VStack(spacing: 8) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 14))
-                            .foregroundColor(.brand)
-                        Text(String(format: "%.1f", bottle.avgRating))
-                            .font(.title2)
-                            .fontWeight(.bold)
-                            .foregroundColor(.text)
-                    }
+                    CommunityRatingView(
+                        average: bottle.avgRating,
+                        total: bottle.totalRatings,
+                        showCount: false,
+                        fontSize: DesignSystem.FontSize.large
+                    )
                     Text("\(bottle.totalRatings) ratings")
                         .font(.caption)
                         .foregroundColor(.textSecondary)
@@ -467,65 +461,6 @@ extension BottleDetailView {
                             .foregroundColor(.brand)
                     }
                     .padding(.top, 2)
-                }
-            }
-        }
-    }
-
-    // MARK: - Characteristics Section
-
-    private func characteristicsSection(_ bottle: Bottle) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("CHARACTERISTICS")
-                .font(.system(size: DesignSystem.FontSize.small))
-                .fontWeight(.semibold)
-                .foregroundColor(.textSecondary)
-
-            VStack(alignment: .leading, spacing: 8) {
-                // Cask properties
-                if bottle.caskStrength || bottle.singleCask {
-                    HStack(spacing: 12) {
-                        if bottle.caskStrength {
-                            Label("Cask Strength", systemImage: "checkmark.circle.fill")
-                                .font(.system(size: DesignSystem.FontSize.small))
-                                .foregroundColor(.success)
-                        }
-
-                        if bottle.singleCask {
-                            Label("Single Cask", systemImage: "checkmark.circle.fill")
-                                .font(.system(size: DesignSystem.FontSize.small))
-                                .foregroundColor(.success)
-                        }
-                    }
-                }
-
-                // Community rating
-                if bottle.totalRatings > 0 {
-                    VStack(alignment: .leading, spacing: 6) {
-                        HStack(spacing: 4) {
-                            Image(systemName: "star.fill")
-                                .font(.system(size: 14))
-                                .foregroundColor(.brand)
-                            Text(String(format: "%.1f", bottle.avgRating))
-                                .font(.system(size: 18))
-                                .fontWeight(.semibold)
-                                .foregroundColor(.text)
-                            Text("average rating")
-                                .font(.system(size: DesignSystem.FontSize.small))
-                                .foregroundColor(.textSecondary)
-                        }
-
-                        Text(
-                            "\(bottle.totalRatings) \(bottle.totalRatings == 1 ? "rating" : "ratings") from the community"
-                        )
-                        .font(.system(size: DesignSystem.FontSize.small))
-                        .foregroundColor(.textSecondary)
-                    }
-                    .padding(.vertical, 8)
-                    .padding(.horizontal, 12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.surface.opacity(0.5))
-                    .cornerRadius(8)
                 }
             }
         }
@@ -668,16 +603,11 @@ struct SimilarBottleCard: View {
                     .multilineTextAlignment(.center)
 
                 if bottle.totalRatings > 0 {
-                    HStack(spacing: 2) {
-                        ForEach(1 ... 5, id: \.self) { star in
-                            Image(systemName: star <= Int(bottle.avgRating.rounded()) ? "star.fill" : "star")
-                                .font(.system(size: 10))
-                                .foregroundColor(.yellow)
-                        }
-                    }
-                    Text(String(format: "%.1f", bottle.avgRating))
-                        .font(.caption2)
-                        .foregroundColor(.textSecondary)
+                    CommunityRatingView(
+                        average: bottle.avgRating,
+                        total: bottle.totalRatings,
+                        fontSize: DesignSystem.FontSize.tiny
+                    )
                 }
             }
         }

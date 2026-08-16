@@ -54,25 +54,8 @@ struct TastingFeedCard: View {
 
                     Spacer()
 
-                    // Rating badge - minimal
-                    if tasting.rating != 0 {
-                        Group {
-                            if Int(tasting.rating) == 2 {
-                                // Savor - elegant presentation
-                                Text("Savor")
-                                    .font(.system(size: 12, weight: .light, design: .serif))
-                                    .foregroundColor(.brand)
-                            } else if tasting.rating > 0 {
-                                Image(systemName: "hand.thumbsup")
-                                    .font(.system(size: 14, weight: .light))
-                                    .foregroundColor(.textMuted)
-                            } else {
-                                Image(systemName: "hand.thumbsdown")
-                                    .font(.system(size: 14, weight: .light))
-                                    .foregroundColor(.textMuted)
-                            }
-                        }
-                    }
+                    SimpleRatingView(rating: tasting.rating, iconSize: 14)
+                        .foregroundColor(.textMuted)
                 }
             }
 

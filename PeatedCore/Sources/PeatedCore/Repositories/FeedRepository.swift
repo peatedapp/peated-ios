@@ -64,18 +64,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     pictureUrl: t.userAvatarUrl
                 ))
                 await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                let b = item.bottle
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
-                    id: t.bottleId,
-                    name: t.bottleName, // best effort; fullName expected here
-                    fullName: t.bottleName,
-                    brand: Brand(id: "0", name: t.bottleBrandName),
-                    category: t.bottleCategory,
-                    imageUrl: t.bottleImageUrl,
-                    isFavorite: b.isFavorite,
-                    isLibrary: b.isLibrary,
-                    hasTasted: b.hasTasted
-                ))
+                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
                 // Persist tasting into DB tasting cache for instant detail seeding
                 try? await DatabaseManager.shared.cacheTasting(t)
             }
@@ -161,18 +150,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     pictureUrl: t.userAvatarUrl
                 ))
                 await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                let b = item.bottle
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
-                    id: t.bottleId,
-                    name: t.bottleName,
-                    fullName: t.bottleName,
-                    brand: Brand(id: "0", name: t.bottleBrandName),
-                    category: t.bottleCategory,
-                    imageUrl: t.bottleImageUrl,
-                    isFavorite: b.isFavorite,
-                    isLibrary: b.isLibrary,
-                    hasTasted: b.hasTasted
-                ))
+                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
                 try? await DatabaseManager.shared.cacheTasting(t)
             }
             return t
@@ -226,18 +204,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     pictureUrl: t.userAvatarUrl
                 ))
                 await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                let b = item.bottle
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
-                    id: t.bottleId,
-                    name: t.bottleName,
-                    fullName: t.bottleName,
-                    brand: Brand(id: "0", name: t.bottleBrandName),
-                    category: t.bottleCategory,
-                    imageUrl: t.bottleImageUrl,
-                    isFavorite: b.isFavorite,
-                    isLibrary: b.isLibrary,
-                    hasTasted: b.hasTasted
-                ))
+                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
                 try? await DatabaseManager.shared.cacheTasting(t)
             }
             return t
@@ -291,18 +258,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
                     pictureUrl: t.userAvatarUrl
                 ))
                 await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                let b = item.bottle
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(
-                    id: t.bottleId,
-                    name: t.bottleName,
-                    fullName: t.bottleName,
-                    brand: Brand(id: "0", name: t.bottleBrandName),
-                    category: t.bottleCategory,
-                    imageUrl: t.bottleImageUrl,
-                    isFavorite: b.isFavorite,
-                    isLibrary: b.isLibrary,
-                    hasTasted: b.hasTasted
-                ))
+                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
                 try? await DatabaseManager.shared.cacheTasting(t)
             }
             return t

@@ -18,6 +18,9 @@ class CreateTastingViewModel: ObservableObject {
     @Published var rating: Double = 0
     @Published var notes = ""
     @Published var selectedTags: Set<String> = []
+    @Published private(set) var suggestedTags: [TastingTag] = []
+    @Published private(set) var isLoadingSuggestedTags = false
+    @Published private(set) var suggestedTagsError: String?
     @Published var servingStyle: ServingStyle?
     @Published var color: Int?
 
@@ -41,6 +44,7 @@ class CreateTastingViewModel: ObservableObject {
         selectedBottle != nil ||
             rating != 0 ||
             !notes.isEmpty ||
+            !selectedTags.isEmpty ||
             !photos.isEmpty
     }
 
@@ -71,7 +75,7 @@ class CreateTastingViewModel: ObservableObject {
                 rating: rating,
                 notes: notes.isEmpty ? nil : notes,
                 servingStyle: servingStyle?.rawValue,
-                tags: Array(selectedTags),
+                tags: selectedTags.sorted(),
                 location: selectedLocation?.name,
                 color: color
             )
@@ -110,6 +114,40 @@ class CreateTastingViewModel: ObservableObject {
         }
 
         isSubmitting = false
+    }
+
+    func loadSuggestedTags() async {
+        guard let bottle = selectedBottle else {
+            suggestedTags = []
+            suggestedTagsError = nil
+            isLoadingSuggestedTags = false
+            return
+        }
+
+        let bottleId = bottle.id
+        suggestedTags = bottle.suggestedTags.map {
+            TastingTag(name: $0, category: "suggested")
+        }
+        isLoadingSuggestedTags = true
+        suggestedTagsError = nil
+
+        do {
+            let tags = try await bottleRepository.getSuggestedTags(bottleId: bottleId)
+            guard selectedBottle?.id == bottleId else { return }
+            suggestedTags = tags
+        } catch {
+            guard selectedBottle?.id == bottleId else { return }
+            suggestedTags = bottle.suggestedTags.map {
+                TastingTag(name: $0, category: "suggested")
+            }
+            suggestedTagsError = suggestedTags.isEmpty
+                ? "Notes are unavailable right now. Try again in a moment."
+                : nil
+        }
+
+        if selectedBottle?.id == bottleId {
+            isLoadingSuggestedTags = false
+        }
     }
 
     func searchBottles(query: String) async {
