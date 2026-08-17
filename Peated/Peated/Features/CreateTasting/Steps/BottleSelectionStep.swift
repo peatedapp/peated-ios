@@ -1,14 +1,17 @@
 import AVFoundation
 import PeatedCore
 import SwiftUI
+import VisionKit
 
 struct BottleSelectionStep: View {
     @Environment(\.openURL) private var openURL
     @ObservedObject var viewModel: CreateTastingViewModel
     @State private var searchText = ""
     @State private var showingScanner = false
+    @State private var showingLabelScanner = false
     @State private var showingManualEntry = false
     @State private var showingCameraPermissionAlert = false
+    @State private var showingLabelScannerUnavailableAlert = false
     @FocusState private var isSearchFocused: Bool
     var onBottleSelected: (() -> Void)?
 
@@ -28,9 +31,9 @@ struct BottleSelectionStep: View {
                         // Search bar
                         searchBar
 
-                        // Barcode scanner button
+                        // Camera scanner buttons
                         if !viewModel.isSearching, searchText.isEmpty {
-                            scanBarcodeButton
+                            scannerButtons
                         }
                     }
                     .padding(.horizontal)
@@ -62,6 +65,11 @@ struct BottleSelectionStep: View {
                 handleBarcodeScanned(barcode)
             }
         }
+        .sheet(isPresented: $showingLabelScanner) {
+            BottleLabelScannerView { query in
+                searchText = query
+            }
+        }
         .sheet(isPresented: $showingManualEntry) {
             ManualBottleEntryView { bottle in
                 selectBottle(bottle)
@@ -75,7 +83,15 @@ struct BottleSelectionStep: View {
             }
             Button("Cancel", role: .cancel) {}
         } message: {
-            Text("Allow camera access in Settings to scan bottle barcodes.")
+            Text("Allow camera access in Settings to scan bottle labels and barcodes.")
+        }
+        .alert("Label Scanner Unavailable", isPresented: $showingLabelScannerUnavailableAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(
+                "Live label scanning requires a supported physical device. " +
+                    "You can still search or add the bottle manually."
+            )
         }
         .task {
             await loadRecentBottles()
@@ -97,24 +113,43 @@ struct BottleSelectionStep: View {
         }
     }
 
-    // MARK: - Scan Barcode Button
+    // MARK: - Scanner Buttons
 
-    private var scanBarcodeButton: some View {
-        Button(action: {
-            checkCameraPermissionAndScan()
-        }) {
-            HStack {
-                Image(systemName: "barcode.viewfinder")
-                    .font(.title3)
-                Text("Scan Barcode")
-                    .font(.body)
-                    .fontWeight(.medium)
+    private var scannerButtons: some View {
+        VStack(spacing: 10) {
+            Button {
+                checkCameraPermissionAndScan(.label)
+            } label: {
+                HStack {
+                    Image(systemName: "text.viewfinder")
+                        .font(.title3)
+                    Text("Scan Bottle Label")
+                        .font(.body)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(.onBrand)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.brand)
+                .cornerRadius(10)
             }
-            .foregroundColor(.brand)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 12)
-            .background(Color.brand.opacity(0.1))
-            .cornerRadius(10)
+
+            Button {
+                checkCameraPermissionAndScan(.barcode)
+            } label: {
+                HStack {
+                    Image(systemName: "barcode.viewfinder")
+                        .font(.title3)
+                    Text("Scan Barcode")
+                        .font(.body)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(.brand)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.brand.opacity(0.1))
+                .cornerRadius(10)
+            }
         }
     }
 
@@ -206,9 +241,9 @@ struct BottleSelectionStep: View {
                 .font(.body)
                 .foregroundColor(.textSecondary)
 
-            Button(action: {
+            Button {
                 showingManualEntry = true
-            }) {
+            } label: {
                 HStack {
                     Text("Add it manually")
                     Image(systemName: "arrow.right")
@@ -257,15 +292,20 @@ struct BottleSelectionStep: View {
         await viewModel.loadRecentBottles()
     }
 
-    private func checkCameraPermissionAndScan() {
+    private func checkCameraPermissionAndScan(_ destination: ScannerDestination) {
+        if destination == .label, !DataScannerViewController.isSupported {
+            showingLabelScannerUnavailableAlert = true
+            return
+        }
+
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-            showingScanner = true
+            showScanner(destination)
         case .notDetermined:
             AVCaptureDevice.requestAccess(for: .video) { granted in
                 DispatchQueue.main.async {
                     if granted {
-                        showingScanner = true
+                        showScanner(destination)
                     } else {
                         showingCameraPermissionAlert = true
                     }
@@ -275,6 +315,19 @@ struct BottleSelectionStep: View {
             showingCameraPermissionAlert = true
         @unknown default:
             showingCameraPermissionAlert = true
+        }
+    }
+
+    private func showScanner(_ destination: ScannerDestination) {
+        switch destination {
+        case .label:
+            guard DataScannerViewController.isAvailable else {
+                showingLabelScannerUnavailableAlert = true
+                return
+            }
+            showingLabelScanner = true
+        case .barcode:
+            showingScanner = true
         }
     }
 
@@ -289,5 +342,10 @@ struct BottleSelectionStep: View {
     private func getLastTasting(for _: Bottle) -> TastingFeedItem? {
         // TODO: Get user's last tasting of this bottle
         nil
+    }
+
+    private enum ScannerDestination: Sendable {
+        case label
+        case barcode
     }
 }
