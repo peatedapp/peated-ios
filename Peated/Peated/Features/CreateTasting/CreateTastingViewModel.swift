@@ -9,6 +9,7 @@ import PeatedCore
 class CreateTastingViewModel: ObservableObject {
     // Step 1: Bottle
     @Published var selectedBottle: Bottle?
+    @Published var pendingBottlePhotoId: String?
     @Published var bottleSearchText = ""
     @Published var searchResults: [Bottle] = []
     @Published var isSearching = false
@@ -42,6 +43,7 @@ class CreateTastingViewModel: ObservableObject {
 
     var hasUnsavedChanges: Bool {
         selectedBottle != nil ||
+            pendingBottlePhotoId != nil ||
             rating != 0 ||
             !notes.isEmpty ||
             !selectedTags.isEmpty ||
@@ -77,7 +79,8 @@ class CreateTastingViewModel: ObservableObject {
                 servingStyle: servingStyle?.rawValue,
                 tags: selectedTags.sorted(),
                 location: selectedLocation?.name,
-                color: color
+                color: color,
+                pendingImageId: pendingBottlePhotoId
             )
 
             let tasting = try await tastingRepository.createTasting(input)

@@ -19,6 +19,7 @@ public struct CreateTastingInput: Sendable {
     public let tags: [String]
     public let location: String?
     public let color: Int?
+    public let pendingImageId: String?
 
     public init(
         bottleId: String,
@@ -27,7 +28,8 @@ public struct CreateTastingInput: Sendable {
         servingStyle: String? = nil,
         tags: [String] = [],
         location: String? = nil,
-        color: Int? = nil
+        color: Int? = nil,
+        pendingImageId: String? = nil
     ) {
         self.bottleId = bottleId
         self.rating = rating
@@ -36,6 +38,7 @@ public struct CreateTastingInput: Sendable {
         self.tags = tags
         self.location = location
         self.color = color
+        self.pendingImageId = pendingImageId
     }
 }
 
@@ -125,6 +128,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
                 tags: input.tags.isEmpty ? nil : input.tags,
                 color: input.color.flatMap { Double($0) },
                 servingStyle: servingStyle,
+                pendingImageId: input.pendingImageId,
                 bottle: bottleId
             )
         )

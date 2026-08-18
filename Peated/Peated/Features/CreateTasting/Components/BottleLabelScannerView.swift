@@ -1,24 +1,27 @@
+import PhotosUI
 import SwiftUI
 import VisionKit
 
 struct BottleLabelScannerView: View {
     @Environment(\.dismiss) private var dismiss
-    let onSearch: (String) -> Void
+    let onImageSelected: (UIImage) -> Void
 
-    @State private var searchText = ""
-    @State private var hasEditedSearchText = false
+    @State private var captureRequest = 0
+    @State private var isCapturing = false
+    @State private var selectedPhoto: PhotosPickerItem?
     @State private var scannerErrorMessage: String?
 
     var body: some View {
         NavigationStack {
             ZStack(alignment: .bottom) {
                 ScannerCameraView(
-                    onTextChanged: handleRecognizedText,
+                    captureRequest: captureRequest,
+                    onPhotoCaptured: finish,
                     onScannerError: handleScannerError
                 )
                 .ignoresSafeArea()
 
-                reviewPanel
+                capturePanel
             }
             .navigationTitle("Scan Bottle Label")
             .navigationBarTitleDisplayMode(.inline)
@@ -31,61 +34,58 @@ struct BottleLabelScannerView: View {
                 }
             }
             .alert("Label Scanner Unavailable", isPresented: scannerErrorBinding) {
-                Button("OK") {
-                    dismiss()
-                }
+                Button("OK") {}
             } message: {
                 Text(scannerErrorMessage ?? "The label scanner is unavailable.")
+            }
+            .onChange(of: selectedPhoto) { _, item in
+                guard let item else { return }
+                Task { await loadPhoto(item) }
             }
         }
     }
 
-    private var reviewPanel: some View {
+    private var capturePanel: some View {
         VStack(alignment: .leading, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
-                Text(searchText.isEmpty ? "Point the camera at the front label" : "Review detected text")
+                Text("Fill the frame with the front label")
                     .font(.headline)
                     .foregroundColor(.text)
-
-                Text("Keep the bottle steady and make sure the brand and bottle name are visible.")
+                Text("Make sure the brand, bottle name, age, and ABV are readable.")
                     .font(.caption)
                     .foregroundColor(.textSecondary)
             }
 
-            TextField("Bottle name", text: editableSearchText)
-                .textInputAutocapitalization(.words)
-                .autocorrectionDisabled(false)
-                .submitLabel(.search)
-                .inputBox()
-                .onSubmit(search)
-
-            Button(action: search) {
-                HStack {
-                    Image(systemName: "magnifyingglass")
-                    Text("Search Bottles")
-                        .fontWeight(.medium)
-                }
+            Button {
+                isCapturing = true
+                captureRequest += 1
+            } label: {
+                Label(
+                    isCapturing ? "Capturing..." : "Identify This Bottle",
+                    systemImage: "camera.fill"
+                )
+                .fontWeight(.medium)
                 .foregroundColor(.onBrand)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.brand)
                 .cornerRadius(10)
             }
-            .disabled(trimmedSearchText.isEmpty)
-            .opacity(trimmedSearchText.isEmpty ? 0.5 : 1)
+            .disabled(isCapturing)
+
+            PhotosPicker(selection: $selectedPhoto, matching: .images) {
+                Label("Choose Photo", systemImage: "photo.on.rectangle")
+                    .fontWeight(.medium)
+                    .foregroundColor(.brand)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.brand.opacity(0.1))
+                    .cornerRadius(10)
+            }
+            .disabled(isCapturing)
         }
         .padding()
         .background(Color.background.opacity(0.94))
-    }
-
-    private var editableSearchText: Binding<String> {
-        Binding(
-            get: { searchText },
-            set: { newValue in
-                hasEditedSearchText = true
-                searchText = newValue
-            }
-        )
     }
 
     private var scannerErrorBinding: Binding<Bool> {
@@ -99,37 +99,47 @@ struct BottleLabelScannerView: View {
         )
     }
 
-    private var trimmedSearchText: String {
-        searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-    }
-
-    private func handleRecognizedText(_ text: String) {
-        guard !hasEditedSearchText, !text.isEmpty else { return }
-        if searchText.isEmpty || text.count > searchText.count {
-            searchText = text
-        }
+    private func finish(_ image: UIImage) {
+        isCapturing = false
+        onImageSelected(image)
+        dismiss()
     }
 
     private func handleScannerError(_ message: String) {
+        isCapturing = false
         scannerErrorMessage = message
     }
 
-    private func search() {
-        guard !trimmedSearchText.isEmpty else { return }
-        onSearch(trimmedSearchText)
-        dismiss()
+    private func loadPhoto(_ item: PhotosPickerItem) async {
+        isCapturing = true
+        defer {
+            isCapturing = false
+            selectedPhoto = nil
+        }
+
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self),
+                  let image = UIImage(data: data)
+            else {
+                throw BottleLabelScannerError.invalidImage
+            }
+            finish(image)
+        } catch {
+            handleScannerError("We couldn't load that photo. Choose another image and try again.")
+        }
     }
 }
 
 private extension BottleLabelScannerView {
     struct ScannerCameraView: UIViewControllerRepresentable {
-        let onTextChanged: (String) -> Void
+        let captureRequest: Int
+        let onPhotoCaptured: (UIImage) -> Void
         let onScannerError: (String) -> Void
 
         func makeUIViewController(context: Context) -> DataScannerViewController {
             let scanner = DataScannerViewController(
                 recognizedDataTypes: [.text()],
-                qualityLevel: .balanced,
+                qualityLevel: .accurate,
                 recognizesMultipleItems: true,
                 isHighFrameRateTrackingEnabled: false,
                 isPinchToZoomEnabled: true,
@@ -142,14 +152,19 @@ private extension BottleLabelScannerView {
 
         func updateUIViewController(_ scanner: DataScannerViewController, context: Context) {
             context.coordinator.parent = self
-            guard !context.coordinator.didAttemptStart else { return }
 
-            context.coordinator.didAttemptStart = true
-            do {
-                try scanner.startScanning()
-            } catch {
-                onScannerError("We couldn't start the label scanner. You can still search by name.")
+            if !context.coordinator.didAttemptStart {
+                context.coordinator.didAttemptStart = true
+                do {
+                    try scanner.startScanning()
+                } catch {
+                    onScannerError("We couldn't start the label scanner. Choose a photo instead.")
+                }
             }
+
+            guard captureRequest > context.coordinator.handledCaptureRequest else { return }
+            context.coordinator.handledCaptureRequest = captureRequest
+            context.coordinator.capturePhoto(from: scanner)
         }
 
         static func dismantleUIViewController(
@@ -168,33 +183,23 @@ private extension BottleLabelScannerView {
     final class ScannerCameraCoordinator: NSObject, DataScannerViewControllerDelegate {
         var parent: ScannerCameraView
         var didAttemptStart = false
+        var handledCaptureRequest = 0
 
         init(_ parent: ScannerCameraView) {
             self.parent = parent
         }
 
-        func dataScanner(
-            _: DataScannerViewController,
-            didAdd _: [RecognizedItem],
-            allItems: [RecognizedItem]
-        ) {
-            updateText(from: allItems)
-        }
-
-        func dataScanner(
-            _: DataScannerViewController,
-            didUpdate _: [RecognizedItem],
-            allItems: [RecognizedItem]
-        ) {
-            updateText(from: allItems)
-        }
-
-        func dataScanner(
-            _: DataScannerViewController,
-            didRemove _: [RecognizedItem],
-            allItems: [RecognizedItem]
-        ) {
-            updateText(from: allItems)
+        func capturePhoto(from scanner: DataScannerViewController) {
+            Task {
+                do {
+                    let image = try await scanner.capturePhoto()
+                    parent.onPhotoCaptured(image)
+                } catch {
+                    parent.onScannerError(
+                        "We couldn't capture that photo. Hold the bottle steady and try again."
+                    )
+                }
+            }
         }
 
         func dataScanner(
@@ -202,20 +207,12 @@ private extension BottleLabelScannerView {
             becameUnavailableWithError _: DataScannerViewController.ScanningUnavailable
         ) {
             parent.onScannerError(
-                "The label scanner became unavailable. You can still search by name."
+                "The label scanner became unavailable. Choose a photo instead."
             )
         }
+    }
 
-        private func updateText(from items: [RecognizedItem]) {
-            let observations = items.compactMap { item -> BottleLabelSearchText.Observation? in
-                guard case let .text(text) = item else { return nil }
-                return BottleLabelSearchText.Observation(
-                    text: text.transcript,
-                    x: Double(text.bounds.topLeft.x),
-                    y: Double(text.bounds.topLeft.y)
-                )
-            }
-            parent.onTextChanged(BottleLabelSearchText.query(from: observations))
-        }
+    enum BottleLabelScannerError: Error {
+        case invalidImage
     }
 }
