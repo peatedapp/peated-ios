@@ -22,11 +22,17 @@ struct ManualBottleEntryView: View {
     @FocusState private var focusAge: Bool
 
     init(
+        initialInput: CreateBottleInput? = nil,
         bottleRepository: any BottleRepositoryProtocol = BottleRepository(),
         onBottleCreated: @escaping (Bottle) -> Void
     ) {
         self.bottleRepository = bottleRepository
         self.onBottleCreated = onBottleCreated
+        _bottleName = State(initialValue: initialInput?.name ?? "")
+        _brandName = State(initialValue: initialInput?.brandName ?? "")
+        _category = State(initialValue: initialInput?.category)
+        _abv = State(initialValue: initialInput?.abv.map { String($0) } ?? "")
+        _age = State(initialValue: initialInput?.statedAge.map { String($0) } ?? "")
     }
 
     var body: some View {

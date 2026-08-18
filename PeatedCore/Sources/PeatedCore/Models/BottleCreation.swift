@@ -20,7 +20,7 @@ public enum BottleCategory: String, CaseIterable, Sendable {
     }
 }
 
-public struct CreateBottleInput: Sendable {
+public struct CreateBottleInput: Equatable, Sendable {
     public let name: String
     public let brandName: String
     public let category: BottleCategory?

@@ -1,5 +1,6 @@
 import AVFoundation
 import PeatedCore
+import PhotosUI
 import SwiftUI
 import VisionKit
 
@@ -9,9 +10,12 @@ struct BottleSelectionStep: View {
     @State private var searchText = ""
     @State private var showingScanner = false
     @State private var showingLabelScanner = false
+    @State private var showingPhotoResolution = false
     @State private var showingManualEntry = false
     @State private var showingCameraPermissionAlert = false
     @State private var showingLabelScannerUnavailableAlert = false
+    @State private var bottlePhotoItem: PhotosPickerItem?
+    @State private var bottlePhoto: UIImage?
     @FocusState private var isSearchFocused: Bool
     var onBottleSelected: (() -> Void)?
 
@@ -65,9 +69,18 @@ struct BottleSelectionStep: View {
                 handleBarcodeScanned(barcode)
             }
         }
-        .sheet(isPresented: $showingLabelScanner) {
-            BottleLabelScannerView { query in
-                searchText = query
+        .sheet(isPresented: $showingLabelScanner, onDismiss: presentPhotoResolutionIfNeeded) {
+            BottleLabelScannerView { image in
+                bottlePhoto = image
+            }
+        }
+        .sheet(isPresented: $showingPhotoResolution, onDismiss: clearBottlePhoto) {
+            if let bottlePhoto {
+                BottlePhotoResolutionView(
+                    image: bottlePhoto,
+                    onBottleResolved: handlePhotoResolved,
+                    onSearch: handlePhotoSearch
+                )
             }
         }
         .sheet(isPresented: $showingManualEntry) {
@@ -90,11 +103,15 @@ struct BottleSelectionStep: View {
         } message: {
             Text(
                 "Live label scanning requires a supported physical device. " +
-                    "You can still search or add the bottle manually."
+                    "Choose a bottle photo instead, or search by name."
             )
         }
         .task {
             await loadRecentBottles()
+        }
+        .onChange(of: bottlePhotoItem) { _, item in
+            guard let item else { return }
+            Task { await loadBottlePhoto(item) }
         }
     }
 
@@ -123,7 +140,7 @@ struct BottleSelectionStep: View {
                 HStack {
                     Image(systemName: "text.viewfinder")
                         .font(.title3)
-                    Text("Scan Bottle Label")
+                    Text("Take Bottle Photo")
                         .font(.body)
                         .fontWeight(.medium)
                 }
@@ -131,6 +148,21 @@ struct BottleSelectionStep: View {
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.brand)
+                .cornerRadius(10)
+            }
+
+            PhotosPicker(selection: $bottlePhotoItem, matching: .images) {
+                HStack {
+                    Image(systemName: "photo.on.rectangle")
+                        .font(.title3)
+                    Text("Choose Bottle Photo")
+                        .font(.body)
+                        .fontWeight(.medium)
+                }
+                .foregroundColor(.brand)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(Color.brand.opacity(0.1))
                 .cornerRadius(10)
             }
 
@@ -261,9 +293,10 @@ struct BottleSelectionStep: View {
 
     // MARK: - Actions
 
-    private func selectBottle(_ bottle: Bottle) {
+    private func selectBottle(_ bottle: Bottle, pendingImageId: String? = nil) {
         withAnimation {
             viewModel.selectedBottle = bottle
+            viewModel.pendingBottlePhotoId = pendingImageId
             isSearchFocused = false
         }
 
@@ -337,6 +370,43 @@ struct BottleSelectionStep: View {
                 selectBottle(bottle)
             }
         }
+    }
+
+    private func loadBottlePhoto(_ item: PhotosPickerItem) async {
+        defer { bottlePhotoItem = nil }
+
+        guard let data = try? await item.loadTransferable(type: Data.self),
+              let image = UIImage(data: data)
+        else {
+            viewModel.errorMessage = "We couldn't load that photo. Choose another image and try again."
+            viewModel.showingError = true
+            return
+        }
+
+        bottlePhoto = image
+        showingPhotoResolution = true
+    }
+
+    private func presentPhotoResolutionIfNeeded() {
+        if bottlePhoto != nil {
+            showingPhotoResolution = true
+        }
+    }
+
+    private func clearBottlePhoto() {
+        if !showingLabelScanner {
+            bottlePhoto = nil
+        }
+    }
+
+    private func handlePhotoResolved(_ bottle: Bottle, pendingImageId: String) {
+        showingPhotoResolution = false
+        selectBottle(bottle, pendingImageId: pendingImageId)
+    }
+
+    private func handlePhotoSearch(_ query: String) {
+        showingPhotoResolution = false
+        searchText = query
     }
 
     private func getLastTasting(for _: Bottle) -> TastingFeedItem? {
