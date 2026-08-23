@@ -53,7 +53,12 @@ struct BottlePhotoUploadMiddlewareTests {
         let baseURL = try #require(URL(string: "https://api.peated.com/v1"))
 
         _ = try await middleware.intercept(
-            HTTPRequest(method: .post, path: "/other"),
+            HTTPRequest(
+                method: .post,
+                scheme: "https",
+                authority: "api.peated.com",
+                path: "/other"
+            ),
             body: HTTPBody(originalBody),
             baseURL: baseURL,
             operationID: "otherOperation"
