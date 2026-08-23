@@ -68,6 +68,21 @@ struct BottlePhotoResolutionViewModelTests {
         #expect(viewModel.errorMessage?.contains("couldn't identify") == true)
         #expect(!viewModel.isIdentifying)
     }
+
+    @Test
+    func creationFailureLeavesReviewAvailable() async {
+        let repository = BottlePhotoRepositoryStub(
+            identification: .stub,
+            error: APIError.serverError(500, nil)
+        )
+        let viewModel = BottlePhotoResolutionViewModel(repository: repository)
+
+        let creation = await viewModel.createBottle(createToken: "signed-create-token")
+
+        #expect(creation == nil)
+        #expect(viewModel.errorMessage?.contains("couldn't create") == true)
+        #expect(!viewModel.isCreating)
+    }
 }
 
 private actor BottlePhotoRepositoryStub: BottlePhotoRepositoryProtocol {
