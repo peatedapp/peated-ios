@@ -26,12 +26,18 @@ public actor APIClient {
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
         let cacheConditionals = CacheConditionalsMiddleware()
+        let bottlePhotoUploadMiddleware = BottlePhotoUploadMiddleware()
 
         client = Client(
             serverURL: currentServerURL,
             configuration: runtimeConfiguration,
             transport: transport,
-            middlewares: [loggingMiddleware, cacheConditionals, authMiddleware]
+            middlewares: [
+                bottlePhotoUploadMiddleware,
+                loggingMiddleware,
+                cacheConditionals,
+                authMiddleware
+            ]
         )
 
         // Observe environment changes and update server URL for all instances
@@ -59,12 +65,18 @@ public actor APIClient {
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
         let cacheConditionals = CacheConditionalsMiddleware()
+        let bottlePhotoUploadMiddleware = BottlePhotoUploadMiddleware()
 
         client = Client(
             serverURL: url,
             configuration: runtimeConfiguration,
             transport: transport,
-            middlewares: [loggingMiddleware, cacheConditionals, authMiddleware]
+            middlewares: [
+                bottlePhotoUploadMiddleware,
+                loggingMiddleware,
+                cacheConditionals,
+                authMiddleware
+            ]
         )
     }
 
