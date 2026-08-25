@@ -46,14 +46,16 @@ struct BottlePhotoUploadMiddleware: ClientMiddleware {
             return try await next(request, HTTPBody(encodedBody), baseURL)
         }
 
-        var multipartRequest = request
-        multipartRequest.headerFields[.contentType] =
-            "multipart/form-data; boundary=\(boundary)"
-
         let multipartBody = makeMultipartBody(
             imageData: imageData,
             idempotencyKey: input.idempotencyKey
         )
+
+        var multipartRequest = request
+        multipartRequest.headerFields[.contentType] =
+            "multipart/form-data; boundary=\(boundary)"
+        multipartRequest.headerFields[.contentLength] = String(multipartBody.count)
+
         return try await next(multipartRequest, HTTPBody(multipartBody), baseURL)
     }
 
