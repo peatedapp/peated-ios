@@ -9,7 +9,7 @@ struct BottlePhotoUploadMiddlewareTests {
     @Test
     func convertsBottlePhotoJSONToMultipartFormData() async throws {
         let middleware = BottlePhotoUploadMiddleware(boundary: "test-boundary")
-        let request = HTTPRequest(
+        var request = HTTPRequest(
             method: .post,
             scheme: "https",
             authority: "api.peated.com",
@@ -19,6 +19,8 @@ struct BottlePhotoUploadMiddlewareTests {
             "file": "data:image/jpeg;base64,AQID",
             "idempotencyKey": "photo-request"
         ])
+        request.headerFields[.contentType] = "application/json; charset=utf-8"
+        request.headerFields[.contentLength] = String(encodedBody.count)
         let capture = RequestCapture()
         let baseURL = try #require(URL(string: "https://api.peated.com/v1"))
 
@@ -37,6 +39,7 @@ struct BottlePhotoUploadMiddlewareTests {
         let captured = await capture.value()
         #expect(captured?.contentType == "multipart/form-data; boundary=test-boundary")
         let body = try #require(captured?.body)
+        #expect(captured?.contentLength == String(body.count))
         let bodyText = try #require(String(data: body, encoding: .utf8))
         #expect(bodyText.contains("name=\"file\"; filename=\"bottle.jpg\""))
         #expect(bodyText.contains("Content-Type: image/jpeg"))
@@ -78,6 +81,7 @@ struct BottlePhotoUploadMiddlewareTests {
 private actor RequestCapture {
     struct Value: Sendable {
         let contentType: String?
+        let contentLength: String?
         let body: Data
     }
 
@@ -86,6 +90,7 @@ private actor RequestCapture {
     func record(request: HTTPRequest, body: Data) {
         capturedValue = Value(
             contentType: request.headerFields[.contentType],
+            contentLength: request.headerFields[.contentLength],
             body: body
         )
     }
