@@ -24,9 +24,9 @@ struct PasswordInput: View {
             HStack(spacing: 8) {
                 Group {
                     if isVisible {
-                        TextField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
                     } else {
-                        SecureField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
                     }
                 }
                 .textFieldStyle(.plain)
@@ -47,5 +47,12 @@ struct PasswordInput: View {
             }
             .inputBox(state: isFocused ? .focused : .normal)
         }
+    }
+
+    private var fieldLabel: String {
+        guard let label, !label.isEmpty else {
+            return placeholder
+        }
+        return label
     }
 }
