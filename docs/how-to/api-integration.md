@@ -2,6 +2,8 @@
 
 This document describes how the Peated iOS app integrates with the backend API.
 
+For the backend location, safe update commands, and guidance on when to read the production specification or backend code, see @docs/how-to/sync-peated-upstream.md.
+
 ## OpenAPI Specification
 
 The Peated API is documented using OpenAPI 3.0. The specification is available at:
@@ -99,8 +101,8 @@ let client = Client(
 )
 
 // Login with Google ID token
-let response = try await client.authLogin(
-    body: .json(.case3(.init(idToken: idToken)))
+let response = try await client.login(
+    body: .json(.init(value3: .init(idToken: idToken)))
 )
 ```
 
@@ -110,7 +112,7 @@ The API client throws typed errors that can be handled:
 
 ```swift
 do {
-    let response = try await client.authLogin(...)
+    let response = try await client.login(...)
 } catch let error as ClientError {
     // Handle client errors (400-499)
 } catch let error as ServerError {

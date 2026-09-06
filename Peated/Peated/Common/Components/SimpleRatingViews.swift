@@ -1,118 +1,104 @@
 import PeatedCore
 import SwiftUI
 
-struct SimpleRatingView: View {
-    let rating: Double
-    var showLabel = false
-    var iconSize: CGFloat = 14
+struct TastingRatingView: View {
+    let band: TastingRatingBand
+    var showRange = false
+    var fontSize = DesignSystem.FontSize.small
 
     var body: some View {
-        if let value = RatingValue(rating: rating), value != .none {
-            HStack(spacing: 3) {
-                HStack(spacing: 2) {
-                    ForEach(0 ..< value.iconCount, id: \.self) { _ in
-                        Image(systemName: value == .pass ? "hand.thumbsdown.fill" : "hand.thumbsup.fill")
-                            .font(.system(size: iconSize))
-                    }
-                }
+        HStack(spacing: 5) {
+            Text(band.displayName)
+                .font(.system(size: fontSize, weight: .semibold))
 
-                if showLabel {
-                    Text(value.displayName)
-                        .fontWeight(.medium)
-                }
-            }
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(value.displayName)
-        }
-    }
-}
-
-struct AverageRatingIndicator: View {
-    let average: Double
-    var iconSize: CGFloat = 14
-
-    private var iconFills: [Double] {
-        if average < 0 {
-            return [min(abs(average), 1)]
-        }
-
-        return [
-            min(max(average, 0), 1),
-            min(max(average - 1, 0), 1)
-        ]
-    }
-
-    var body: some View {
-        HStack(spacing: 2) {
-            ForEach(Array(iconFills.enumerated()), id: \.offset) { _, fill in
-                Image(systemName: average < 0 ? "hand.thumbsdown.fill" : "hand.thumbsup.fill")
-                    .font(.system(size: iconSize))
-                    .foregroundColor(.brand.opacity(0.25 + (0.75 * fill)))
+            if showRange {
+                Text(band.description)
+                    .font(.system(size: fontSize))
+                    .foregroundColor(.textSecondary)
             }
         }
+        .foregroundColor(.brand)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Average rating \(average, specifier: "%.2f")")
+        .accessibilityLabel("Rating: \(band.displayName), \(band.description)")
     }
 }
 
-struct CommunityRatingView: View {
-    let average: Double?
-    let total: Int
+struct BottleRatingSummaryView: View {
+    let summary: BottleRatingSummary
     var showCount = true
     var fontSize = DesignSystem.FontSize.small
 
     var body: some View {
-        if total > 0, let average {
+        if let band = summary.presentedBand, summary.presentedCount > 0 {
             HStack(spacing: 5) {
-                AverageRatingIndicator(average: average, iconSize: fontSize)
+                Text(band.displayName)
+                    .font(.system(size: fontSize, weight: .semibold))
 
-                Text(average, format: .number.precision(.fractionLength(2)))
-                    .font(.system(size: fontSize, weight: .medium))
+                if let score = summary.medianScore {
+                    Text("\(score)")
+                        .font(.system(size: fontSize, weight: .medium, design: .monospaced))
+                } else {
+                    Text(band.description)
+                        .font(.system(size: fontSize))
+                        .foregroundColor(.textSecondary)
+                }
 
                 if showCount {
-                    Text("(\(total))")
+                    Text("(\(summary.presentedCount))")
                         .font(.system(size: fontSize))
                         .foregroundColor(.textSecondary)
                 }
             }
             .foregroundColor(.text)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilityLabel(for: band))
         }
+    }
+
+    private func accessibilityLabel(for band: TastingRatingBand) -> String {
+        let count = summary.presentedCount
+        if let score = summary.medianScore {
+            let noun = count == 1 ? "review" : "reviews"
+            return "Review score \(score) out of 100, \(band.displayName), based on \(count) \(noun)"
+        }
+        let noun = count == 1 ? "tasting" : "tastings"
+        return "Tasting rating \(band.displayName), \(band.description), based on \(count) \(noun)"
     }
 }
 
 struct BottleRatingStatsView: View {
-    let stats: BottleRatingStats
+    let counts: RatingBandCounts
 
     var body: some View {
-        if stats.total == 0 {
+        if counts.total == 0 {
             Text("No ratings yet")
                 .font(.system(size: DesignSystem.FontSize.small))
                 .foregroundColor(.textSecondary)
         } else {
             VStack(spacing: 8) {
-                ratingRow(label: "Savor", value: 2, count: stats.savor, percentage: stats.percentages.savor)
-                ratingRow(label: "Sip", value: 1, count: stats.sip, percentage: stats.percentages.sip)
-                ratingRow(label: "Pass", value: -1, count: stats.pass, percentage: stats.percentages.pass)
+                ForEach(TastingRatingBand.allCases.reversed(), id: \.self) { band in
+                    ratingRow(band: band, count: counts.count(for: band))
+                }
             }
         }
     }
 
-    private func ratingRow(label: String, value: Double, count: Int, percentage: Double) -> some View {
+    private func ratingRow(band: TastingRatingBand, count: Int) -> some View {
         HStack(spacing: 10) {
-            HStack(spacing: 5) {
-                SimpleRatingView(rating: value, iconSize: 12)
-                Text(label)
-                    .font(.system(size: DesignSystem.FontSize.small, weight: .medium))
-            }
-            .frame(width: 72, alignment: .leading)
+            Text(band.displayName)
+                .font(.system(size: DesignSystem.FontSize.small, weight: .medium))
+                .frame(width: 92, alignment: .leading)
 
-            ProgressView(value: min(max(percentage, 0), 100), total: 100)
-                .tint(.brand)
-
-            Text("\(count) (\(Int(percentage.rounded()))%)")
-                .font(.system(size: DesignSystem.FontSize.caption))
+            Text(band.description)
+                .font(.system(size: DesignSystem.FontSize.caption, design: .monospaced))
                 .foregroundColor(.textSecondary)
-                .frame(width: 72, alignment: .trailing)
+
+            Spacer()
+
+            Text("\(count)")
+                .font(.system(size: DesignSystem.FontSize.small, weight: .medium, design: .monospaced))
+                .foregroundColor(.textSecondary)
+                .frame(minWidth: 28, alignment: .trailing)
         }
     }
 }

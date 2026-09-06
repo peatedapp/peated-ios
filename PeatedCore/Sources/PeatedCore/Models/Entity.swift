@@ -16,12 +16,14 @@ public struct Entity: Codable, Equatable, Sendable, Identifiable {
         case brand
         case distillery
         case bottler
+        case company
 
         public var displayName: String {
             switch self {
             case .brand: "Brand"
             case .distillery: "Distillery"
             case .bottler: "Bottler"
+            case .company: "Company"
             }
         }
     }

@@ -412,15 +412,17 @@ extension BottleDetailView {
             }
 
             // Rating if exists
-            if bottle.totalRatings > 0, bottle.category == nil, bottle.abv == nil, bottle.statedAge == nil {
+            if bottle.ratingSummary.presentedCount > 0,
+               bottle.category == nil,
+               bottle.abv == nil,
+               bottle.statedAge == nil {
                 VStack(spacing: 8) {
-                    CommunityRatingView(
-                        average: bottle.avgRating,
-                        total: bottle.totalRatings,
+                    BottleRatingSummaryView(
+                        summary: bottle.ratingSummary,
                         showCount: false,
                         fontSize: DesignSystem.FontSize.large
                     )
-                    Text("\(bottle.totalRatings) ratings")
+                    Text("\(bottle.ratingSummary.presentedCount) ratings")
                         .font(.caption)
                         .foregroundColor(.textSecondary)
                 }
@@ -602,10 +604,9 @@ struct SimilarBottleCard: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
 
-                if bottle.totalRatings > 0 {
-                    CommunityRatingView(
-                        average: bottle.avgRating,
-                        total: bottle.totalRatings,
+                if bottle.ratingSummary.presentedCount > 0 {
+                    BottleRatingSummaryView(
+                        summary: bottle.ratingSummary,
                         fontSize: DesignSystem.FontSize.tiny
                     )
                 }

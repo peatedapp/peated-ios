@@ -594,7 +594,7 @@ struct ProfileView: View {
         // Create updated tasting for optimistic update
         let updatedTasting = TastingFeedItem(
             id: currentTasting.id,
-            rating: currentTasting.rating,
+            ratingBand: currentTasting.ratingBand,
             notes: currentTasting.notes,
             servingStyle: currentTasting.servingStyle,
             imageUrl: currentTasting.imageUrl,
@@ -631,7 +631,7 @@ struct ProfileView: View {
             // Update with correct state from API
             let correctTasting = TastingFeedItem(
                 id: currentTasting.id,
-                rating: currentTasting.rating,
+                ratingBand: currentTasting.ratingBand,
                 notes: currentTasting.notes,
                 servingStyle: currentTasting.servingStyle,
                 imageUrl: currentTasting.imageUrl,

@@ -199,7 +199,7 @@ public class OfflineQueueManager {
             let payload = try JSONDecoder().decode(CreateTastingPayload.self, from: operation.payload)
             let input = CreateTastingInput(
                 bottleId: payload.bottleId,
-                rating: payload.rating,
+                ratingBand: payload.ratingBand,
                 notes: payload.notes,
                 servingStyle: payload.servingStyle,
                 tags: payload.tags,

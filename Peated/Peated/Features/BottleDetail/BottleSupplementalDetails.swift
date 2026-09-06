@@ -1,3 +1,4 @@
+import Foundation
 import PeatedCore
 import SwiftUI
 
@@ -42,11 +43,23 @@ struct BottleSupplementalDetails: View {
         if let vintageYear = bottle.vintageYear {
             detailRow(label: "Vintage", value: String(vintageYear))
         }
-        if let releaseYear = bottle.releaseYear {
-            detailRow(label: "Released", value: String(releaseYear))
+        if let bottlingYear = bottle.bottlingYear {
+            detailRow(label: "Bottled", value: String(bottlingYear))
         }
-        if let caskDetails {
-            detailRow(label: "Cask", value: caskDetails)
+        if let releaseYear = bottle.releaseYear {
+            detailRow(label: "Released", value: releaseDate(year: releaseYear))
+        }
+        if let maturation = bottle.maturation, !maturation.isEmpty {
+            detailRow(label: "Maturation", value: maturation)
+        }
+        if let caskNumber = bottle.caskNumber, !caskNumber.isEmpty {
+            detailRow(label: "Cask number", value: caskNumber)
+        }
+        if let outturn = bottle.outturn {
+            detailRow(label: "Outturn", value: "\(outturn) bottles")
+        }
+        if let ppm = bottle.maltPhenolPpm {
+            detailRow(label: "Phenols", value: "\(ppm.formatted()) ppm")
         }
     }
 
@@ -59,13 +72,11 @@ struct BottleSupplementalDetails: View {
         if let bottler = bottle.bottler, bottler.id != bottle.brand.id {
             detailRow(label: "Bottled by", value: bottler.name)
         }
-        if bottle.caskStrength || bottle.singleCask {
-            HStack(spacing: 12) {
-                if bottle.caskStrength {
-                    characteristic("Cask Strength")
-                }
-                if bottle.singleCask {
-                    characteristic("Single Cask")
+        let characteristics = characteristics
+        if !characteristics.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(characteristics, id: \.self) { name in
+                    characteristic(name)
                 }
             }
         }
@@ -73,29 +84,37 @@ struct BottleSupplementalDetails: View {
 
     @ViewBuilder
     private var communityRating: some View {
-        if bottle.totalRatings > 0 {
-            VStack(alignment: .leading, spacing: 6) {
-                CommunityRatingView(
-                    average: bottle.avgRating,
-                    total: bottle.totalRatings,
+        if bottle.ratingSummary.presentedCount > 0 {
+            VStack(alignment: .leading, spacing: 10) {
+                BottleRatingSummaryView(
+                    summary: bottle.ratingSummary,
                     showCount: false,
                     fontSize: DesignSystem.FontSize.large
                 )
 
-                Text(
-                    "\(bottle.totalRatings) \(bottle.totalRatings == 1 ? "rating" : "ratings") from the community"
-                )
-                .font(.system(size: DesignSystem.FontSize.small))
-                .foregroundColor(.textSecondary)
+                Text(ratingSummaryCaption)
+                    .font(.system(size: DesignSystem.FontSize.small))
+                    .foregroundColor(.textSecondary)
 
-                BottleRatingStatsView(stats: bottle.ratingStats)
-                    .padding(.top, 6)
+                if bottle.ratingSummary.reviewBandCounts.total > 0 {
+                    Text("REVIEWS")
+                        .font(.system(size: DesignSystem.FontSize.caption, weight: .semibold))
+                        .foregroundColor(.textSecondary)
+                    BottleRatingStatsView(counts: bottle.ratingSummary.reviewBandCounts)
+                }
+
+                if bottle.ratingSummary.tastingBandCounts.total > 0 {
+                    Text("TASTINGS")
+                        .font(.system(size: DesignSystem.FontSize.caption, weight: .semibold))
+                        .foregroundColor(.textSecondary)
+                    BottleRatingStatsView(counts: bottle.ratingSummary.tastingBandCounts)
+                }
             }
             .padding(.vertical, 8)
             .padding(.horizontal, 12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.surface.opacity(0.5))
-            .cornerRadius(8)
+            .cornerRadius(DesignSystem.CornerRadius.medium)
         }
     }
 
@@ -103,22 +122,63 @@ struct BottleSupplementalDetails: View {
         bottle.edition != nil
             || bottle.series != nil
             || bottle.vintageYear != nil
+            || bottle.bottlingYear != nil
             || bottle.releaseYear != nil
-            || bottle.caskType != nil
-            || bottle.caskSize != nil
-            || bottle.caskFill != nil
+            || bottle.maturation != nil
+            || bottle.caskNumber != nil
+            || bottle.outturn != nil
+            || bottle.maltPhenolPpm != nil
             || bottle.caskStrength
             || bottle.singleCask
+            || bottle.naturalColor == true
+            || bottle.nonChillFiltered == true
+            || bottle.noAgeStatement == true
             || bottle.distillers.contains { $0.id != bottle.brand.id }
             || (bottle.bottler != nil && bottle.bottler?.id != bottle.brand.id)
-            || bottle.totalRatings > 0
+            || bottle.ratingSummary.presentedCount > 0
     }
 
-    private var caskDetails: String? {
-        let values = [bottle.caskFill, bottle.caskType, bottle.caskSize]
-            .compactMap(\.self)
-            .map { $0.replacingOccurrences(of: "_", with: " ").capitalized }
-        return values.isEmpty ? nil : values.joined(separator: " · ")
+    private var characteristics: [String] {
+        var values: [String] = []
+        if bottle.caskStrength {
+            values.append("Cask Strength")
+        }
+        if bottle.singleCask {
+            values.append("Single Cask")
+        }
+        if bottle.naturalColor == true {
+            values.append("Natural Color")
+        }
+        if bottle.nonChillFiltered == true {
+            values.append("Non-Chill Filtered")
+        }
+        if bottle.noAgeStatement == true {
+            values.append("No Age Statement")
+        }
+        return values
+    }
+
+    private var ratingSummaryCaption: String {
+        let summary = bottle.ratingSummary
+        if summary.medianScore != nil {
+            return "Based on \(summary.scoreCount) published \(summary.scoreCount == 1 ? "review" : "reviews")"
+        }
+        let count = summary.tastingBandCounts.total
+        return "Based on \(count) tasting \(count == 1 ? "rating" : "ratings")"
+    }
+
+    private func releaseDate(year: Int) -> String {
+        guard let month = bottle.releaseMonth,
+              Calendar(identifier: .gregorian).shortMonthSymbols.indices.contains(month - 1)
+        else {
+            return String(year)
+        }
+
+        let monthName = Calendar(identifier: .gregorian).shortMonthSymbols[month - 1]
+        if let day = bottle.releaseDay {
+            return "\(monthName) \(day), \(year)"
+        }
+        return "\(monthName) \(year)"
     }
 
     private func sectionTitle(_ title: String) -> some View {
@@ -133,7 +193,7 @@ struct BottleSupplementalDetails: View {
             Text(label)
                 .font(.system(size: DesignSystem.FontSize.small, weight: .medium))
                 .foregroundColor(.textSecondary)
-                .frame(width: 82, alignment: .leading)
+                .frame(width: 100, alignment: .leading)
 
             Text(value)
                 .font(.system(size: DesignSystem.FontSize.body))

@@ -13,7 +13,7 @@ public protocol TastingRepositoryProtocol: Sendable {
 
 public struct CreateTastingInput: Sendable {
     public let bottleId: String
-    public let rating: Double
+    public let ratingBand: TastingRatingBand?
     public let notes: String?
     public let servingStyle: String?
     public let tags: [String]
@@ -23,7 +23,7 @@ public struct CreateTastingInput: Sendable {
 
     public init(
         bottleId: String,
-        rating: Double,
+        ratingBand: TastingRatingBand? = nil,
         notes: String? = nil,
         servingStyle: String? = nil,
         tags: [String] = [],
@@ -32,7 +32,7 @@ public struct CreateTastingInput: Sendable {
         pendingImageId: String? = nil
     ) {
         self.bottleId = bottleId
-        self.rating = rating
+        self.ratingBand = ratingBand
         self.notes = notes
         self.servingStyle = servingStyle
         self.tags = tags
@@ -68,7 +68,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
                 // Map to TastingFeedItem
                 return TastingFeedItem(
                     id: String(Int(payload.id)),
-                    rating: extractRating(from: payload.rating),
+                    ratingBand: payload.ratingBand.map(TastingRatingBand.init),
                     notes: payload.notes,
                     servingStyle: payload.servingStyle?.rawValue,
                     imageUrl: payload.imageUrl,
@@ -108,8 +108,6 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
             throw APIError.requestFailed("Invalid bottle ID")
         }
 
-        let rating = Operations.createTasting.Input.Body.jsonPayload
-            .makeRating(RatingValue(rawValue: Int(input.rating)) ?? .none)
         let servingStyle: Operations.createTasting.Input.Body.jsonPayload.servingStylePayload? =
             input.servingStyle.flatMap { style in
                 switch style {
@@ -124,7 +122,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         let body = Operations.createTasting.Input.Body.json(
             .init(
                 notes: input.notes,
-                rating: rating,
+                ratingBand: input.ratingBand?.createPayload,
                 tags: input.tags.isEmpty ? nil : input.tags,
                 color: input.color.flatMap { Double($0) },
                 servingStyle: servingStyle,
@@ -146,7 +144,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
 
                 return TastingFeedItem(
                     id: String(Int(tasting.id)),
-                    rating: extractRating(from: tasting.rating),
+                    ratingBand: tasting.ratingBand.map(TastingRatingBand.init),
                     notes: tasting.notes,
                     servingStyle: tasting.servingStyle?.rawValue,
                     imageUrl: tasting.imageUrl,

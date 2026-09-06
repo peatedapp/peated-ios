@@ -434,7 +434,7 @@ public class FeedModel {
         // Create updated tasting for optimistic update
         let updatedTasting = TastingFeedItem(
             id: currentTasting.id,
-            rating: currentTasting.rating,
+            ratingBand: currentTasting.ratingBand,
             notes: currentTasting.notes,
             servingStyle: currentTasting.servingStyle,
             imageUrl: currentTasting.imageUrl,
@@ -488,7 +488,7 @@ public class FeedModel {
                 // Create the correct tasting state based on API response
                 let correctTasting = TastingFeedItem(
                     id: currentTasting.id,
-                    rating: currentTasting.rating,
+                    ratingBand: currentTasting.ratingBand,
                     notes: currentTasting.notes,
                     servingStyle: currentTasting.servingStyle,
                     imageUrl: currentTasting.imageUrl,

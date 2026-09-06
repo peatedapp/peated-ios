@@ -4,7 +4,7 @@ import Foundation
 /// Builder pattern for creating TastingFeedItem test data
 public class TastingFeedItemBuilder {
     private var id = "1"
-    private var rating = 4.0
+    private var ratingBand: TastingRatingBand? = .veryGood
     private var notes: String?
     private var servingStyle: String? = "neat"
     private var imageUrl: String?
@@ -32,8 +32,8 @@ public class TastingFeedItemBuilder {
         return self
     }
 
-    public func withRating(_ rating: Double) -> TastingFeedItemBuilder {
-        self.rating = rating
+    public func withRatingBand(_ ratingBand: TastingRatingBand?) -> TastingFeedItemBuilder {
+        self.ratingBand = ratingBand
         return self
     }
 
@@ -85,7 +85,7 @@ public class TastingFeedItemBuilder {
     public func build() -> TastingFeedItem {
         TastingFeedItem(
             id: id,
-            rating: rating,
+            ratingBand: ratingBand,
             notes: notes,
             servingStyle: servingStyle,
             imageUrl: imageUrl,
@@ -124,7 +124,7 @@ public extension TastingFeedItem {
             .withBottleName("Lagavulin 16-year-old")
             .withBrandName("Lagavulin")
             .withUsername("whisky_lover")
-            .withRating(4.5)
+            .withRatingBand(.outstanding)
             .withNotes("Smoky and peaty with hints of seaweed")
             .withToastCount(12)
             .withCommentCount(3)
@@ -139,7 +139,7 @@ public extension TastingFeedItem {
             .withBottleName("Glenfiddich 12-year-old")
             .withBrandName("Glenfiddich")
             .withUsername("highland_fan")
-            .withRating(3.8)
+            .withRatingBand(.good)
             .withNotes("Light and fruity with apple notes")
             .withToastCount(8)
             .withCommentCount(1)
@@ -154,7 +154,7 @@ public extension TastingFeedItem {
             .withBottleName("Macallan 18-year-old")
             .withBrandName("Macallan")
             .withUsername("sherry_cask_lover")
-            .withRating(4.8)
+            .withRatingBand(.unicorn)
             .withNotes("Rich sherry influence with dried fruits")
             .withToastCount(25)
             .withCommentCount(7)
@@ -201,7 +201,7 @@ public extension FeedPage {
                 .withId("item\(index)")
                 .withBottleName("Test Bottle \(index)")
                 .withUsername("user\(index)")
-                .withRating(Double.random(in: 3.0 ... 5.0))
+                .withRatingBand(TastingRatingBand.allCases.randomElement())
                 .build()
         }
         return FeedPage(tastings: tastings, cursor: "999", hasMore: true)

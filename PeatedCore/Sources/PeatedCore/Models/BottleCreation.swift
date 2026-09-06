@@ -1,21 +1,27 @@
 public enum BottleCategory: String, CaseIterable, Sendable {
     case blend
+    case blendedGrain = "blended_grain"
+    case blendedMalt = "blended_malt"
     case bourbon
+    case corn
     case rye
     case singleGrain = "single_grain"
     case singleMalt = "single_malt"
     case singlePotStill = "single_pot_still"
-    case spirit
+    case wheat
 
     public var displayName: String {
         switch self {
         case .blend: "Blend"
+        case .blendedGrain: "Blended Grain"
+        case .blendedMalt: "Blended Malt"
         case .bourbon: "Bourbon"
+        case .corn: "Corn"
         case .rye: "Rye"
         case .singleGrain: "Single Grain"
         case .singleMalt: "Single Malt"
         case .singlePotStill: "Single Pot Still"
-        case .spirit: "Spirit"
+        case .wheat: "Wheat"
         }
     }
 }

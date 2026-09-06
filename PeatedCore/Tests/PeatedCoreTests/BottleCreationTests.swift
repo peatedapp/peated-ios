@@ -19,7 +19,7 @@ struct BottleCreationTests {
 
         let brand = try #require(payload.brand?.value1)
         #expect(brand.name == "Ardbeg")
-        #expect(brand._type == [.brand])
+        #expect(brand.kind == .brand)
     }
 
     @Test
@@ -38,12 +38,15 @@ struct BottleCreationTests {
     func categoriesMatchServerValues() {
         #expect(BottleCategory.allCases.map(\.rawValue) == [
             "blend",
+            "blended_grain",
+            "blended_malt",
             "bourbon",
+            "corn",
             "rye",
             "single_grain",
             "single_malt",
             "single_pot_still",
-            "spirit"
+            "wheat"
         ])
     }
 }

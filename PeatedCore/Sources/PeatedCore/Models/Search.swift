@@ -12,8 +12,6 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
     public let name: String
     public let subtitle: String?
     public let imageUrl: String?
-    public let rating: Double?
-    public let ratingCount: Int?
     public let friendStatus: User.FriendStatus?
     public let bottle: Bottle?
 
@@ -23,8 +21,6 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
         name: String,
         subtitle: String? = nil,
         imageUrl: String? = nil,
-        rating: Double? = nil,
-        ratingCount: Int? = nil,
         friendStatus: User.FriendStatus? = nil,
         bottle: Bottle? = nil
     ) {
@@ -33,8 +29,6 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
         self.name = name
         self.subtitle = subtitle
         self.imageUrl = imageUrl
-        self.rating = rating
-        self.ratingCount = ratingCount
         self.friendStatus = friendStatus
         self.bottle = bottle
     }
@@ -46,8 +40,6 @@ public struct SearchResult: Identifiable, Equatable, Sendable {
             name: name,
             subtitle: subtitle,
             imageUrl: imageUrl,
-            rating: rating,
-            ratingCount: ratingCount,
             friendStatus: friendStatus,
             bottle: bottle
         )

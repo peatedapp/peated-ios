@@ -404,10 +404,9 @@ struct EntityDetailView: View {
                         .lineLimit(1)
                 }
 
-                if bottle.totalRatings > 0 {
-                    CommunityRatingView(
-                        average: bottle.avgRating,
-                        total: bottle.totalRatings,
+                if bottle.ratingSummary.presentedCount > 0 {
+                    BottleRatingSummaryView(
+                        summary: bottle.ratingSummary,
                         fontSize: DesignSystem.FontSize.caption
                     )
                 }

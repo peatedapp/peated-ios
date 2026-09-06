@@ -2,7 +2,9 @@
 
 ## Overview
 
-This document defines the design system for the Peated iOS app. The app uses a token‑based, themeable color system with a light “cream” default palette. All UI must use semantic tokens, not raw colors.
+This document records the design system currently used by the Peated iOS app. The shared design guide is `../peated/DESIGN.md`, and the exact web colors and measurements are in `../peated/apps/web/src/styles/tokens.stylex.ts`. Follow @docs/how-to/sync-peated-upstream.md before changing the app-wide styles or updating screens.
+
+The iOS app follows that shared guide. If this document or the Swift styles disagree with it, update the iOS styles and this document together. UI code must use named theme colors instead of color values written directly in a screen.
 
 See the detailed token reference in docs/design/colors.md.
 
