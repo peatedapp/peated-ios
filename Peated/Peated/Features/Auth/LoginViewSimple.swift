@@ -15,13 +15,8 @@ struct LoginViewSimple: View {
 
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [Color.background, Color.surface]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            Color.background
+                .ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 24) {
@@ -92,7 +87,6 @@ struct LoginViewSimple: View {
                 Text("Track and share your whisky journey")
                     .font(.peatedBody)
                     .foregroundColor(.textSecondary)
-                    .accessibilityIdentifier("login.subtitle")
             }
         }
     }
