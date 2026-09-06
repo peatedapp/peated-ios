@@ -146,7 +146,7 @@ struct TastingPreviewCard: View {
                             ForEach(Array(viewModel.photos.enumerated()), id: \.offset) { _, photo in
                                 Image(uiImage: photo)
                                     .resizable()
-                                    .aspectRatio(contentMode: .fill)
+                                    .scaledToFill()
                                     .frame(width: 80, height: 80)
                                     .clipped()
                                     .clipShape(RoundedRectangle(cornerRadius: 8))

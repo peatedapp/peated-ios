@@ -75,7 +75,7 @@ struct TastingCard: View {
                         case let .success(image):
                             image
                                 .resizable()
-                                .aspectRatio(contentMode: .fill)
+                                .scaledToFill()
                                 .frame(maxHeight: 200)
                                 .clipped()
                                 .clipShape(RoundedRectangle(cornerRadius: 8))

@@ -122,7 +122,7 @@ extension BottleDetailView {
                 ZStack(alignment: .bottom) {
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .scaledToFill()
                         .frame(maxWidth: .infinity)
                         .frame(height: 390)
                         .clipped()

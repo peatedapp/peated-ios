@@ -9,4 +9,11 @@ final class PeatedUITests: XCTestCase {
         let app = XCUIApplication()
         app.launch()
     }
+
+    func testLaunchScreenAccessibility() throws {
+        let app = XCUIApplication()
+        app.launch()
+
+        try app.performAccessibilityAudit()
+    }
 }

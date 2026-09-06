@@ -7,6 +7,7 @@ cd "$REPOSITORY_ROOT"
 
 echo 'Checking shell syntax...'
 while IFS= read -r -d '' script; do
+    [ -f "$script" ] || continue
     bash -n "$script"
 done < <(
     git ls-files -z '*.sh'
@@ -16,6 +17,7 @@ done < <(
 echo 'Checking JSON syntax...'
 if command -v jq >/dev/null 2>&1; then
     while IFS= read -r -d '' document; do
+        [ -f "$document" ] || continue
         if ! jq empty "$document"; then
             echo "error: invalid JSON in $document" >&2
             exit 1
@@ -26,6 +28,7 @@ if command -v jq >/dev/null 2>&1; then
     )
 elif command -v plutil >/dev/null 2>&1; then
     while IFS= read -r -d '' document; do
+        [ -f "$document" ] || continue
         if ! plutil -lint "$document" >/dev/null; then
             echo "error: invalid JSON in $document" >&2
             exit 1
@@ -36,6 +39,23 @@ elif command -v plutil >/dev/null 2>&1; then
     )
 else
     echo 'error: JSON validation requires jq or plutil' >&2
+    exit 1
+fi
+
+echo 'Checking app privacy manifest...'
+PRIVACY_MANIFEST='Peated/Peated/PrivacyInfo.xcprivacy'
+if [ ! -f "$PRIVACY_MANIFEST" ]; then
+    echo "error: missing $PRIVACY_MANIFEST" >&2
+    exit 1
+fi
+
+if command -v plutil >/dev/null 2>&1; then
+    plutil -lint "$PRIVACY_MANIFEST" >/dev/null
+fi
+
+if ! grep -q 'NSPrivacyAccessedAPICategoryUserDefaults' "$PRIVACY_MANIFEST" || \
+   ! grep -q 'CA92.1' "$PRIVACY_MANIFEST"; then
+    echo 'error: app UserDefaults access must declare reason CA92.1' >&2
     exit 1
 fi
 

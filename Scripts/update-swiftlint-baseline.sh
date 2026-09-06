@@ -5,7 +5,7 @@ set -euo pipefail
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPOSITORY_ROOT"
 
-SWIFTLINT_IMAGE="${SWIFTLINT_IMAGE:-ghcr.io/realm/swiftlint:0.65.0}"
+SWIFTLINT_IMAGE="${SWIFTLINT_IMAGE:-ghcr.io/realm/swiftlint:0.65.1@sha256:f47e083201e47a136cda5ae847595bfe00226c444ca226fa74fa5dc648a9b057}"
 GENERATED_BASELINE="$(mktemp "$REPOSITORY_ROOT/.swiftlint-baseline.generated.XXXXXX")"
 NORMALIZED_BASELINE="$(mktemp "$REPOSITORY_ROOT/.swiftlint-baseline.normalized.XXXXXX")"
 
