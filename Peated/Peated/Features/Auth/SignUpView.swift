@@ -93,7 +93,7 @@ struct SignUpView: View {
         VStack(spacing: 16) {
             TextInput(
                 label: "Username",
-                placeholder: "yourname",
+                placeholder: "Username",
                 text: $username,
                 keyboard: .asciiCapable,
                 submitLabel: .next,
@@ -103,7 +103,7 @@ struct SignUpView: View {
 
             TextInput(
                 label: "Email",
-                placeholder: "you@example.com",
+                placeholder: "Email",
                 text: $email,
                 keyboard: .emailAddress,
                 submitLabel: .next,

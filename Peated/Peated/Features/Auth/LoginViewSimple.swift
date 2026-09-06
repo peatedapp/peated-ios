@@ -118,7 +118,7 @@ struct LoginViewSimple: View {
         VStack(spacing: 16) {
             TextInput(
                 label: "Email",
-                placeholder: "you@example.com",
+                placeholder: "Email",
                 text: $email,
                 keyboard: .emailAddress,
                 submitLabel: .next,
@@ -128,7 +128,7 @@ struct LoginViewSimple: View {
 
             PasswordInput(
                 label: "Password",
-                placeholder: "Enter your password",
+                placeholder: "Password",
                 text: $password,
                 submitLabel: .go,
                 onSubmit: { handleLogin() }
