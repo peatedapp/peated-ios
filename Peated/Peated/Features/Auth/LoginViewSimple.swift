@@ -92,6 +92,7 @@ struct LoginViewSimple: View {
                 Text("Track and share your whisky journey")
                     .font(.peatedBody)
                     .foregroundColor(.textSecondary)
+                    .accessibilityIdentifier("login.subtitle")
             }
         }
     }
