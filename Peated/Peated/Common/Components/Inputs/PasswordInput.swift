@@ -39,8 +39,11 @@ struct PasswordInput: View {
                 Button { isVisible.toggle() } label: {
                     Image(systemName: isVisible ? "eye.slash" : "eye")
                         .foregroundColor(.textSecondary)
+                        .frame(minWidth: 44, minHeight: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(isVisible ? "Hide password" : "Show password")
             }
             .inputBox(state: isFocused ? .focused : .normal)
         }
