@@ -15,13 +15,8 @@ struct LoginViewSimple: View {
 
     var body: some View {
         ZStack {
-            // Background gradient
-            LinearGradient(
-                gradient: Gradient(colors: [Color.background, Color.surface]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            Color.background
+                .ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 24) {
@@ -123,7 +118,7 @@ struct LoginViewSimple: View {
         VStack(spacing: 16) {
             TextInput(
                 label: "Email",
-                placeholder: "you@example.com",
+                placeholder: "Email",
                 text: $email,
                 keyboard: .emailAddress,
                 submitLabel: .next,
@@ -133,7 +128,7 @@ struct LoginViewSimple: View {
 
             PasswordInput(
                 label: "Password",
-                placeholder: "Enter your password",
+                placeholder: "Password",
                 text: $password,
                 submitLabel: .go,
                 onSubmit: { handleLogin() }

@@ -8,6 +8,8 @@ cd "$REPOSITORY_ROOT"
 printf 'Host: %s %s\n' "$(uname -s)" "$(uname -m)"
 printf 'Repository: %s\n\n' "$REPOSITORY_ROOT"
 
+EXPECTED_XCODE_VERSION="$(tr -d '[:space:]' < .xcode-version)"
+
 tool_status() {
     local tool="$1"
 
@@ -19,9 +21,20 @@ tool_status() {
 }
 
 echo 'Tools:'
-for tool in git make brew docker jq swift swiftformat swiftlint shellcheck xcodebuild xcrun; do
+for tool in git make brew docker jq asc actionlint swift swiftformat swiftlint shellcheck xcodebuild xcrun; do
     tool_status "$tool"
 done
+
+echo
+printf 'Expected Xcode: %s\n' "$EXPECTED_XCODE_VERSION"
+if command -v xcodebuild >/dev/null 2>&1; then
+    ACTUAL_XCODE_VERSION="$(xcodebuild -version | awk 'NR == 1 { print $2 }')"
+    if [ "$ACTUAL_XCODE_VERSION" = "$EXPECTED_XCODE_VERSION" ]; then
+        printf 'Selected Xcode: %s\n' "$ACTUAL_XCODE_VERSION"
+    else
+        printf 'Selected Xcode: %s (expected %s)\n' "$ACTUAL_XCODE_VERSION" "$EXPECTED_XCODE_VERSION"
+    fi
+fi
 
 echo
 echo 'Available verification:'

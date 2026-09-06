@@ -171,7 +171,7 @@ struct PhotoGridItem: View {
         ZStack(alignment: .topTrailing) {
             Image(uiImage: image)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
+                .scaledToFill()
                 .frame(height: 120)
                 .clipped()
                 .cornerRadius(12)

@@ -1,0 +1,77 @@
+name: Xcode Cloud
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Git branch or tag to archive and distribute
+        required: true
+        default: main
+        type: string
+      clean:
+        description: Request a clean Xcode Cloud build
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xcode-cloud-${{ inputs.branch }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    name: Start release workflow
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      ASC_APP_ID: ${{ vars.ASC_APP_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_KEY_TYPE: ${{ vars.ASC_KEY_TYPE || 'team' }}
+      ASC_PRIVATE_KEY_B64: ${{ secrets.ASC_PRIVATE_KEY_B64 }}
+      ASC_STRICT_AUTH: "true"
+      ASC_TELEMETRY_DISABLED: "1"
+      ASC_XCODE_CLOUD_WORKFLOW: ${{ vars.ASC_XCODE_CLOUD_WORKFLOW }}
+      BUILD_BRANCH: ${{ inputs.branch }}
+      CLEAN_BUILD: ${{ inputs.clean }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install pinned App Store Connect CLI
+        run: |
+          ./Scripts/install-asc.sh "$RUNNER_TEMP/asc/bin"
+          echo "$RUNNER_TEMP/asc/bin" >> "$GITHUB_PATH"
+
+      - name: Validate configuration and credentials
+        run: |
+          : "${ASC_APP_ID:?Set the ASC_APP_ID repository variable}"
+          : "${ASC_KEY_ID:?Set the ASC_KEY_ID Actions secret}"
+          : "${ASC_PRIVATE_KEY_B64:?Set the ASC_PRIVATE_KEY_B64 Actions secret}"
+          : "${ASC_XCODE_CLOUD_WORKFLOW:?Set the ASC_XCODE_CLOUD_WORKFLOW repository variable}"
+          if [ "$ASC_KEY_TYPE" = 'team' ]; then
+              : "${ASC_ISSUER_ID:?Set the ASC_ISSUER_ID Actions secret for a team key}"
+          fi
+          asc auth status --validate --output table
+
+      - name: Start Xcode Cloud build
+        run: |
+          arguments=(
+              xcode-cloud run
+              --app "$ASC_APP_ID"
+              --workflow "$ASC_XCODE_CLOUD_WORKFLOW"
+              --branch "$BUILD_BRANCH"
+              --wait
+              --timeout 170m
+              --output table
+          )
+          if [ "$CLEAN_BUILD" = 'true' ]; then
+              arguments+=(--clean)
+          fi
+          asc "${arguments[@]}"

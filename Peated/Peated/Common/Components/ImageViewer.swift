@@ -32,7 +32,7 @@ struct ImageViewer: View {
                     case let .success(image):
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                             // Render the image over white so transparent pixels appear on white,
                             // while the surrounding edges use our dark app background.
                             .background(Color.white)

@@ -44,9 +44,9 @@ struct TextInput: View {
 
                 Group {
                     if isSecure {
-                        SecureField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
                     } else {
-                        TextField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
                     }
                 }
                 .textFieldStyle(.plain)
@@ -92,5 +92,12 @@ struct TextInput: View {
 
     private var focusBinding: FocusState<Bool>.Binding {
         isFocused ?? $internalFocused
+    }
+
+    private var fieldLabel: String {
+        guard let label, !label.isEmpty else {
+            return placeholder
+        }
+        return label
     }
 }
