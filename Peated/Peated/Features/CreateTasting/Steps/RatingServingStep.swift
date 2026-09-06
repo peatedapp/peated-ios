@@ -7,7 +7,6 @@ struct RatingServingStep: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 32) {
-                // Header
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Rate your experience")
                         .font(.title2)
@@ -20,95 +19,57 @@ struct RatingServingStep: View {
                             .foregroundColor(.textSecondary)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.top)
 
-                VStack(spacing: 24) {
-                    // Rating Section
-                    VStack(spacing: 16) {
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack {
                         Text("Rating")
                             .font(.headline)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-
-                        // Pass/Sip/Savor Rating
-                        HStack(spacing: 12) {
-                            // Pass button
-                            RatingSelectionButton(
-                                title: "Pass",
-                                iconName: "hand.thumbsdown.fill",
-                                value: -1,
-                                selectedValue: $viewModel.rating,
-                                color: .danger
-                            )
-
-                            // Sip button
-                            RatingSelectionButton(
-                                title: "Sip",
-                                iconName: "hand.thumbsup.fill",
-                                value: 1,
-                                selectedValue: $viewModel.rating,
-                                color: .info
-                            )
-
-                            // Savor button
-                            RatingSelectionButton(
-                                title: "Savor",
-                                iconName: "hands.sparkles.fill",
-                                value: 2,
-                                selectedValue: $viewModel.rating,
-                                color: .success
-                            )
-                        }
-                        .frame(maxWidth: .infinity)
-
-                        // Rating description
-                        if viewModel.rating != 0 {
-                            Text(ratingDescription)
-                                .font(.subheadline)
-                                .foregroundColor(.textSecondary)
-                                .transition(.opacity)
-                        }
+                        Spacer()
+                        Text("Optional")
+                            .font(.caption)
+                            .foregroundColor(.textSecondary)
                     }
 
-                    // Color Picker Section
-                    WhiskyColorPicker(selectedColor: $viewModel.color)
-
-                    // Serving Style Section
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("How did you drink it?")
-                            .font(.headline)
-
-                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
-                            ForEach(ServingStyle.allCases, id: \.self) { style in
-                                RatingServingStyleButton(
-                                    style: style,
-                                    isSelected: viewModel.servingStyle == style,
-                                    onTap: {
-                                        withAnimation(.spring(response: 0.3)) {
-                                            viewModel.servingStyle = viewModel.servingStyle == style ? nil : style
-                                        }
-                                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                                    }
-                                )
-                            }
+                    VStack(spacing: 8) {
+                        ForEach(TastingRatingBand.allCases, id: \.self) { band in
+                            RatingBandSelectionButton(
+                                band: band,
+                                selectedBand: $viewModel.ratingBand
+                            )
                         }
                     }
                 }
-                .padding(.horizontal)
+
+                WhiskyColorPicker(selectedColor: $viewModel.color)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("How did you drink it?")
+                        .font(.headline)
+
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
+                        ForEach(ServingStyle.allCases, id: \.self) { style in
+                            RatingServingStyleButton(
+                                style: style,
+                                isSelected: viewModel.servingStyle == style,
+                                onTap: {
+                                    withAnimation(.spring(response: 0.3)) {
+                                        viewModel.servingStyle = viewModel.servingStyle == style ? nil : style
+                                    }
+                                    UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                                }
+                            )
+                        }
+                    }
+                }
             }
-            .padding(.bottom, 100) // Space for navigation buttons
+            .padding(.horizontal)
+            .padding(.top)
+            .padding(.bottom, 100)
         }
         .background(Color.background)
         .scrollDismissesKeyboard(.interactively)
     }
-
-    private var ratingDescription: String {
-        guard let rating = RatingValue(rating: viewModel.rating) else { return "" }
-        return "\(rating.displayName) — \(rating.description)"
-    }
 }
-
-// MARK: - Serving Style Button
 
 private struct RatingServingStyleButton: View {
     let style: ServingStyle
@@ -131,10 +92,10 @@ private struct RatingServingStyleButton: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                     .fill(isSelected ? Color.brand : Color.formSurface)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
                             .stroke(isSelected ? Color.brand : Color.clear, lineWidth: 2)
                     )
             )
@@ -145,56 +106,54 @@ private struct RatingServingStyleButton: View {
 
     private var iconName: String {
         switch style {
-        case .neat:
-            "wineglass"
-        case .rocks:
-            "cube"
-        case .water:
-            "drop"
+        case .neat: "wineglass"
+        case .rocks: "cube"
+        case .water: "drop"
         }
     }
 }
 
-// MARK: - Rating Button
-
-private struct RatingSelectionButton: View {
-    let title: String
-    let iconName: String
-    let value: Double
-    @Binding var selectedValue: Double
-    let color: Color
+private struct RatingBandSelectionButton: View {
+    let band: TastingRatingBand
+    @Binding var selectedBand: TastingRatingBand?
 
     private var isSelected: Bool {
-        selectedValue == value
+        selectedBand == band
     }
 
     var body: some View {
-        Button(action: {
+        Button {
             withAnimation(.spring(response: 0.3)) {
-                selectedValue = selectedValue == value ? 0 : value
+                selectedBand = isSelected ? nil : band
             }
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        }) {
-            VStack(spacing: 8) {
-                Image(systemName: iconName)
-                    .font(.system(size: 28))
-                    .foregroundColor(isSelected ? color : .textSecondary)
-                Text(title)
-                    .font(.caption)
-                    .fontWeight(.semibold)
+        } label: {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(band.displayName)
+                        .font(.body.weight(.semibold))
+                    Text(band.description)
+                        .font(.caption.monospacedDigit())
+                        .foregroundColor(isSelected ? .onBrand.opacity(0.8) : .textSecondary)
+                }
+
+                Spacer()
+
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 80)
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(isSelected ? color.opacity(0.2) : Color.formSurface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(isSelected ? color : Color.clear, lineWidth: 2)
-                    )
+            .foregroundColor(isSelected ? .onBrand : .text)
+            .padding(.horizontal, 16)
+            .frame(maxWidth: .infinity, minHeight: 58)
+            .background(isSelected ? Color.brand : Color.formSurface)
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                    .stroke(isSelected ? Color.brand : Color.formBorder, lineWidth: 1)
             )
+            .cornerRadius(DesignSystem.CornerRadius.medium)
         }
         .buttonStyle(.plain)
-        .scaleEffect(isSelected ? 1.05 : 1.0)
+        .accessibilityLabel("\(band.displayName), \(band.description)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

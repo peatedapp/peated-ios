@@ -54,8 +54,9 @@ struct TastingFeedCard: View {
 
                     Spacer()
 
-                    SimpleRatingView(rating: tasting.rating, iconSize: 14)
-                        .foregroundColor(.textMuted)
+                    if let band = tasting.ratingBand {
+                        TastingRatingView(band: band)
+                    }
                 }
             }
 

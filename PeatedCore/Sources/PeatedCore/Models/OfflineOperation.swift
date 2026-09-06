@@ -108,7 +108,7 @@ public struct OfflineOperation: Codable, Identifiable, Sendable {
 /// Payload for creating a tasting
 public struct CreateTastingPayload: Codable, Sendable {
     public let bottleId: String
-    public let rating: Double
+    public let ratingBand: TastingRatingBand?
     public let notes: String?
     public let servingStyle: String?
     public let tags: [String]
@@ -146,7 +146,7 @@ public extension OfflineOperation {
     /// Creates a create tasting operation
     static func createTasting(
         bottleId: String,
-        rating: Double,
+        ratingBand: TastingRatingBand?,
         notes: String?,
         servingStyle: String?,
         tags: [String],
@@ -155,7 +155,7 @@ public extension OfflineOperation {
     ) throws -> OfflineOperation {
         let payload = CreateTastingPayload(
             bottleId: bottleId,
-            rating: rating,
+            ratingBand: ratingBand,
             notes: notes,
             servingStyle: servingStyle,
             tags: tags,

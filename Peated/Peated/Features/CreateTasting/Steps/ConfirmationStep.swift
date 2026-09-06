@@ -65,9 +65,9 @@ struct TastingPreviewCard: View {
 
                     Spacer()
 
-                    SimpleRatingView(rating: viewModel.rating, showLabel: true, iconSize: 14)
-                        .font(.system(size: 12))
-                        .foregroundColor(viewModel.rating < 0 ? .danger : .brand)
+                    if let band = viewModel.ratingBand {
+                        TastingRatingView(band: band, showRange: true, fontSize: 12)
+                    }
                 }
 
                 // Bottle info card-within-card

@@ -26,16 +26,18 @@ public actor ImageUploadService: ImageUploadServiceProtocol {
         // Get the generated client
         let client = await apiClient.generatedClient
 
-        // Convert image data to the base64 data URL expected by the API.
-        let base64String = "data:image/jpeg;base64," + image.base64EncodedString()
+        typealias Part = Operations.updateTastingImage.Input.Body.multipartFormPayload
+        let multipartBody: MultipartBody<Part> = [
+            .file(.init(
+                payload: .init(body: HTTPBody(image)),
+                filename: "tasting.jpg"
+            ))
+        ]
 
-        // Create the request with image data as base64
         let response = try await client.updateTastingImage(
             .init(
                 path: .init(tasting: tastingIdDouble),
-                body: .json(.init(
-                    file: base64String
-                ))
+                body: .multipartForm(multipartBody)
             )
         )
 

@@ -18,8 +18,9 @@ struct BottleRow: View {
                 EmptyView() // Handled in main view
             case let .lastTasting(tasting):
                 HStack(spacing: DesignSystem.Spacing.xSmall) {
-                    SimpleRatingView(rating: tasting.rating, iconSize: DesignSystem.FontSize.tiny)
-                        .foregroundColor(.textSecondary)
+                    if let band = tasting.ratingBand {
+                        TastingRatingView(band: band, fontSize: DesignSystem.FontSize.tiny)
+                    }
 
                     Text("Last: \(tasting.timeAgo)")
                         .font(.system(size: DesignSystem.FontSize.small))
@@ -82,8 +83,8 @@ struct BottleRow: View {
 
                     // Subtitle content
                     if let subtitle {
-                        if case .rating = subtitle, bottle.totalRatings > 0 {
-                            CommunityRatingView(average: bottle.avgRating, total: bottle.totalRatings)
+                        if case .rating = subtitle, bottle.ratingSummary.presentedCount > 0 {
+                            BottleRatingSummaryView(summary: bottle.ratingSummary)
                         } else {
                             subtitle.view
                         }

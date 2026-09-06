@@ -31,14 +31,14 @@ enum DesignSystem {
     }
 
     enum CornerRadius {
-        static let small: CGFloat = 8
-        static let medium: CGFloat = 10
-        static let large: CGFloat = 12
-        static let capsule: CGFloat = 100
+        static let small: CGFloat = 2
+        static let medium: CGFloat = 3
+        static let large: CGFloat = 3
+        static let capsule: CGFloat = 3
     }
 
     enum ImageSize {
-        static let bottleThumb = CGSize(width: 28, height: 36)
+        static let bottleThumb = CGSize(width: 42, height: 58)
         static let bottleLarge = CGSize(width: 50, height: 70)
         static let avatar = CGSize(width: 32, height: 32)
         static let avatarLarge = CGSize(width: 48, height: 48)

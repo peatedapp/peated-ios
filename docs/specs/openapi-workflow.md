@@ -1,5 +1,7 @@
 # OpenAPI Workflow (PeatedAPI)
 
+Generate the API client from the production specification at `https://api.peated.com/spec.json`. Use the updated sibling `../peated` repository when the specification does not fully explain an endpoint; see @docs/how-to/sync-peated-upstream.md.
+
 ## Critical Warning
 
 Updating the API client regenerates a large codebase and can break dependents. Work on a clean branch, commit first, and review diffs carefully.

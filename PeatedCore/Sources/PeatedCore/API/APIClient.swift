@@ -26,14 +26,12 @@ public actor APIClient {
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
         let cacheConditionals = CacheConditionalsMiddleware()
-        let bottlePhotoUploadMiddleware = BottlePhotoUploadMiddleware()
 
         client = Client(
             serverURL: currentServerURL,
             configuration: runtimeConfiguration,
             transport: transport,
             middlewares: [
-                bottlePhotoUploadMiddleware,
                 loggingMiddleware,
                 cacheConditionals,
                 authMiddleware
@@ -65,14 +63,12 @@ public actor APIClient {
         let authMiddleware = AuthMiddleware()
         let loggingMiddleware = LoggingMiddleware()
         let cacheConditionals = CacheConditionalsMiddleware()
-        let bottlePhotoUploadMiddleware = BottlePhotoUploadMiddleware()
 
         client = Client(
             serverURL: url,
             configuration: runtimeConfiguration,
             transport: transport,
             middlewares: [
-                bottlePhotoUploadMiddleware,
                 loggingMiddleware,
                 cacheConditionals,
                 authMiddleware

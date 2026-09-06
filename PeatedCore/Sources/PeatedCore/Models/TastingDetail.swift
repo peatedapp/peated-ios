@@ -4,7 +4,7 @@ import PeatedAPI
 /// Represents detailed tasting information including comments and toasts
 public struct TastingDetail: Identifiable, Equatable {
     public let id: String
-    public let rating: Double
+    public let ratingBand: TastingRatingBand?
     public let notes: String?
     public let servingStyle: String?
     public let imageUrl: String?
@@ -68,7 +68,7 @@ public extension TastingDetail {
     /// Creates a TastingDetail from a TastingFeedItem (partial data)
     init(from feedItem: TastingFeedItem) {
         id = feedItem.id
-        rating = feedItem.rating
+        ratingBand = feedItem.ratingBand
         notes = feedItem.notes
         servingStyle = feedItem.servingStyle
         imageUrl = feedItem.imageUrl
@@ -97,7 +97,7 @@ public extension TastingDetail {
     func toFeedItem() -> TastingFeedItem {
         TastingFeedItem(
             id: id,
-            rating: rating,
+            ratingBand: ratingBand,
             notes: notes,
             servingStyle: servingStyle,
             imageUrl: imageUrl,

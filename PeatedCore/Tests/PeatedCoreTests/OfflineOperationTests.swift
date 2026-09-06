@@ -13,7 +13,7 @@ struct OfflineOperationTests {
 
         let operation = try OfflineOperation.createTasting(
             bottleId: "bottle-1",
-            rating: 4.5,
+            ratingBand: .outstanding,
             notes: "Rich and smoky",
             servingStyle: "neat",
             tags: ["smoky"],
@@ -24,7 +24,7 @@ struct OfflineOperationTests {
 
         #expect(operation.type == .createTasting)
         #expect(payload.bottleId == "bottle-1")
-        #expect(payload.rating == 4.5)
+        #expect(payload.ratingBand == .outstanding)
         #expect(payload.notes == "Rich and smoky")
         #expect(payload.servingStyle == "neat")
         #expect(payload.tags == ["smoky"])
@@ -35,18 +35,19 @@ struct OfflineOperationTests {
     }
 
     @Test
-    func createTastingRejectsNonFiniteRating() {
-        #expect(throws: EncodingError.self) {
-            try OfflineOperation.createTasting(
-                bottleId: "bottle-1",
-                rating: .nan,
-                notes: nil,
-                servingStyle: nil,
-                tags: [],
-                imageData: nil,
-                location: nil
-            )
-        }
+    func createTastingEncodesWithoutRating() throws {
+        let operation = try OfflineOperation.createTasting(
+            bottleId: "bottle-1",
+            ratingBand: nil,
+            notes: nil,
+            servingStyle: nil,
+            tags: [],
+            imageData: nil,
+            location: nil
+        )
+        let payload = try JSONDecoder().decode(CreateTastingPayload.self, from: operation.payload)
+
+        #expect(payload.ratingBand == nil)
     }
 
     @Test

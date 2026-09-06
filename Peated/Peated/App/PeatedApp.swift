@@ -63,7 +63,6 @@ struct PeatedApp: App {
     var body: some Scene {
         WindowGroup {
             AppView()
-                .preferredColorScheme(.dark)
                 .onOpenURL { url in
                     // Google Sign-In handler
                     GIDSignIn.sharedInstance.handle(url)

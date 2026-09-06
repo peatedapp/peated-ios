@@ -16,7 +16,7 @@ class CreateTastingViewModel: ObservableObject {
     @Published var recentBottles: [Bottle] = []
 
     // Step 2: Rating & Notes
-    @Published var rating: Double = 0
+    @Published var ratingBand: TastingRatingBand?
     @Published var notes = ""
     @Published var selectedTags: Set<String> = []
     @Published private(set) var suggestedTags: [TastingTag] = []
@@ -44,7 +44,7 @@ class CreateTastingViewModel: ObservableObject {
     var hasUnsavedChanges: Bool {
         selectedBottle != nil ||
             pendingBottlePhotoId != nil ||
-            rating != 0 ||
+            ratingBand != nil ||
             !notes.isEmpty ||
             !selectedTags.isEmpty ||
             !photos.isEmpty
@@ -74,7 +74,7 @@ class CreateTastingViewModel: ObservableObject {
             // Create tasting first
             let input = CreateTastingInput(
                 bottleId: selectedBottle!.id,
-                rating: rating,
+                ratingBand: ratingBand,
                 notes: notes.isEmpty ? nil : notes,
                 servingStyle: servingStyle?.rawValue,
                 tags: selectedTags.sorted(),

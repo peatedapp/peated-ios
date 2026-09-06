@@ -100,7 +100,7 @@ public class CacheManager {
         // Create updated tasting
         let updatedTasting = TastingFeedItem(
             id: originalTasting.id,
-            rating: originalTasting.rating,
+            ratingBand: originalTasting.ratingBand,
             notes: originalTasting.notes,
             servingStyle: originalTasting.servingStyle,
             imageUrl: originalTasting.imageUrl,
@@ -131,7 +131,7 @@ public class CacheManager {
                 // Update with server truth
                 let serverTasting = TastingFeedItem(
                     id: originalTasting.id,
-                    rating: originalTasting.rating,
+                    ratingBand: originalTasting.ratingBand,
                     notes: originalTasting.notes,
                     servingStyle: originalTasting.servingStyle,
                     imageUrl: originalTasting.imageUrl,

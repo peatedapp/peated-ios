@@ -6,7 +6,7 @@ public struct Tasting: Codable {
     public let id: Int64
     public let bottleId: Int64
     public let userId: Int64
-    public let rating: Double?
+    public let ratingBand: TastingRatingBand?
     public let notes: String?
     public let tags: [String]
     public let servingStyle: String?
@@ -20,7 +20,7 @@ public struct Tasting: Codable {
         id: Int64,
         bottleId: Int64,
         userId: Int64,
-        rating: Double? = nil,
+        ratingBand: TastingRatingBand? = nil,
         notes: String? = nil,
         tags: [String] = [],
         servingStyle: String? = nil,
@@ -33,7 +33,7 @@ public struct Tasting: Codable {
         self.id = id
         self.bottleId = bottleId
         self.userId = userId
-        self.rating = rating
+        self.ratingBand = ratingBand
         self.notes = notes
         self.tags = tags
         self.servingStyle = servingStyle
@@ -57,7 +57,7 @@ public extension Tasting {
             id: row.get(Tables.Tastings.id),
             bottleId: row.get(Tables.Tastings.bottleId),
             userId: row.get(Tables.Tastings.userId),
-            rating: row.get(Tables.Tastings.rating),
+            ratingBand: row.get(Tables.Tastings.ratingBand).flatMap(TastingRatingBand.init(rawValue:)),
             notes: row.get(Tables.Tastings.notes),
             tags: tags,
             servingStyle: row.get(Tables.Tastings.servingStyle),
@@ -97,7 +97,7 @@ public extension Tasting {
             Tables.Tastings.id <- id,
             Tables.Tastings.bottleId <- bottleId,
             Tables.Tastings.userId <- userId,
-            Tables.Tastings.rating <- rating,
+            Tables.Tastings.ratingBand <- ratingBand?.rawValue,
             Tables.Tastings.notes <- notes,
             Tables.Tastings.tags <- tagsJson,
             Tables.Tastings.servingStyle <- servingStyle,
@@ -113,7 +113,7 @@ public extension Tasting {
     private func update(in db: Connection, tagsJson: String) throws {
         let tasting = Tables.tastings.filter(Tables.Tastings.id == id)
         try db.run(tasting.update(
-            Tables.Tastings.rating <- rating,
+            Tables.Tastings.ratingBand <- ratingBand?.rawValue,
             Tables.Tastings.notes <- notes,
             Tables.Tastings.tags <- tagsJson,
             Tables.Tastings.servingStyle <- servingStyle,

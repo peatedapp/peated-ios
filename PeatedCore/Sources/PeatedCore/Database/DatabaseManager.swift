@@ -53,7 +53,16 @@ public final class DatabaseManager: @unchecked Sendable {
             try setSchemaVersion(3)
         }
 
+        if currentVersion < 4 {
+            try addTastingRatingBand()
+            try setSchemaVersion(4)
+        }
+
         // Add future migrations here
+    }
+
+    private func addTastingRatingBand() throws {
+        try db.run(Tables.tastings.addColumn(Tables.Tastings.ratingBand))
     }
 
     /// Get current schema version
@@ -215,6 +224,7 @@ public enum Tables {
         nonisolated(unsafe) static let bottleId = Expression<Int64>("bottle_id")
         nonisolated(unsafe) static let userId = Expression<Int64>("user_id")
         nonisolated(unsafe) static let rating = Expression<Double?>("rating")
+        nonisolated(unsafe) static let ratingBand = Expression<String?>("rating_band")
         nonisolated(unsafe) static let notes = Expression<String?>("notes")
         nonisolated(unsafe) static let tags = Expression<String?>("tags") // JSON array
         nonisolated(unsafe) static let servingStyle = Expression<String?>("serving_style")

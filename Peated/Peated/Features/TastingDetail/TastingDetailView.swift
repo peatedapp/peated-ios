@@ -378,10 +378,8 @@ struct TastingDetailCard: View {
                         }
                     }
 
-                    if tasting.rating != 0 {
-                        SimpleRatingView(rating: tasting.rating, showLabel: true, iconSize: 14)
-                            .font(.peatedBody)
-                            .foregroundColor(.brand)
+                    if let band = tasting.ratingBand {
+                        TastingRatingView(band: band, showRange: true, fontSize: DesignSystem.FontSize.body)
                             .padding(.top, 4)
                     }
                 }

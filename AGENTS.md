@@ -71,6 +71,8 @@ Run the strongest verification supported by the current host and relevant to the
 - Testing strategy: @docs/how-to/testing-strategy.md
 - API workflow: @docs/specs/openapi-workflow.md
 - API integration: @docs/how-to/api-integration.md
+- Backend, API, and redesign sync: @docs/how-to/sync-peated-upstream.md
+- Upstream migration status: @docs/notes/upstream-migration.md
 - Architecture: @docs/design/architecture/overview.md
 - Google Sign-In setup: @docs/how-to/google-signin-setup.md
 

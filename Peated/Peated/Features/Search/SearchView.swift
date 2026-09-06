@@ -543,13 +543,9 @@ extension SearchView {
                             .foregroundColor(.textSecondary)
                     }
 
-                    if bottle.totalRatings > 0 {
+                    if bottle.ratingSummary.presentedCount > 0 {
                         Text("•").foregroundColor(.textMuted)
-                        CommunityRatingView(
-                            average: bottle.avgRating,
-                            total: bottle.totalRatings,
-                            showCount: false
-                        )
+                        BottleRatingSummaryView(summary: bottle.ratingSummary, showCount: false)
                     }
                 }
             }

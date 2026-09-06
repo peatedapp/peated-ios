@@ -32,40 +32,96 @@ public struct BottleTastingNotes: Codable, Equatable, Sendable {
     }
 }
 
-public struct BottleRatingStats: Codable, Equatable, Sendable {
-    public struct Percentages: Codable, Equatable, Sendable {
-        public let pass: Double
-        public let sip: Double
-        public let savor: Double
+public struct RatingBandCounts: Codable, Equatable, Sendable {
+    public let mediocre: Int
+    public let good: Int
+    public let veryGood: Int
+    public let outstanding: Int
+    public let unicorn: Int
 
-        public init(pass: Double = 0, sip: Double = 0, savor: Double = 0) {
-            self.pass = pass
-            self.sip = sip
-            self.savor = savor
+    public init(
+        mediocre: Int = 0,
+        good: Int = 0,
+        veryGood: Int = 0,
+        outstanding: Int = 0,
+        unicorn: Int = 0
+    ) {
+        self.mediocre = mediocre
+        self.good = good
+        self.veryGood = veryGood
+        self.outstanding = outstanding
+        self.unicorn = unicorn
+    }
+
+    public var total: Int {
+        mediocre + good + veryGood + outstanding + unicorn
+    }
+
+    public func count(for band: TastingRatingBand) -> Int {
+        switch band {
+        case .mediocre: mediocre
+        case .good: good
+        case .veryGood: veryGood
+        case .outstanding: outstanding
+        case .unicorn: unicorn
         }
     }
 
-    public let pass: Int
-    public let sip: Int
-    public let savor: Int
-    public let total: Int
-    public let average: Double?
-    public let percentages: Percentages
+    public var lowerMedianBand: TastingRatingBand? {
+        guard total > 0 else { return nil }
+
+        let medianIndex = (total - 1) / 2
+        var cumulativeCount = 0
+        for band in TastingRatingBand.allCases {
+            cumulativeCount += count(for: band)
+            if medianIndex < cumulativeCount {
+                return band
+            }
+        }
+        return nil
+    }
+}
+
+public struct BottleRatingSummary: Codable, Equatable, Sendable {
+    public let medianScore: Int?
+    public let minimumScore: Int?
+    public let maximumScore: Int?
+    public let memberScoreCount: Int
+    public let externalScoreCount: Int
+    public let reviewBandCounts: RatingBandCounts
+    public let tastingBandCounts: RatingBandCounts
 
     public init(
-        pass: Int = 0,
-        sip: Int = 0,
-        savor: Int = 0,
-        total: Int = 0,
-        average: Double? = nil,
-        percentages: Percentages = Percentages()
+        medianScore: Int? = nil,
+        minimumScore: Int? = nil,
+        maximumScore: Int? = nil,
+        memberScoreCount: Int = 0,
+        externalScoreCount: Int = 0,
+        reviewBandCounts: RatingBandCounts = RatingBandCounts(),
+        tastingBandCounts: RatingBandCounts = RatingBandCounts()
     ) {
-        self.pass = pass
-        self.sip = sip
-        self.savor = savor
-        self.total = total
-        self.average = average
-        self.percentages = percentages
+        self.medianScore = medianScore
+        self.minimumScore = minimumScore
+        self.maximumScore = maximumScore
+        self.memberScoreCount = memberScoreCount
+        self.externalScoreCount = externalScoreCount
+        self.reviewBandCounts = reviewBandCounts
+        self.tastingBandCounts = tastingBandCounts
+    }
+
+    public var scoreCount: Int {
+        memberScoreCount + externalScoreCount
+    }
+
+    public var presentedBand: TastingRatingBand? {
+        if let medianScore {
+            return TastingRatingBand(score: medianScore)
+        }
+        return tastingBandCounts.lowerMedianBand
+    }
+
+    public var presentedCount: Int {
+        medianScore == nil ? tastingBandCounts.total : scoreCount
     }
 }
 
@@ -100,10 +156,17 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
     public let singleCask: Bool
     public let statedAge: Int?
     public let vintageYear: Int?
+    public let bottlingYear: Int?
     public let releaseYear: Int?
-    public let caskType: String?
-    public let caskSize: String?
-    public let caskFill: String?
+    public let releaseMonth: Int?
+    public let releaseDay: Int?
+    public let caskNumber: String?
+    public let maturation: String?
+    public let maltPhenolPpm: Double?
+    public let naturalColor: Bool?
+    public let nonChillFiltered: Bool?
+    public let noAgeStatement: Bool?
+    public let outturn: Int?
     public let distillers: [Brand]
     public let bottler: Brand?
     public let tastingNotes: BottleTastingNotes?
@@ -112,9 +175,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
     // Additional properties for UI
     public let imageUrl: String?
     public let abv: Double?
-    public let avgRating: Double?
-    public let ratingStats: BottleRatingStats
-    public let totalRatings: Int
+    public let ratingSummary: BottleRatingSummary
     public let totalTastings: Int
     public var isFavorite: Bool
     public var isLibrary: Bool
@@ -137,20 +198,25 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         singleCask: Bool = false,
         statedAge: Int? = nil,
         vintageYear: Int? = nil,
+        bottlingYear: Int? = nil,
         releaseYear: Int? = nil,
-        caskType: String? = nil,
-        caskSize: String? = nil,
-        caskFill: String? = nil,
+        releaseMonth: Int? = nil,
+        releaseDay: Int? = nil,
+        caskNumber: String? = nil,
+        maturation: String? = nil,
+        maltPhenolPpm: Double? = nil,
+        naturalColor: Bool? = nil,
+        nonChillFiltered: Bool? = nil,
+        noAgeStatement: Bool? = nil,
+        outturn: Int? = nil,
         distillers: [Brand] = [],
         bottler: Brand? = nil,
         tastingNotes: BottleTastingNotes? = nil,
         suggestedTags: [String] = [],
         imageUrl: String? = nil,
         abv: Double? = nil,
-        avgRating: Double? = nil,
-        ratingStats: BottleRatingStats? = nil,
-        totalRatings: Int = 0,
-        totalTastings: Int? = nil,
+        ratingSummary: BottleRatingSummary = BottleRatingSummary(),
+        totalTastings: Int = 0,
         isFavorite: Bool = false,
         isLibrary: Bool = false,
         hasTasted: Bool = false
@@ -167,20 +233,25 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         self.singleCask = singleCask
         self.statedAge = statedAge
         self.vintageYear = vintageYear
+        self.bottlingYear = bottlingYear
         self.releaseYear = releaseYear
-        self.caskType = caskType
-        self.caskSize = caskSize
-        self.caskFill = caskFill
+        self.releaseMonth = releaseMonth
+        self.releaseDay = releaseDay
+        self.caskNumber = caskNumber
+        self.maturation = maturation
+        self.maltPhenolPpm = maltPhenolPpm
+        self.naturalColor = naturalColor
+        self.nonChillFiltered = nonChillFiltered
+        self.noAgeStatement = noAgeStatement
+        self.outturn = outturn
         self.distillers = distillers
         self.bottler = bottler
         self.tastingNotes = tastingNotes
         self.suggestedTags = suggestedTags
         self.imageUrl = imageUrl
         self.abv = abv
-        self.avgRating = avgRating
-        self.ratingStats = ratingStats ?? BottleRatingStats(total: totalRatings, average: avgRating)
-        self.totalRatings = ratingStats?.total ?? totalRatings
-        self.totalTastings = totalTastings ?? totalRatings
+        self.ratingSummary = ratingSummary
+        self.totalTastings = totalTastings
         self.isFavorite = isFavorite
         self.isLibrary = isLibrary
         self.hasTasted = hasTasted
@@ -199,19 +270,24 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         case singleCask
         case statedAge
         case vintageYear
+        case bottlingYear
         case releaseYear
-        case caskType
-        case caskSize
-        case caskFill
+        case releaseMonth
+        case releaseDay
+        case caskNumber
+        case maturation
+        case maltPhenolPpm
+        case naturalColor
+        case nonChillFiltered
+        case noAgeStatement
+        case outturn
         case distillers
         case bottler
         case tastingNotes
         case suggestedTags
         case imageUrl
         case abv
-        case avgRating
-        case ratingStats
-        case totalRatings
+        case ratingSummary
         case totalTastings
         case isFavorite
         case isLibrary
@@ -232,23 +308,26 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         singleCask = try container.decodeIfPresent(Bool.self, forKey: .singleCask) ?? false
         statedAge = try container.decodeIfPresent(Int.self, forKey: .statedAge)
         vintageYear = try container.decodeIfPresent(Int.self, forKey: .vintageYear)
+        bottlingYear = try container.decodeIfPresent(Int.self, forKey: .bottlingYear)
         releaseYear = try container.decodeIfPresent(Int.self, forKey: .releaseYear)
-        caskType = try container.decodeIfPresent(String.self, forKey: .caskType)
-        caskSize = try container.decodeIfPresent(String.self, forKey: .caskSize)
-        caskFill = try container.decodeIfPresent(String.self, forKey: .caskFill)
+        releaseMonth = try container.decodeIfPresent(Int.self, forKey: .releaseMonth)
+        releaseDay = try container.decodeIfPresent(Int.self, forKey: .releaseDay)
+        caskNumber = try container.decodeIfPresent(String.self, forKey: .caskNumber)
+        maturation = try container.decodeIfPresent(String.self, forKey: .maturation)
+        maltPhenolPpm = try container.decodeIfPresent(Double.self, forKey: .maltPhenolPpm)
+        naturalColor = try container.decodeIfPresent(Bool.self, forKey: .naturalColor)
+        nonChillFiltered = try container.decodeIfPresent(Bool.self, forKey: .nonChillFiltered)
+        noAgeStatement = try container.decodeIfPresent(Bool.self, forKey: .noAgeStatement)
+        outturn = try container.decodeIfPresent(Int.self, forKey: .outturn)
         distillers = try container.decodeIfPresent([Brand].self, forKey: .distillers) ?? []
         bottler = try container.decodeIfPresent(Brand.self, forKey: .bottler)
         tastingNotes = try container.decodeIfPresent(BottleTastingNotes.self, forKey: .tastingNotes)
         suggestedTags = try container.decodeIfPresent([String].self, forKey: .suggestedTags) ?? []
         imageUrl = try container.decodeIfPresent(String.self, forKey: .imageUrl)
         abv = try container.decodeIfPresent(Double.self, forKey: .abv)
-        avgRating = try container.decodeIfPresent(Double.self, forKey: .avgRating)
-
-        let legacyTotalRatings = try container.decodeIfPresent(Int.self, forKey: .totalRatings) ?? 0
-        ratingStats = try container.decodeIfPresent(BottleRatingStats.self, forKey: .ratingStats)
-            ?? BottleRatingStats(total: legacyTotalRatings, average: avgRating)
-        totalRatings = ratingStats.total
-        totalTastings = try container.decodeIfPresent(Int.self, forKey: .totalTastings) ?? legacyTotalRatings
+        ratingSummary = try container.decodeIfPresent(BottleRatingSummary.self, forKey: .ratingSummary)
+            ?? BottleRatingSummary()
+        totalTastings = try container.decodeIfPresent(Int.self, forKey: .totalTastings) ?? 0
         isFavorite = try container.decodeIfPresent(Bool.self, forKey: .isFavorite) ?? false
         isLibrary = try container.decodeIfPresent(Bool.self, forKey: .isLibrary) ?? false
         hasTasted = try container.decodeIfPresent(Bool.self, forKey: .hasTasted) ?? false

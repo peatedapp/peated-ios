@@ -28,21 +28,10 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
         case let .ok(output):
             switch output.body {
             case let .json(payload):
-                // Map entity type from the _type array
-                let entityType: Entity.EntityType = if let types = payload._type, !types.isEmpty {
-                    if let firstType = types.first {
-                        mapEntityType(firstType.rawValue)
-                    } else {
-                        .brand // Default if extraction fails
-                    }
-                } else {
-                    .brand // Default fallback
-                }
-
                 let entity = Entity(
                     id: String(Int(payload.id)),
                     name: payload.name,
-                    type: entityType,
+                    type: mapEntityType(payload.kind.rawValue),
                     description: payload.description,
                     imageUrl: nil, // TODO: Map when API provides it
                     country: payload.country?.name,
@@ -82,6 +71,8 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
             .distillery
         case "bottler":
             .bottler
+        case "company":
+            .company
         default:
             .brand // Default fallback
         }

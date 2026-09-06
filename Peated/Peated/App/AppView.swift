@@ -75,7 +75,7 @@ struct AppView: View {
 
         // Keep the rest of UIAppearance minimal to avoid UIKit bugs during trait changes.
 
-        // Rely on SwiftUI's preferredColorScheme(.dark) instead of overriding windows
+        // SwiftUI follows the operating system color scheme.
     }
 
     /// Helper to produce a tab icon with a desired SF Symbol scale
@@ -266,8 +266,6 @@ struct AppView: View {
                 }
             }
         }
-        .preferredColorScheme(.dark)
-        .environment(\.colorScheme, .dark)
         .appTheme(ThemeManager.shared.theme) // Provide theme via Environment
         .task {
             await model.checkAuthStatus()

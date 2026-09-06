@@ -48,8 +48,9 @@ struct UnifiedTastingCard: View {
 
                 Spacer()
 
-                SimpleRatingView(rating: tasting.rating, iconSize: 14)
-                    .foregroundColor(.textSecondary)
+                if let band = tasting.ratingBand {
+                    TastingRatingView(band: band)
+                }
             }
 
             // Notes (truncated for feed)
@@ -229,8 +230,9 @@ struct UnifiedTastingListItem: View {
 
                 Spacer()
 
-                SimpleRatingView(rating: tasting.rating, iconSize: 14)
-                    .foregroundColor(.textSecondary)
+                if let band = tasting.ratingBand {
+                    TastingRatingView(band: band)
+                }
             }
 
             // Notes (truncated for feed)

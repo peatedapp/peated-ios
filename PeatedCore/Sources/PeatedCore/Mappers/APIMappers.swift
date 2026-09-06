@@ -38,7 +38,7 @@ extension TastingFeedItem {
 
         // Extract all values first
         let id = String(Int(apiTasting.id))
-        let rating = extractRating(from: apiTasting.rating)
+        let ratingBand = apiTasting.ratingBand.map(TastingRatingBand.init)
         let notes = apiTasting.notes
         let servingStyle = apiTasting.servingStyle?.rawValue
         let imageUrl: String? = apiTasting.imageUrl
@@ -61,7 +61,7 @@ extension TastingFeedItem {
 
         return TastingFeedItem(
             id: id,
-            rating: rating,
+            ratingBand: ratingBand,
             notes: notes,
             servingStyle: servingStyle,
             imageUrl: imageUrl,
@@ -105,16 +105,25 @@ extension Achievement {
 extension Bottle {
     init(from apiBottle: Components.Schemas.Bottle) {
         let category = apiBottle.category?.rawValue
-        let ratingStats = BottleRatingStats(
-            pass: Int(apiBottle.ratingStats.pass),
-            sip: Int(apiBottle.ratingStats.sip),
-            savor: Int(apiBottle.ratingStats.savor),
-            total: Int(apiBottle.ratingStats.total),
-            average: apiBottle.ratingStats.avg,
-            percentages: .init(
-                pass: apiBottle.ratingStats.percentage.pass,
-                sip: apiBottle.ratingStats.percentage.sip,
-                savor: apiBottle.ratingStats.percentage.savor
+        let ratingSummary = BottleRatingSummary(
+            medianScore: apiBottle.medianScore,
+            minimumScore: apiBottle.minScore,
+            maximumScore: apiBottle.maxScore,
+            memberScoreCount: apiBottle.memberScoreCount,
+            externalScoreCount: apiBottle.externalScoreCount,
+            reviewBandCounts: RatingBandCounts(
+                mediocre: apiBottle.reviewScoreBandCounts.mediocre,
+                good: apiBottle.reviewScoreBandCounts.good,
+                veryGood: apiBottle.reviewScoreBandCounts.very_good,
+                outstanding: apiBottle.reviewScoreBandCounts.outstanding,
+                unicorn: apiBottle.reviewScoreBandCounts.unicorn
+            ),
+            tastingBandCounts: RatingBandCounts(
+                mediocre: apiBottle.tastingBandCounts.mediocre,
+                good: apiBottle.tastingBandCounts.good,
+                veryGood: apiBottle.tastingBandCounts.very_good,
+                outstanding: apiBottle.tastingBandCounts.outstanding,
+                unicorn: apiBottle.tastingBandCounts.unicorn
             )
         )
 
@@ -136,10 +145,17 @@ extension Bottle {
             singleCask: apiBottle.singleCask ?? false,
             statedAge: apiBottle.statedAge.map { Int($0) },
             vintageYear: apiBottle.vintageYear.map { Int($0) },
+            bottlingYear: apiBottle.bottlingYear.map { Int($0) },
             releaseYear: apiBottle.releaseYear.map { Int($0) },
-            caskType: apiBottle.caskType?.rawValue,
-            caskSize: apiBottle.caskSize?.rawValue,
-            caskFill: apiBottle.caskFill?.rawValue,
+            releaseMonth: apiBottle.releaseMonth,
+            releaseDay: apiBottle.releaseDay,
+            caskNumber: apiBottle.caskNumber,
+            maturation: apiBottle.maturation,
+            maltPhenolPpm: apiBottle.maltPhenolPpm,
+            naturalColor: apiBottle.naturalColor,
+            nonChillFiltered: apiBottle.nonChillFiltered,
+            noAgeStatement: apiBottle.noAgeStatement,
+            outturn: apiBottle.outturn,
             distillers: apiBottle.distillers?.map {
                 Brand(id: String(Int($0.id)), name: $0.name)
             } ?? [],
@@ -152,9 +168,7 @@ extension Bottle {
             suggestedTags: apiBottle.suggestedTags ?? [],
             imageUrl: apiBottle.imageUrl,
             abv: apiBottle.abv,
-            avgRating: apiBottle.avgRating,
-            ratingStats: ratingStats,
-            totalRatings: ratingStats.total,
+            ratingSummary: ratingSummary,
             totalTastings: Int(apiBottle.totalTastings),
             isFavorite: apiBottle.isFavorite,
             isLibrary: apiBottle.isLibrary,
@@ -163,16 +177,25 @@ extension Bottle {
     }
 
     init(from apiBottle: Components.Schemas.Tasting.bottlePayload) {
-        let ratingStats = BottleRatingStats(
-            pass: Int(apiBottle.ratingStats.pass),
-            sip: Int(apiBottle.ratingStats.sip),
-            savor: Int(apiBottle.ratingStats.savor),
-            total: Int(apiBottle.ratingStats.total),
-            average: apiBottle.ratingStats.avg,
-            percentages: .init(
-                pass: apiBottle.ratingStats.percentage.pass,
-                sip: apiBottle.ratingStats.percentage.sip,
-                savor: apiBottle.ratingStats.percentage.savor
+        let ratingSummary = BottleRatingSummary(
+            medianScore: apiBottle.medianScore,
+            minimumScore: apiBottle.minScore,
+            maximumScore: apiBottle.maxScore,
+            memberScoreCount: apiBottle.memberScoreCount,
+            externalScoreCount: apiBottle.externalScoreCount,
+            reviewBandCounts: RatingBandCounts(
+                mediocre: apiBottle.reviewScoreBandCounts.mediocre,
+                good: apiBottle.reviewScoreBandCounts.good,
+                veryGood: apiBottle.reviewScoreBandCounts.very_good,
+                outstanding: apiBottle.reviewScoreBandCounts.outstanding,
+                unicorn: apiBottle.reviewScoreBandCounts.unicorn
+            ),
+            tastingBandCounts: RatingBandCounts(
+                mediocre: apiBottle.tastingBandCounts.mediocre,
+                good: apiBottle.tastingBandCounts.good,
+                veryGood: apiBottle.tastingBandCounts.very_good,
+                outstanding: apiBottle.tastingBandCounts.outstanding,
+                unicorn: apiBottle.tastingBandCounts.unicorn
             )
         )
 
@@ -191,10 +214,17 @@ extension Bottle {
             singleCask: apiBottle.singleCask ?? false,
             statedAge: apiBottle.statedAge.map { Int($0) },
             vintageYear: apiBottle.vintageYear.map { Int($0) },
+            bottlingYear: apiBottle.bottlingYear.map { Int($0) },
             releaseYear: apiBottle.releaseYear.map { Int($0) },
-            caskType: apiBottle.caskType?.rawValue,
-            caskSize: apiBottle.caskSize?.rawValue,
-            caskFill: apiBottle.caskFill?.rawValue,
+            releaseMonth: apiBottle.releaseMonth,
+            releaseDay: apiBottle.releaseDay,
+            caskNumber: apiBottle.caskNumber,
+            maturation: apiBottle.maturation,
+            maltPhenolPpm: apiBottle.maltPhenolPpm,
+            naturalColor: apiBottle.naturalColor,
+            nonChillFiltered: apiBottle.nonChillFiltered,
+            noAgeStatement: apiBottle.noAgeStatement,
+            outturn: apiBottle.outturn,
             distillers: apiBottle.distillers?.map {
                 Brand(id: String(Int($0.id)), name: $0.name)
             } ?? [],
@@ -207,13 +237,84 @@ extension Bottle {
             suggestedTags: apiBottle.suggestedTags ?? [],
             imageUrl: apiBottle.imageUrl,
             abv: apiBottle.abv,
-            avgRating: apiBottle.avgRating,
-            ratingStats: ratingStats,
-            totalRatings: ratingStats.total,
+            ratingSummary: ratingSummary,
             totalTastings: Int(apiBottle.totalTastings),
             isFavorite: apiBottle.isFavorite,
             isLibrary: apiBottle.isLibrary,
             hasTasted: apiBottle.hasTasted
+        )
+    }
+
+    init(
+        from apiBottle: Components.Schemas.CollectionBottle.bottlePayload,
+        imageUrl: String? = nil,
+        hasTasted: Bool? = nil
+    ) {
+        let ratingSummary = BottleRatingSummary(
+            medianScore: apiBottle.medianScore,
+            minimumScore: apiBottle.minScore,
+            maximumScore: apiBottle.maxScore,
+            memberScoreCount: apiBottle.memberScoreCount,
+            externalScoreCount: apiBottle.externalScoreCount,
+            reviewBandCounts: RatingBandCounts(
+                mediocre: apiBottle.reviewScoreBandCounts.mediocre,
+                good: apiBottle.reviewScoreBandCounts.good,
+                veryGood: apiBottle.reviewScoreBandCounts.very_good,
+                outstanding: apiBottle.reviewScoreBandCounts.outstanding,
+                unicorn: apiBottle.reviewScoreBandCounts.unicorn
+            ),
+            tastingBandCounts: RatingBandCounts(
+                mediocre: apiBottle.tastingBandCounts.mediocre,
+                good: apiBottle.tastingBandCounts.good,
+                veryGood: apiBottle.tastingBandCounts.very_good,
+                outstanding: apiBottle.tastingBandCounts.outstanding,
+                unicorn: apiBottle.tastingBandCounts.unicorn
+            )
+        )
+
+        self.init(
+            id: String(Int(apiBottle.id)),
+            name: apiBottle.name,
+            fullName: apiBottle.fullName,
+            brand: Brand(id: String(Int(apiBottle.brand.id)), name: apiBottle.brand.name),
+            category: apiBottle.category?.rawValue,
+            description: apiBottle.description,
+            edition: apiBottle.edition,
+            series: apiBottle.series.map {
+                BottleSeriesSummary(id: String(Int($0.id)), name: $0.name)
+            },
+            caskStrength: apiBottle.caskStrength ?? false,
+            singleCask: apiBottle.singleCask ?? false,
+            statedAge: apiBottle.statedAge.map { Int($0) },
+            vintageYear: apiBottle.vintageYear.map { Int($0) },
+            bottlingYear: apiBottle.bottlingYear.map { Int($0) },
+            releaseYear: apiBottle.releaseYear.map { Int($0) },
+            releaseMonth: apiBottle.releaseMonth,
+            releaseDay: apiBottle.releaseDay,
+            caskNumber: apiBottle.caskNumber,
+            maturation: apiBottle.maturation,
+            maltPhenolPpm: apiBottle.maltPhenolPpm,
+            naturalColor: apiBottle.naturalColor,
+            nonChillFiltered: apiBottle.nonChillFiltered,
+            noAgeStatement: apiBottle.noAgeStatement,
+            outturn: apiBottle.outturn,
+            distillers: apiBottle.distillers?.map {
+                Brand(id: String(Int($0.id)), name: $0.name)
+            } ?? [],
+            bottler: apiBottle.bottler.map {
+                Brand(id: String(Int($0.id)), name: $0.name)
+            },
+            tastingNotes: apiBottle.tastingNotes.map {
+                BottleTastingNotes(nose: $0.nose, palate: $0.palate, finish: $0.finish)
+            },
+            suggestedTags: apiBottle.suggestedTags ?? [],
+            imageUrl: imageUrl ?? apiBottle.imageUrl,
+            abv: apiBottle.abv,
+            ratingSummary: ratingSummary,
+            totalTastings: Int(apiBottle.totalTastings),
+            isFavorite: apiBottle.isFavorite,
+            isLibrary: apiBottle.isLibrary,
+            hasTasted: hasTasted ?? apiBottle.hasTasted
         )
     }
 }

@@ -1,4 +1,5 @@
 import Foundation
+import OpenAPIRuntime
 import PeatedAPI
 
 public protocol BottlePhotoRepositoryProtocol: Sendable {
@@ -23,11 +24,21 @@ public actor BottlePhotoIdentificationRepository: BottlePhotoRepositoryProtocol,
         idempotencyKey: String
     ) async throws -> BottlePhotoIdentification {
         let client = await client
-        let response = try await client.identifyTastingBottleFromPhoto(
-            body: .json(.init(
-                file: fileDataUrl,
-                idempotencyKey: idempotencyKey
+        guard let imageData = Self.decodeDataURL(fileDataUrl) else {
+            throw APIError.requestFailed("The bottle photo could not be read.")
+        }
+        typealias Part = Operations.identifyTastingBottleFromPhoto.Input.Body.multipartFormPayload
+        let multipartBody: MultipartBody<Part> = [
+            .file(.init(
+                payload: .init(body: HTTPBody(imageData)),
+                filename: "bottle.jpg"
+            )),
+            .idempotencyKey(.init(
+                payload: .init(body: HTTPBody(idempotencyKey))
             ))
+        ]
+        let response = try await client.identifyTastingBottleFromPhoto(
+            body: .multipartForm(multipartBody)
         )
 
         guard case let .ok(okResponse) = response else {
@@ -42,6 +53,17 @@ public actor BottlePhotoIdentificationRepository: BottlePhotoRepositoryProtocol,
             await cache(bottle)
         }
         return identification
+    }
+
+    private static func decodeDataURL(_ value: String) -> Data? {
+        guard value.hasPrefix("data:image/"),
+              let separator = value.firstIndex(of: ","),
+              value[..<separator].hasSuffix(";base64")
+        else {
+            return nil
+        }
+
+        return Data(base64Encoded: String(value[value.index(after: separator)...]))
     }
 
     public func createBottleFromPhoto(createToken: String) async throws -> BottlePhotoCreation {

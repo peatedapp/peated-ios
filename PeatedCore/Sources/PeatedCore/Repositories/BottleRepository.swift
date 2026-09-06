@@ -36,27 +36,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             switch okResponse.body {
             case let .json(payload):
                 return payload.results.map { apiBottle in
-                    let bottle = Bottle(
-                        id: String(Int(apiBottle.id)),
-                        name: apiBottle.name,
-                        fullName: apiBottle.fullName,
-                        brand: Brand(
-                            id: String(Int(apiBottle.brand.id)),
-                            name: apiBottle.brand.name
-                        ),
-                        category: apiBottle.category?.rawValue,
-                        caskStrength: apiBottle.caskStrength ?? false,
-                        singleCask: apiBottle.singleCask ?? false,
-                        statedAge: apiBottle.statedAge.map { Int($0) },
-                        imageUrl: apiBottle.imageUrl,
-                        abv: apiBottle.abv,
-                        avgRating: apiBottle.avgRating,
-                        totalRatings: Int(apiBottle.ratingStats.total),
-                        totalTastings: Int(apiBottle.totalTastings),
-                        isFavorite: apiBottle.isFavorite,
-                        isLibrary: apiBottle.isLibrary,
-                        hasTasted: apiBottle.hasTasted
-                    )
+                    let bottle = Bottle(from: apiBottle)
                     Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
                     return bottle
                 }
@@ -180,26 +160,17 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
     ) -> Operations.createBottle.Input.Body.jsonPayload {
         typealias Payload = Operations.createBottle.Input.Body.jsonPayload
 
-        let category: Payload.categoryPayload? = switch input.category {
-        case .some(.blend): .blend
-        case .some(.bourbon): .bourbon
-        case .some(.rye): .rye
-        case .some(.singleGrain): .single_grain
-        case .some(.singleMalt): .single_malt
-        case .some(.singlePotStill): .single_pot_still
-        case .some(.spirit): .spirit
-        case .none: nil
-        }
+        let category = input.category.flatMap { Payload.categoryPayload(rawValue: $0.rawValue) }
 
         let brand = Payload.brandPayload(
-            value1: .init(name: input.brandName, _type: [.brand])
+            value1: .init(name: input.brandName, kind: .brand)
         )
 
         return Payload(
             name: input.name,
+            statedAge: input.statedAge,
             category: category,
             brand: brand,
-            statedAge: input.statedAge,
             abv: input.abv
         )
     }
@@ -222,7 +193,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         let response = try await client.listBottles(
             query: .init(
                 limit: Double(limit),
-                sort: .tastings
+                sort: ._hyphen_tastings
             )
         )
 
@@ -231,32 +202,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             switch okResponse.body {
             case let .json(payload):
                 return payload.results.map { apiBottle in
-                    let bottleId = String(Int(apiBottle.id))
-                    let brandId = String(Int(apiBottle.brand.id))
-                    let brand = Brand(id: brandId, name: apiBottle.brand.name)
-                    let category = apiBottle.category?.rawValue
-                    let statedAge = apiBottle.statedAge.map { Int($0) }
-                    let avgRating = apiBottle.avgRating
-                    let totalRatings = Int(apiBottle.ratingStats.total)
-
-                    let bottle = Bottle(
-                        id: bottleId,
-                        name: apiBottle.name,
-                        fullName: apiBottle.fullName,
-                        brand: brand,
-                        category: category,
-                        caskStrength: apiBottle.caskStrength ?? false,
-                        singleCask: apiBottle.singleCask ?? false,
-                        statedAge: statedAge,
-                        imageUrl: apiBottle.imageUrl,
-                        abv: apiBottle.abv,
-                        avgRating: avgRating,
-                        totalRatings: totalRatings,
-                        totalTastings: Int(apiBottle.totalTastings),
-                        isFavorite: apiBottle.isFavorite,
-                        isLibrary: apiBottle.isLibrary,
-                        hasTasted: apiBottle.hasTasted
-                    )
+                    let bottle = Bottle(from: apiBottle)
                     Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
                     return bottle
                 }
@@ -279,7 +225,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         let response = try await client.listBottles(
             query: .init(
                 limit: Double(limit),
-                sort: .rating
+                sort: ._hyphen_score
             )
         )
 
@@ -288,32 +234,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             switch okResponse.body {
             case let .json(payload):
                 return payload.results.map { apiBottle in
-                    let bottleId = String(Int(apiBottle.id))
-                    let brandId = String(Int(apiBottle.brand.id))
-                    let brand = Brand(id: brandId, name: apiBottle.brand.name)
-                    let category = apiBottle.category?.rawValue
-                    let statedAge = apiBottle.statedAge.map { Int($0) }
-                    let avgRating = apiBottle.avgRating
-                    let totalRatings = Int(apiBottle.ratingStats.total)
-
-                    return Bottle(
-                        id: bottleId,
-                        name: apiBottle.name,
-                        fullName: apiBottle.fullName,
-                        brand: brand,
-                        category: category,
-                        caskStrength: apiBottle.caskStrength ?? false,
-                        singleCask: apiBottle.singleCask ?? false,
-                        statedAge: statedAge,
-                        imageUrl: apiBottle.imageUrl,
-                        abv: apiBottle.abv,
-                        avgRating: avgRating,
-                        totalRatings: totalRatings,
-                        totalTastings: Int(apiBottle.totalTastings),
-                        isFavorite: apiBottle.isFavorite,
-                        isLibrary: apiBottle.isLibrary,
-                        hasTasted: apiBottle.hasTasted
-                    )
+                    Bottle(from: apiBottle)
                 }
             }
         case .badRequest:
@@ -347,24 +268,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             switch okResponse.body {
             case let .json(payload):
                 return payload.results.map { apiBottle in
-                    let bottle = Bottle(
-                        id: String(Int(apiBottle.id)),
-                        name: apiBottle.name,
-                        fullName: apiBottle.fullName,
-                        brand: Brand(
-                            id: String(Int(apiBottle.brand.id)),
-                            name: apiBottle.brand.name
-                        ),
-                        category: apiBottle.category?.rawValue,
-                        caskStrength: apiBottle.caskStrength ?? false,
-                        singleCask: apiBottle.singleCask ?? false,
-                        statedAge: apiBottle.statedAge.map { Int($0) },
-                        imageUrl: apiBottle.imageUrl,
-                        abv: apiBottle.abv,
-                        avgRating: apiBottle.avgRating,
-                        totalRatings: Int(apiBottle.ratingStats.total),
-                        totalTastings: Int(apiBottle.totalTastings)
-                    )
+                    let bottle = Bottle(from: apiBottle)
                     Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
                     return bottle
                 }

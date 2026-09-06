@@ -114,31 +114,9 @@ public actor CollectionRepository: BaseRepositoryProtocol, CollectionRepositoryP
     }
 
     private static func mapLibraryEntry(_ item: Components.Schemas.CollectionBottle) -> LibraryEntry {
-        let bottle = item.bottle
-        return LibraryEntry(
+        LibraryEntry(
             id: String(Int(item.id)),
-            bottle: Bottle(
-                id: String(Int(bottle.id)),
-                name: bottle.name,
-                fullName: bottle.fullName,
-                brand: Brand(
-                    id: String(Int(bottle.brand.id)),
-                    name: bottle.brand.name
-                ),
-                category: bottle.category?.rawValue,
-                description: bottle.description,
-                caskStrength: bottle.caskStrength ?? false,
-                singleCask: bottle.singleCask ?? false,
-                statedAge: bottle.statedAge.map { Int($0) },
-                imageUrl: item.imageUrl ?? bottle.imageUrl,
-                abv: bottle.abv,
-                avgRating: bottle.avgRating,
-                totalRatings: Int(bottle.ratingStats.total),
-                totalTastings: Int(bottle.totalTastings),
-                isFavorite: bottle.isFavorite,
-                isLibrary: bottle.isLibrary,
-                hasTasted: item.hasTasted
-            ),
+            bottle: Bottle(from: item.bottle, imageUrl: item.imageUrl, hasTasted: item.hasTasted),
             imageUrl: item.imageUrl,
             status: item.status.flatMap { LibraryBottleStatus(rawValue: $0.rawValue) }
         )

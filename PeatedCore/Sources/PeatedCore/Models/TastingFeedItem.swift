@@ -2,7 +2,7 @@ import Foundation
 
 public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Codable {
     public let id: String
-    public let rating: Double
+    public let ratingBand: TastingRatingBand?
     public let notes: String?
     public let servingStyle: String?
     public let imageUrl: String?
@@ -33,7 +33,7 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
 
     public init(
         id: String,
-        rating: Double,
+        ratingBand: TastingRatingBand?,
         notes: String?,
         servingStyle: String?,
         imageUrl: String?,
@@ -55,7 +55,7 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
         friendUsernames: [String]
     ) {
         self.id = id
-        self.rating = rating
+        self.ratingBand = ratingBand
         self.notes = notes
         self.servingStyle = servingStyle
         self.imageUrl = imageUrl
@@ -92,7 +92,7 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
 
         return TastingFeedItem(
             id: id,
-            rating: rating,
+            ratingBand: ratingBand,
             notes: notes,
             servingStyle: servingStyle,
             imageUrl: imageUrl,

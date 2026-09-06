@@ -1,98 +1,74 @@
 import Foundation
-import OpenAPIRuntime
 import PeatedAPI
 
-public enum RatingValue: Int, CaseIterable, Codable, Hashable, Sendable {
-    case pass = -1
-    case none = 0
-    case sip = 1
-    case savor = 2
+public enum TastingRatingBand: String, CaseIterable, Codable, Hashable, Sendable {
+    case mediocre
+    case good
+    case veryGood = "very_good"
+    case outstanding
+    case unicorn
 
     public var displayName: String {
         switch self {
-        case .pass: "Pass"
-        case .none: "No Rating"
-        case .sip: "Sip"
-        case .savor: "Savor"
+        case .mediocre: "Mediocre"
+        case .good: "Good"
+        case .veryGood: "Very good"
+        case .outstanding: "Outstanding"
+        case .unicorn: "Unicorn"
         }
     }
 
-    public var emoji: String {
+    public var scoreRange: ClosedRange<Int> {
         switch self {
-        case .pass: "👎"
-        case .none: ""
-        case .sip: "👍"
-        case .savor: "👍👍"
+        case .mediocre: 0 ... 79
+        case .good: 80 ... 84
+        case .veryGood: 85 ... 89
+        case .outstanding: 90 ... 94
+        case .unicorn: 95 ... 100
         }
     }
 
     public var description: String {
         switch self {
-        case .pass: "Not my thing"
-        case .none: "No rating"
-        case .sip: "Enjoyable, would drink again"
-        case .savor: "Amazing, would seek out"
+        case .mediocre: "Below 80"
+        case .good: "80–84"
+        case .veryGood: "85–89"
+        case .outstanding: "90–94"
+        case .unicorn: "95–100"
         }
     }
 
-    public var iconCount: Int {
-        self == .savor ? 2 : 1
-    }
+    public init?(score: Int) {
+        guard 0 ... 100 ~= score else { return nil }
 
-    public init?(rating: Double) {
-        guard rating.rounded() == rating else { return nil }
-        self.init(rawValue: Int(rating))
-    }
-}
-
-public extension Operations.createTasting.Input.Body.jsonPayload {
-    static func makeRating(_ value: RatingValue) -> ratingPayload? {
-        guard value != .none else { return nil }
-
-        // The anyOf is generated as value1, value2, value3
-        // We need to determine which one to use based on the actual const values
-        switch value.rawValue {
-        case -1:
-            return ratingPayload(
-                value1: OpenAPIValueContainer(-1),
-                value2: nil,
-                value3: nil
-            )
-        case 1:
-            return ratingPayload(
-                value1: nil,
-                value2: OpenAPIValueContainer(1),
-                value3: nil
-            )
-        case 2:
-            return ratingPayload(
-                value1: nil,
-                value2: nil,
-                value3: OpenAPIValueContainer(2)
-            )
-        default:
-            return nil
+        switch score {
+        case ...79: self = .mediocre
+        case 80 ... 84: self = .good
+        case 85 ... 89: self = .veryGood
+        case 90 ... 94: self = .outstanding
+        default: self = .unicorn
         }
     }
 }
 
-/// Helper to extract rating from API response
-public func extractRating(from ratingPayload: (some Any)?) -> Double {
-    guard let ratingPayload else { return 0.0 }
-
-    // Use reflection to find the actual value
-    let mirror = Mirror(reflecting: ratingPayload)
-
-    for child in mirror.children {
-        if let container = child.value as? OpenAPIValueContainer {
-            if let intValue = container.value as? Int {
-                return Double(intValue)
-            }
-            if let doubleValue = container.value as? Double {
-                return doubleValue
-            }
+public extension TastingRatingBand {
+    init(_ payload: Components.Schemas.Tasting.ratingBandPayload) {
+        switch payload {
+        case .mediocre: self = .mediocre
+        case .good: self = .good
+        case .very_good: self = .veryGood
+        case .outstanding: self = .outstanding
+        case .unicorn: self = .unicorn
         }
     }
 
-    return 0.0
+    var createPayload: Operations.createTasting.Input.Body.jsonPayload.ratingBandPayload {
+        switch self {
+        case .mediocre: .mediocre
+        case .good: .good
+        case .veryGood: .very_good
+        case .outstanding: .outstanding
+        case .unicorn: .unicorn
+        }
+    }
 }
