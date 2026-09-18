@@ -120,6 +120,9 @@ Temporary Items
 .env
 .env.local
 
+# App Store Connect CLI credentials and local profiles
+.asc/
+
 # SwiftLint
 .swiftlint.yml.lock
 
@@ -140,3 +143,4 @@ Temporary Items
 
 # agent stuff idk
 .derived_data
+.test-results/

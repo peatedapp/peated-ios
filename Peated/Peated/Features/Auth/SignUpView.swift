@@ -17,12 +17,8 @@ struct SignUpView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color.background, Color.surface]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            Color.background
+                .ignoresSafeArea()
 
             ScrollView {
                 VStack(spacing: 24) {
@@ -97,7 +93,7 @@ struct SignUpView: View {
         VStack(spacing: 16) {
             TextInput(
                 label: "Username",
-                placeholder: "yourname",
+                placeholder: "Username",
                 text: $username,
                 keyboard: .asciiCapable,
                 submitLabel: .next,
@@ -107,7 +103,7 @@ struct SignUpView: View {
 
             TextInput(
                 label: "Email",
-                placeholder: "you@example.com",
+                placeholder: "Email",
                 text: $email,
                 keyboard: .emailAddress,
                 submitLabel: .next,

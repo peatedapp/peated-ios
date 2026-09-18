@@ -34,7 +34,7 @@ final class BottlePhotoResolutionViewModel: ObservableObject {
             )
         } catch {
             capture(error, operation: "identify", imageByteCount: imageData.count)
-            errorMessage = "We couldn't identify that bottle. \(error.localizedDescription)"
+            errorMessage = "We couldn't identify that bottle. Please try again."
         }
     }
 
@@ -49,7 +49,7 @@ final class BottlePhotoResolutionViewModel: ObservableObject {
             return try await repository.createBottleFromPhoto(createToken: createToken)
         } catch {
             capture(error, operation: "create")
-            errorMessage = "We couldn't create that bottle. \(error.localizedDescription)"
+            errorMessage = "We couldn't create that bottle. Please try again."
             return nil
         }
     }

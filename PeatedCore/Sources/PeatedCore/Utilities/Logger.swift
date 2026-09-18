@@ -28,14 +28,9 @@ public struct Logger {
     /// Log API request with standardized format
     public static func logAPIRequest(
         endpoint: String,
-        method: String = "GET",
-        parameters: [String: Any]? = nil
+        method: String = "GET"
     ) {
-        var message = "API \(method) \(endpoint)"
-        if let params = parameters, !params.isEmpty {
-            message += " with params: \(params)"
-        }
-        api.info("\(message, privacy: .public)")
+        api.info("API request operation=\(endpoint, privacy: .public) method=\(method, privacy: .public)")
     }
 
     /// Log API response with standardized format
@@ -45,30 +40,34 @@ public struct Logger {
         resultCount: Int? = nil,
         duration: TimeInterval? = nil
     ) {
-        var message = "API response \(endpoint)"
-        if let status = statusCode {
-            message += " (\(status))"
-        }
-        if let count = resultCount {
-            message += " - \(count) items"
-        }
-        if let time = duration {
-            message += " in \(String(format: "%.3f", time))s"
-        }
-        api.info("\(message, privacy: .public)")
+        api.info(
+            """
+            API response
+            operation=\(endpoint, privacy: .public)
+            status=\(statusCode ?? 0)
+            count=\(resultCount ?? 0)
+            duration=\(duration ?? 0)
+            """
+        )
     }
 
     /// Log API error with context
     public static func logAPIError(
         endpoint: String,
         error: Error,
-        context: [String: Any]? = nil
+        method: String,
+        duration: TimeInterval
     ) {
-        var message = "API error \(endpoint): \(error.localizedDescription)"
-        if let ctx = context {
-            message += " context: \(ctx)"
-        }
-        api.error("\(message, privacy: .public)")
+        let errorKind = String(describing: type(of: error))
+        api.error(
+            """
+            API failure
+            operation=\(endpoint, privacy: .public)
+            method=\(method, privacy: .public)
+            error=\(errorKind, privacy: .public)
+            duration=\(duration)
+            """
+        )
     }
 
     /// Log model state change
@@ -77,11 +76,14 @@ public struct Logger {
         action: String,
         details: String? = nil
     ) {
-        var message = "\(modelName): \(action)"
-        if let details {
-            message += " - \(details)"
-        }
-        model.info("\(message, privacy: .public)")
+        model.info(
+            """
+            Model update
+            model=\(modelName, privacy: .public)
+            action=\(action, privacy: .public)
+            details=\(details ?? "", privacy: .private)
+            """
+        )
     }
 
     /// Log authentication events
@@ -90,12 +92,14 @@ public struct Logger {
         userId: String? = nil,
         success: Bool = true
     ) {
-        let status = success ? "success" : "failure"
-        var message = "Auth \(event) - \(status)"
-        if let id = userId {
-            message += " (user: \(id))"
-        }
-        auth.info("\(message, privacy: .public)")
+        auth.info(
+            """
+            Auth
+            event=\(event, privacy: .public)
+            success=\(success)
+            user=\(userId ?? "", privacy: .private(mask: .hash))
+            """
+        )
     }
 
     /// Log network connectivity changes
@@ -103,12 +107,9 @@ public struct Logger {
         connected: Bool,
         connectionType: String? = nil
     ) {
-        let status = connected ? "connected" : "disconnected"
-        var message = "Network \(status)"
-        if let type = connectionType {
-            message += " (\(type))"
-        }
-        network.info("\(message, privacy: .public)")
+        network.info(
+            "Network connected=\(connected) type=\(connectionType ?? "unknown", privacy: .public)"
+        )
     }
 
     /// Log database operations
@@ -118,17 +119,15 @@ public struct Logger {
         recordCount: Int? = nil,
         duration: TimeInterval? = nil
     ) {
-        var message = "DB \(operation)"
-        if let table {
-            message += " \(table)"
-        }
-        if let count = recordCount {
-            message += " (\(count) records)"
-        }
-        if let time = duration {
-            message += " in \(String(format: "%.3f", time))s"
-        }
-        database.info("\(message, privacy: .public)")
+        database.info(
+            """
+            Database
+            operation=\(operation, privacy: .public)
+            table=\(table ?? "unknown", privacy: .public)
+            count=\(recordCount ?? 0)
+            duration=\(duration ?? 0)
+            """
+        )
     }
 
     /// Log sync operations
@@ -138,19 +137,26 @@ public struct Logger {
         count: Int? = nil,
         success: Bool = true
     ) {
-        let status = success ? "completed" : "failed"
-        var message = "Sync \(operation) \(status)"
-        if let type = entityType {
-            message += " \(type)"
-        }
-        if let count {
-            message += " (\(count) items)"
-        }
-
         if success {
-            sync.info("\(message, privacy: .public)")
+            sync.info(
+                """
+                Sync
+                operation=\(operation, privacy: .public)
+                entity=\(entityType ?? "unknown", privacy: .public)
+                count=\(count ?? 0)
+                success=true
+                """
+            )
         } else {
-            sync.error("\(message, privacy: .public)")
+            sync.error(
+                """
+                Sync
+                operation=\(operation, privacy: .public)
+                entity=\(entityType ?? "unknown", privacy: .public)
+                count=\(count ?? 0)
+                success=false
+                """
+            )
         }
     }
 }
@@ -160,8 +166,7 @@ public struct Logger {
 public extension Logger {
     /// Helper to format user-sensitive data with appropriate privacy levels
     static func formatUserData(_ data: String) -> String {
-        // In production, this could hash or truncate sensitive data
-        data
+        data.isEmpty ? "" : "<redacted>"
     }
 
     /// Helper to format system data (safe to log)

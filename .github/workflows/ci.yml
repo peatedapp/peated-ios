@@ -17,7 +17,7 @@ jobs:
   repository-checks:
     name: Repository checks
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
@@ -28,6 +28,9 @@ jobs:
 
       - name: Run portable checks
         run: make check
+
+      - name: Validate GitHub Actions workflows
+        run: make lint-actions-docker
 
       - name: Enforce SwiftLint baseline
         run: make lint-swift-docker
@@ -41,16 +44,16 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: PeatedAPI/.build
-          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-api-${{ hashFiles('PeatedAPI/Package.*') }}-${{ hashFiles('PeatedAPI/Sources/**/*.swift', 'PeatedAPI/Tests/**/*.swift') }}
+          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-swift-6.3-api-${{ hashFiles('PeatedAPI/Package.*') }}-${{ hashFiles('PeatedAPI/Sources/**/*.swift', 'PeatedAPI/Tests/**/*.swift') }}
           restore-keys: |
-            swiftpm-${{ runner.os }}-${{ runner.arch }}-api-${{ hashFiles('PeatedAPI/Package.*') }}-
+            swiftpm-${{ runner.os }}-${{ runner.arch }}-swift-6.3-api-${{ hashFiles('PeatedAPI/Package.*') }}-
 
       - name: Test PeatedAPI package
         run: make test-api-docker
 
   core-tests:
     name: PeatedCore package tests
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
 
     steps:
@@ -59,8 +62,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Select Xcode 16.4
-        run: sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Select Xcode 26.6
+        run: sudo xcode-select --switch /Applications/Xcode_26.6.app/Contents/Developer
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -69,16 +72,16 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: PeatedCore/.build
-          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-xcode-16.4-core-${{ hashFiles('PeatedCore/Package.*', 'PeatedAPI/Package.*') }}-${{ hashFiles('PeatedCore/Sources/**/*.swift', 'PeatedCore/Tests/**/*.swift', 'PeatedAPI/Sources/**/*.swift') }}
+          key: swiftpm-${{ runner.os }}-${{ runner.arch }}-xcode-26.6-core-${{ hashFiles('PeatedCore/Package.*', 'PeatedAPI/Package.*') }}-${{ hashFiles('PeatedCore/Sources/**/*.swift', 'PeatedCore/Tests/**/*.swift', 'PeatedAPI/Sources/**/*.swift') }}
           restore-keys: |
-            swiftpm-${{ runner.os }}-${{ runner.arch }}-xcode-16.4-core-${{ hashFiles('PeatedCore/Package.*', 'PeatedAPI/Package.*') }}-
+            swiftpm-${{ runner.os }}-${{ runner.arch }}-xcode-26.6-core-${{ hashFiles('PeatedCore/Package.*', 'PeatedAPI/Package.*') }}-
 
       - name: Test PeatedCore package
         run: make test-core
 
   ios-tests:
     name: iOS app tests
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 60
 
     steps:
@@ -87,8 +90,8 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Select Xcode 16.4
-        run: sudo xcode-select --switch /Applications/Xcode_16.4.app/Contents/Developer
+      - name: Select Xcode 26.6
+        run: sudo xcode-select --switch /Applications/Xcode_26.6.app/Contents/Developer
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -100,12 +103,21 @@ jobs:
             .derived_data/Build
             .derived_data/ModuleCache.noindex
             .derived_data/SourcePackages
-          key: xcode-${{ runner.os }}-${{ runner.arch }}-16.4-${{ hashFiles('Peated/Peated.xcodeproj/project.pbxproj', '**/Package.*') }}-${{ hashFiles('Peated/**/*.swift', 'PeatedCore/**/*.swift', 'PeatedAPI/**/*.swift') }}
+          key: xcode-${{ runner.os }}-${{ runner.arch }}-26.6-${{ hashFiles('Peated/Peated.xcodeproj/project.pbxproj', '**/Package.*') }}-${{ hashFiles('Peated/**/*.swift', 'PeatedCore/**/*.swift', 'PeatedAPI/**/*.swift') }}
           restore-keys: |
-            xcode-${{ runner.os }}-${{ runner.arch }}-16.4-${{ hashFiles('Peated/Peated.xcodeproj/project.pbxproj', '**/Package.*') }}-
+            xcode-${{ runner.os }}-${{ runner.arch }}-26.6-${{ hashFiles('Peated/Peated.xcodeproj/project.pbxproj', '**/Package.*') }}-
 
       - name: Test iOS app
-        run: make test-ios
+        run: make test-ios SIMULATOR='iPhone 17 Pro'
+
+      - name: Upload iOS test results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: ios-test-results
+          path: .test-results/Peated.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
 
   apple-tests:
     name: Apple build and tests

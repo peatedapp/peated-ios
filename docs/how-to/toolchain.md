@@ -1,14 +1,23 @@
 # Development Toolchain
 
-This guide defines the supported verification commands for Linux and macOS development environments.
+This guide defines the supported verification commands for Linux and macOS.
 
 Status: active
 
+## Selected versions
+
+- Xcode: read `.xcode-version` (`26.6`)
+- Swift container: 6.3 on Ubuntu Jammy, pinned by image digest
+- SwiftFormat container: 0.63.0, pinned by image digest
+- SwiftLint container: 0.65.1, pinned by image digest
+- App Store Connect CLI: 5.0.0 in automation; Homebrew provides local updates
+- actionlint: 1.7.12, pinned by container digest in CI
+
+The Makefile and CI workflow are the executable sources of truth for these versions. `make doctor` reports the selected local Xcode and warns when it differs.
+
 ## Command entry point
 
-Run `make help` from the repository root to see the supported commands. The Makefile is the canonical command interface for local development and automation; scripts under `Scripts/` contain the implementation details.
-
-Start by inspecting the current host:
+Run `make help` from the repository root. Start by inspecting the host:
 
 ```bash
 make doctor
@@ -16,104 +25,81 @@ make doctor
 
 ## Portable checks
 
-The baseline repository checks require Bash, Git, and either `jq` or Apple's `plutil`:
+Run repository checks on Linux or macOS:
 
 ```bash
 make check
+make lint-actions-docker
 ```
 
-These checks run on Linux and macOS. They validate shell and JSON syntax, instruction-file mirrors, merge markers, and whitespace in the current diff. They do not compile Swift.
+The command checks shell and JSON syntax, the app privacy manifest, agent-instruction mirrors, merge markers, and changed-line whitespace. It does not compile Swift.
 
-Linux hosts with Docker can lint changed Swift and shell files using pinned tool images:
+Linux hosts with Docker can use the pinned tool images:
 
 ```bash
 make lint-docker
-```
-
-The first run downloads SwiftFormat 0.62.1, SwiftLint 0.65.0, and ShellCheck 0.11.0 images. Override `SWIFTFORMAT_IMAGE`, `SWIFTLINT_IMAGE`, or `SHELLCHECK_IMAGE` when an internally mirrored image is required.
-
-Apply or verify repository-wide Swift formatting on Linux with the pinned formatter:
-
-```bash
-make format-docker
 make format-check-docker
-```
-
-Generated OpenAPI sources and the executable `Scripts/recolor-png.swift` helper are excluded. The script retains its shebang and executable mode because SwiftFormat import sorting does not preserve them.
-
-Run the repository-wide SwiftLint ratchet with:
-
-```bash
 make lint-swift-docker
+make test-api-docker
 ```
 
-`.swiftlint-baseline.json` records existing violations, while strict mode rejects every violation outside that baseline. This keeps existing cleanup debt from blocking unrelated changes without allowing the debt to grow.
+Generated OpenAPI sources and the executable `Scripts/recolor-png.swift` helper are excluded from formatting.
 
 ## macOS setup
 
-Xcode supplies the Apple SDKs and Swift toolchain. Install the auxiliary command-line tools declared in `Brewfile` with:
+Install the Xcode version in `.xcode-version`. Select it with `xcode-select`, then install auxiliary tools:
 
 ```bash
 make bootstrap
+make doctor
 ```
 
-Then lint files changed from `HEAD` without modifying them:
+Lint files changed from `HEAD` without modifying them:
 
 ```bash
 make lint
 ```
 
-Changed-file linting applies the same strict baseline to edited Swift files. Use `make lint-all` to check all hand-written sources with native macOS tools.
+Set `LINT_BASE_REF` to compare with another commit or branch. CI uses the pull-request base SHA.
 
-Set `LINT_BASE_REF` to lint committed changes against another commit or branch. GitHub Actions uses the pull request base SHA:
+Use `make lint-all` for repository-wide native lint and formatting checks. Use `make format` only for an intentional formatting change.
 
-```bash
-LINT_BASE_REF=origin/main make lint-docker
-```
-
-Run `make format` separately when an intentional repository-wide formatting change is desired. Generated OpenAPI client files are excluded from formatting and linting.
-
-After removing existing SwiftLint violations, regenerate the baseline with:
+After removing existing SwiftLint violations, regenerate the reviewed baseline with:
 
 ```bash
 make update-swiftlint-baseline
 ```
 
-Review the generated diff before committing it. Routine cleanup should only remove baseline entries; additions require an explicit decision because they expand accepted debt.
+Review the baseline diff. Routine cleanup should remove entries; additions expand accepted debt and need explicit review.
 
-## Swift package checks
+## Swift packages
 
-`PeatedAPI` can be tested anywhere its Swift dependencies support the host:
+Run package tests on an Apple host:
 
 ```bash
 make test-api
-```
-
-Linux and CI use the pinned Swift 6.1.2 container:
-
-```bash
-make test-api-docker
-```
-
-`PeatedCore` imports Apple-platform dependencies and should be tested on macOS:
-
-```bash
 make test-core
 make test-packages
 ```
 
+`PeatedCore` imports Apple-platform dependencies and requires an Apple toolchain. `PeatedAPI` is also tested in Linux CI with the pinned Swift image.
+
+The checked-in `Package.resolved` files define the reviewed dependency graph. Routine build and test commands do not update that graph. Update dependencies deliberately and review the resolved-file diff.
+
 ## iOS verification
 
-The command-line fallback uses the standard `iPhone 16 Pro` simulator:
+The local command-line fallback uses `iPhone 16 Pro`:
 
 ```bash
 make build-ios
 make test-ios
 ```
 
-Agents should prefer the repository's `xcodebuildmcp` build-and-run flow when it is available because it can also launch and inspect the app. The Make targets provide a consistent fallback for macOS hosts and CI.
+`make test-ios` writes `.test-results/Peated.xcresult`. GitHub Actions uploads this bundle for seven days so failures can be opened in Xcode.
 
-Run the complete local suite with:
+Agents should prefer XcodeBuildMCP when it is available because it can build, launch, inspect accessibility state, capture logs, and take screenshots. Use semantic accessibility queries before coordinate-based interaction.
+
+Run the full Apple-host suite with:
 
 ```bash
 make verify
@@ -123,20 +109,33 @@ make verify
 
 The `CI` workflow runs for pull requests and pushes to `main`:
 
-- `Repository checks` runs portable validation, enforces the repository-wide SwiftLint baseline, lints changed files, and runs the containerized `PeatedAPI` package tests on Ubuntu.
-- `PeatedCore package tests` and `iOS app tests` run concurrently on macOS 15 with Xcode 16.4.
-- `Apple build and tests` aggregates both Apple jobs so branch protection retains one stable required check.
+- `Repository checks` runs portable validation, SwiftLint, SwiftFormat, ShellCheck, and `PeatedAPI` tests on Ubuntu.
+- `PeatedCore package tests` runs on macOS 26 with Xcode 26.6.
+- `iOS app tests` runs on macOS 26 with Xcode 26.6 and an installed `iPhone 17 Pro` simulator.
+- `Apple build and tests` provides one stable aggregate branch-protection check.
 
-SwiftPM build directories and Xcode DerivedData are cached with keys that include the host, toolchain, dependency manifests, lockfiles, and source hashes. A source change restores the closest dependency-compatible cache and lets SwiftPM or Xcode rebuild affected artifacts. The iOS test command disables parallel testing because the suite targets one simulator and does not benefit from cloned devices.
+The workflow uses read-only repository permissions, cancels superseded runs, pins third-party actions to reviewed commits, and caches dependency-compatible build products.
 
-The workflow uses read-only repository permissions, cancels superseded runs, and pins third-party actions to reviewed commits. Dependabot checks weekly for GitHub Actions updates.
+Dependabot updates GitHub Actions plus the `PeatedAPI` and `PeatedCore` Swift package manifests. Xcode-project package requirements still need a deliberate manual update because Dependabot does not manage package requirements stored in `project.pbxproj`.
+
+## Xcode Cloud
+
+Xcode Cloud is reserved for manual release archives and TestFlight distribution. GitHub Actions provides the per-change Apple build and test gate without consuming Xcode Cloud compute hours.
+
+Use `make xcode-cloud-list` to inspect workflows and `make xcode-cloud-run ASC_XCODE_CLOUD_WORKFLOW='<name>'` to start the release workflow. The manual `Xcode Cloud` GitHub Actions workflow provides the same operation from the repository UI.
+
+Xcode Cloud uses the committed app `Package.resolved`. Its post-clone script validates that the lockfile exists and does not clear caches, delete lockfiles, or update dependencies. See `@docs/how-to/app-store-connect.md` for credentials, workflow settings, and release operation.
 
 ## Limited environments
 
-Run every applicable verification tier. If Swift, Xcode, a simulator, or an MCP build tool is unavailable, report that portion as unverified and include the checks that did run. Tool absence is not itself a build failure.
+Run every applicable verification tier. If Swift, Xcode, a simulator, or an MCP build tool is unavailable, report that portion as unverified. Missing tooling is not itself a build failure.
 
-## Tool references
+## References
 
-- [SwiftFormat](https://github.com/nicklockwood/SwiftFormat) defines the `.swiftformat` configuration and formatting checks.
-- [SwiftLint](https://github.com/realm/SwiftLint) defines the `.swiftlint.yml` static-analysis rules.
-- [ShellCheck](https://github.com/koalaman/shellcheck) performs static analysis of Bash scripts.
+- [Building apps with Swift packages in CI](https://developer.apple.com/documentation/xcode/building-swift-packages-or-apps-that-use-them-in-continuous-integration-workflows)
+- [Xcode system requirements](https://developer.apple.com/xcode/system-requirements)
+- [SwiftFormat](https://github.com/nicklockwood/SwiftFormat)
+- [SwiftLint](https://github.com/realm/SwiftLint)
+- [ShellCheck](https://github.com/koalaman/shellcheck)
+- [App Store Connect CLI](https://github.com/rorkai/App-Store-Connect-CLI)
+- [actionlint](https://github.com/rhysd/actionlint)

@@ -15,19 +15,13 @@ public struct LoggingMiddleware: ClientMiddleware {
     ) async throws -> (HTTPResponse, HTTPBody?) {
         let startTime = Date()
 
-        // Extract endpoint from URL path
-        let endpoint = request.path ?? operationID
-
-        // Extract query parameters for logging context
-        var context: [String: Any] = [:]
-        if let query = request.headerFields[.contentType]?.description {
-            context["contentType"] = query
-        }
+        // The generated operation id is stable and contains no user-supplied
+        // path, query, or request-body values.
+        let endpoint = operationID
 
         Logger.logAPIRequest(
             endpoint: endpoint,
-            method: request.method.rawValue,
-            parameters: context.isEmpty ? nil : context
+            method: request.method.rawValue
         )
 
         do {
@@ -86,10 +80,8 @@ public struct LoggingMiddleware: ClientMiddleware {
             Logger.logAPIError(
                 endpoint: endpoint,
                 error: error,
-                context: [
-                    "method": request.method.rawValue,
-                    "duration": duration
-                ]
+                method: request.method.rawValue,
+                duration: duration
             )
 
             // Re-throw the error

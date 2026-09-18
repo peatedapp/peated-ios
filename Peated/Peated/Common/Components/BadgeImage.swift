@@ -21,7 +21,7 @@ struct BadgeImage: View {
                 CachedAsyncImage(url: url) { image in
                     image
                         .resizable()
-                        .aspectRatio(contentMode: .fill)
+                        .scaledToFill()
                         .frame(width: size, height: size)
                         .clipped()
                 } placeholder: {

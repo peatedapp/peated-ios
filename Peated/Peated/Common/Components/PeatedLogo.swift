@@ -9,7 +9,7 @@ struct PeatedLogo: View {
             Image("PeatedLogo")
                 .renderingMode(.template)
                 .resizable()
-                .aspectRatio(contentMode: .fit)
+                .scaledToFit()
                 .frame(height: height)
                 .foregroundColor(.brand)
         } else {

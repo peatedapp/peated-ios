@@ -38,9 +38,8 @@ struct PeatedApp: App {
                 options.debug = false // Disable in production
             #endif
 
-            // Adds IP for users.
-            // For more information, visit: https://docs.sentry.io/platforms/apple/data-management/data-collected/
-            options.sendDefaultPii = true
+            // Private user data is opt-in at reviewed capture sites.
+            options.sendDefaultPii = false
 
             // Sample 20% of transactions for performance monitoring in production
             options.tracesSampleRate = 0.2
@@ -51,12 +50,8 @@ struct PeatedApp: App {
                 $0.lifecycle = .trace
             }
 
-            // Uncomment the following lines to add more data to your events
-            // options.attachScreenshot = true // This adds a screenshot to the error events
-            // options.attachViewHierarchy = true // This adds the view hierarchy to the error events
-
-            // Enable experimental logging features
-            options.experimental.enableLogs = true
+            // Screenshots, view hierarchies, and unrestricted logs can contain
+            // private tasting, account, and photo data. Keep them disabled.
         }
     }
 

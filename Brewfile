@@ -1,3 +1,5 @@
+brew "asc"
+brew "actionlint"
 brew "jq"
 brew "shellcheck"
 brew "swiftformat"

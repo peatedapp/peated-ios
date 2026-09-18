@@ -134,7 +134,7 @@ struct EntityDetailView: View {
                     AsyncImage(url: url) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                             .frame(width: 100, height: 100)
                             .clipShape(Circle())
                     } placeholder: {
@@ -379,7 +379,7 @@ struct EntityDetailView: View {
                     AsyncImage(url: URL(string: imageUrl)) { image in
                         image
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+                            .scaledToFit()
                     } placeholder: {
                         ProgressView()
                     }
