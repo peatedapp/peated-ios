@@ -93,6 +93,7 @@ public class TastingDetailModel {
             // Ensure comments get loaded
             await loadComments()
         } catch {
+            Telemetry.capture(error, feature: "tasting", operation: "load")
             state = .error(error.localizedDescription)
         }
     }
@@ -114,6 +115,7 @@ public class TastingDetailModel {
             }
 
         } catch {
+            Telemetry.capture(error, feature: "tasting", operation: "load_comments")
             commentState = .error("Failed to load comments")
             // Don't fail the whole view, just show error for comments
         }
@@ -137,6 +139,7 @@ public class TastingDetailModel {
                     isToasted: newToastedState
                 )
             } catch {
+                Telemetry.capture(error, feature: "tasting", operation: "queue_toast")
                 ToastManager.shared.showError("Failed to prepare offline toast")
                 return
             }
@@ -167,6 +170,7 @@ public class TastingDetailModel {
             }
 
         } catch {
+            Telemetry.capture(error, feature: "tasting", operation: "toggle_toast")
             // Revert on error
             detail.hasToasted = !newToastedState
             detail.toastCount += newToastedState ? -1 : 1
@@ -196,6 +200,7 @@ public class TastingDetailModel {
                 ToastManager.shared.showInfo("Comment will post when online")
                 return true
             } catch {
+                Telemetry.capture(error, feature: "tasting", operation: "queue_comment")
                 ToastManager.shared.showError("Failed to prepare offline comment")
                 return false
             }
@@ -209,6 +214,7 @@ public class TastingDetailModel {
             appendComment(comment)
             return true
         } catch {
+            Telemetry.capture(error, feature: "tasting", operation: "post_comment")
             ToastManager.shared.showError("Failed to post comment")
             return false
         }
@@ -235,6 +241,7 @@ public class TastingDetailModel {
         do {
             try await tastingRepository.deleteComment(id: comment.id)
         } catch {
+            Telemetry.capture(error, feature: "tasting", operation: "delete_comment")
             commentState = .loaded(comments)
             detail.comments = comments
             detail.commentCount = comments.count

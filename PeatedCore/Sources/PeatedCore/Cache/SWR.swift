@@ -34,7 +34,8 @@ public enum SWR {
                     await onChanged(updated)
                 }
             } catch {
-                // Silently ignore; caller can choose to surface errors elsewhere
+                // The cached snapshot stays on screen; the refresh failure is reported here.
+                Telemetry.capture(error, feature: "snapshot", operation: "refresh")
             }
         }
 

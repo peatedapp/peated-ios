@@ -143,6 +143,7 @@ class ProfileModel {
                 result = (user: currentUser, achievements: loadedAchievements, error: nil)
             }
         } catch {
+            Telemetry.capture(error, feature: "profile", operation: "load")
             result = (user: nil, achievements: [], error: error)
         }
 
@@ -231,6 +232,7 @@ class ProfileModel {
                 user?.friendStatus = User.FriendStatus.pending
             }
         } catch {
+            Telemetry.capture(error, feature: "profile", operation: "toggle_friend")
             self.error = error
         }
     }
@@ -258,6 +260,7 @@ class ProfileModel {
                 limit: 100
             )
         } catch {
+            Telemetry.capture(error, feature: "profile", operation: "load_library")
             libraryError = error
         }
     }

@@ -108,6 +108,7 @@ struct BarcodeScannerCameraView: UIViewRepresentable {
         do {
             videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
         } catch {
+            Telemetry.capture(error, feature: "barcode_scanner", operation: "camera_input")
             return view
         }
 

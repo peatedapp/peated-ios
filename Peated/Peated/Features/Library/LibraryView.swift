@@ -81,6 +81,7 @@ final class LibraryViewModel: ObservableObject {
             return
         } catch {
             guard !Task.isCancelled, generation == loadGeneration else { return }
+            Telemetry.capture(error, feature: "library", operation: "load")
             self.error = error.localizedDescription
         }
     }

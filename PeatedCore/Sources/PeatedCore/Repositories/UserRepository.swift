@@ -53,7 +53,7 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
                     }
                 } catch {
                     // Continue without stats if details fail
-                    print("Failed to fetch user details: \(error)")
+                    Telemetry.capture(error, feature: "user", operation: "load_user_details")
                 }
 
                 // Write-through caches

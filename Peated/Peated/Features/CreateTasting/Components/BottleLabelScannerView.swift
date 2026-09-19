@@ -1,3 +1,4 @@
+import PeatedCore
 import PhotosUI
 import SwiftUI
 import VisionKit
@@ -125,6 +126,7 @@ struct BottleLabelScannerView: View {
             }
             finish(image)
         } catch {
+            Telemetry.capture(error, feature: "label_scanner", operation: "load_photo")
             handleScannerError("We couldn't load that photo. Choose another image and try again.")
         }
     }
@@ -158,6 +160,7 @@ private extension BottleLabelScannerView {
                 do {
                     try scanner.startScanning()
                 } catch {
+                    Telemetry.capture(error, feature: "label_scanner", operation: "start")
                     onScannerError("We couldn't start the label scanner. Choose a photo instead.")
                 }
             }
@@ -195,6 +198,7 @@ private extension BottleLabelScannerView {
                     let image = try await scanner.capturePhoto()
                     parent.onPhotoCaptured(image)
                 } catch {
+                    Telemetry.capture(error, feature: "label_scanner", operation: "capture_photo")
                     parent.onScannerError(
                         "We couldn't capture that photo. Hold the bottle steady and try again."
                     )

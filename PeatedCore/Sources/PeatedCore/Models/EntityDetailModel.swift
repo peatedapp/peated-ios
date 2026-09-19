@@ -64,6 +64,7 @@ public final class EntityDetailModel {
                 }
             }
         } catch {
+            Telemetry.capture(error, feature: "entity", operation: "load")
             if case .loading = state {
                 state = .error(error)
             }
@@ -78,8 +79,8 @@ public final class EntityDetailModel {
             // Fetch bottles for this entity (brand/distillery)
             bottles = try await bottleRepository.getEntityBottles(entityId: entityId)
         } catch {
-            // Log error but don't fail the whole view
-            print("Failed to load bottles for entity: \(error)")
+            // Report but don't fail the whole view
+            Telemetry.capture(error, feature: "entity", operation: "load_bottles")
             bottles = []
         }
     }
@@ -93,8 +94,8 @@ public final class EntityDetailModel {
             let feedPage = try await feedRepository.getEntityTastings(entityId: entityId)
             recentTastings = feedPage.tastings
         } catch {
-            // Log error but don't fail the whole view
-            print("Failed to load tastings for entity: \(error)")
+            // Report but don't fail the whole view
+            Telemetry.capture(error, feature: "entity", operation: "load_tastings")
             recentTastings = []
         }
     }
@@ -118,6 +119,7 @@ public final class EntityDetailModel {
                 ToastManager.shared.showSuccess("Cheers! 🥃")
             }
         } catch {
+            Telemetry.capture(error, feature: "entity", operation: "toggle_toast")
             if let currentIndex = recentTastings.firstIndex(where: { $0.id == tastingId }) {
                 recentTastings[currentIndex] = original
             }
