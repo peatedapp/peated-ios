@@ -137,7 +137,7 @@ public struct LoggingMiddleware: ClientMiddleware {
             data: [
                 "operation": .string(operationID),
                 "method": .string(method),
-                "error_kind": .string(String(describing: type(of: error))),
+                "error_kind": .string(ErrorReport.describe(error).kind),
                 "duration_ms": .int(Int(duration * 1000))
             ]
         ))

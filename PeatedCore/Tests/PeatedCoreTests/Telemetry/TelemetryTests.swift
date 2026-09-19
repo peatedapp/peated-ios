@@ -99,7 +99,7 @@ struct TelemetryTests {
                 recorder.breadcrumbs.first { $0.category == "http" && $0.message == "POST createTasting" }
             )
             #expect(breadcrumb.level == .error)
-            #expect(breadcrumb.data["error_kind"] == .string("URLError"))
+            #expect(breadcrumb.data["error_kind"] == .string("url.\(URLError.Code.badServerResponse.rawValue)"))
         }
     }
 
