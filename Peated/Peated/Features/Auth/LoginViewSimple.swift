@@ -101,8 +101,7 @@ struct LoginViewSimple: View {
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(.onBrand)
                 Text("Continue with Google")
-                    .font(.peatedProse)
-                    .fontWeight(.semibold)
+                    .font(.peatedInteractive)
                     .foregroundColor(.onBrand)
             }
             .frame(maxWidth: .infinity)
@@ -142,8 +141,7 @@ struct LoginViewSimple: View {
     private var loginButton: some View {
         Button(action: handleLogin) {
             Text("Sign In")
-                .font(.peatedProse)
-                .fontWeight(.semibold)
+                .font(.peatedInteractive)
                 .foregroundColor(.onBrand)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -167,9 +165,11 @@ struct LoginViewSimple: View {
                 }
             ) {
                 Text("Sign up")
-                    .font(.peatedProse)
-                    .fontWeight(.medium)
+                    .font(.peatedInteractive)
                     .foregroundColor(.brand)
+                    // Keep the bare text link at the 44-point minimum hit target.
+                    .frame(minHeight: DesignSystem.ControlHeight.standard)
+                    .contentShape(Rectangle())
             }
         }
     }

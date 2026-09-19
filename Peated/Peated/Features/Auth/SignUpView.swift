@@ -146,8 +146,7 @@ struct SignUpView: View {
     private var signUpButton: some View {
         Button(action: handleEmailSignUp) {
             Text("Create Account")
-                .font(.peatedProse)
-                .fontWeight(.semibold)
+                .font(.peatedInteractive)
                 .foregroundColor(.onBrand)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -172,8 +171,7 @@ struct SignUpView: View {
                         .tint(.onBrand)
                 } else {
                     Text("Continue with Google")
-                        .font(.peatedProse)
-                        .fontWeight(.semibold)
+                        .font(.peatedInteractive)
                         .foregroundColor(.onBrand)
                 }
             }
