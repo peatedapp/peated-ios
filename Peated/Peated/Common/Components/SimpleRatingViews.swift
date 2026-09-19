@@ -132,20 +132,20 @@ struct BottleRatingSummaryView: View {
         if let band = summary.presentedBand, summary.presentedCount > 0 {
             HStack(spacing: 5) {
                 Text(band.displayName)
-                    .font(.system(size: fontSize, weight: .semibold))
+                    .font(.custom(PeatedFontName.readingSemiBold, size: fontSize, relativeTo: .footnote))
 
                 if let score = summary.medianScore {
                     Text("\(score)")
-                        .font(.system(size: fontSize, weight: .medium, design: .monospaced))
+                        .font(.custom(PeatedFontName.display, size: fontSize, relativeTo: .footnote).monospacedDigit())
                 } else {
                     Text(band.description)
-                        .font(.system(size: fontSize))
+                        .font(.custom(PeatedFontName.reading, size: fontSize, relativeTo: .footnote))
                         .foregroundColor(.textSecondary)
                 }
 
                 if showCount {
                     Text("(\(summary.presentedCount))")
-                        .font(.system(size: fontSize))
+                        .font(.custom(PeatedFontName.reading, size: fontSize, relativeTo: .footnote))
                         .foregroundColor(.textSecondary)
                 }
             }
@@ -172,7 +172,7 @@ struct BottleRatingStatsView: View {
     var body: some View {
         if counts.total == 0 {
             Text("No ratings yet")
-                .font(.system(size: DesignSystem.FontSize.small))
+                .font(.peatedMetadata)
                 .foregroundColor(.textSecondary)
         } else {
             VStack(spacing: 8) {
@@ -186,17 +186,17 @@ struct BottleRatingStatsView: View {
     private func ratingRow(band: TastingRatingBand, count: Int) -> some View {
         HStack(spacing: 10) {
             Text(band.displayName)
-                .font(.system(size: DesignSystem.FontSize.small, weight: .medium))
+                .font(.peatedInteractiveSmall)
                 .frame(width: 92, alignment: .leading)
 
             Text(band.description)
-                .font(.system(size: DesignSystem.FontSize.caption, design: .monospaced))
+                .font(.peatedCode)
                 .foregroundColor(.textSecondary)
 
             Spacer()
 
             Text("\(count)")
-                .font(.system(size: DesignSystem.FontSize.small, weight: .medium, design: .monospaced))
+                .font(.peatedCode)
                 .foregroundColor(.textSecondary)
                 .frame(minWidth: 28, alignment: .trailing)
         }

@@ -19,7 +19,8 @@ struct UnifiedTastingCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(tasting.bottleName)
-                        .font(.peatedDisplaySerif)
+                        .font(.peatedRowTitle)
+                        .tracking(DesignSystem.Tracking.rowTitle)
                         .foregroundColor(.text)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -27,16 +28,16 @@ struct UnifiedTastingCard: View {
 
                     HStack(spacing: 4) {
                         Text(tasting.bottleBrandName)
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                             .foregroundColor(.textSecondary)
 
                         if let category = tasting.bottleCategory {
                             Text("•")
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                                 .foregroundColor(.textMuted)
 
                             Text(category.capitalized)
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                         }
 
@@ -56,7 +57,7 @@ struct UnifiedTastingCard: View {
             // Notes (truncated for feed)
             if let notes = tasting.notes, !notes.isEmpty {
                 Text(notes)
-                    .font(.peatedBody)
+                    .font(.peatedProse)
                     .foregroundColor(.text)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
@@ -68,7 +69,7 @@ struct UnifiedTastingCard: View {
                     HStack(spacing: 8) {
                         ForEach(tasting.tags, id: \.self) { tag in
                             Text("#\(tag)")
-                                .font(.peatedFootnote)
+                                .font(.peatedMetadata)
                                 .foregroundColor(.textSecondary)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
@@ -110,12 +111,12 @@ struct UnifiedTastingCard: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(tasting.username)
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                             .fontWeight(.medium)
                             .foregroundColor(.text)
 
                         Text(tasting.timeAgo)
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }
                 }
@@ -134,7 +135,7 @@ struct UnifiedTastingCard: View {
                             Image(systemName: tasting.hasToasted ? "hands.clap.fill" : "hands.clap")
                                 .font(.system(size: 16))
                             Text("\(tasting.toastCount)")
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                         }
                         .foregroundColor(tasting.hasToasted ? .brand : .textSecondary)
                     }
@@ -145,7 +146,7 @@ struct UnifiedTastingCard: View {
                             Image(systemName: "bubble.left")
                                 .font(.system(size: 16))
                             Text("\(tasting.commentCount)")
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                         }
                         .foregroundColor(.textSecondary)
                     }
@@ -161,13 +162,13 @@ struct UnifiedTastingCard: View {
 
                     ForEach(Array(tasting.friendUsernames.prefix(3)), id: \.self) { friend in
                         Text("@\(friend)")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.brand)
                     }
 
                     if tasting.friendUsernames.count > 3 {
                         Text("and \(tasting.friendUsernames.count - 3) more")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }
                 }
@@ -201,7 +202,8 @@ struct UnifiedTastingListItem: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(tasting.bottleName)
-                        .font(.peatedDisplaySerif)
+                        .font(.peatedRowTitle)
+                        .tracking(DesignSystem.Tracking.rowTitle)
                         .foregroundColor(.text)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -209,16 +211,16 @@ struct UnifiedTastingListItem: View {
 
                     HStack(spacing: 4) {
                         Text(tasting.bottleBrandName)
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                             .foregroundColor(.textSecondary)
 
                         if let category = tasting.bottleCategory {
                             Text("•")
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                                 .foregroundColor(.textMuted)
 
                             Text(category.capitalized)
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                         }
 
@@ -238,7 +240,7 @@ struct UnifiedTastingListItem: View {
             // Notes (truncated for feed)
             if let notes = tasting.notes, !notes.isEmpty {
                 Text(notes)
-                    .font(.peatedBody)
+                    .font(.peatedProse)
                     .foregroundColor(.text)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
@@ -250,7 +252,7 @@ struct UnifiedTastingListItem: View {
                     HStack(spacing: 8) {
                         ForEach(tasting.tags, id: \.self) { tag in
                             Text("#\(tag)")
-                                .font(.peatedCaption)
+                                .font(.peatedMetadata)
                                 .foregroundColor(.textSecondary)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
@@ -292,12 +294,12 @@ struct UnifiedTastingListItem: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(tasting.username)
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                             .fontWeight(.medium)
                             .foregroundColor(.text)
 
                         Text(tasting.timeAgo)
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }
                 }
@@ -316,7 +318,7 @@ struct UnifiedTastingListItem: View {
                             Image(systemName: tasting.hasToasted ? "hands.clap.fill" : "hands.clap")
                                 .font(.system(size: 16))
                             Text("\(tasting.toastCount)")
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                         }
                         .foregroundColor(tasting.hasToasted ? .brand : .textSecondary)
                     }
@@ -327,7 +329,7 @@ struct UnifiedTastingListItem: View {
                             Image(systemName: "bubble.left")
                                 .font(.system(size: 16))
                             Text("\(tasting.commentCount)")
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                         }
                         .foregroundColor(.textSecondary)
                     }
@@ -343,13 +345,13 @@ struct UnifiedTastingListItem: View {
 
                     ForEach(Array(tasting.friendUsernames.prefix(3)), id: \.self) { friend in
                         Text("@\(friend)")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.brand)
                     }
 
                     if tasting.friendUsernames.count > 3 {
                         Text("and \(tasting.friendUsernames.count - 3) more")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }
                 }

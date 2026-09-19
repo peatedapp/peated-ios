@@ -95,7 +95,7 @@ struct TastingFeedCard: View {
             VStack(alignment: .leading, spacing: 8) {
                 if let excerpt {
                     Text(excerpt)
-                        .font(.peatedBodyText)
+                        .font(.peatedBody)
                         .foregroundColor(.text)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)

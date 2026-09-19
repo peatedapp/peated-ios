@@ -310,22 +310,23 @@ extension SearchView {
             }
 
             if result.type == .bottle, let bottle = result.bottle {
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
                     Text(bottle.fullName)
-                        .font(.system(size: DesignSystem.FontSize.title, weight: .semibold, design: .default))
+                        .font(.peatedRowTitleCompact)
+                        .tracking(DesignSystem.Tracking.rowTitleCompact)
                         .foregroundColor(.text)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
                     HStack(spacing: DesignSystem.Spacing.xSmall) {
                         Text(bottle.brandName)
-                            .font(.system(size: DesignSystem.FontSize.body))
+                            .font(.peatedBody)
                             .foregroundColor(.textSecondary)
                             .lineLimit(1)
                             .truncationMode(.tail)
                         if let category = bottle.category {
                             Text("•").foregroundColor(.textMuted)
                             Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                                .font(.system(size: DesignSystem.FontSize.body))
+                                .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                         }
                     }
@@ -529,9 +530,10 @@ extension SearchView {
                     height: DesignSystem.ImageSize.bottleThumb.height
                 )
 
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
                 Text(bottle.fullName)
-                    .font(.system(size: DesignSystem.FontSize.body, weight: .medium))
+                    .font(.peatedRowTitleCompact)
+                    .tracking(DesignSystem.Tracking.rowTitleCompact)
                     .foregroundColor(.text)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -539,7 +541,7 @@ extension SearchView {
                 HStack(spacing: DesignSystem.Spacing.xSmall) {
                     if let category = bottle.category {
                         Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                            .font(.system(size: DesignSystem.FontSize.small))
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }
 

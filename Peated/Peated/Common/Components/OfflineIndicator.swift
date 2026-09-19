@@ -47,18 +47,18 @@ struct OfflineIndicator: View {
 
             VStack(alignment: .leading, spacing: 0) {
                 Text("You're offline")
-                    .font(.peatedCaption)
+                    .font(.peatedMetadata)
                     .fontWeight(.semibold)
                     .foregroundColor(.onStatus)
                 Text("Changes will sync automatically when you're back online.")
-                    .font(.peatedCaption)
+                    .font(.peatedMetadata)
                     .foregroundColor(.onStatus.opacity(0.9))
             }
 
             if queueManager.pendingCount > 0 {
                 Spacer(minLength: 8)
                 Text("\(queueManager.pendingCount) pending")
-                    .font(.peatedCaption)
+                    .font(.peatedMetadata)
                     .fontWeight(.medium)
                     .foregroundColor(.onStatus)
                     .padding(.horizontal, 8)
@@ -84,7 +84,7 @@ struct OfflineIndicator: View {
                 .scaleEffect(0.7)
 
             Text("Back online — syncing \(queueManager.pendingCount) changes…")
-                .font(.peatedCaption)
+                .font(.peatedMetadata)
                 .fontWeight(.medium)
                 .foregroundColor(.onStatus)
 
@@ -112,7 +112,8 @@ struct OfflineStatusView: View {
                         .foregroundColor(networkMonitor.isConnected ? .success : .danger)
 
                     Text("Network Status")
-                        .font(.peatedHeadline)
+                        .font(.peatedSectionHeading)
+                        .tracking(DesignSystem.Tracking.sectionHeading)
                         .foregroundColor(.text)
 
                     Spacer()
@@ -121,11 +122,11 @@ struct OfflineStatusView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text("Connection:")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
 
                         Text(networkMonitor.isConnected ? "Online" : "Offline")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .fontWeight(.medium)
                             .foregroundColor(networkMonitor.isConnected ? .success : .danger)
                     }
@@ -133,11 +134,11 @@ struct OfflineStatusView: View {
                     if networkMonitor.isConnected {
                         HStack {
                             Text("Type:")
-                                .font(.peatedCaption)
+                                .font(.peatedMetadata)
                                 .foregroundColor(.textSecondary)
 
                             Text(networkMonitor.connectionType.displayName)
-                                .font(.peatedCaption)
+                                .font(.peatedMetadata)
                                 .fontWeight(.medium)
                                 .foregroundColor(.text)
                         }
@@ -149,7 +150,7 @@ struct OfflineStatusView: View {
                                     .foregroundColor(.warning)
 
                                 Text("Expensive connection")
-                                    .font(.peatedCaption)
+                                    .font(.peatedMetadata)
                                     .foregroundColor(.warning)
                             }
                         }
@@ -161,7 +162,7 @@ struct OfflineStatusView: View {
                                     .foregroundColor(.warning)
 
                                 Text("Low data mode")
-                                    .font(.peatedCaption)
+                                    .font(.peatedMetadata)
                                     .foregroundColor(.warning)
                             }
                         }
@@ -181,7 +182,8 @@ struct OfflineStatusView: View {
                             .foregroundColor(.info)
 
                         Text("Pending Sync")
-                            .font(.peatedHeadline)
+                            .font(.peatedSectionHeading)
+                            .tracking(DesignSystem.Tracking.sectionHeading)
                             .foregroundColor(.text)
 
                         Spacer()
@@ -196,11 +198,11 @@ struct OfflineStatusView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
                             Text("Pending:")
-                                .font(.peatedCaption)
+                                .font(.peatedMetadata)
                                 .foregroundColor(.textSecondary)
 
                             Text("\(queueManager.pendingCount) operations")
-                                .font(.peatedCaption)
+                                .font(.peatedMetadata)
                                 .fontWeight(.medium)
                                 .foregroundColor(.text)
                         }
@@ -208,11 +210,11 @@ struct OfflineStatusView: View {
                         if queueManager.failedCount > 0 {
                             HStack {
                                 Text("Failed:")
-                                    .font(.peatedCaption)
+                                    .font(.peatedMetadata)
                                     .foregroundColor(.textSecondary)
 
                                 Text("\(queueManager.failedCount) operations")
-                                    .font(.peatedCaption)
+                                    .font(.peatedMetadata)
                                     .fontWeight(.medium)
                                     .foregroundColor(.danger)
                             }
@@ -226,13 +228,13 @@ struct OfflineStatusView: View {
                             ForEach(Array(queueManager.operationsSummary), id: \.key) { type, count in
                                 HStack {
                                     Text(type.description)
-                                        .font(.peatedCaption)
+                                        .font(.peatedMetadata)
                                         .foregroundColor(.textSecondary)
 
                                     Spacer()
 
                                     Text("\(count)")
-                                        .font(.peatedCaption)
+                                        .font(.peatedMetadata)
                                         .fontWeight(.medium)
                                         .foregroundColor(.text)
                                 }
@@ -251,7 +253,7 @@ struct OfflineStatusView: View {
                                     .font(.system(size: 14))
 
                                 Text("Retry Failed Operations")
-                                    .font(.peatedCaption)
+                                    .font(.peatedMetadata)
                                     .fontWeight(.medium)
                             }
                             .foregroundColor(.info)
@@ -267,7 +269,8 @@ struct OfflineStatusView: View {
             // Network Preferences
             VStack(alignment: .leading, spacing: 12) {
                 Text("Network Preferences")
-                    .font(.peatedHeadline)
+                    .font(.peatedSectionHeading)
+                    .tracking(DesignSystem.Tracking.sectionHeading)
                     .foregroundColor(.text)
                     .padding(.horizontal)
 

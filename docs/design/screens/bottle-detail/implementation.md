@@ -78,7 +78,7 @@ This prevents redundant information display and maintains consistency.
 
 All styling uses the centralized `DesignSystem`:
 - Spacing: `DesignSystem.Spacing`
-- Fonts: prefer semantic fonts like `Font.peatedHeadline` for bottle names (matches feed), `Font.peatedBody` for text, etc.
+- Fonts: prefer semantic fonts like `Font.peatedRowTitle` for bottle names (matches feed), `Font.peatedBody` for text, etc.
 - Colors: use semantic tokens (`Color.background`, `Color.surface`, `Color.text`, `Color.textSecondary`, `Color.border`, status tokens) — avoid platform colors.
 - Corner radius: `DesignSystem.CornerRadius`
 
