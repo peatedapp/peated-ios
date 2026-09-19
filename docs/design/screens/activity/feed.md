@@ -2,7 +2,11 @@
 
 ## Overview
 
-The Activity Feed is the main screen of the app, displaying a chronological feed of whisky tastings from the user's network and the global community. It follows the Untappd model with three feed types: Friends, You, and Global.
+The Activity Feed is the main screen of the app, displaying a chronological feed of whisky tastings, member reviews, critic reviews, and library additions from the user's network and the global community. It reads the same activity endpoint as the web activity page and has two feeds, Global and Friends, matching the web. Global is the default, the last selection is remembered on the device, and critic reviews appear only in Global.
+
+Each entry mirrors the web activity row: a header line (avatar, actor, action, relative time), then the bottle identity row with a 42×58 thumbnail, the marketed bottle name, provenance (distillers and category), and release facts (release or vintage, age or NAS, ABV), and finally the excerpt, tasting-note chips (four plus "+N more"), and any byline. Bottle names, provenance, and metadata come from `BottleIdentity`, which ports the web's display-name rules.
+
+The rating sits on the trailing edge of the bottle row and shows what its source uses: tastings show one of the five named bands over its range ("Very good" / "85–89 range"), member reviews show a whole-number score out of 100 with the band that score falls in, and critic reviews show the publication's native score, named with a band only when the scale is 100 points. Band names use the deep accent color; scores use the display face at 26pt.
 
 ## Visual Layout
 
@@ -11,7 +15,7 @@ The Activity Feed is the main screen of the app, displaying a chronological feed
 │   Activity              •               │ (New activity indicator)
 ├─────────────────────────────────────────┤
 │                                         │
-│  [ Friends ]  [ You ]  [ Global ]       │ (Segmented Control)
+│  [ Global ]  [ Friends ]                │ (Segmented Control)
 │                                         │
 ├─────────────────────────────────────────┤
 │                                         │

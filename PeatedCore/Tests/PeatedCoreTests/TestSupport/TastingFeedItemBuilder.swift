@@ -164,17 +164,22 @@ public extension TastingFeedItem {
     }
 }
 
-// MARK: - FeedPage Test Helpers
+// MARK: - ActivityPage Test Helpers
 
-public extension FeedPage {
+public extension ActivityPage {
+    /// A page made only of tastings, the common case in feed model tests.
+    init(tastings: [TastingFeedItem], cursor: String?, hasMore: Bool) {
+        self.init(entries: tastings.map(ActivityFeedEntry.tasting), cursor: cursor, hasMore: hasMore)
+    }
+
     /// Empty feed page for tests
-    static var empty: FeedPage {
-        FeedPage(tastings: [], cursor: nil, hasMore: false)
+    static var empty: ActivityPage {
+        ActivityPage(tastings: [], cursor: nil, hasMore: false)
     }
 
     /// Single item feed page
-    static var singleItem: FeedPage {
-        FeedPage(
+    static var singleItem: ActivityPage {
+        ActivityPage(
             tastings: [TastingFeedItem.sample1],
             cursor: "123",
             hasMore: true
@@ -182,8 +187,8 @@ public extension FeedPage {
     }
 
     /// Multiple items feed page
-    static var multipleItems: FeedPage {
-        FeedPage(
+    static var multipleItems: ActivityPage {
+        ActivityPage(
             tastings: [
                 TastingFeedItem.sample1,
                 TastingFeedItem.sample2,
@@ -195,7 +200,7 @@ public extension FeedPage {
     }
 
     /// Full page (20 items) for pagination testing
-    static var fullPage: FeedPage {
+    static var fullPage: ActivityPage {
         let tastings = (1 ... 20).map { index in
             TastingFeedItem.builder()
                 .withId("item\(index)")
@@ -204,6 +209,6 @@ public extension FeedPage {
                 .withRatingBand(TastingRatingBand.allCases.randomElement())
                 .build()
         }
-        return FeedPage(tastings: tastings, cursor: "999", hasMore: true)
+        return ActivityPage(tastings: tastings, cursor: "999", hasMore: true)
     }
 }

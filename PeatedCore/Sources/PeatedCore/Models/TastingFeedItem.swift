@@ -30,6 +30,9 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
     public let tags: [String]
     public let location: String?
     public let friendUsernames: [String]
+    /// Identity lines for the bottle row. Nil only for tastings cached before
+    /// these lines existed; rows then fall back to the bottle name and brand.
+    public let bottleIdentity: BottleIdentity?
 
     public init(
         id: String,
@@ -52,7 +55,8 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
         hasToasted: Bool,
         tags: [String],
         location: String?,
-        friendUsernames: [String]
+        friendUsernames: [String],
+        bottleIdentity: BottleIdentity? = nil
     ) {
         self.id = id
         self.ratingBand = ratingBand
@@ -75,6 +79,7 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
         self.tags = tags
         self.location = location
         self.friendUsernames = friendUsernames
+        self.bottleIdentity = bottleIdentity
     }
 
     public var displayUsername: String {
@@ -111,7 +116,22 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
             hasToasted: hasToasted,
             tags: tags,
             location: location,
-            friendUsernames: friendUsernames
+            friendUsernames: friendUsernames,
+            bottleIdentity: bottleIdentity
+        )
+    }
+
+    /// The bottle row for this tasting. Tastings cached before identity lines
+    /// existed fall back to the stored name and category.
+    public var bottle: ActivityBottleSummary {
+        ActivityBottleSummary(
+            id: bottleId,
+            imageUrl: bottleImageUrl,
+            identity: bottleIdentity ?? BottleIdentity(
+                name: bottleName,
+                provenance: [BottleDisplayName.categoryName(bottleCategory)].compactMap(\.self),
+                metadata: []
+            )
         )
     }
 

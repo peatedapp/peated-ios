@@ -65,30 +65,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         case let .ok(okResponse):
             switch okResponse.body {
             case let .json(payload):
-                // Map to TastingFeedItem
-                return TastingFeedItem(
-                    id: String(Int(payload.id)),
-                    ratingBand: payload.ratingBand.map(TastingRatingBand.init),
-                    notes: payload.notes,
-                    servingStyle: payload.servingStyle?.rawValue,
-                    imageUrl: payload.imageUrl,
-                    createdAt: payload.createdAt,
-                    userId: String(Int(payload.createdBy.id)),
-                    username: payload.createdBy.username,
-                    userDisplayName: nil,
-                    userAvatarUrl: payload.createdBy.pictureUrl,
-                    bottleId: String(Int(payload.bottle.id)),
-                    bottleName: payload.bottle.fullName,
-                    bottleBrandName: payload.bottle.brand.name,
-                    bottleCategory: payload.bottle.category?.rawValue,
-                    bottleImageUrl: payload.bottle.imageUrl,
-                    toastCount: Int(payload.toasts),
-                    commentCount: Int(payload.comments),
-                    hasToasted: payload.hasToasted ?? false,
-                    tags: payload.tags ?? [],
-                    location: nil,
-                    friendUsernames: payload.friends?.map(\.username) ?? []
-                )
+                return TastingFeedItem.from(payload)
             }
         case .unauthorized:
             throw APIError.unauthorized
@@ -137,34 +114,7 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         case let .ok(createdResponse):
             switch createdResponse.body {
             case let .json(payload):
-                // Extract the tasting from the response payload
-                let tasting = payload.tasting
-                let apiUser = tasting.createdBy
-                let apiBottle = tasting.bottle
-
-                return TastingFeedItem(
-                    id: String(Int(tasting.id)),
-                    ratingBand: tasting.ratingBand.map(TastingRatingBand.init),
-                    notes: tasting.notes,
-                    servingStyle: tasting.servingStyle?.rawValue,
-                    imageUrl: tasting.imageUrl,
-                    createdAt: tasting.createdAt,
-                    userId: String(Int(apiUser.id)),
-                    username: apiUser.username,
-                    userDisplayName: nil,
-                    userAvatarUrl: apiUser.pictureUrl,
-                    bottleId: String(Int(apiBottle.id)),
-                    bottleName: apiBottle.fullName,
-                    bottleBrandName: apiBottle.brand.name,
-                    bottleCategory: apiBottle.category?.rawValue,
-                    bottleImageUrl: apiBottle.imageUrl,
-                    toastCount: Int(tasting.toasts),
-                    commentCount: Int(tasting.comments),
-                    hasToasted: tasting.hasToasted ?? false,
-                    tags: tasting.tags ?? [],
-                    location: nil,
-                    friendUsernames: tasting.friends?.map(\.username) ?? []
-                )
+                return TastingFeedItem.from(payload.tasting)
             }
         case .badRequest:
             throw APIError.requestFailed("Invalid tasting data")

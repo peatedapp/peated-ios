@@ -12,6 +12,7 @@ protocol AppTheme {
     var surface: Color { get }
     var surfaceSubtle: Color { get }
     var border: Color { get }
+    var sectionRule: Color { get }
     var formSurface: Color { get }
     var formBorder: Color { get }
     // App chrome (nav/tab bars)
@@ -53,6 +54,7 @@ struct CreamTheme: AppTheme {
         static let surface = Color(hex: "#EBEEE7")
         static let surfaceSubtle = Color(hex: "#DCE0D6")
         static let border = Color(hex: "#161914").opacity(0.11)
+        static let sectionRule = Color(hex: "#161914").opacity(0.16)
         static let formSurface = Color(hex: "#DCE0D6")
         static let formBorder = Color(hex: "#161914").opacity(0.28)
         static let chrome = Color(hex: "#F7F8F5").opacity(0.95)
@@ -86,6 +88,7 @@ struct CreamTheme: AppTheme {
         static let surface = Color(hex: "#1B1E1A")
         static let surfaceSubtle = Color(hex: "#2B2F29")
         static let border = Color(hex: "#E8EAE3").opacity(0.11)
+        static let sectionRule = Color(hex: "#E8EAE3").opacity(0.16)
         static let formSurface = Color(hex: "#2B2F29")
         static let formBorder = Color(hex: "#E8EAE3").opacity(0.32)
         static let chrome = Color(hex: "#101210").opacity(0.95)
@@ -148,6 +151,10 @@ struct CreamTheme: AppTheme {
 
     var border: Color {
         dynamic(PaletteLight.border, PaletteDark.border)
+    }
+
+    var sectionRule: Color {
+        dynamic(PaletteLight.sectionRule, PaletteDark.sectionRule)
     }
 
     var formSurface: Color {

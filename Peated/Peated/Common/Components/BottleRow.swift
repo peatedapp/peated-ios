@@ -19,7 +19,7 @@ struct BottleRow: View {
             case let .lastTasting(tasting):
                 HStack(spacing: DesignSystem.Spacing.xSmall) {
                     if let band = tasting.ratingBand {
-                        TastingRatingView(band: band, fontSize: DesignSystem.FontSize.tiny)
+                        TastingRatingView(band: band, size: .small)
                     }
 
                     Text("Last: \(tasting.timeAgo)")

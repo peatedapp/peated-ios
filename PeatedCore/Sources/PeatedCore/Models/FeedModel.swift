@@ -1,16 +1,15 @@
 import Foundation
 import PeatedAPI
 
+/// The two feeds the app offers, in tab order. Global is the default, as on the web.
 public enum FeedType: String, CaseIterable, Sendable {
-    case friends
-    case personal = "self"
     case global
+    case friends
 
     public var displayName: String {
         switch self {
-        case .friends: "Friends"
-        case .personal: "You"
         case .global: "Global"
+        case .friends: "Friends"
         }
     }
 }
@@ -23,12 +22,12 @@ private final class ObserverHolder: @unchecked Sendable {
 @Observable
 @MainActor
 public class FeedModel {
-    public private(set) var tastings: [TastingFeedItem] = []
+    public private(set) var entries: [ActivityFeedEntry] = []
     public private(set) var isLoading = false
     public private(set) var isSwitchingFeed = false
     public var error: Error?
     public private(set) var hasMore = true
-    public var selectedFeedType: FeedType = .friends
+    public var selectedFeedType: FeedType
 
     private var cursor: String?
     private let feedRepository: any FeedRepositoryProtocol
@@ -42,7 +41,7 @@ public class FeedModel {
 
     /// Cache for each feed type
     private struct FeedCache {
-        var tastings: [TastingFeedItem] = []
+        var entries: [ActivityFeedEntry] = []
         var cursor: String?
         var hasMore: Bool = true
         var lastUpdated: Date?
@@ -54,8 +53,8 @@ public class FeedModel {
         }
 
         var memorySizeBytes: Int {
-            // Rough estimate: each TastingFeedItem is ~500 bytes on average
-            tastings.count * 500
+            // Rough estimate: each entry is ~500 bytes on average
+            entries.count * 500
         }
     }
 
@@ -66,13 +65,17 @@ public class FeedModel {
     private let maxItemsPerFeed = 500 // Reasonable limit per feed type
 
     private let tastingRepository: TastingRepository
+    private let selectionStore: any FeedSelectionStore
 
     public init(
         feedRepository: (any FeedRepositoryProtocol)? = nil,
-        tastingRepository: TastingRepository? = nil
+        tastingRepository: TastingRepository? = nil,
+        selectionStore: any FeedSelectionStore = UserDefaultsFeedSelectionStore()
     ) {
         self.feedRepository = feedRepository ?? FeedRepository()
         self.tastingRepository = tastingRepository ?? TastingRepository()
+        self.selectionStore = selectionStore
+        selectedFeedType = selectionStore.loadSelection() ?? .global
 
         // Set up notification observer after initialization
         Task { @MainActor in
@@ -141,25 +144,25 @@ public class FeedModel {
         }
 
         do {
-            let feedPage: FeedPage
+            let feedPage: ActivityPage
 
             if refresh {
-                feedPage = try await feedRepository.refreshFeed(type: feedType)
+                feedPage = try await feedRepository.refreshActivity(type: feedType)
                 if updateUI {
-                    tastings = feedPage.tastings
+                    entries = feedPage.entries
                 }
             } else {
                 // For background loads, we need to get the current cursor from cache
                 let currentCursor = updateUI ? cursor : feedCaches[feedType]?.cursor
 
-                feedPage = try await feedRepository.getFeed(
+                feedPage = try await feedRepository.getActivity(
                     type: feedType,
                     cursor: currentCursor,
                     limit: 20
                 )
 
                 if updateUI {
-                    tastings.append(contentsOf: feedPage.tastings)
+                    entries.append(contentsOf: feedPage.entries)
                 }
             }
 
@@ -170,7 +173,7 @@ public class FeedModel {
             if refresh || feedCaches[feedType] == nil {
                 // For refresh or new cache, replace entirely
                 var newCache = FeedCache(
-                    tastings: feedPage.tastings,
+                    entries: feedPage.entries,
                     cursor: feedPage.cursor,
                     hasMore: feedPage.hasMore,
                     lastUpdated: Date()
@@ -182,7 +185,7 @@ public class FeedModel {
             } else {
                 // For pagination, append to existing cache
                 var existingCache = feedCaches[feedType] ?? FeedCache()
-                existingCache.tastings.append(contentsOf: feedPage.tastings)
+                existingCache.entries.append(contentsOf: feedPage.entries)
                 existingCache.cursor = feedPage.cursor
                 existingCache.hasMore = feedPage.hasMore
                 existingCache.lastUpdated = Date()
@@ -197,14 +200,14 @@ public class FeedModel {
 
             // Update UI state if this is for the current feed and we're updating UI
             if updateUI {
-                tastings = feedCaches[feedType]?.tastings ?? []
+                entries = feedCaches[feedType]?.entries ?? []
                 cursor = feedCaches[feedType]?.cursor
                 hasMore = feedCaches[feedType]?.hasMore ?? false
             }
 
             // If this background load was for the currently selected feed, update UI
             if !updateUI, feedType == selectedFeedType {
-                tastings = feedCaches[feedType]?.tastings ?? []
+                entries = feedCaches[feedType]?.entries ?? []
                 cursor = feedCaches[feedType]?.cursor
                 hasMore = feedCaches[feedType]?.hasMore ?? true
             }
@@ -240,11 +243,12 @@ public class FeedModel {
         }
 
         selectedFeedType = type
+        selectionStore.saveSelection(type)
 
         // Check if we have cached data for this feed type
         if let cache = feedCaches[type], !cache.isExpired {
             // Use cached data immediately
-            tastings = cache.tastings
+            entries = cache.entries
             cursor = cache.cursor
             hasMore = cache.hasMore
             error = nil
@@ -266,7 +270,7 @@ public class FeedModel {
         } else {
             // No cache or expired, show loading state
             isSwitchingFeed = true
-            tastings = []
+            entries = []
             cursor = nil
             hasMore = true
             error = nil
@@ -277,14 +281,14 @@ public class FeedModel {
         }
     }
 
-    public func loadMoreIfNeeded(currentItem: TastingFeedItem) async {
+    public func loadMoreIfNeeded(currentEntry: ActivityFeedEntry) async {
         guard hasMore, !isLoading else { return }
 
-        // Find the index of current item
-        guard let currentIndex = tastings.firstIndex(where: { $0.id == currentItem.id }) else { return }
+        // Find the index of current entry
+        guard let currentIndex = entries.firstIndex(where: { $0.id == currentEntry.id }) else { return }
 
-        // Trigger loading when user reaches 3rd item from the end
-        let triggerIndex = max(0, tastings.count - 3)
+        // Trigger loading when user reaches 3rd entry from the end
+        let triggerIndex = max(0, entries.count - 3)
 
         if currentIndex >= triggerIndex {
             await loadFeed(refresh: false)
@@ -310,12 +314,12 @@ public class FeedModel {
 
     /// Reloads data from cache for the current feed type
     private func reloadFromCache() async {
-        guard let cache = feedCaches[selectedFeedType], !cache.tastings.isEmpty else {
+        guard let cache = feedCaches[selectedFeedType], !cache.entries.isEmpty else {
             return
         }
 
         // Update UI with cached data
-        tastings = cache.tastings
+        entries = cache.entries
         cursor = cache.cursor
         hasMore = cache.hasMore
     }
@@ -326,14 +330,14 @@ public class FeedModel {
     private func enforceMemoryLimits(for cache: FeedCache) -> FeedCache {
         var limitedCache = cache
 
-        // Limit by number of items first (most important for performance)
-        if limitedCache.tastings.count > maxItemsPerFeed {
+        // Limit by number of entries first (most important for performance)
+        if limitedCache.entries.count > maxItemsPerFeed {
             // Keep the most recent items (preserve chronological order)
-            limitedCache.tastings = Array(limitedCache.tastings.suffix(maxItemsPerFeed))
+            limitedCache.entries = Array(limitedCache.entries.suffix(maxItemsPerFeed))
 
             // When we truncate, we might not have more items even if the original response said we did
             // This is a conservative approach to prevent endless pagination loops
-            if limitedCache.tastings.count < cache.tastings.count {
+            if limitedCache.entries.count < cache.entries.count {
                 limitedCache.hasMore = false
             }
         }
@@ -371,11 +375,11 @@ public class FeedModel {
         // If we're still over the limit, truncate the current feed cache
         if currentMemoryUsage > maxCacheSizeBytes,
            var currentCache = feedCaches[selectedFeedType],
-           currentCache.tastings.count > 50 { // Keep at least 50 items
+           currentCache.entries.count > 50 { // Keep at least 50 items
 
             // Reduce current cache by half
-            let targetCount = max(50, currentCache.tastings.count / 2)
-            currentCache.tastings = Array(currentCache.tastings.suffix(targetCount))
+            let targetCount = max(50, currentCache.entries.count / 2)
+            currentCache.entries = Array(currentCache.entries.suffix(targetCount))
             feedCaches[selectedFeedType] = currentCache
 
             print("FeedModel: Truncated current feed cache to \(targetCount) items")
@@ -385,18 +389,18 @@ public class FeedModel {
     /// Returns current memory usage statistics (for debugging/monitoring)
     public var cacheMemoryUsage: (totalBytes: Int, feedCounts: [FeedType: Int]) {
         let totalBytes = feedCaches.values.reduce(0) { $0 + $1.memorySizeBytes }
-        let feedCounts = feedCaches.mapValues { $0.tastings.count }
+        let feedCounts = feedCaches.mapValues { $0.entries.count }
         return (totalBytes, feedCounts)
     }
 
     /// Check if we have any data (cached or current) for the selected feed
     public var hasData: Bool {
-        !tastings.isEmpty || feedCaches[selectedFeedType]?.tastings.isEmpty == false
+        !entries.isEmpty || feedCaches[selectedFeedType]?.entries.isEmpty == false
     }
 
     /// Check if we're in an error state with no data to show
     public var isErrorWithNoData: Bool {
-        error != nil && tastings.isEmpty
+        error != nil && entries.isEmpty
     }
 
     /// Clear the error state
@@ -408,12 +412,10 @@ public class FeedModel {
 
     /// Toggle toast for a tasting with optimistic UI update and offline support
     public func toggleToast(for tastingId: String) async {
-        // Find the tasting in current feed
-        guard let tastingIndex = tastings.firstIndex(where: { $0.id == tastingId }) else {
+        // Find the tasting in the current feed; only tasting entries can be toasted
+        guard let currentTasting = entries.lazy.compactMap(\.tasting).first(where: { $0.id == tastingId }) else {
             return
         }
-
-        let currentTasting = tastings[tastingIndex]
         let newToastedState = !currentTasting.hasToasted
         let isConnected = NetworkMonitor.shared.isConnected
         let offlineOperation: OfflineOperation?
@@ -434,7 +436,7 @@ public class FeedModel {
         }
 
         // Optimistic update - immediately update UI and every cached feed
-        replaceTasting(id: tastingId, with: Self.toasted(currentTasting, hasToasted: newToastedState))
+        replaceTasting(with: Self.toasted(currentTasting, hasToasted: newToastedState))
 
         // Check network status
         if let offlineOperation {
@@ -458,7 +460,7 @@ public class FeedModel {
                 // Update UI with the state the server confirmed
                 let correctTasting = Self.toasted(currentTasting, hasToasted: actualToastedState)
                 await MainActor.run {
-                    replaceTasting(id: tastingId, with: correctTasting)
+                    replaceTasting(with: correctTasting)
                 }
 
             } catch {
@@ -474,7 +476,7 @@ public class FeedModel {
                     } catch {
                         Telemetry.capture(error, feature: "feed", operation: "queue_toast")
                         await MainActor.run {
-                            replaceTasting(id: tastingId, with: currentTasting)
+                            replaceTasting(with: currentTasting)
                             ToastManager.shared.showError("Failed to prepare offline toast")
                         }
                     }
@@ -482,7 +484,7 @@ public class FeedModel {
                     Telemetry.capture(error, feature: "feed", operation: "toggle_toast")
                     // Revert optimistic update on error
                     await MainActor.run {
-                        replaceTasting(id: tastingId, with: currentTasting)
+                        replaceTasting(with: currentTasting)
 
                         // Don't set general error for toast failures - they're user-specific actions
                         // Show specific error message via ToastManager
@@ -500,13 +502,14 @@ public class FeedModel {
     }
 
     /// Replaces a tasting in the visible feed and in every cached feed that contains it.
-    private func replaceTasting(id: String, with tasting: TastingFeedItem) {
-        if let index = tastings.firstIndex(where: { $0.id == id }) {
-            tastings[index] = tasting
+    private func replaceTasting(with tasting: TastingFeedItem) {
+        let entryId = ActivityFeedEntry.tasting(tasting).id
+        if let index = entries.firstIndex(where: { $0.id == entryId }) {
+            entries[index] = .tasting(tasting)
         }
         for feedType in feedCaches.keys {
-            if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == id }) {
-                feedCaches[feedType]?.tastings[cacheIndex] = tasting
+            if let cacheIndex = feedCaches[feedType]?.entries.firstIndex(where: { $0.id == entryId }) {
+                feedCaches[feedType]?.entries[cacheIndex] = .tasting(tasting)
             }
         }
     }
@@ -534,7 +537,8 @@ public class FeedModel {
             hasToasted: hasToasted,
             tags: tasting.tags,
             location: tasting.location,
-            friendUsernames: tasting.friendUsernames
+            friendUsernames: tasting.friendUsernames,
+            bottleIdentity: tasting.bottleIdentity
         )
     }
 

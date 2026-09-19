@@ -32,6 +32,11 @@ extension Color {
         ThemeProvider.current.border
     }
 
+    /// Stronger hairline for chip and section outlines.
+    static var sectionRule: Color {
+        ThemeProvider.current.sectionRule
+    }
+
     static var formSurface: Color {
         ThemeProvider.current.formSurface
     }

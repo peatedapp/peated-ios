@@ -615,7 +615,8 @@ struct ProfileView: View {
             hasToasted: newToastedState,
             tags: currentTasting.tags,
             location: currentTasting.location,
-            friendUsernames: currentTasting.friendUsernames
+            friendUsernames: currentTasting.friendUsernames,
+            bottleIdentity: currentTasting.bottleIdentity
         )
 
         // Optimistic update
@@ -652,7 +653,8 @@ struct ProfileView: View {
                 hasToasted: actualToastedState,
                 tags: currentTasting.tags,
                 location: currentTasting.location,
-                friendUsernames: currentTasting.friendUsernames
+                friendUsernames: currentTasting.friendUsernames,
+                bottleIdentity: currentTasting.bottleIdentity
             )
 
             if let currentIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) {
