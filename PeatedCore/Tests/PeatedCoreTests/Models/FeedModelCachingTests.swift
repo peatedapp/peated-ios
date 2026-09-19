@@ -11,17 +11,17 @@ struct FeedModelCachingTests {
     func feedDataIsCached() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure mock to return sample data
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // When - Load friends feed for the first time
         await model.switchFeedType(.friends)
         let firstCallCount = mockRepository.getFeedCallCount
 
         // Switch to a different feed type
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
 
         // Switch back to friends feed
         await model.switchFeedType(.friends)
@@ -29,28 +29,28 @@ struct FeedModelCachingTests {
 
         // Then
         #expect(firstCallCount == 1, "Should make initial API call")
-        #expect(secondCallCount == 2, "Should only load the uncached personal feed")
-        #expect(model.tastings.count == 1, "Should show cached data")
-        #expect(model.tastings.first?.id == "sample1", "Should show correct cached item")
+        #expect(secondCallCount == 2, "Should only load the uncached global feed")
+        #expect(model.entries.count == 1, "Should show cached data")
+        #expect(model.entries.first?.tasting?.id == "sample1", "Should show correct cached item")
     }
 
     @Test("Different feed types have separate caches")
     func separateCachesForDifferentFeedTypes() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure different data for different feed types
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // When - Load friends feed
         await model.switchFeedType(.friends)
         let friendsCallCount = mockRepository.getFeedCallCount
 
-        // Configure different data for personal feed
-        mockRepository.mockFeedPage = .multipleItems
-        await model.switchFeedType(.personal)
-        let personalCallCount = mockRepository.getFeedCallCount
+        // Configure different data for global feed
+        mockRepository.mockPage = .multipleItems
+        await model.switchFeedType(.global)
+        let globalCallCount = mockRepository.getFeedCallCount
 
         // Switch back to friends
         await model.switchFeedType(.friends)
@@ -58,9 +58,9 @@ struct FeedModelCachingTests {
 
         // Then
         #expect(friendsCallCount == 1, "Should load friends feed")
-        #expect(personalCallCount == 2, "Should load personal feed (separate cache)")
+        #expect(globalCallCount == 2, "Should load global feed (separate cache)")
         #expect(finalCallCount == 2, "Should use cached friends data")
-        #expect(model.tastings.count == 1, "Should show cached friends data")
+        #expect(model.entries.count == 1, "Should show cached friends data")
     }
 
     // MARK: - Pull to Refresh Tests
@@ -69,16 +69,16 @@ struct FeedModelCachingTests {
     func pullToRefreshClearsCache() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Initial load with sample1
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
         await model.switchFeedType(.friends)
 
-        #expect(model.tastings.first?.id == "sample1", "Initial data should be sample1")
+        #expect(model.entries.first?.tasting?.id == "sample1", "Initial data should be sample1")
 
         // When - Simulate updated data from server
-        mockRepository.mockFeedPage = FeedPage(
+        mockRepository.mockPage = ActivityPage(
             tastings: [TastingFeedItem.sample2], // Different data
             cursor: "new_cursor",
             hasMore: false
@@ -89,14 +89,14 @@ struct FeedModelCachingTests {
 
         // Then
         #expect(mockRepository.refreshFeedCallCount == 1, "Should call refresh")
-        #expect(model.tastings.first?.id == "sample2", "Should show updated data")
+        #expect(model.entries.first?.tasting?.id == "sample2", "Should show updated data")
         #expect(model.hasMore == false, "Should update hasMore state")
 
         // Verify cache was updated by switching away and back
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         await model.switchFeedType(.friends)
 
-        #expect(model.tastings.first?.id == "sample2", "Cache should contain updated data")
+        #expect(model.entries.first?.tasting?.id == "sample2", "Cache should contain updated data")
     }
 
     // MARK: - Error Handling Tests
@@ -105,7 +105,7 @@ struct FeedModelCachingTests {
     func networkErrorDuringInitialLoad() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure repository to throw error
         struct TestError: Error {}
@@ -116,7 +116,7 @@ struct FeedModelCachingTests {
 
         // Then
         #expect(model.error != nil, "Should set error state")
-        #expect(model.tastings.isEmpty, "Should have no tastings")
+        #expect(model.entries.isEmpty, "Should have no tastings")
         #expect(model.isLoading == false, "Should not be loading")
     }
 
@@ -126,11 +126,11 @@ struct FeedModelCachingTests {
     func loadingStatesDuringFeedSwitching() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure slow network response
         mockRepository.networkDelay = 0.1
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // When - Switch to friends feed (no cache)
         let switchTask = Task {
@@ -146,10 +146,10 @@ struct FeedModelCachingTests {
         // Then - After load completes
         #expect(model.isSwitchingFeed == false, "Should not be switching feed")
         #expect(model.isLoading == false, "Should not be loading")
-        #expect(model.tastings.count == 1, "Should have loaded data")
+        #expect(model.entries.count == 1, "Should have loaded data")
 
         // When - Switch to cached feed (should be instant)
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         await model.switchFeedType(.friends) // Back to cached data
 
         // Then - Should not show loading states for cached data
@@ -161,10 +161,10 @@ struct FeedModelCachingTests {
     func cachePreservesPaginationState() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure initial page
-        mockRepository.mockFeedPage = FeedPage(
+        mockRepository.mockPage = ActivityPage(
             tastings: [TastingFeedItem.sample1],
             cursor: "page1_cursor",
             hasMore: true
@@ -174,15 +174,15 @@ struct FeedModelCachingTests {
         await model.switchFeedType(.friends)
 
         // Verify initial state
-        #expect(model.tastings.count == 1, "Should have initial items")
+        #expect(model.entries.count == 1, "Should have initial items")
         #expect(model.hasMore == true, "Should have more items")
 
         // Switch away and back
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         await model.switchFeedType(.friends)
 
         // Then - Pagination state should be preserved
-        #expect(model.tastings.count == 1, "Should preserve tasting count")
+        #expect(model.entries.count == 1, "Should preserve tasting count")
         #expect(model.hasMore == true, "Should preserve hasMore state")
     }
 
@@ -192,11 +192,11 @@ struct FeedModelCachingTests {
     func cachePerformance() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure repository with network delay
         mockRepository.networkDelay = 0.2 // 200ms delay
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // When - First load (network)
         let networkStartTime = Date()
@@ -204,7 +204,7 @@ struct FeedModelCachingTests {
         let networkDuration = Date().timeIntervalSince(networkStartTime)
 
         // Switch away
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
 
         // Switch back (cache)
         let cacheStartTime = Date()
@@ -223,22 +223,22 @@ struct FeedModelCachingTests {
     func refreshCurrentFeedClearsOnlyCurrentCache() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Load friends feed
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
         await model.switchFeedType(.friends)
 
-        // Load personal feed
-        mockRepository.mockFeedPage = .multipleItems
-        await model.switchFeedType(.personal)
+        // Load global feed
+        mockRepository.mockPage = .multipleItems
+        await model.switchFeedType(.global)
 
         // Switch back to friends
         await model.switchFeedType(.friends)
         let callCountBeforeRefresh = mockRepository.totalCallCount
 
         // When - Refresh current feed (friends)
-        mockRepository.mockFeedPage = FeedPage(
+        mockRepository.mockPage = ActivityPage(
             tastings: [TastingFeedItem.sample3],
             cursor: nil,
             hasMore: false
@@ -246,14 +246,14 @@ struct FeedModelCachingTests {
         await model.refreshCurrentFeed()
 
         // Then - Friends cache should be cleared and reloaded
-        #expect(model.tastings.first?.id == "sample3", "Should show refreshed data")
+        #expect(model.entries.first?.tasting?.id == "sample3", "Should show refreshed data")
 
-        // Switch to personal feed - should still use cache
-        await model.switchFeedType(.personal)
+        // Switch to global feed - should still use cache
+        await model.switchFeedType(.global)
         let finalCallCount = mockRepository.totalCallCount
 
-        #expect(model.tastings.count == 3, "Personal feed should still be cached")
-        #expect(finalCallCount == callCountBeforeRefresh + 1, "Should only refresh friends, not personal")
+        #expect(model.entries.count == 3, "Global feed should still be cached")
+        #expect(finalCallCount == callCountBeforeRefresh + 1, "Should only refresh friends, not global")
     }
 
     // MARK: - Edge Cases
@@ -262,24 +262,24 @@ struct FeedModelCachingTests {
     func emptyFeedCaching() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure empty response
-        mockRepository.mockFeedPage = .empty
+        mockRepository.mockPage = .empty
 
         // When
         await model.switchFeedType(.friends)
         let firstCallCount = mockRepository.getFeedCallCount
 
         // Switch away and back
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         await model.switchFeedType(.friends)
         let secondCallCount = mockRepository.getFeedCallCount
 
         // Then
         #expect(firstCallCount == 1, "Should make initial call")
-        #expect(secondCallCount == 2, "Should only load the uncached personal feed")
-        #expect(model.tastings.isEmpty, "Should show empty cached result")
+        #expect(secondCallCount == 2, "Should only load the uncached global feed")
+        #expect(model.entries.isEmpty, "Should show empty cached result")
         #expect(model.hasMore == false, "Should cache hasMore state")
     }
 
@@ -287,22 +287,22 @@ struct FeedModelCachingTests {
     func rapidFeedSwitching() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // When - Load friends feed first
         await model.switchFeedType(.friends)
 
         // Rapid switching
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         await model.switchFeedType(.global)
         await model.switchFeedType(.friends) // Back to cached
-        await model.switchFeedType(.personal) // New load
+        await model.switchFeedType(.global) // New load
         await model.switchFeedType(.friends) // Cached again
 
         // Then
         #expect(mockRepository.getFeedCallCount <= 3, "Should minimize API calls through caching")
-        #expect(model.tastings.count == 1, "Should show correct final data")
+        #expect(model.entries.count == 1, "Should show correct final data")
     }
 }

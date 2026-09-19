@@ -56,7 +56,7 @@ The shared light and dark colors, system appearance setting, compact corners, he
 3. **In progress:** update colors, fonts, spacing, corners, dividers, controls, and shadows. The actual web font files still need to be found and added to the app.
 4. **In progress:** update shared rows, ratings, fields, buttons, filters, lists, loading screens, empty screens, and errors from the web examples.
 5. **In progress:** update complete user flows, beginning with the app shell and search → bottle → tasting path.
-6. **Next:** add member reviews and other new features after the shared bottle and rating work is complete.
+6. **In progress:** the activity feed now reads the combined activity endpoints and shows tastings, member reviews with their 0–100 scores, critic reviews with the publication's own score scale, and library additions. Writing member reviews, and a member review detail screen, remain to be added.
 7. **Ongoing:** verify each update in light and dark appearances, Dynamic Type sizes, narrow screens, and VoiceOver, in addition to unit and integration tests.
 
 Update this note as work lands. Remove completed notes instead of keeping outdated implementation details.

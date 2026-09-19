@@ -52,22 +52,22 @@ swift test --enable-code-coverage
 func testFeedDataIsCached() async throws {
     // Given
     let mockRepository = MockFeedRepository()
-    let model = FeedModel(feedRepository: mockRepository)
-    mockRepository.mockFeedPage = .singleItem
+    let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
+    mockRepository.mockPage = .singleItem
     
     // When - Load friends feed for the first time
     await model.switchFeedType(.friends)
     let firstCallCount = mockRepository.getFeedCallCount
     
     // Switch to a different feed type and back
-    await model.switchFeedType(.personal)
+    await model.switchFeedType(.global)
     await model.switchFeedType(.friends)
     let secondCallCount = mockRepository.getFeedCallCount
     
     // Then - Should use cache on second access
     #expect(firstCallCount == 1)
     #expect(secondCallCount == 1) // No additional API call
-    #expect(model.tastings.count == 1)
+    #expect(model.entries.count == 1)
 }
 ```
 
@@ -77,16 +77,16 @@ func testFeedDataIsCached() async throws {
 func testPullToRefreshClearsCache() async throws {
     // Given - Load initial data
     let mockRepository = MockFeedRepository()
-    let model = FeedModel(feedRepository: mockRepository)
-    mockRepository.mockFeedPage = .singleItem
+    let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
+    mockRepository.mockPage = .singleItem
     await model.switchFeedType(.friends)
     
     // When - Simulate server data change and refresh
-    mockRepository.mockFeedPage = .multipleItems
+    mockRepository.mockPage = .multipleItems
     await model.refreshCurrentFeed()
     
     // Then - Should show updated data
-    #expect(model.tastings.count == 3) // multipleItems has 3 items
+    #expect(model.entries.count == 3) // multipleItems has 3 items
     #expect(mockRepository.refreshFeedCallCount == 1)
 }
 ```
@@ -114,10 +114,10 @@ let sample2 = TastingFeedItem.sample2  // Glenfiddich 12
 let sample3 = TastingFeedItem.sample3  // Macallan 18
 
 // Feed pages
-let emptyFeed = FeedPage.empty
-let singleItemFeed = FeedPage.singleItem
-let multipleItemsFeed = FeedPage.multipleItems
-let fullPageFeed = FeedPage.fullPage  // 20 items for pagination testing
+let emptyFeed = ActivityPage.empty
+let singleItemFeed = ActivityPage.singleItem
+let multipleItemsFeed = ActivityPage.multipleItems
+let fullPageFeed = ActivityPage.fullPage  // 20 items for pagination testing
 ```
 
 ## Mock Repository Usage
@@ -125,10 +125,10 @@ let fullPageFeed = FeedPage.fullPage  // 20 items for pagination testing
 ### Basic Setup
 ```swift
 let mockRepository = MockFeedRepository()
-let model = FeedModel(feedRepository: mockRepository)
+let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
 // Configure response
-mockRepository.mockFeedPage = .singleItem
+mockRepository.mockPage = .singleItem
 
 // Configure network behavior
 mockRepository.networkDelay = 0.1  // Simulate slow network
@@ -143,7 +143,7 @@ mockRepository.mockError = APIError.networkUnavailable  // Simulate error
 
 // Check what was called
 #expect(mockRepository.wasGetFeedCalled(for: .friends))
-#expect(mockRepository.lastFeedType == .personal)
+#expect(mockRepository.lastFeedType == .global)
 
 // Detailed call history
 let friendsCalls = mockRepository.getFeedCalls.filter { $0.type == .friends }
@@ -158,7 +158,7 @@ func testCachePerformance() async throws {
     let mockRepository = MockFeedRepository()
     mockRepository.networkDelay = 0.2  // 200ms network delay
     
-    let model = FeedModel(feedRepository: mockRepository)
+    let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
     
     // Time network access
     let networkStart = Date()
@@ -166,7 +166,7 @@ func testCachePerformance() async throws {
     let networkTime = Date().timeIntervalSince(networkStart)
     
     // Time cache access
-    await model.switchFeedType(.personal)
+    await model.switchFeedType(.global)
     let cacheStart = Date()
     await model.switchFeedType(.friends)
     let cacheTime = Date().timeIntervalSince(cacheStart)

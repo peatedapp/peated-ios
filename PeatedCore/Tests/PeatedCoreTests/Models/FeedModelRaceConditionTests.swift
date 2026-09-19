@@ -9,11 +9,11 @@ struct FeedModelRaceConditionTests {
     func backgroundRefreshCancellationOnFeedSwitch() async throws {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Set up slow network to ensure background task has time to start
         mockRepository.networkDelay = 0.2
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // Load friends feed initially
         await model.switchFeedType(.friends)
@@ -23,10 +23,10 @@ struct FeedModelRaceConditionTests {
         // by directly checking the background refresh logic
 
         // Configure fresh data for background refresh
-        mockRepository.mockFeedPage = .multipleItems
+        mockRepository.mockPage = .multipleItems
 
         // When - Switch to friends (should trigger background refresh due to stale cache)
-        // Then immediately switch to personal (should cancel background refresh)
+        // Then immediately switch to global (should cancel background refresh)
         let rapidSwitchTask1 = Task {
             await model.switchFeedType(.friends)
         }
@@ -35,14 +35,14 @@ struct FeedModelRaceConditionTests {
         try await Task.sleep(for: .milliseconds(50))
 
         let rapidSwitchTask2 = Task {
-            await model.switchFeedType(.personal)
+            await model.switchFeedType(.global)
         }
 
         await rapidSwitchTask1.value
         await rapidSwitchTask2.value
 
         // Then
-        #expect(model.selectedFeedType == .personal, "Should end up on personal feed")
+        #expect(model.selectedFeedType == .global, "Should end up on global feed")
 
         // Background refresh should have been cancelled, so friends cache shouldn't be updated
         // Wait a bit to see if any background task completes
@@ -52,26 +52,26 @@ struct FeedModelRaceConditionTests {
         await model.switchFeedType(.friends)
 
         // Should show original cached data, not the updated data from cancelled background refresh
-        #expect(model.tastings.count == 1, "Should show original cached data")
-        #expect(model.tastings.first?.id == "sample1", "Should not show updated data from cancelled task")
+        #expect(model.entries.count == 1, "Should show original cached data")
+        #expect(model.entries.first?.tasting?.id == "sample1", "Should not show updated data from cancelled task")
     }
 
     @Test("Multiple rapid feed switches don't create race conditions")
     func rapidFeedSwitchingRaceCondition() async throws {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         mockRepository.networkDelay = 0.1
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // When - Rapid feed switching
         let switches = [
             FeedType.friends,
-            FeedType.personal,
+            FeedType.global,
             FeedType.global,
             FeedType.friends,
-            FeedType.personal,
+            FeedType.global,
             FeedType.global,
             FeedType.friends
         ]
@@ -87,7 +87,7 @@ struct FeedModelRaceConditionTests {
 
         // Then
         #expect(model.selectedFeedType == .friends, "Should end on final feed type")
-        #expect(!model.tastings.isEmpty, "Should have loaded data")
+        #expect(!model.entries.isEmpty, "Should have loaded data")
 
         // Repository shouldn't be called excessively due to caching and race condition prevention
         #expect(mockRepository.totalCallCount <= switches.count, "Should minimize API calls through caching")
@@ -97,16 +97,16 @@ struct FeedModelRaceConditionTests {
     func backgroundRefreshTaskCleanup() async throws {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         mockRepository.networkDelay = 0.05 // Short delay
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // Load initial data
         await model.switchFeedType(.friends)
 
         // Configure updated data for background refresh
-        mockRepository.mockFeedPage = .multipleItems
+        mockRepository.mockPage = .multipleItems
 
         // Trigger background refresh by simulating stale cache
         // In production, this would be time-based, but for testing we'll trigger it differently
@@ -118,7 +118,7 @@ struct FeedModelRaceConditionTests {
         // This is verified by the fact that the model doesn't crash or leak memory
 
         // Switch away and back to trigger any remaining background tasks
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         await model.switchFeedType(.friends)
 
         // Wait for any background operations
@@ -126,23 +126,23 @@ struct FeedModelRaceConditionTests {
 
         // Then - No assertion needed, just verifying no crashes occur
         #expect(model.selectedFeedType == .friends, "Model should be in stable state")
-        #expect(!model.tastings.isEmpty, "Should have data")
+        #expect(!model.entries.isEmpty, "Should have data")
     }
 
     @Test("refreshCurrentFeed cancels existing background refresh")
     func refreshCurrentFeedCancelsBackground() async throws {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         mockRepository.networkDelay = 0.2
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
 
         // Load initial data
         await model.switchFeedType(.friends)
 
         // Start a background refresh (simulated by having stale cache)
-        mockRepository.mockFeedPage = .multipleItems
+        mockRepository.mockPage = .multipleItems
 
         // Simulate starting background task
         // In real scenario, this would happen automatically with stale cache
@@ -156,55 +156,55 @@ struct FeedModelRaceConditionTests {
 
         // Then
         #expect(mockRepository.refreshFeedCallCount >= 1, "Should have called refresh")
-        #expect(!model.tastings.isEmpty, "Should have refreshed data")
+        #expect(!model.entries.isEmpty, "Should have refreshed data")
 
         // No background task should interfere after manual refresh
         try await Task.sleep(for: .milliseconds(300))
 
         // Data should remain stable (no interference from cancelled background tasks)
-        let stableDataCount = model.tastings.count
+        let stableDataCount = model.entries.count
         try await Task.sleep(for: .milliseconds(100))
-        #expect(model.tastings.count == stableDataCount, "Data should remain stable")
+        #expect(model.entries.count == stableDataCount, "Data should remain stable")
     }
 
     @Test("Concurrent loadMoreIfNeeded calls don't interfere")
     func concurrentLoadMoreIfNeeded() async throws {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         mockRepository.networkDelay = 0.1
-        mockRepository.mockFeedPage = .fullPage // 20 items
+        mockRepository.mockPage = .fullPage // 20 items
 
         // Load initial page
         await model.switchFeedType(.friends)
 
-        #expect(model.tastings.count == 20, "Should have full page")
+        #expect(model.entries.count == 20, "Should have full page")
         #expect(model.hasMore == true, "Should have more items")
 
         // When - Try to trigger multiple concurrent loadMoreIfNeeded calls
-        guard let lastItem = model.tastings.last else {
+        guard let lastItem = model.entries.last else {
             throw TestError.noData
         }
 
         // Configure next page data
-        mockRepository.mockFeedPage = FeedPage(
+        mockRepository.mockPage = ActivityPage(
             tastings: [TastingFeedItem.sample1], // 1 more item
             cursor: "page2",
             hasMore: false
         )
 
         // Start multiple concurrent loadMore calls
-        let task1 = Task { await model.loadMoreIfNeeded(currentItem: lastItem) }
-        let task2 = Task { await model.loadMoreIfNeeded(currentItem: lastItem) }
-        let task3 = Task { await model.loadMoreIfNeeded(currentItem: lastItem) }
+        let task1 = Task { await model.loadMoreIfNeeded(currentEntry: lastItem) }
+        let task2 = Task { await model.loadMoreIfNeeded(currentEntry: lastItem) }
+        let task3 = Task { await model.loadMoreIfNeeded(currentEntry: lastItem) }
 
         await task1.value
         await task2.value
         await task3.value
 
         // Then - Should only load one additional page, not multiple
-        #expect(model.tastings.count == 21, "Should have exactly one additional item")
+        #expect(model.entries.count == 21, "Should have exactly one additional item")
         #expect(model.hasMore == false, "Should update hasMore state")
 
         // Should not have made excessive API calls
@@ -217,14 +217,14 @@ struct FeedModelRaceConditionTests {
         let mockRepository = MockFeedRepository()
 
         do {
-            let model = FeedModel(feedRepository: mockRepository)
+            let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
             mockRepository.networkDelay = 0.5 // Long delay to keep task running
-            mockRepository.mockFeedPage = .singleItem
+            mockRepository.mockPage = .singleItem
 
             // Load data and potentially start background tasks
             await model.switchFeedType(.friends)
-            await model.switchFeedType(.personal)
+            await model.switchFeedType(.global)
 
             // Model will deinit here, should cancel background tasks
         }

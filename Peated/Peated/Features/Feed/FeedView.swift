@@ -13,19 +13,23 @@ struct FeedView: View {
     }
 
     private func prefetchFeedImages() {
-        var urls: [URL] = []
-        for item in model.tastings.prefix(60) {
-            if let s = item.userAvatarUrl, let u = URL(string: s) {
-                urls.append(u)
-            }
-            if let s = item.bottleImageUrl, let u = URL(string: s) {
-                urls.append(u)
-            }
-            if let s = item.imageUrl, let u = URL(string: s) {
-                urls.append(u)
-            }
-        }
+        let urls = model.entries.prefix(60)
+            .flatMap(Self.imageUrls(for:))
+            .compactMap { URL(string: $0) }
         ImagePrefetcher.prefetch(urls: urls, max: 60)
+    }
+
+    private static func imageUrls(for entry: ActivityFeedEntry) -> [String] {
+        switch entry {
+        case let .tasting(item):
+            [item.userAvatarUrl, item.bottleImageUrl, item.imageUrl].compactMap(\.self)
+        case let .memberReview(item):
+            [item.userAvatarUrl, item.bottle.imageUrl, item.imageUrl].compactMap(\.self)
+        case let .criticReview(item):
+            [item.sourceImageUrl, item.bottle.imageUrl].compactMap(\.self)
+        case let .collectionAdd(item):
+            [item.userAvatarUrl].compactMap(\.self) + item.bottles.compactMap(\.imageUrl)
+        }
     }
 
     var body: some View {
@@ -72,7 +76,7 @@ struct FeedView: View {
                 // Content container
                 ZStack(alignment: .top) {
                     // Feed content
-                    if model.isLoading || model.isSwitchingFeed, model.tastings.isEmpty {
+                    if model.isLoading || model.isSwitchingFeed, model.entries.isEmpty {
                         LoadingView()
                     } else if model.isErrorWithNoData {
                         // Show error-specific empty state
@@ -81,20 +85,20 @@ struct FeedView: View {
                                 await model.refreshCurrentFeed()
                             }
                         }
-                    } else if model.tastings.isEmpty, !model.isLoading, !model.isSwitchingFeed {
+                    } else if model.entries.isEmpty, !model.isLoading, !model.isSwitchingFeed {
                         EmptyFeedView(feedType: model.selectedFeedType, onFindFriends: onFindFriends)
                     } else {
                         ScrollView {
                             LazyVStack(spacing: 0) {
-                                ForEach(model.tastings) { tasting in
-                                    TastingFeedCard(
-                                        tasting: tasting,
-                                        onToast: {
+                                ForEach(model.entries) { entry in
+                                    ActivityEntryCard(
+                                        entry: entry,
+                                        onToast: { tasting in
                                             Task {
                                                 await model.toggleToast(for: tasting.id)
                                             }
                                         },
-                                        onComment: {
+                                        onComment: { tasting in
                                             navigationPath.append(
                                                 TastingActivityNavigationDestination.tasting(
                                                     id: tasting.id,
@@ -102,18 +106,18 @@ struct FeedView: View {
                                                 )
                                             )
                                         },
-                                        onUserTap: {
+                                        onUserTap: { actor in
                                             navigationPath.append(
                                                 TastingActivityNavigationDestination.profile(
-                                                    id: tasting.userId,
-                                                    username: tasting.username,
-                                                    pictureUrl: tasting.userAvatarUrl
+                                                    id: actor.id,
+                                                    username: actor.username,
+                                                    pictureUrl: actor.avatarUrl
                                                 )
                                             )
                                         },
-                                        onBottleTap: {
+                                        onBottleTap: { bottleId in
                                             navigationPath.append(
-                                                TastingActivityNavigationDestination.bottle(id: tasting.bottleId)
+                                                TastingActivityNavigationDestination.bottle(id: bottleId)
                                             )
                                         }
                                     )
@@ -128,12 +132,12 @@ struct FeedView: View {
                                     )
                                     .onAppear {
                                         Task {
-                                            await model.loadMoreIfNeeded(currentItem: tasting)
+                                            await model.loadMoreIfNeeded(currentEntry: entry)
                                         }
                                     }
                                 }
 
-                                if model.isLoading, !model.tastings.isEmpty {
+                                if model.isLoading, !model.entries.isEmpty {
                                     ProgressView()
                                         .padding()
                                 }
@@ -244,8 +248,6 @@ struct EmptyFeedView: View {
         switch feedType {
         case .friends:
             "person.2"
-        case .personal:
-            "wineglass"
         case .global:
             "globe"
         }
@@ -255,8 +257,6 @@ struct EmptyFeedView: View {
         switch feedType {
         case .friends:
             "No Friend Activity"
-        case .personal:
-            "No Tastings Yet"
         case .global:
             "No Global Activity"
         }
@@ -265,11 +265,9 @@ struct EmptyFeedView: View {
     private var message: String {
         switch feedType {
         case .friends:
-            "Follow other whisky enthusiasts to see their tastings here"
-        case .personal:
-            "Start your whisky journey by creating your first tasting"
+            "Follow other whisky enthusiasts to see their tastings and reviews here"
         case .global:
-            "Be the first to share a tasting with the community"
+            "Be the first to share a tasting or review with the community"
         }
     }
 }

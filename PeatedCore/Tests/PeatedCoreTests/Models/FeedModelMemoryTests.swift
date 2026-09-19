@@ -9,27 +9,27 @@ struct FeedModelMemoryTests {
     func maxItemsPerFeedLimit() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Configure a large page that exceeds the limit (500 items)
-        let largePage = FeedPage(
+        let largePage = ActivityPage(
             tastings: Array(1 ... 600).map {
                 TastingFeedItem.builder().withId("item\($0)").build()
             },
             cursor: "large_page",
             hasMore: false
         )
-        mockRepository.mockFeedPage = largePage
+        mockRepository.mockPage = largePage
 
         // When
         await model.switchFeedType(.friends)
 
         // Then
-        #expect(model.tastings.count == 500, "Should limit to 500 items per feed")
+        #expect(model.entries.count == 500, "Should limit to 500 items per feed")
 
         // Should keep the most recent items (last 500)
-        #expect(model.tastings.first?.id == "item101", "Should keep items 101-600")
-        #expect(model.tastings.last?.id == "item600", "Should keep items 101-600")
+        #expect(model.entries.first?.tasting?.id == "item101", "Should keep items 101-600")
+        #expect(model.entries.last?.tasting?.id == "item600", "Should keep items 101-600")
 
         // hasMore should be false when we truncate
         #expect(model.hasMore == false, "Should set hasMore to false when truncating")
@@ -39,60 +39,60 @@ struct FeedModelMemoryTests {
     func globalMemoryLimits() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Create large pages for each feed type to exceed global memory limit
-        let largePage = FeedPage(
+        let largePage = ActivityPage(
             tastings: Array(1 ... 400).map {
                 TastingFeedItem.builder().withId("item\($0)").build()
             },
             cursor: "large",
             hasMore: false
         )
-        mockRepository.mockFeedPage = largePage
+        mockRepository.mockPage = largePage
 
         // When - Load all feed types to exceed memory limit
         // 400 items * 500 bytes * 3 feeds = ~600KB each = ~1.8MB total (under 10MB limit)
         // Let's create much larger feeds to trigger eviction
-        let veryLargePage = FeedPage(
+        let veryLargePage = ActivityPage(
             tastings: Array(1 ... 5000).map {
                 TastingFeedItem.builder().withId("item\($0)").build()
             },
             cursor: "very_large",
             hasMore: false
         )
-        mockRepository.mockFeedPage = veryLargePage
+        mockRepository.mockPage = veryLargePage
 
         await model.switchFeedType(.friends)
 
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         await model.switchFeedType(.global)
 
         let finalMemory = model.cacheMemoryUsage
 
         // Then
         #expect(finalMemory.totalBytes <= 10 * 1024 * 1024, "Should stay under 10MB total")
-        #expect(finalMemory.feedCounts.count <= 3, "Should have evicted some caches or limited items")
+        #expect(finalMemory.feedCounts.count <= 2, "Should have evicted some caches or limited items")
     }
 
     @Test("Memory cleanup preserves current feed")
     func memoryCleanupPreservesCurrentFeed() async throws {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Create large pages to trigger memory cleanup
-        let largePage = FeedPage(
+        let largePage = ActivityPage(
             tastings: Array(1 ... 5000).map {
                 TastingFeedItem.builder().withId("item\($0)").build()
             },
             cursor: "large",
             hasMore: false
         )
-        mockRepository.mockFeedPage = largePage
+        mockRepository.mockPage = largePage
 
         // When - Load multiple feeds, ending on friends
-        await model.switchFeedType(.personal)
+        await model.switchFeedType(.global)
         try await Task.sleep(for: .milliseconds(10)) // Ensure different timestamps
 
         await model.switchFeedType(.global)
@@ -105,7 +105,7 @@ struct FeedModelMemoryTests {
         // Then
         #expect(memoryUsage.feedCounts[.friends] != nil, "Should preserve current feed (.friends)")
         #expect(model.selectedFeedType == .friends, "Should be on friends feed")
-        #expect(!model.tastings.isEmpty, "Should still have data for current feed")
+        #expect(!model.entries.isEmpty, "Should still have data for current feed")
 
         // One of the older feeds might have been evicted
         let totalFeeds = memoryUsage.feedCounts.count
@@ -117,7 +117,7 @@ struct FeedModelMemoryTests {
     func cacheMemoryUsageReporting() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Start with empty cache
         let emptyUsage = model.cacheMemoryUsage
@@ -125,7 +125,7 @@ struct FeedModelMemoryTests {
         #expect(emptyUsage.feedCounts.isEmpty, "Should start with no feeds")
 
         // When - Load friends feed
-        mockRepository.mockFeedPage = .singleItem
+        mockRepository.mockPage = .singleItem
         await model.switchFeedType(.friends)
 
         let singleItemUsage = model.cacheMemoryUsage
@@ -135,15 +135,15 @@ struct FeedModelMemoryTests {
         #expect(singleItemUsage.feedCounts[.friends] == 1, "Should have 1 item in friends feed")
         #expect(singleItemUsage.totalBytes == 500, "Should estimate 500 bytes for 1 item")
 
-        // When - Load personal feed
-        mockRepository.mockFeedPage = .multipleItems // 3 items
-        await model.switchFeedType(.personal)
+        // When - Load global feed
+        mockRepository.mockPage = .multipleItems // 3 items
+        await model.switchFeedType(.global)
 
         let multipleItemsUsage = model.cacheMemoryUsage
 
         // Then
         #expect(multipleItemsUsage.feedCounts[.friends] == 1, "Should still have friends cache")
-        #expect(multipleItemsUsage.feedCounts[.personal] == 3, "Should have 3 items in personal feed")
+        #expect(multipleItemsUsage.feedCounts[.global] == 3, "Should have 3 items in global feed")
         #expect(multipleItemsUsage.totalBytes == 2000, "Should estimate 2000 bytes for 4 total items")
     }
 
@@ -151,39 +151,39 @@ struct FeedModelMemoryTests {
     func paginationRespectsMemoryLimits() async throws {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // Start with a page at the limit
-        let initialPage = FeedPage(
+        let initialPage = ActivityPage(
             tastings: Array(1 ... 500).map {
                 TastingFeedItem.builder().withId("initial\($0)").build()
             },
             cursor: "page1",
             hasMore: true
         )
-        mockRepository.mockFeedPage = initialPage
+        mockRepository.mockPage = initialPage
 
         await model.switchFeedType(.friends)
-        #expect(model.tastings.count == 500, "Should start with 500 items")
+        #expect(model.entries.count == 500, "Should start with 500 items")
 
         // When - Load more that would exceed the limit
-        let additionalPage = FeedPage(
+        let additionalPage = ActivityPage(
             tastings: Array(1 ... 100).map {
                 TastingFeedItem.builder().withId("additional\($0)").build()
             },
             cursor: "page2",
             hasMore: false
         )
-        mockRepository.mockFeedPage = additionalPage
+        mockRepository.mockPage = additionalPage
 
-        try await model.loadMoreIfNeeded(currentItem: #require(model.tastings.last))
+        try await model.loadMoreIfNeeded(currentEntry: #require(model.entries.last))
 
         // Then
-        #expect(model.tastings.count == 500, "Should still be limited to 500 items")
+        #expect(model.entries.count == 500, "Should still be limited to 500 items")
 
         // Should contain the most recent items (last 500 of the 600 total)
-        let hasInitialItems = model.tastings.contains { $0.id.hasPrefix("initial") }
-        let hasAdditionalItems = model.tastings.contains { $0.id.hasPrefix("additional") }
+        let hasInitialItems = model.entries.contains { $0.tasting?.id.hasPrefix("initial") == true }
+        let hasAdditionalItems = model.entries.contains { $0.tasting?.id.hasPrefix("additional") == true }
 
         #expect(hasInitialItems, "Should have some initial items")
         #expect(hasAdditionalItems, "Should have additional items")
@@ -194,10 +194,10 @@ struct FeedModelMemoryTests {
     func memoryLimitsHandleEmptyResponses() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
         // When - Load empty feed
-        mockRepository.mockFeedPage = .empty
+        mockRepository.mockPage = .empty
         await model.switchFeedType(.friends)
 
         let emptyUsage = model.cacheMemoryUsage
@@ -205,43 +205,34 @@ struct FeedModelMemoryTests {
         // Then
         #expect(emptyUsage.feedCounts[.friends] == 0, "Should have 0 items")
         #expect(emptyUsage.totalBytes == 0, "Should have 0 bytes for empty feed")
-        #expect(model.tastings.isEmpty, "Should have no tastings")
+        #expect(model.entries.isEmpty, "Should have no tastings")
     }
 
-    @Test("Cache eviction removes oldest feeds first")
-    func cacheEvictionRemovesOldestFirst() async throws {
+    @Test("Both feeds stay cached within the memory limit")
+    func bothFeedsStayCachedWithinLimit() async {
         // Given
         let mockRepository = MockFeedRepository()
-        let model = FeedModel(feedRepository: mockRepository)
+        let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
-        // Create a large page that will trigger memory cleanup
-        let largePage = FeedPage(
+        // Each feed is capped at 500 entries, so two feeds never reach the 10MB limit
+        let largePage = ActivityPage(
             tastings: Array(1 ... 4000).map {
                 TastingFeedItem.builder().withId("item\($0)").build()
             },
             cursor: "large",
             hasMore: false
         )
-        mockRepository.mockFeedPage = largePage
+        mockRepository.mockPage = largePage
 
-        // When - Load feeds in order: personal -> global -> friends
-        await model.switchFeedType(.personal)
-        try await Task.sleep(for: .milliseconds(50)) // Ensure different timestamps
-
+        // When - Load global, then friends
         await model.switchFeedType(.global)
-        try await Task.sleep(for: .milliseconds(50))
-
-        await model.switchFeedType(.friends) // Current feed, should be preserved
+        await model.switchFeedType(.friends)
 
         let finalUsage = model.cacheMemoryUsage
 
         // Then
-        #expect(finalUsage.feedCounts[.friends] != nil, "Should preserve current feed")
-
-        // Personal feed should be evicted first (oldest), global might be preserved
-        if finalUsage.feedCounts.count < 3 {
-            // Some eviction occurred
-            #expect(finalUsage.feedCounts[.personal] == nil, "Should evict oldest feed first")
-        }
+        #expect(finalUsage.feedCounts[.friends] == 500, "Should keep the current feed, capped per feed")
+        #expect(finalUsage.feedCounts[.global] == 500, "Should keep the other feed, capped per feed")
+        #expect(finalUsage.totalBytes <= 10 * 1024 * 1024, "Should stay under the memory limit")
     }
 }

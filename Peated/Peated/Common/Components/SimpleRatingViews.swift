@@ -1,25 +1,125 @@
 import PeatedCore
 import SwiftUI
 
+/// Rating sizes shared by tasting bands and review scores, matching the web's sm, md, and lg.
+enum RatingSize {
+    case small
+    case medium
+    case large
+
+    var labelFont: Font {
+        switch self {
+        case .small: .peatedRatingLabelSmall
+        case .medium: .peatedRatingLabel
+        case .large: .peatedRatingLabelLarge
+        }
+    }
+}
+
+/// One tasting's named rating and its range, never a five-point score.
+/// Small keeps the label and range inline for compact metadata rows.
 struct TastingRatingView: View {
     let band: TastingRatingBand
-    var showRange = false
-    var fontSize = DesignSystem.FontSize.small
+    var size: RatingSize = .medium
+
+    private var rangeText: String {
+        "\(band.scoreRange.lowerBound)–\(band.scoreRange.upperBound) range"
+    }
 
     var body: some View {
-        HStack(spacing: 5) {
-            Text(band.displayName)
-                .font(.system(size: fontSize, weight: .semibold))
+        Group {
+            if size == .small {
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
+                    label
+                    range
+                }
+            } else {
+                VStack(alignment: .trailing, spacing: 2) {
+                    label
+                    range
+                }
+            }
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(band.displayName) rating, \(rangeText)")
+    }
 
-            if showRange {
-                Text(band.description)
-                    .font(.system(size: fontSize))
+    private var label: some View {
+        Text(band.displayName)
+            .font(size.labelFont)
+            .foregroundColor(.brandEmphasis)
+            .lineLimit(1)
+    }
+
+    private var range: some View {
+        Text(rangeText)
+            .font(size == .large ? .system(size: 15) : .peatedMetadata)
+            .monospacedDigit()
+            .foregroundColor(.textSecondary)
+            .lineLimit(1)
+    }
+}
+
+/// One review's exact score on its own scale. Only a 100-point scale gets a Peated
+/// rating name, so critic scores on other scales show the number alone.
+struct ReviewScoreView: View {
+    let value: Double
+    let scale: Double
+    let band: TastingRatingBand?
+    var size: RatingSize = .medium
+
+    /// A member review score, always on Peated's 100-point scale.
+    init(score: Int, size: RatingSize = .medium) {
+        value = Double(score)
+        scale = 100
+        band = TastingRatingBand(score: score)
+        self.size = size
+    }
+
+    /// A critic's score as the publication shows it.
+    init(score: CriticReviewFeedItem.Score, size: RatingSize = .medium) {
+        value = score.value
+        scale = score.scale
+        band = score.ratingBand
+        self.size = size
+    }
+
+    var body: some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            if let band {
+                Text(band.displayName)
+                    .font(size.labelFont)
+                    .foregroundColor(.brandEmphasis)
+                    .lineLimit(1)
+            }
+
+            HStack(alignment: .firstTextBaseline, spacing: 3) {
+                Text(value.formatted())
+                    .font(valueFont)
+                    .foregroundColor(.text)
+                Text("/\(scale.formatted())")
+                    .font(.peatedMetadata)
                     .foregroundColor(.textSecondary)
             }
         }
-        .foregroundColor(.brand)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Rating: \(band.displayName), \(band.description)")
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var valueFont: Font {
+        switch size {
+        case .small: .peatedScoreValueSmall
+        case .medium: .peatedScoreValue
+        case .large: .peatedScoreValueLarge
+        }
+    }
+
+    private var accessibilityLabel: String {
+        let score = "\(value.formatted()) out of \(scale.formatted())"
+        if let band {
+            return "\(band.displayName) review score, \(score)"
+        }
+        return "Review score, \(score)"
     }
 }
 

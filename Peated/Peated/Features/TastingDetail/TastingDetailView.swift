@@ -380,7 +380,7 @@ struct TastingDetailCard: View {
                     }
 
                     if let band = tasting.ratingBand {
-                        TastingRatingView(band: band, showRange: true, fontSize: DesignSystem.FontSize.body)
+                        TastingRatingView(band: band, size: .large)
                             .padding(.top, 4)
                     }
                 }
