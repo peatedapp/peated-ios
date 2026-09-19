@@ -30,14 +30,13 @@ struct AppView: View {
         let navAppearance = UINavigationBarAppearance()
         navAppearance.configureWithOpaqueBackground()
         navAppearance.backgroundColor = UIColor(Color.chrome)
-        // Use concrete UIColors to avoid any UIAppearance/dynamic color bridging quirks
-        navAppearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        navAppearance.titleTextAttributes = [.foregroundColor: UIColor(Color.text)]
+        navAppearance.largeTitleTextAttributes = [.foregroundColor: UIColor(Color.text)]
 
         UINavigationBar.appearance().standardAppearance = navAppearance
         UINavigationBar.appearance().scrollEdgeAppearance = navAppearance
         UINavigationBar.appearance().compactAppearance = navAppearance
-        // Ensure back chevron and "< Back" text are white, not brand/amber
+        // Keep the back chevron and "< Back" text on ink, not the accent
         UINavigationBar.appearance().tintColor = UIColor(Color.text)
 
         // Tab bar (selected state may still use brand for affordance)

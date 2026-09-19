@@ -70,7 +70,7 @@ The `TastingFeedCard` component is reused with `showBottle: true` since users ne
 
 All styling uses the centralized `DesignSystem`:
 - Spacing: `DesignSystem.Spacing`
-- Fonts: use semantic fonts like `Font.peatedHeadline` for the entity name (matches feed), `Font.peatedBody` for body text.
+- Fonts: use semantic fonts like `Font.peatedRowTitle` for the entity name (matches feed), `Font.peatedBody` for body text.
 - Colors: use semantic tokens (`Color.background`, `Color.surface`, `Color.text`, `Color.textSecondary`, `Color.border`, status tokens). Avoid `.primary/.secondary` and platform backgrounds in app UI samples.
 - Corner radius: `DesignSystem.CornerRadius`
 

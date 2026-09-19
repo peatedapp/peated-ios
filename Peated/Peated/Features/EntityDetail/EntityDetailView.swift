@@ -151,7 +151,8 @@ struct EntityDetailView: View {
     private func nameCardSection(entity: Entity) -> some View {
         VStack(spacing: 8) {
             Text(entity.name)
-                .font(.peatedDisplaySerifLarge)
+                .font(.peatedPageTitle)
+                .tracking(DesignSystem.Tracking.pageTitle)
                 .foregroundColor(.text)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
@@ -160,7 +161,7 @@ struct EntityDetailView: View {
 
             HStack(spacing: 8) {
                 Label(entity.type.displayName, systemImage: entity.type == .distillery ? "building.2" : "tag")
-                    .font(.system(size: DesignSystem.FontSize.small))
+                    .font(.peatedMetadata)
                     .foregroundColor(.textSecondary)
 
                 if let country = entity.country {
@@ -169,7 +170,7 @@ struct EntityDetailView: View {
                         Image(systemName: "location").font(.system(size: 10))
                         Text(country)
                     }
-                    .font(.system(size: DesignSystem.FontSize.small))
+                    .font(.peatedMetadata)
                     .foregroundColor(.textSecondary)
                 }
             }
@@ -236,13 +237,13 @@ struct EntityDetailView: View {
     private func aboutSection(entity: Entity) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("ABOUT")
-                .font(.system(size: DesignSystem.FontSize.small))
+                .font(.peatedMetadata)
                 .fontWeight(.semibold)
                 .foregroundColor(.textSecondary)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(entity.description ?? "")
-                    .font(.system(size: DesignSystem.FontSize.body))
+                    .font(.peatedBody)
                     .foregroundColor(.text)
                     .lineLimit(isDescriptionExpanded ? nil : 3)
                     .fixedSize(horizontal: false, vertical: true)
@@ -255,7 +256,7 @@ struct EntityDetailView: View {
                         }
                     }) {
                         Text(isDescriptionExpanded ? "Show less" : "Read more")
-                            .font(.system(size: DesignSystem.FontSize.small))
+                            .font(.peatedMetadata)
                             .fontWeight(.medium)
                             .foregroundColor(.brand)
                     }
@@ -392,14 +393,14 @@ struct EntityDetailView: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(bottle.name)
-                    .font(.system(size: DesignSystem.FontSize.small, weight: .semibold))
+                    .font(.peatedInteractiveSmall)
                     .foregroundColor(.primary)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
 
                 if let category = bottle.category {
                     Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                        .font(.system(size: DesignSystem.FontSize.caption))
+                        .font(.peatedMetadata)
                         .foregroundColor(.textSecondary)
                         .lineLimit(1)
                 }

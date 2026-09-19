@@ -42,11 +42,11 @@ struct BarcodeScannerView: View {
                     // Instructions
                     VStack(spacing: DesignSystem.Spacing.small) {
                         Text("Position barcode within frame")
-                            .font(.system(size: DesignSystem.FontSize.title, weight: .medium))
+                            .font(.peatedBody)
                             .foregroundColor(.onStatus)
 
                         Text("Scanning will happen automatically")
-                            .font(.system(size: DesignSystem.FontSize.body))
+                            .font(.peatedBody)
                             .foregroundColor(.onStatus.opacity(DesignSystem.Opacity.dimmed))
                     }
                     .padding(.horizontal, DesignSystem.Spacing.screenPadding)

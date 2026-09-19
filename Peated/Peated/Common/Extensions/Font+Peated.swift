@@ -1,39 +1,64 @@
 import SwiftUI
 
+/// PostScript names of the font files shipped in `Resources/Fonts` and registered through
+/// `UIAppFonts` in `Configuration/Info.plist`. Keep both lists in sync with this enum.
+enum PeatedFontName {
+    /// Hanken Grotesk 700: names, headings, and meaningful figures.
+    static let display = "HankenGrotesk-Bold"
+    /// Karla: prose, labels, controls, and member input.
+    static let reading = "Karla-Regular"
+    static let readingItalic = "Karla-Italic"
+    static let readingSemiBold = "Karla-SemiBold"
+    static let readingBold = "Karla-Bold"
+    /// IBM Plex Mono: rare values that must align as code-like data.
+    static let data = "IBMPlexMono-Regular"
+    static let dataMedium = "IBMPlexMono-Medium"
+}
+
+/// Typography roles from `../peated/DESIGN.md`. Every role scales with Dynamic Type relative
+/// to the system text style whose default size is closest to the web size.
 extension Font {
-    // Hanken Grotesk/Karla equivalents until the web font files are shipped in the app bundle.
-    static let peatedLargeTitle = Font.system(.largeTitle, design: .rounded, weight: .bold)
-    static let peatedTitle = Font.system(.title, design: .rounded, weight: .bold)
-    static let peatedTitle2 = Font.system(.title2, design: .rounded, weight: .bold)
-    static let peatedTitle3 = Font.system(.title3, design: .rounded, weight: .bold)
-    static let peatedHeadline = Font.system(.headline, weight: .semibold)
-    static let peatedBody = Font.system(.body)
-    static let peatedCallout = Font.system(.callout)
-    static let peatedSubheadline = Font.system(.subheadline)
-    static let peatedFootnote = Font.system(.footnote)
-    static let peatedCaption = Font.system(.caption)
-    static let peatedCaption2 = Font.system(.caption2)
+    // MARK: Display (Hanken Grotesk 700)
 
-    // Kept as source-compatible names while adopting the new sans-serif display role.
-    static let peatedDisplaySerif = Font.system(.title2, design: .rounded, weight: .bold)
-    static let peatedDisplaySerifLarge = Font.system(.title, design: .rounded, weight: .bold)
-    static let peatedHeadlineSerif = Font.system(.headline, design: .rounded, weight: .bold)
+    /// Catalog identities such as bottle and entity names. Web: 40–72px, 40px on narrow screens.
+    static let peatedPageTitle = Font.custom(PeatedFontName.display, size: 40, relativeTo: .largeTitle)
+    /// Task screens such as search, sign-in, and settings. Web: 32–40px.
+    static let peatedPageTitleCompact = Font.custom(PeatedFontName.display, size: 32, relativeTo: .largeTitle)
+    static let peatedSectionHeading = Font.custom(PeatedFontName.display, size: 20, relativeTo: .title3)
+    static let peatedRowTitle = Font.custom(PeatedFontName.display, size: 18, relativeTo: .headline)
+    /// Sidebars, search results, and typeahead rows.
+    static let peatedRowTitleCompact = Font.custom(PeatedFontName.display, size: 15, relativeTo: .subheadline)
 
-    /// Single semantic title for screen headers (Profile/Bottle/Entity)
-    static let titlePrimary = Font.system(.title2, design: .rounded, weight: .bold)
+    // MARK: Reading (Karla)
 
-    /// Semantic alias for prominent names (bottles, entities, usernames)
-    static let nameTitle = Font.system(.headline, design: .rounded, weight: .bold)
+    /// Long descriptions, reviews, and tasting notes.
+    static let peatedProse = Font.custom(PeatedFontName.reading, size: 16, relativeTo: .body)
+    /// Short interface copy. This is the default text role.
+    static let peatedBody = Font.custom(PeatedFontName.reading, size: 15, relativeTo: .subheadline)
+    /// Text fields stay at 16 on every screen.
+    static let peatedInput = Font.custom(PeatedFontName.reading, size: 16, relativeTo: .body)
+    /// Buttons, tabs, and links.
+    static let peatedInteractive = Font.custom(PeatedFontName.readingSemiBold, size: 15, relativeTo: .subheadline)
+    static let peatedInteractiveSmall = Font.custom(PeatedFontName.readingSemiBold, size: 13, relativeTo: .footnote)
+    /// Dates, counts, hints, and table headers. Do not shrink metadata below 13 to fit.
+    static let peatedMetadata = Font.custom(PeatedFontName.reading, size: 13, relativeTo: .footnote)
+    static let peatedFieldLabel = Font.custom(PeatedFontName.readingSemiBold, size: 13, relativeTo: .footnote)
+    static let peatedMicroLabel = Font.custom(PeatedFontName.reading, size: 13, relativeTo: .footnote)
 
-    // Activity rows and ratings mirror the web foundations (row title 18, metadata 13, body 15).
-    static let peatedRowTitle = Font.system(size: 18, weight: .bold, design: .rounded)
-    static let peatedMetadata = Font.system(size: 13)
-    static let peatedBodyText = Font.system(size: 15)
-    static let peatedInteractiveSmall = Font.system(size: 13, weight: .semibold)
-    static let peatedRatingLabelSmall = Font.system(size: 13, weight: .bold, design: .rounded)
-    static let peatedRatingLabel = Font.system(size: 16, weight: .bold, design: .rounded)
-    static let peatedRatingLabelLarge = Font.system(size: 20, weight: .bold, design: .rounded)
-    static let peatedScoreValueSmall = Font.system(size: 18, weight: .bold, design: .rounded).monospacedDigit()
-    static let peatedScoreValue = Font.system(size: 26, weight: .bold, design: .rounded).monospacedDigit()
-    static let peatedScoreValueLarge = Font.system(size: 36, weight: .bold, design: .rounded).monospacedDigit()
+    // MARK: Data (IBM Plex Mono)
+
+    /// Identifiers and values that must align as code-like data.
+    static let peatedCode = Font.custom(PeatedFontName.data, size: 13, relativeTo: .footnote)
+
+    // MARK: Rating and score figures
+
+    // Numeric scores and their labels size to their geometry inside rating components.
+    static let peatedRatingLabelSmall = Font.custom(PeatedFontName.display, size: 13, relativeTo: .footnote)
+    static let peatedRatingLabel = Font.custom(PeatedFontName.display, size: 16, relativeTo: .callout)
+    static let peatedRatingLabelLarge = Font.custom(PeatedFontName.display, size: 20, relativeTo: .title3)
+    static let peatedScoreValueSmall = Font.custom(PeatedFontName.display, size: 18, relativeTo: .headline)
+        .monospacedDigit()
+    static let peatedScoreValue = Font.custom(PeatedFontName.display, size: 26, relativeTo: .title).monospacedDigit()
+    static let peatedScoreValueLarge = Font.custom(PeatedFontName.display, size: 36, relativeTo: .largeTitle)
+        .monospacedDigit()
 }

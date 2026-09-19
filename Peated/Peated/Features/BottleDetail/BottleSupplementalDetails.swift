@@ -93,19 +93,19 @@ struct BottleSupplementalDetails: View {
                 )
 
                 Text(ratingSummaryCaption)
-                    .font(.system(size: DesignSystem.FontSize.small))
+                    .font(.peatedMetadata)
                     .foregroundColor(.textSecondary)
 
                 if bottle.ratingSummary.reviewBandCounts.total > 0 {
                     Text("REVIEWS")
-                        .font(.system(size: DesignSystem.FontSize.caption, weight: .semibold))
+                        .font(.peatedInteractiveSmall)
                         .foregroundColor(.textSecondary)
                     BottleRatingStatsView(counts: bottle.ratingSummary.reviewBandCounts)
                 }
 
                 if bottle.ratingSummary.tastingBandCounts.total > 0 {
                     Text("TASTINGS")
-                        .font(.system(size: DesignSystem.FontSize.caption, weight: .semibold))
+                        .font(.peatedInteractiveSmall)
                         .foregroundColor(.textSecondary)
                     BottleRatingStatsView(counts: bottle.ratingSummary.tastingBandCounts)
                 }
@@ -183,7 +183,7 @@ struct BottleSupplementalDetails: View {
 
     private func sectionTitle(_ title: String) -> some View {
         Text(title)
-            .font(.system(size: DesignSystem.FontSize.small))
+            .font(.peatedMetadata)
             .fontWeight(.semibold)
             .foregroundColor(.textSecondary)
     }
@@ -191,12 +191,12 @@ struct BottleSupplementalDetails: View {
     private func detailRow(label: String, value: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Text(label)
-                .font(.system(size: DesignSystem.FontSize.small, weight: .medium))
+                .font(.peatedInteractiveSmall)
                 .foregroundColor(.textSecondary)
                 .frame(width: 100, alignment: .leading)
 
             Text(value)
-                .font(.system(size: DesignSystem.FontSize.body))
+                .font(.peatedBody)
                 .foregroundColor(.text)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -204,7 +204,7 @@ struct BottleSupplementalDetails: View {
 
     private func characteristic(_ name: String) -> some View {
         Label(name, systemImage: "checkmark.circle.fill")
-            .font(.system(size: DesignSystem.FontSize.small))
+            .font(.peatedMetadata)
             .foregroundColor(.success)
     }
 }

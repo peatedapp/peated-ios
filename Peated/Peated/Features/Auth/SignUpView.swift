@@ -72,11 +72,12 @@ struct SignUpView: View {
         VStack(spacing: 8) {
             PeatedLogo(height: 60)
             Text("Join Peated")
-                .font(.peatedTitle2)
+                .font(.peatedPageTitleCompact)
+                .tracking(DesignSystem.Tracking.pageTitleCompact)
                 .fontWeight(.bold)
                 .foregroundColor(.text)
             Text("Track and share your whisky journey")
-                .font(.peatedBody)
+                .font(.peatedProse)
                 .foregroundColor(.textSecondary)
         }
     }
@@ -84,7 +85,7 @@ struct SignUpView: View {
     private var divider: some View {
         HStack {
             Rectangle().fill(Color.border).frame(height: 1)
-            Text("OR").font(.peatedCaption).foregroundColor(.textMuted).padding(.horizontal, 16)
+            Text("OR").font(.peatedMetadata).foregroundColor(.textMuted).padding(.horizontal, 16)
             Rectangle().fill(Color.border).frame(height: 1)
         }
     }
@@ -139,14 +140,13 @@ struct SignUpView: View {
                 .buttonStyle(.plain)
             }
         }
-        .font(.peatedCaption)
+        .font(.peatedMetadata)
     }
 
     private var signUpButton: some View {
         Button(action: handleEmailSignUp) {
             Text("Create Account")
-                .font(.peatedBody)
-                .fontWeight(.semibold)
+                .font(.peatedInteractive)
                 .foregroundColor(.onBrand)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -171,8 +171,7 @@ struct SignUpView: View {
                         .tint(.onBrand)
                 } else {
                     Text("Continue with Google")
-                        .font(.peatedBody)
-                        .fontWeight(.semibold)
+                        .font(.peatedInteractive)
                         .foregroundColor(.onBrand)
                 }
             }

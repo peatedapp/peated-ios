@@ -55,6 +55,7 @@ struct ActivityBottleIdentityRow<End: View, Details: View>: View {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(bottle.identity.name)
                     .font(.peatedRowTitle)
+                    .tracking(DesignSystem.Tracking.rowTitle)
                     .foregroundColor(.text)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
@@ -93,7 +94,7 @@ struct CompactBottleIdentityRow: View {
             HStack(spacing: 8) {
                 ActivityBottleThumbnail(imageUrl: bottle.imageUrl, size: .compact)
                 Text(bottle.identity.name)
-                    .font(.peatedBodyText)
+                    .font(.peatedBody)
                     .foregroundColor(.text)
                     .lineLimit(1)
                     .truncationMode(.tail)

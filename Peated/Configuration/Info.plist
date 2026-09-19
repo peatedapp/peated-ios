@@ -52,16 +52,22 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>HankenGrotesk-Bold.ttf</string>
+		<string>Karla-Regular.ttf</string>
+		<string>Karla-Italic.ttf</string>
+		<string>Karla-SemiBold.ttf</string>
+		<string>Karla-Bold.ttf</string>
+		<string>IBMPlexMono-Regular.ttf</string>
+		<string>IBMPlexMono-Medium.ttf</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
 	</array>
-    <key>UIStatusBarStyle</key>
-    <string>UIStatusBarStyleLightContent</string>
-    <key>UIViewControllerBasedStatusBarAppearance</key>
-    <false/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -75,8 +81,6 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-    <key>UIUserInterfaceStyle</key>
-    <string>Dark</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Peated uses your location to help you find and check in at nearby bars, restaurants, and distilleries.</string>
 	<key>NSCameraUsageDescription</key>

@@ -55,7 +55,7 @@ struct ActivityBottleThumbnail: View {
                     ImagePrefetcher.prefetch(urls: [url], max: 1)
                 }
                 .frame(width: size.frame.width, height: size.frame.height)
-                .background(Color.white)
+                .background(Color.imageBackground)
                 .clipShape(RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small))
                 .overlay(
                     RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)

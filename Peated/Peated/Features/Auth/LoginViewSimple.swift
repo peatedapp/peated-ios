@@ -35,7 +35,7 @@ struct LoginViewSimple: View {
                             .frame(height: 1)
 
                         Text("OR")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textMuted)
                             .padding(.horizontal, 16)
 
@@ -80,12 +80,13 @@ struct LoginViewSimple: View {
 
             VStack(spacing: 8) {
                 Text("Welcome back")
-                    .font(.peatedTitle2)
+                    .font(.peatedPageTitleCompact)
+                    .tracking(DesignSystem.Tracking.pageTitleCompact)
                     .fontWeight(.bold)
                     .foregroundColor(.text)
 
                 Text("Track and share your whisky journey")
-                    .font(.peatedBody)
+                    .font(.peatedProse)
                     .foregroundColor(.textSecondary)
             }
         }
@@ -100,8 +101,7 @@ struct LoginViewSimple: View {
                     .font(.system(size: 20, weight: .semibold))
                     .foregroundColor(.onBrand)
                 Text("Continue with Google")
-                    .font(.peatedBody)
-                    .fontWeight(.semibold)
+                    .font(.peatedInteractive)
                     .foregroundColor(.onBrand)
             }
             .frame(maxWidth: .infinity)
@@ -141,8 +141,7 @@ struct LoginViewSimple: View {
     private var loginButton: some View {
         Button(action: handleLogin) {
             Text("Sign In")
-                .font(.peatedBody)
-                .fontWeight(.semibold)
+                .font(.peatedInteractive)
                 .foregroundColor(.onBrand)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -157,7 +156,7 @@ struct LoginViewSimple: View {
     private var signUpLink: some View {
         HStack {
             Text("Don't have an account?")
-                .font(.peatedBody)
+                .font(.peatedProse)
                 .foregroundColor(.textSecondary)
 
             NavigationLink(
@@ -166,9 +165,11 @@ struct LoginViewSimple: View {
                 }
             ) {
                 Text("Sign up")
-                    .font(.peatedBody)
-                    .fontWeight(.medium)
+                    .font(.peatedInteractive)
                     .foregroundColor(.brand)
+                    // Keep the bare text link at the 44-point minimum hit target.
+                    .frame(minHeight: DesignSystem.ControlHeight.standard)
+                    .contentShape(Rectangle())
             }
         }
     }
