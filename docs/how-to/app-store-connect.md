@@ -59,6 +59,7 @@ Keep one active workflow named `Release to TestFlight` with these settings:
 - Action: archive the Peated iOS app
 - Post-action: distribute to the internal Peated TestFlight group
 - Automatic pull-request and branch-change triggers: disabled
+- Environment: `SENTRY_AUTH_TOKEN` as a secret variable, so the post-archive script can upload debug symbols (see `@docs/how-to/sentry.md`)
 
 The workflow should not add separate Build, Test, or Analyze actions. The tagged or selected commit must already have passed the required GitHub `Apple build and tests` check. Run broader analysis or device matrices locally or in a deliberately started diagnostic workflow.
 

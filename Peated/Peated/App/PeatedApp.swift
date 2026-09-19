@@ -1,7 +1,6 @@
 import Foundation
 import GoogleSignIn
 import PeatedCore
-import Sentry
 import SwiftUI
 
 @main
@@ -28,31 +27,8 @@ struct PeatedApp: App {
                                        diskPath: "com.peated.urlcache")
         }
 
-        // Initialize Sentry
-        SentrySDK.start { options in
-            options.dsn = "https://768306340a5c4721d816c33502f7e06e@o4505211758706688.ingest.us.sentry.io/4510132027457536"
-
-            #if DEBUG
-                options.debug = true // Enable debug logging in development builds
-            #else
-                options.debug = false // Disable in production
-            #endif
-
-            // Private user data is opt-in at reviewed capture sites.
-            options.sendDefaultPii = false
-
-            // Sample 20% of transactions for performance monitoring in production
-            options.tracesSampleRate = 0.2
-
-            // Configure profiling - sample 10% of sessions
-            options.configureProfiling = {
-                $0.sessionSampleRate = 0.1
-                $0.lifecycle = .trace
-            }
-
-            // Screenshots, view hierarchies, and unrestricted logs can contain
-            // private tasting, account, and photo data. Keep them disabled.
-        }
+        // Start error reporting before any repository or model can fail.
+        SentryTelemetryReporter.start()
     }
 
     var body: some Scene {

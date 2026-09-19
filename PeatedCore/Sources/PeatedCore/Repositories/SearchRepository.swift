@@ -48,6 +48,7 @@ public actor SearchRepository: SearchRepositoryProtocol, BaseRepositoryProtocol 
                 )
             }
         } catch {
+            Telemetry.capture(error, feature: "search", operation: "bottles")
             return []
         }
     }
@@ -69,6 +70,7 @@ public actor SearchRepository: SearchRepositoryProtocol, BaseRepositoryProtocol 
                 )
             }
         } catch {
+            Telemetry.capture(error, feature: "search", operation: "entities")
             return []
         }
     }
@@ -91,6 +93,7 @@ public actor SearchRepository: SearchRepositoryProtocol, BaseRepositoryProtocol 
                 )
             }
         } catch {
+            Telemetry.capture(error, feature: "search", operation: "users")
             return []
         }
     }

@@ -51,7 +51,7 @@ public class OfflineQueueManager {
             pendingOperations = try await database.getPendingOperations()
             print("OfflineQueueManager: Loaded \(pendingOperations.count) pending operations")
         } catch {
-            print("OfflineQueueManager: Failed to load pending operations: \(error)")
+            Telemetry.capture(error, feature: "offline_queue", operation: "load")
         }
     }
 
@@ -69,7 +69,7 @@ public class OfflineQueueManager {
                 await processPendingOperations()
             }
         } catch {
-            print("OfflineQueueManager: Failed to queue operation: \(error)")
+            Telemetry.capture(error, feature: "offline_queue", operation: "enqueue")
         }
     }
 
@@ -170,11 +170,23 @@ public class OfflineQueueManager {
 
             try? await database.updateOfflineOperation(updatedOperation)
 
-            print("OfflineQueueManager: Failed to process operation \(operation.id): \(error)")
-
-            // Show error for final failure
+            // Bounded retries are expected. Only the terminal failure is an issue.
             if updatedOperation.hasExceededRetries {
+                Telemetry.capture(error, feature: "offline_queue", operation: "sync", attributes: [
+                    "operation_type": .string(String(describing: operation.type)),
+                    "retry_count": .int(updatedOperation.retryCount)
+                ])
                 ToastManager.shared.showError("Failed to sync \(operation.type.description)")
+            } else {
+                Telemetry.addBreadcrumb(TelemetryBreadcrumb(
+                    category: "offline_queue",
+                    message: "Sync attempt failed",
+                    level: .warning,
+                    data: [
+                        "operation_type": .string(String(describing: operation.type)),
+                        "retry_count": .int(updatedOperation.retryCount)
+                    ]
+                ))
             }
 
             // Apply exponential backoff for retry

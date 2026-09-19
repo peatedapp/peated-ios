@@ -78,6 +78,7 @@ struct TastingDetailView: View {
                         try await model.deleteTasting()
                         dismiss()
                     } catch {
+                        Telemetry.capture(error, feature: "tasting", operation: "delete")
                         ToastManager.shared.showError("Failed to delete tasting")
                     }
                 }

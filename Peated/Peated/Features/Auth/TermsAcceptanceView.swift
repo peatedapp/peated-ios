@@ -98,6 +98,7 @@ struct TermsAcceptanceView: View {
                     onAccepted()
                 }
             } catch {
+                Telemetry.capture(error, feature: "auth", operation: "accept_terms")
                 await MainActor.run {
                     self.error = error
                     isAccepting = false

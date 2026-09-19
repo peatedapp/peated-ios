@@ -213,6 +213,8 @@ public class FeedModel {
             // Check for cancellation
             guard !Task.isCancelled else { return }
 
+            Telemetry.capture(error, feature: "feed", operation: "load")
+
             if updateUI {
                 self.error = error
                 // IMPORTANT: Don't clear cache on error - preserve stale data
@@ -413,7 +415,6 @@ public class FeedModel {
 
         let currentTasting = tastings[tastingIndex]
         let newToastedState = !currentTasting.hasToasted
-        let newToastCount = newToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1)
         let isConnected = NetworkMonitor.shared.isConnected
         let offlineOperation: OfflineOperation?
 
@@ -426,45 +427,14 @@ public class FeedModel {
                     isToasted: newToastedState
                 )
             } catch {
+                Telemetry.capture(error, feature: "feed", operation: "queue_toast")
                 ToastManager.shared.showError("Failed to prepare offline toast")
                 return
             }
         }
 
-        // Create updated tasting for optimistic update
-        let updatedTasting = TastingFeedItem(
-            id: currentTasting.id,
-            ratingBand: currentTasting.ratingBand,
-            notes: currentTasting.notes,
-            servingStyle: currentTasting.servingStyle,
-            imageUrl: currentTasting.imageUrl,
-            createdAt: currentTasting.createdAt,
-            userId: currentTasting.userId,
-            username: currentTasting.username,
-            userDisplayName: currentTasting.userDisplayName,
-            userAvatarUrl: currentTasting.userAvatarUrl,
-            bottleId: currentTasting.bottleId,
-            bottleName: currentTasting.bottleName,
-            bottleBrandName: currentTasting.bottleBrandName,
-            bottleCategory: currentTasting.bottleCategory,
-            bottleImageUrl: currentTasting.bottleImageUrl,
-            toastCount: newToastCount,
-            commentCount: currentTasting.commentCount,
-            hasToasted: newToastedState,
-            tags: currentTasting.tags,
-            location: currentTasting.location,
-            friendUsernames: currentTasting.friendUsernames
-        )
-
-        // Optimistic update - immediately update UI
-        tastings[tastingIndex] = updatedTasting
-
-        // Also update all feed caches that contain this tasting
-        for feedType in feedCaches.keys {
-            if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == tastingId }) {
-                feedCaches[feedType]?.tastings[cacheIndex] = updatedTasting
-            }
-        }
+        // Optimistic update - immediately update UI and every cached feed
+        replaceTasting(id: tastingId, with: Self.toasted(currentTasting, hasToasted: newToastedState))
 
         // Check network status
         if let offlineOperation {
@@ -485,47 +455,10 @@ public class FeedModel {
                     ToastManager.shared.showSuccess("Cheers! 🥃")
                 }
 
-                // Create the correct tasting state based on API response
-                let correctTasting = TastingFeedItem(
-                    id: currentTasting.id,
-                    ratingBand: currentTasting.ratingBand,
-                    notes: currentTasting.notes,
-                    servingStyle: currentTasting.servingStyle,
-                    imageUrl: currentTasting.imageUrl,
-                    createdAt: currentTasting.createdAt,
-                    userId: currentTasting.userId,
-                    username: currentTasting.username,
-                    userDisplayName: currentTasting.userDisplayName,
-                    userAvatarUrl: currentTasting.userAvatarUrl,
-                    bottleId: currentTasting.bottleId,
-                    bottleName: currentTasting.bottleName,
-                    bottleBrandName: currentTasting.bottleBrandName,
-                    bottleCategory: currentTasting.bottleCategory,
-                    bottleImageUrl: currentTasting.bottleImageUrl,
-                    toastCount: actualToastedState ? currentTasting.toastCount + 1 : max(
-                        0,
-                        currentTasting.toastCount - 1
-                    ),
-                    commentCount: currentTasting.commentCount,
-                    hasToasted: actualToastedState,
-                    tags: currentTasting.tags,
-                    location: currentTasting.location,
-                    friendUsernames: currentTasting.friendUsernames
-                )
-
-                // Update UI with correct state if needed
+                // Update UI with the state the server confirmed
+                let correctTasting = Self.toasted(currentTasting, hasToasted: actualToastedState)
                 await MainActor.run {
-                    if let currentIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
-                        tastings[currentIndex] = correctTasting
-
-                        // Also update all feed caches
-                        for feedType in feedCaches.keys {
-                            if let cacheIndex = feedCaches[feedType]?.tastings
-                                .firstIndex(where: { $0.id == tastingId }) {
-                                feedCaches[feedType]?.tastings[cacheIndex] = correctTasting
-                            }
-                        }
-                    }
+                    replaceTasting(id: tastingId, with: correctTasting)
                 }
 
             } catch {
@@ -539,35 +472,17 @@ public class FeedModel {
                         await OfflineQueueManager.shared.queueOperation(operation)
                         ToastManager.shared.showWarning("Toast queued for sync")
                     } catch {
+                        Telemetry.capture(error, feature: "feed", operation: "queue_toast")
                         await MainActor.run {
-                            if let revertIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
-                                tastings[revertIndex] = currentTasting
-
-                                for feedType in feedCaches.keys {
-                                    if let cacheIndex = feedCaches[feedType]?.tastings
-                                        .firstIndex(where: { $0.id == tastingId }) {
-                                        feedCaches[feedType]?.tastings[cacheIndex] = currentTasting
-                                    }
-                                }
-                            }
-
+                            replaceTasting(id: tastingId, with: currentTasting)
                             ToastManager.shared.showError("Failed to prepare offline toast")
                         }
                     }
                 } else {
+                    Telemetry.capture(error, feature: "feed", operation: "toggle_toast")
                     // Revert optimistic update on error
                     await MainActor.run {
-                        if let revertIndex = tastings.firstIndex(where: { $0.id == tastingId }) {
-                            tastings[revertIndex] = currentTasting
-
-                            // Also revert in all feed caches
-                            for feedType in feedCaches.keys {
-                                if let cacheIndex = feedCaches[feedType]?.tastings
-                                    .firstIndex(where: { $0.id == tastingId }) {
-                                    feedCaches[feedType]?.tastings[cacheIndex] = currentTasting
-                                }
-                            }
-                        }
+                        replaceTasting(id: tastingId, with: currentTasting)
 
                         // Don't set general error for toast failures - they're user-specific actions
                         // Show specific error message via ToastManager
@@ -582,6 +497,45 @@ public class FeedModel {
                 }
             }
         }
+    }
+
+    /// Replaces a tasting in the visible feed and in every cached feed that contains it.
+    private func replaceTasting(id: String, with tasting: TastingFeedItem) {
+        if let index = tastings.firstIndex(where: { $0.id == id }) {
+            tastings[index] = tasting
+        }
+        for feedType in feedCaches.keys {
+            if let cacheIndex = feedCaches[feedType]?.tastings.firstIndex(where: { $0.id == id }) {
+                feedCaches[feedType]?.tastings[cacheIndex] = tasting
+            }
+        }
+    }
+
+    /// Copies a tasting with the toast state applied and the count adjusted from the original.
+    private static func toasted(_ tasting: TastingFeedItem, hasToasted: Bool) -> TastingFeedItem {
+        TastingFeedItem(
+            id: tasting.id,
+            ratingBand: tasting.ratingBand,
+            notes: tasting.notes,
+            servingStyle: tasting.servingStyle,
+            imageUrl: tasting.imageUrl,
+            createdAt: tasting.createdAt,
+            userId: tasting.userId,
+            username: tasting.username,
+            userDisplayName: tasting.userDisplayName,
+            userAvatarUrl: tasting.userAvatarUrl,
+            bottleId: tasting.bottleId,
+            bottleName: tasting.bottleName,
+            bottleBrandName: tasting.bottleBrandName,
+            bottleCategory: tasting.bottleCategory,
+            bottleImageUrl: tasting.bottleImageUrl,
+            toastCount: hasToasted ? tasting.toastCount + 1 : max(0, tasting.toastCount - 1),
+            commentCount: tasting.commentCount,
+            hasToasted: hasToasted,
+            tags: tasting.tags,
+            location: tasting.location,
+            friendUsernames: tasting.friendUsernames
+        )
     }
 
     /// Checks if an error is network-related and should trigger offline queueing

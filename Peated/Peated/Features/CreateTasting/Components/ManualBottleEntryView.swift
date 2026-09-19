@@ -239,6 +239,7 @@ struct ManualBottleEntryView: View {
                 onBottleCreated(newBottle)
                 dismiss()
             } catch {
+                Telemetry.capture(error, feature: "create_bottle", operation: "submit")
                 errorMessage = error.localizedDescription
                 showingError = true
             }

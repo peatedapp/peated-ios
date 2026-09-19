@@ -44,8 +44,10 @@ public class CacheManager {
             try await database.cacheFeed(type: type, items: freshData.tastings)
             return (freshData.tastings, true)
         } catch {
-            // 5. On network error, return stale cache if available
+            // 5. On network error, return stale cache if available. The caller
+            // never sees this failure, so it is reported here.
             if !cachedData.items.isEmpty {
+                Telemetry.capture(error, feature: "feed", operation: "refresh_stale")
                 return (cachedData.items, false)
             }
             throw error
@@ -197,8 +199,8 @@ public class CacheManager {
                 userInfo: ["feedType": type]
             )
         } catch {
-            // Log error but don't throw - this is background refresh
-            print("Background refresh failed for \(type): \(error)")
+            // Report but don't throw - this is background refresh
+            Telemetry.capture(error, feature: "feed", operation: "background_refresh")
         }
     }
 
@@ -217,7 +219,7 @@ public class CacheManager {
                 userInfo: ["tastingId": id]
             )
         } catch {
-            print("Background refresh failed for tasting \(id): \(error)")
+            Telemetry.capture(error, feature: "tasting", operation: "background_refresh")
         }
     }
 }

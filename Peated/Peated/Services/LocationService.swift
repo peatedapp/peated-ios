@@ -5,6 +5,13 @@ import PeatedCore
 
 @MainActor
 class LocationService: NSObject, ObservableObject {
+    /// MapKit and Core Location report no results, throttling, and network
+    /// state through their own error domains. None of those are Peated bugs.
+    private static func isExpectedLocationError(_ error: any Error) -> Bool {
+        let domain = (error as NSError).domain
+        return domain == MKError.errorDomain || domain == kCLErrorDomain
+    }
+
     @Published var currentLocation: CLLocation?
     @Published var authorizationStatus: CLAuthorizationStatus = .notDetermined
     @Published var isLoadingLocation = false
@@ -86,7 +93,9 @@ class LocationService: NSObject, ObservableObject {
                 )
             }
         } catch {
-            print("Location search error: \(error)")
+            if !Self.isExpectedLocationError(error) {
+                Telemetry.capture(error, feature: "location", operation: "search")
+            }
             return []
         }
     }
@@ -105,7 +114,9 @@ class LocationService: NSObject, ObservableObject {
                 address: address
             )
         } catch {
-            print("Geocoding error: \(error)")
+            if !Self.isExpectedLocationError(error) {
+                Telemetry.capture(error, feature: "location", operation: "geocode")
+            }
             return nil
         }
     }

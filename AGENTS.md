@@ -75,6 +75,7 @@ Read the relevant policy and owning feature documentation before changing code i
 | SwiftUI and accessibility | `docs/policies/swiftui-accessibility.md` |
 | Development toolchain | `docs/how-to/toolchain.md` |
 | App Store Connect and Xcode Cloud | `docs/how-to/app-store-connect.md` |
+| Sentry and error reporting | `docs/how-to/sentry.md` |
 | Swift 6 migration | `docs/how-to/swift-6-migration.md` |
 | Testing strategy | `docs/how-to/testing-strategy.md` |
 | API generation workflow | `docs/specs/openapi-workflow.md` |
