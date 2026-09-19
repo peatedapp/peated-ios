@@ -35,15 +35,18 @@ struct ActivityBottleThumbnail: View {
         Group {
             if let imageUrl, let url = URL(string: imageUrl) {
                 CachedAsyncImage(url: url) { image in
-                    if fit == .cover {
-                        image
-                            .resizable()
-                            .scaledToFill()
-                    } else {
-                        image
-                            .resizable()
-                            .scaledToFit()
-                            .padding(size.padding)
+                    // The content closure is not a view builder, so branch inside a Group.
+                    Group {
+                        if fit == .cover {
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        } else {
+                            image
+                                .resizable()
+                                .scaledToFit()
+                                .padding(size.padding)
+                        }
                     }
                 } placeholder: {
                     Color.clear

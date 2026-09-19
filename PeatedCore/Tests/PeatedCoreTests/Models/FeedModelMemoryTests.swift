@@ -208,13 +208,13 @@ struct FeedModelMemoryTests {
         #expect(model.entries.isEmpty, "Should have no tastings")
     }
 
-    @Test("Cache eviction removes oldest feeds first")
-    func cacheEvictionRemovesOldestFirst() async throws {
+    @Test("Both feeds stay cached within the memory limit")
+    func bothFeedsStayCachedWithinLimit() async {
         // Given
         let mockRepository = MockFeedRepository()
         let model = FeedModel(feedRepository: mockRepository, selectionStore: InMemoryFeedSelectionStore())
 
-        // Create a large page that will trigger memory cleanup
+        // Each feed is capped at 500 entries, so two feeds never reach the 10MB limit
         let largePage = ActivityPage(
             tastings: Array(1 ... 4000).map {
                 TastingFeedItem.builder().withId("item\($0)").build()
@@ -224,24 +224,15 @@ struct FeedModelMemoryTests {
         )
         mockRepository.mockPage = largePage
 
-        // When - Load feeds in order: global -> friends
+        // When - Load global, then friends
         await model.switchFeedType(.global)
-        try await Task.sleep(for: .milliseconds(50)) // Ensure different timestamps
-
-        await model.switchFeedType(.global)
-        try await Task.sleep(for: .milliseconds(50))
-
-        await model.switchFeedType(.friends) // Current feed, should be preserved
+        await model.switchFeedType(.friends)
 
         let finalUsage = model.cacheMemoryUsage
 
         // Then
-        #expect(finalUsage.feedCounts[.friends] != nil, "Should preserve current feed")
-
-        // Global feed should be evicted first (oldest), global might be preserved
-        if finalUsage.feedCounts.count < 3 {
-            // Some eviction occurred
-            #expect(finalUsage.feedCounts[.global] == nil, "Should evict oldest feed first")
-        }
+        #expect(finalUsage.feedCounts[.friends] == 500, "Should keep the current feed, capped per feed")
+        #expect(finalUsage.feedCounts[.global] == 500, "Should keep the other feed, capped per feed")
+        #expect(finalUsage.totalBytes <= 10 * 1024 * 1024, "Should stay under the memory limit")
     }
 }
