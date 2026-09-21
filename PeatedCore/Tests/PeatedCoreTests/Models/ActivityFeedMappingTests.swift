@@ -124,10 +124,13 @@ struct ActivityFeedMappingTests {
         return #"""
         {"id":1,"peatedId":"b1","fullName":"Ardbeg 10","name":"10","imageUrl":"https://img/b1.png",
         "category":"single_malt",
-        "brand":{"id":2,"peatedId":"e2","name":"Ardbeg","kind":"brand","totalTastings":1,"totalBottles":1,
+        "brand":{"id":2,"peatedId":"e2","name":"Ardbeg","kind":"brand","totalTastings":1,
+        "publicReviewAndTastingCount":1,"totalBottles":1,
         "isFollowing":false,"createdAt":"\#(date)","updatedAt":"\#(date)"},
-        "medianScore":null,"minScore":null,"maxScore":null,"memberScoreCount":0,"externalScoreCount":0,"scoreCount":0,
+        "medianScore":null,"minScore":null,"maxScore":null,"memberScoreCount":0,"externalScoreCount":0,
+        "raterCount":0,"scoreCount":0,
         "reviewScoreBandCounts":\#(counts),"tastingBandCounts":\#(counts),"totalTastings":0,
+        "publicReviewAndTastingCount":0,"notedReviewAndTastingCount":0,
         "createdAt":"\#(date)","updatedAt":"\#(date)","isFavorite":false,"isLibrary":false,"hasTasted":false}
         """#
     }
