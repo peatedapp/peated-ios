@@ -76,6 +76,16 @@ The API supports multiple authentication methods through the `/auth/login` endpo
 
 For iOS, we use the ID token flow as recommended by [Google's iOS backend authentication guide](https://developers.google.com/identity/sign-in/ios/backend-auth).
 
+### Apple Identity Token (Mobile Flow)
+```json
+{
+  "appleIdentityToken": "identity_token_from_sign_in_with_apple",
+  "fullName": "Jane Doe"
+}
+```
+
+`fullName` is optional. Apple sends it only on the first authorization, and the server uses it to pick a username for a new account. The token audience must be the app bundle ID. See `docs/how-to/apple-signin-setup.md`.
+
 ## Configuration
 
 API configuration is stored in xcconfig files:

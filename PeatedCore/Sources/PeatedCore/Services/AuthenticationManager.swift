@@ -97,55 +97,13 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         print("AuthenticationManager: Attempting login for \(email)")
 
         do {
-            let client = await apiClient.generatedClient
-
-            // Create the request body
-            let body = Operations.login.Input.Body.json(
-                .init(
-                    value1: .init(email: email, password: password)
-                )
+            let user = try await exchangeForSession(
+                body: .json(.init(value1: .init(email: email, password: password)))
             )
-
-            let response = try await client.login(body: body)
-
-            // Extract the successful response
-            if case let .ok(okResponse) = response,
-               case let .json(jsonPayload) = okResponse.body {
-                // Save tokens
-                if let accessToken = jsonPayload.accessToken {
-                    try keychain.saveToken(accessToken)
-                }
-
-                // Convert API user to local User
-                let apiUser = jsonPayload.user
-                var user = User(from: apiUser)
-
-                // Fetch additional user details including stats
-                do {
-                    let detailsResponse = try await client.getUser(
-                        path: .init(user: .init(value1: apiUser.id))
-                    )
-
-                    if case let .ok(detailsOk) = detailsResponse,
-                       case let .json(detailsJson) = detailsOk.body {
-                        user.tastingsCount = Int(detailsJson.stats.tastings)
-                        user.bottlesCount = Int(detailsJson.stats.bottles)
-                        user.collectedCount = Int(detailsJson.stats.collected)
-                        user.contributionsCount = Int(detailsJson.stats.contributions)
-                    }
-                } catch {
-                    // Continue without stats if details fail
-                    Telemetry.capture(error, feature: "auth", operation: "load_user_details")
-                }
-
-                // Update auth state
-                authState = .authenticated(user)
-                isLoading = false
-                print("AuthenticationManager: Login successful, authState updated to authenticated")
-                return user
-            } else {
-                throw AuthError.invalidResponse
-            }
+            authState = .authenticated(user)
+            isLoading = false
+            print("AuthenticationManager: Login successful, authState updated to authenticated")
+            return user
         } catch {
             captureAuthFailure(error, operation: "sign_in")
             self.error = error
@@ -195,6 +153,32 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         #else
             throw AuthError.noPresentingViewController
         #endif
+    }
+
+    /// Exchanges a Sign in with Apple identity token for a Peated session.
+    ///
+    /// The app presents the Apple authorization UI and hands over the identity
+    /// token (a JWT whose audience is the app's bundle ID). Apple sends
+    /// `fullName` only on the first authorization, and the server uses it to
+    /// pick a username when it creates a new account.
+    public func loginWithApple(identityToken: String, fullName: String?) async throws -> User {
+        isLoading = true
+        error = nil
+
+        do {
+            let user = try await exchangeForSession(
+                body: .json(.init(value4: .init(appleIdentityToken: identityToken, fullName: fullName)))
+            )
+            authState = .authenticated(user)
+            isLoading = false
+            return user
+        } catch {
+            captureAuthFailure(error, operation: "apple_sign_in")
+            self.error = error
+            authState = .unauthenticated
+            isLoading = false
+            throw error
+        }
     }
 
     public func register(username: String, email: String, password: String,
@@ -384,43 +368,44 @@ extension AuthenticationManager {
     }
 
     private func exchangeGoogleIDTokenForSession(idToken: String) async throws -> User {
+        try await exchangeForSession(body: .json(.init(value3: .init(idToken: idToken))))
+    }
+
+    /// Sends one `/auth/login` request, stores the returned access token, and
+    /// returns the signed-in user with their stats. Callers own `authState`.
+    private func exchangeForSession(body: Operations.login.Input.Body) async throws -> User {
         let client = await apiClient.generatedClient
-        // Create the request body for Google auth (using idToken)
-        let body = Operations.login.Input.Body.json(
-            .init(
-                value3: .init(idToken: idToken)
-            )
-        )
         let response = try await client.login(body: body)
-        // Extract the successful response
-        if case let .ok(okResponse) = response,
-           case let .json(jsonPayload) = okResponse.body {
-            // Save tokens
-            if let accessToken = jsonPayload.accessToken {
-                try keychain.saveToken(accessToken)
-            }
-            // Convert API user to local User
-            let apiUser = jsonPayload.user
-            var user = User(from: apiUser)
-            // Fetch additional user details including stats
-            do {
-                let detailsResponse = try await client.getUser(
-                    path: .init(user: .init(value1: apiUser.id))
-                )
-                if case let .ok(detailsOk) = detailsResponse,
-                   case let .json(detailsJson) = detailsOk.body {
-                    user.tastingsCount = Int(detailsJson.stats.tastings)
-                    user.bottlesCount = Int(detailsJson.stats.bottles)
-                    user.collectedCount = Int(detailsJson.stats.collected)
-                    user.contributionsCount = Int(detailsJson.stats.contributions)
-                }
-            } catch {
-                // Continue without stats if details fail
-                Telemetry.capture(error, feature: "auth", operation: "load_user_details")
-            }
-            return user
-        } else {
+
+        guard case let .ok(okResponse) = response,
+              case let .json(jsonPayload) = okResponse.body
+        else {
             throw AuthError.invalidResponse
         }
+
+        if let accessToken = jsonPayload.accessToken {
+            try keychain.saveToken(accessToken)
+        }
+
+        let apiUser = jsonPayload.user
+        var user = User(from: apiUser)
+
+        // Fetch additional user details including stats
+        do {
+            let detailsResponse = try await client.getUser(
+                path: .init(user: .init(value1: apiUser.id))
+            )
+            if case let .ok(detailsOk) = detailsResponse,
+               case let .json(detailsJson) = detailsOk.body {
+                user.tastingsCount = Int(detailsJson.stats.tastings)
+                user.bottlesCount = Int(detailsJson.stats.bottles)
+                user.collectedCount = Int(detailsJson.stats.collected)
+                user.contributionsCount = Int(detailsJson.stats.contributions)
+            }
+        } catch {
+            // Continue without stats if details fail
+            Telemetry.capture(error, feature: "auth", operation: "load_user_details")
+        }
+        return user
     }
 }

@@ -25,8 +25,11 @@ struct SignUpView: View {
                     headerSection
                         .padding(.top, 60)
 
-                    googleSignUpButton
-                        .padding(.horizontal)
+                    VStack(spacing: 12) {
+                        appleSignUpButton
+                        googleSignUpButton
+                    }
+                    .padding(.horizontal)
 
                     divider
                         .padding(.horizontal)
@@ -167,6 +170,18 @@ struct SignUpView: View {
         !username.isEmpty && !email.isEmpty && !password.isEmpty && acceptedTerms && !isLoading
     }
 
+    private var appleSignUpButton: some View {
+        AppleSignInButton(label: .continue) { result in
+            switch result {
+            case let .success(credential):
+                handleAppleSignUp(credential)
+            case let .failure(error):
+                self.error = error.localizedDescription
+            }
+        }
+        .disabled(isLoading)
+    }
+
     private var googleSignUpButton: some View {
         Button(action: handleGoogleSignUp) {
             HStack(spacing: 12) {
@@ -217,6 +232,26 @@ struct SignUpView: View {
                     email: email,
                     password: password,
                     tosAccepted: acceptedTerms
+                )
+                await MainActor.run { onSignUpSuccess(user) }
+            } catch {
+                await MainActor.run {
+                    self.error = error.localizedDescription
+                    isLoading = false
+                }
+            }
+        }
+    }
+
+    private func handleAppleSignUp(_ credential: AppleSignInCredential) {
+        // The backend links or creates the account on the first successful Apple auth.
+        Task {
+            isLoading = true
+            error = nil
+            do {
+                let user = try await authManager.loginWithApple(
+                    identityToken: credential.identityToken,
+                    fullName: credential.fullName
                 )
                 await MainActor.run { onSignUpSuccess(user) }
             } catch {

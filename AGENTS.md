@@ -84,6 +84,7 @@ Read the relevant policy and owning feature documentation before changing code i
 | Upstream migration status | `docs/notes/upstream-migration.md` |
 | Architecture | `docs/design/architecture/overview.md` |
 | Google Sign-In setup | `docs/how-to/google-signin-setup.md` |
+| Sign in with Apple setup | `docs/how-to/apple-signin-setup.md` |
 | Module-specific rules | Nearest child `AGENTS.md` |
 
 Policy documents contain repo-wide defaults. Feature architecture and non-obvious invariants belong in the owning package, module, or feature documentation. Code, generated API contracts, exported types, and tests are authoritative. Temporary notes and plans cannot override policy.

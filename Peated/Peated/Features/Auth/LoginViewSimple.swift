@@ -24,9 +24,12 @@ struct LoginViewSimple: View {
                     headerSection
                         .padding(.top, 60)
 
-                    // Google Sign In
-                    googleSignInButton
-                        .padding(.horizontal)
+                    // Federated sign-in
+                    VStack(spacing: 12) {
+                        appleSignInButton
+                        googleSignInButton
+                    }
+                    .padding(.horizontal)
 
                     // Divider
                     HStack {
@@ -90,6 +93,20 @@ struct LoginViewSimple: View {
                     .foregroundColor(.textSecondary)
             }
         }
+    }
+
+    // MARK: - Apple Sign In
+
+    private var appleSignInButton: some View {
+        AppleSignInButton(label: .continue) { result in
+            switch result {
+            case let .success(credential):
+                handleAppleSignIn(credential)
+            case let .failure(error):
+                self.error = error.localizedDescription
+            }
+        }
+        .disabled(isLoading)
     }
 
     // MARK: - Google Sign In
@@ -200,6 +217,29 @@ struct LoginViewSimple: View {
             error = nil
             do {
                 let user = try await authManager.login(email: trimmedEmail, password: password)
+                await MainActor.run {
+                    isLoading = false
+                    onLoginSuccess(user)
+                }
+            } catch {
+                await MainActor.run {
+                    self.error = error.localizedDescription
+                    isLoading = false
+                }
+            }
+        }
+    }
+
+    private func handleAppleSignIn(_ credential: AppleSignInCredential) {
+        Task {
+            isLoading = true
+            error = nil
+
+            do {
+                let user = try await authManager.loginWithApple(
+                    identityToken: credential.identityToken,
+                    fullName: credential.fullName
+                )
                 await MainActor.run {
                     isLoading = false
                     onLoginSuccess(user)
