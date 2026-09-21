@@ -47,9 +47,24 @@ struct SettingsView: View {
 
                     // Support Section
                     FormSection("Support") {
-                        Link(destination: URL(string: "https://github.com/dcramer/peated")!) {
+                        Link(destination: URL(string: "https://peated.com/about")!) {
                             // Make row full-width and left-aligned
                             Label("Help & Support", systemImage: "questionmark.circle")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                        }
+                    }
+
+                    // Legal Section. App Review requires the privacy policy to be reachable in the app.
+                    FormSection("Legal") {
+                        Link(destination: LegalDocument.privacy.url) {
+                            Label("Privacy Policy", systemImage: "hand.raised")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                        }
+
+                        Link(destination: LegalDocument.terms.url) {
+                            Label("Terms of Service", systemImage: "doc.text")
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .contentShape(Rectangle())
                         }

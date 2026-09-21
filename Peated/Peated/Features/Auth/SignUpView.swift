@@ -11,7 +11,7 @@ struct SignUpView: View {
     @State private var acceptedTerms = false
     @State private var isLoading = false
     @State private var error: String?
-    @State private var showTerms = false
+    @State private var legalDocument: LegalDocument?
 
     private let authManager = AuthenticationManager.shared
 
@@ -58,11 +58,9 @@ struct SignUpView: View {
             Text(error ?? "An error occurred")
         }
         .overlay(loadingOverlay)
-        .sheet(isPresented: $showTerms) {
-            if let url = URL(string: "https://peated.com/terms") {
-                SafariView(url: url)
-                    .ignoresSafeArea(edges: .bottom)
-            }
+        .sheet(item: $legalDocument) { document in
+            SafariView(url: document.url)
+                .ignoresSafeArea(edges: .bottom)
         }
     }
 
@@ -132,15 +130,24 @@ struct SignUpView: View {
             HStack(spacing: 4) {
                 Text("I agree to the")
                     .foregroundColor(.textSecondary)
-                Button(action: { showTerms = true }) {
-                    Text("Terms of Service")
-                        .foregroundColor(.brand)
-                        .underline()
-                }
-                .buttonStyle(.plain)
+                legalLink("Terms of Service", document: .terms)
+                Text("and")
+                    .foregroundColor(.textSecondary)
+                legalLink("Privacy Policy", document: .privacy)
             }
         }
         .font(.peatedMetadata)
+    }
+
+    private func legalLink(_ title: String, document: LegalDocument) -> some View {
+        Button {
+            legalDocument = document
+        } label: {
+            Text(title)
+                .foregroundColor(.brand)
+                .underline()
+        }
+        .buttonStyle(.plain)
     }
 
     private var signUpButton: some View {

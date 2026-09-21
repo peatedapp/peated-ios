@@ -65,7 +65,7 @@ struct TermsAcceptanceView: View {
                 .disabled(isAccepting)
 
                 // View terms link
-                Link(destination: URL(string: "https://peated.com/terms")!) {
+                Link(destination: LegalDocument.terms.url) {
                     Text("View Terms of Service")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
