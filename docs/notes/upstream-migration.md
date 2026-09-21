@@ -31,6 +31,8 @@ Changes that affect the iOS app include:
 
 The production client has now been regenerated. `PeatedAPI` builds and its decoding test passes. The app code compiles against it, including the new file-upload format for tasting images and bottle photo identification.
 
+The client was regenerated again on 2026-09-21 against backend commit `83f8fb064b213a420269b54750a7362928a41668` to pick up Sign in with Apple. That refresh also brought new required bottle and entity counts (`raterCount`, `publicReviewAndTastingCount`, `notedReviewAndTastingCount`), an entity `status`, review tag categories, and three endpoints the app does not use yet: bottle series flavor profiles, active critics, and combined reviews and tastings.
+
 The first update also moved tastings and saved offline actions to the five new ratings, added the current bottle details and rating summaries, updated entity, search, and library data, and added a database update for saved tasting ratings. The old numeric rating column remains in existing databases so upgrades stay safe, but the app no longer reads or writes it.
 
 ## Design changes

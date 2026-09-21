@@ -118,7 +118,7 @@ These project settings exist to satisfy App Review and must stay in sync with th
 
 - The app targets iPhone only, in portrait. No screen adapts to iPad size classes, so widening the device family needs iPad QA first.
 - `Peated/Peated/PrivacyInfo.xcprivacy` lists every data type the app sends off the device. Update it and the App Privacy answers together whenever a new field, permission, or SDK ships.
-- `Peated/Peated/Peated.entitlements` holds only iOS entitlements. Add Sign in with Apple there once the API accepts Apple identity tokens.
+- `Peated/Peated/Peated.entitlements` holds only iOS entitlements: Sign in with Apple. See `docs/how-to/apple-signin-setup.md`.
 - Settings and sign-up link to `https://peated.com/terms` and `https://peated.com/privacy` through `LegalDocument`. App Store Connect needs the same privacy URL.
 - The support URL is `https://peated.com/about`.
 - Age rating must declare frequent alcohol references.

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The login screen is the primary entry point for returning users. It supports both email/password authentication and Google OAuth sign-in, matching the authentication methods provided by the Peated API.
+The login screen is the primary entry point for returning users. It supports email/password authentication, Sign in with Apple, and Google sign-in, matching the authentication methods provided by the Peated API.
 
 ## Visual Layout
 
@@ -15,7 +15,10 @@ The login screen is the primary entry point for returning users. It supports bot
 │      Track and share your journey       │
 │                                         │
 │    ┌─────────────────────────────┐     │
-│    │   🔷 Sign in with Google    │     │
+│    │    Continue with Apple     │     │
+│    └─────────────────────────────┘     │
+│    ┌─────────────────────────────┐     │
+│    │   🔷 Continue with Google   │     │
 │    └─────────────────────────────┘     │
 │                                         │
 │            ──── OR ────                 │
@@ -68,8 +71,8 @@ struct LoginScreen: View {
                 headerSection
                     .padding(.top, 60)
                 
-                // Google Sign In
-                googleSignInButton
+                // Apple and Google sign-in
+                federatedSignInButtons
                     .padding(.horizontal)
                 
                 // Divider
@@ -141,37 +144,21 @@ struct LoginScreen: View {
         }
     }
     
-    // MARK: - Google Sign In
+    // MARK: - Federated Sign In
     @ViewBuilder
-    private var googleSignInButton: some View {
-        SignInWithAppleButton(.signIn) { request in
-            // We'll use this as a template but implement Google
-        } onCompletion: { result in
-            // Handle result
-        }
-        .signInWithAppleButtonStyle(.black)
-        .frame(height: 50)
-        .cornerRadius(25)
-        .overlay(
-            // Custom Google button overlay
-            Button(action: handleGoogleSignIn) {
-                HStack {
-                    Image("GoogleLogo")
-                        .resizable()
-                        .frame(width: 20, height: 20)
-                    
-                    Text("Sign in with Google")
-                        .font(.body)
-                        .fontWeight(.medium)
-                }
-                .foregroundColor(.white)
+    private var federatedSignInButtons: some View {
+        VStack(spacing: 12) {
+            // System button; see Peated/Features/Auth/AppleSignInButton.swift
+            AppleSignInButton(label: .continue) { result in
+                // Cancellation never reaches here. Success hands over the identity token.
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(red: 0.26, green: 0.52, blue: 0.96))
-            .cornerRadius(25)
-        )
+
+            Button(action: handleGoogleSignIn) {
+                Label("Continue with Google", systemImage: "g.circle.fill")
+            }
+        }
     }
-    
+
     // MARK: - Email Field
     @ViewBuilder
     private var emailField: some View {
@@ -378,8 +365,7 @@ class LoginModel {
 ## Data Requirements
 
 ### API Endpoints
-- `POST /auth/login` - Email/password authentication
-- `POST /auth/google` - Google OAuth authentication
+- `POST /auth/login` - Email/password, Google ID token, and Apple identity token authentication
 
 ### Request Formats
 ```swift
@@ -389,9 +375,15 @@ struct EmailLoginRequest: Codable {
     let password: String
 }
 
-// Google OAuth
+// Google Sign-In
 struct GoogleLoginRequest: Codable {
-    let code: String
+    let idToken: String
+}
+
+// Sign in with Apple
+struct AppleLoginRequest: Codable {
+    let appleIdentityToken: String
+    let fullName: String? // sent by Apple on the first authorization only
 }
 ```
 
@@ -437,12 +429,17 @@ struct AuthResponse: Codable {
 - Failed: "Google sign-in failed. Please try again."
 - Invalid code: "Authentication failed. Please try again."
 
+### Sign in with Apple Errors
+- Cancelled: No error shown
+- Missing identity token: "Apple sign-in did not return a usable credential"
+- Rejected by server: the server's message, for example an expired token
+
 ## Accessibility
 
 ### VoiceOver
 - Logo: "Peated logo"
 - Fields: "Email, text field" / "Password, secure text field"
-- Buttons: "Sign in with Google, button" / "Sign in, button"
+- Buttons: "Continue with Apple, button" / "Continue with Google, button" / "Sign in, button"
 - Links: "Forgot password, button" / "Sign up, link"
 
 ### Keyboard Navigation
@@ -469,14 +466,14 @@ struct AuthResponse: Codable {
 ### Success Cases
 1. Valid email/password login
 2. Google sign-in flow
-3. Remember me functionality
+3. Sign in with Apple, first and repeat authorization
 4. Auto-fill credentials
 
 ### Error Cases
 1. Invalid email format
 2. Wrong password
 3. Network failure
-4. Google sign-in cancellation
+4. Google or Apple sign-in cancellation
 
 ### Edge Cases
 1. Rapid submit attempts

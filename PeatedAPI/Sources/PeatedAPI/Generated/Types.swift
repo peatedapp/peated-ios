@@ -18,9 +18,16 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `GET /activity`.
     /// - Remark: Generated from `#/paths//activity/get(listActivity)`.
     func listActivity(_ input: Operations.listActivity.Input) async throws -> Operations.listActivity.Output
+    /// List reviews and tastings
+    ///
+    /// List tastings, member reviews, and published critic reviews for one bottle, brand, bottler, or distillery in newest-first order.
+    ///
+    /// - Remark: HTTP `GET /reviews-and-tastings`.
+    /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)`.
+    func listReviewsAndTastings(_ input: Operations.listReviewsAndTastings.Input) async throws -> Operations.listReviewsAndTastings.Output
     /// User login
     ///
-    /// Sign in with email and password, a Google OAuth code, or a Google ID token
+    /// Sign in with email and password, a Google OAuth code, a Google ID token, or an Apple identity token
     ///
     /// - Remark: HTTP `POST /auth/login`.
     /// - Remark: Generated from `#/paths//auth/login/post(login)`.
@@ -174,7 +181,7 @@ public protocol APIProtocol: Sendable {
     func getBottle(_ input: Operations.getBottle.Input) async throws -> Operations.getBottle.Output
     /// Get a bottle flavor profile
     ///
-    /// Count public tastings of one active Bottle with each tasting-note category. Each tasting counts once per category. Only tastings with recognized notes enter the denominator; private and suggested notes are excluded.
+    /// Count how many public reviews and tastings of one active bottle mention each tasting-note category. Each review or tasting counts once per category. Private entries and suggested notes are excluded.
     ///
     /// - Remark: HTTP `GET /bottles/{bottle}/flavor-profile`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/flavor-profile/get(getBottleFlavorProfile)`.
@@ -223,7 +230,7 @@ public protocol APIProtocol: Sendable {
     func getBottleSimilar(_ input: Operations.getBottleSimilar.Input) async throws -> Operations.getBottleSimilar.Output
     /// Get bottle tags
     ///
-    /// Get common tasting tags for a bottle
+    /// Get common tasting tags from public reviews and tastings
     ///
     /// - Remark: HTTP `GET /bottles/{bottle}/tags`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/tags/get(getBottleTags)`.
@@ -312,9 +319,16 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `GET /bottle-series/{series}`.
     /// - Remark: Generated from `#/paths//bottle-series/{series}/get(getBottleSeries)`.
     func getBottleSeries(_ input: Operations.getBottleSeries.Input) async throws -> Operations.getBottleSeries.Output
+    /// Get a bottle series flavor profile
+    ///
+    /// Count active bottles in a series with each family of public tasting notes. Each bottle counts once per family. Coverage includes only bottles with recognized tasting tags.
+    ///
+    /// - Remark: HTTP `GET /bottle-series/{series}/flavor-profile`.
+    /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)`.
+    func getBottleSeriesFlavorProfile(_ input: Operations.getBottleSeriesFlavorProfile.Input) async throws -> Operations.getBottleSeriesFlavorProfile.Output
     /// List bottle series
     ///
-    /// List bottle series, with optional brand filtering, search, and pagination.
+    /// Find bottle series by name, brand, or distillery.
     ///
     /// - Remark: HTTP `GET /bottle-series`.
     /// - Remark: Generated from `#/paths//bottle-series/get(listBottleSeries)`.
@@ -753,6 +767,13 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `GET /countries/{country}/regions`.
     /// - Remark: Generated from `#/paths//countries/{country}/regions/get(listRegions)`.
     func listRegions(_ input: Operations.listRegions.Input) async throws -> Operations.listRegions.Output
+    /// List active critics
+    ///
+    /// List review sites in Peated's activity order. Each site includes the public review used to place it.
+    ///
+    /// - Remark: HTTP `GET /external-reviews/active-critics`.
+    /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)`.
+    func listActiveCritics(_ input: Operations.listActiveCritics.Input) async throws -> Operations.listActiveCritics.Output
     /// List external reviews
     ///
     /// Find published external reviews by bottle, site, or name. Requests with `onlyUnknown: true`, or `sort: name` without a bottle, are for moderator review and include unpublished records.
@@ -783,7 +804,7 @@ public protocol APIProtocol: Sendable {
     func getStats(_ input: Operations.getStats.Input) async throws -> Operations.getStats.Output
     /// Find bottles by tasting note
     ///
-    /// Rank bottles by the share of tastings with notes that mention a category or note. Break ties by matching tasting count, then bottle ID.
+    /// Rank bottles by how often a category or note appears in their public reviews and tastings. Break ties by the number of matches, then bottle ID.
     ///
     /// - Remark: HTTP `GET /tags/bottles`.
     /// - Remark: Generated from `#/paths//tags/bottles/get(listTastingNoteBottles)`.
@@ -975,9 +996,24 @@ extension APIProtocol {
             headers: headers
         ))
     }
+    /// List reviews and tastings
+    ///
+    /// List tastings, member reviews, and published critic reviews for one bottle, brand, bottler, or distillery in newest-first order.
+    ///
+    /// - Remark: HTTP `GET /reviews-and-tastings`.
+    /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)`.
+    public func listReviewsAndTastings(
+        query: Operations.listReviewsAndTastings.Input.Query = .init(),
+        headers: Operations.listReviewsAndTastings.Input.Headers = .init()
+    ) async throws -> Operations.listReviewsAndTastings.Output {
+        try await listReviewsAndTastings(Operations.listReviewsAndTastings.Input(
+            query: query,
+            headers: headers
+        ))
+    }
     /// User login
     ///
-    /// Sign in with email and password, a Google OAuth code, or a Google ID token
+    /// Sign in with email and password, a Google OAuth code, a Google ID token, or an Apple identity token
     ///
     /// - Remark: HTTP `POST /auth/login`.
     /// - Remark: Generated from `#/paths//auth/login/post(login)`.
@@ -1293,7 +1329,7 @@ extension APIProtocol {
     }
     /// Get a bottle flavor profile
     ///
-    /// Count public tastings of one active Bottle with each tasting-note category. Each tasting counts once per category. Only tastings with recognized notes enter the denominator; private and suggested notes are excluded.
+    /// Count how many public reviews and tastings of one active bottle mention each tasting-note category. Each review or tasting counts once per category. Private entries and suggested notes are excluded.
     ///
     /// - Remark: HTTP `GET /bottles/{bottle}/flavor-profile`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/flavor-profile/get(getBottleFlavorProfile)`.
@@ -1402,7 +1438,7 @@ extension APIProtocol {
     }
     /// Get bottle tags
     ///
-    /// Get common tasting tags for a bottle
+    /// Get common tasting tags from public reviews and tastings
     ///
     /// - Remark: HTTP `GET /bottles/{bottle}/tags`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/tags/get(getBottleTags)`.
@@ -1605,9 +1641,24 @@ extension APIProtocol {
             headers: headers
         ))
     }
+    /// Get a bottle series flavor profile
+    ///
+    /// Count active bottles in a series with each family of public tasting notes. Each bottle counts once per family. Coverage includes only bottles with recognized tasting tags.
+    ///
+    /// - Remark: HTTP `GET /bottle-series/{series}/flavor-profile`.
+    /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)`.
+    public func getBottleSeriesFlavorProfile(
+        path: Operations.getBottleSeriesFlavorProfile.Input.Path,
+        headers: Operations.getBottleSeriesFlavorProfile.Input.Headers = .init()
+    ) async throws -> Operations.getBottleSeriesFlavorProfile.Output {
+        try await getBottleSeriesFlavorProfile(Operations.getBottleSeriesFlavorProfile.Input(
+            path: path,
+            headers: headers
+        ))
+    }
     /// List bottle series
     ///
-    /// List bottle series, with optional brand filtering, search, and pagination.
+    /// Find bottle series by name, brand, or distillery.
     ///
     /// - Remark: HTTP `GET /bottle-series`.
     /// - Remark: Generated from `#/paths//bottle-series/get(listBottleSeries)`.
@@ -2566,6 +2617,21 @@ extension APIProtocol {
             headers: headers
         ))
     }
+    /// List active critics
+    ///
+    /// List review sites in Peated's activity order. Each site includes the public review used to place it.
+    ///
+    /// - Remark: HTTP `GET /external-reviews/active-critics`.
+    /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)`.
+    public func listActiveCritics(
+        query: Operations.listActiveCritics.Input.Query = .init(),
+        headers: Operations.listActiveCritics.Input.Headers = .init()
+    ) async throws -> Operations.listActiveCritics.Output {
+        try await listActiveCritics(Operations.listActiveCritics.Input(
+            query: query,
+            headers: headers
+        ))
+    }
     /// List external reviews
     ///
     /// Find published external reviews by bottle, site, or name. Requests with `onlyUnknown: true`, or `sort: name` without a bottle, are for moderator review and include unpublished records.
@@ -2616,7 +2682,7 @@ extension APIProtocol {
     }
     /// Find bottles by tasting note
     ///
-    /// Rank bottles by the share of tastings with notes that mention a category or note. Break ties by matching tasting count, then bottle ID.
+    /// Rank bottles by how often a category or note appears in their public reviews and tastings. Break ties by the number of matches, then bottle ID.
     ///
     /// - Remark: HTTP `GET /tags/bottles`.
     /// - Remark: Generated from `#/paths//tags/bottles/get(listTastingNoteBottles)`.
@@ -3111,6 +3177,8 @@ public enum Components {
                 public var memberScoreCount: Swift.Int
                 /// - Remark: Generated from `#/components/schemas/Bottle/group/externalScoreCount`.
                 public var externalScoreCount: Swift.Int
+                /// - Remark: Generated from `#/components/schemas/Bottle/group/raterCount`.
+                public var raterCount: Swift.Int
                 /// - Remark: Generated from `#/components/schemas/Bottle/group/scoreCount`.
                 public var scoreCount: Swift.Int
                 /// - Remark: Generated from `#/components/schemas/Bottle/group/reviewScoreBandCounts`.
@@ -3201,6 +3269,10 @@ public enum Components {
                 public var tastingBandCounts: Components.Schemas.Bottle.groupPayload.tastingBandCountsPayload
                 /// - Remark: Generated from `#/components/schemas/Bottle/group/totalTastings`.
                 public var totalTastings: Swift.Int
+                /// - Remark: Generated from `#/components/schemas/Bottle/group/publicReviewAndTastingCount`.
+                public var publicReviewAndTastingCount: Swift.Int
+                /// - Remark: Generated from `#/components/schemas/Bottle/group/notedReviewAndTastingCount`.
+                public var notedReviewAndTastingCount: Swift.Int
                 /// - Remark: Generated from `#/components/schemas/Bottle/group/totalBottles`.
                 public var totalBottles: Swift.Int
                 /// - Remark: Generated from `#/components/schemas/Bottle/group/createdByActorId`.
@@ -3229,10 +3301,13 @@ public enum Components {
                 ///   - maxScore:
                 ///   - memberScoreCount:
                 ///   - externalScoreCount:
+                ///   - raterCount:
                 ///   - scoreCount:
                 ///   - reviewScoreBandCounts:
                 ///   - tastingBandCounts:
                 ///   - totalTastings:
+                ///   - publicReviewAndTastingCount:
+                ///   - notedReviewAndTastingCount:
                 ///   - totalBottles:
                 ///   - createdByActorId:
                 ///   - createdAt:
@@ -3255,10 +3330,13 @@ public enum Components {
                     maxScore: Swift.Int? = nil,
                     memberScoreCount: Swift.Int,
                     externalScoreCount: Swift.Int,
+                    raterCount: Swift.Int,
                     scoreCount: Swift.Int,
                     reviewScoreBandCounts: Components.Schemas.Bottle.groupPayload.reviewScoreBandCountsPayload,
                     tastingBandCounts: Components.Schemas.Bottle.groupPayload.tastingBandCountsPayload,
                     totalTastings: Swift.Int,
+                    publicReviewAndTastingCount: Swift.Int,
+                    notedReviewAndTastingCount: Swift.Int,
                     totalBottles: Swift.Int,
                     createdByActorId: Swift.Int,
                     createdAt: Foundation.Date,
@@ -3281,10 +3359,13 @@ public enum Components {
                     self.maxScore = maxScore
                     self.memberScoreCount = memberScoreCount
                     self.externalScoreCount = externalScoreCount
+                    self.raterCount = raterCount
                     self.scoreCount = scoreCount
                     self.reviewScoreBandCounts = reviewScoreBandCounts
                     self.tastingBandCounts = tastingBandCounts
                     self.totalTastings = totalTastings
+                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                    self.notedReviewAndTastingCount = notedReviewAndTastingCount
                     self.totalBottles = totalBottles
                     self.createdByActorId = createdByActorId
                     self.createdAt = createdAt
@@ -3308,10 +3389,13 @@ public enum Components {
                     case maxScore
                     case memberScoreCount
                     case externalScoreCount
+                    case raterCount
                     case scoreCount
                     case reviewScoreBandCounts
                     case tastingBandCounts
                     case totalTastings
+                    case publicReviewAndTastingCount
+                    case notedReviewAndTastingCount
                     case totalBottles
                     case createdByActorId
                     case createdAt
@@ -3446,6 +3530,19 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/kind`.
                 public var kind: Components.Schemas.Bottle.brandPayload.kindPayload
+                /// Current status, or null when it is unknown
+                ///
+                /// - Remark: Generated from `#/components/schemas/Bottle/brand/status`.
+                @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case active = "active"
+                    case mothballed = "mothballed"
+                    case closed = "closed"
+                    case discontinued = "discontinued"
+                }
+                /// Current status, or null when it is unknown
+                ///
+                /// - Remark: Generated from `#/components/schemas/Bottle/brand/status`.
+                public var status: Components.Schemas.Bottle.brandPayload.statusPayload?
                 /// ID of the entity's current owner
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/ownerId`.
@@ -3527,19 +3624,19 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/website`.
                 public var website: Swift.String?
-                /// Country where the entity is located
+                /// Country where the entity comes from
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/country`.
                 public var country: Components.Schemas.Country?
-                /// Region where the entity is located
+                /// Region where the entity comes from
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/region`.
                 public var region: Components.Schemas.Region?
-                /// Physical address of the entity
+                /// Address where the entity comes from
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/address`.
                 public var address: Swift.String?
-                /// Geographic coordinates of the entity
+                /// Geographic coordinates where the entity comes from
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/location`.
                 public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -3547,6 +3644,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/totalTastings`.
                 public var totalTastings: Swift.Double
+                /// Total public reviews and tastings for this entity's bottles
+                ///
+                /// - Remark: Generated from `#/components/schemas/Bottle/brand/publicReviewAndTastingCount`.
+                public var publicReviewAndTastingCount: Swift.Int
                 /// Total number of bottles associated with this entity
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/totalBottles`.
@@ -3571,17 +3672,19 @@ public enum Components {
                 ///   - name: Name of the entity (brand, distillery, etc.)
                 ///   - shortName: Abbreviated or short name for the entity
                 ///   - kind: Best short description of what this entity is
+                ///   - status: Current status, or null when it is unknown
                 ///   - ownerId: ID of the entity's current owner
                 ///   - owner: Current direct owner
                 ///   - description: Detailed description of the entity
                 ///   - descriptionSrc: Source of the entity description
                 ///   - yearEstablished: Year the entity was established
                 ///   - website: Official website URL
-                ///   - country: Country where the entity is located
-                ///   - region: Region where the entity is located
-                ///   - address: Physical address of the entity
-                ///   - location: Geographic coordinates of the entity
+                ///   - country: Country where the entity comes from
+                ///   - region: Region where the entity comes from
+                ///   - address: Address where the entity comes from
+                ///   - location: Geographic coordinates where the entity comes from
                 ///   - totalTastings: Total number of tastings for bottles from this entity
+                ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                 ///   - totalBottles: Total number of bottles associated with this entity
                 ///   - isFollowing: Whether the current user follows this entity
                 ///   - createdAt: Timestamp when the entity was created
@@ -3592,6 +3695,7 @@ public enum Components {
                     name: Swift.String,
                     shortName: Swift.String? = nil,
                     kind: Components.Schemas.Bottle.brandPayload.kindPayload,
+                    status: Components.Schemas.Bottle.brandPayload.statusPayload? = nil,
                     ownerId: Swift.Double? = nil,
                     owner: Components.Schemas.Bottle.brandPayload.ownerPayload? = nil,
                     description: Swift.String? = nil,
@@ -3603,6 +3707,7 @@ public enum Components {
                     address: Swift.String? = nil,
                     location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                     totalTastings: Swift.Double,
+                    publicReviewAndTastingCount: Swift.Int,
                     totalBottles: Swift.Double,
                     isFollowing: Swift.Bool,
                     createdAt: Foundation.Date,
@@ -3613,6 +3718,7 @@ public enum Components {
                     self.name = name
                     self.shortName = shortName
                     self.kind = kind
+                    self.status = status
                     self.ownerId = ownerId
                     self.owner = owner
                     self.description = description
@@ -3624,6 +3730,7 @@ public enum Components {
                     self.address = address
                     self.location = location
                     self.totalTastings = totalTastings
+                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
                     self.totalBottles = totalBottles
                     self.isFollowing = isFollowing
                     self.createdAt = createdAt
@@ -3635,6 +3742,7 @@ public enum Components {
                     case name
                     case shortName
                     case kind
+                    case status
                     case ownerId
                     case owner
                     case description
@@ -3646,6 +3754,7 @@ public enum Components {
                     case address
                     case location
                     case totalTastings
+                    case publicReviewAndTastingCount
                     case totalBottles
                     case isFollowing
                     case createdAt
@@ -3770,6 +3879,10 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/Bottle/externalScoreCount`.
             public var externalScoreCount: Swift.Int
+            /// Number of distinct members and external critics with a rating for this exact Bottle
+            ///
+            /// - Remark: Generated from `#/components/schemas/Bottle/raterCount`.
+            public var raterCount: Swift.Int
             /// Combined member and external score count
             ///
             /// - Remark: Generated from `#/components/schemas/Bottle/scoreCount`.
@@ -3872,6 +3985,14 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/Bottle/totalTastings`.
             public var totalTastings: Swift.Double
+            /// Total public reviews and tastings for this exact Bottle
+            ///
+            /// - Remark: Generated from `#/components/schemas/Bottle/publicReviewAndTastingCount`.
+            public var publicReviewAndTastingCount: Swift.Int
+            /// Public reviews and tastings with recognized tasting notes
+            ///
+            /// - Remark: Generated from `#/components/schemas/Bottle/notedReviewAndTastingCount`.
+            public var notedReviewAndTastingCount: Swift.Int
             /// Timestamp when the bottle was created
             ///
             /// - Remark: Generated from `#/components/schemas/Bottle/createdAt`.
@@ -3935,10 +4056,13 @@ public enum Components {
             ///   - maxScore:
             ///   - memberScoreCount: Number of member review scores for this exact Bottle
             ///   - externalScoreCount: Number of permitted external scores for this exact Bottle
+            ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
             ///   - scoreCount: Combined member and external score count
             ///   - reviewScoreBandCounts: Review score counts in each rating range
             ///   - tastingBandCounts: Tasting counts in each rating band
             ///   - totalTastings: Total number of recorded tastings for this bottle
+            ///   - publicReviewAndTastingCount: Total public reviews and tastings for this exact Bottle
+            ///   - notedReviewAndTastingCount: Public reviews and tastings with recognized tasting notes
             ///   - createdAt: Timestamp when the bottle was created
             ///   - updatedAt: Timestamp when the bottle was last updated
             ///   - isFavorite: Whether the current user has marked this bottle as a favorite
@@ -3985,10 +4109,13 @@ public enum Components {
                 maxScore: Swift.Int? = nil,
                 memberScoreCount: Swift.Int,
                 externalScoreCount: Swift.Int,
+                raterCount: Swift.Int,
                 scoreCount: Swift.Int,
                 reviewScoreBandCounts: Components.Schemas.Bottle.reviewScoreBandCountsPayload,
                 tastingBandCounts: Components.Schemas.Bottle.tastingBandCountsPayload,
                 totalTastings: Swift.Double,
+                publicReviewAndTastingCount: Swift.Int,
+                notedReviewAndTastingCount: Swift.Int,
                 createdAt: Foundation.Date,
                 updatedAt: Foundation.Date,
                 isFavorite: Swift.Bool,
@@ -4035,10 +4162,13 @@ public enum Components {
                 self.maxScore = maxScore
                 self.memberScoreCount = memberScoreCount
                 self.externalScoreCount = externalScoreCount
+                self.raterCount = raterCount
                 self.scoreCount = scoreCount
                 self.reviewScoreBandCounts = reviewScoreBandCounts
                 self.tastingBandCounts = tastingBandCounts
                 self.totalTastings = totalTastings
+                self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                self.notedReviewAndTastingCount = notedReviewAndTastingCount
                 self.createdAt = createdAt
                 self.updatedAt = updatedAt
                 self.isFavorite = isFavorite
@@ -4086,10 +4216,13 @@ public enum Components {
                 case maxScore
                 case memberScoreCount
                 case externalScoreCount
+                case raterCount
                 case scoreCount
                 case reviewScoreBandCounts
                 case tastingBandCounts
                 case totalTastings
+                case publicReviewAndTastingCount
+                case notedReviewAndTastingCount
                 case createdAt
                 case updatedAt
                 case isFavorite
@@ -4243,6 +4376,19 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/kind`.
             public var kind: Components.Schemas.Entity.kindPayload
+            /// Current status, or null when it is unknown
+            ///
+            /// - Remark: Generated from `#/components/schemas/Entity/status`.
+            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                case active = "active"
+                case mothballed = "mothballed"
+                case closed = "closed"
+                case discontinued = "discontinued"
+            }
+            /// Current status, or null when it is unknown
+            ///
+            /// - Remark: Generated from `#/components/schemas/Entity/status`.
+            public var status: Components.Schemas.Entity.statusPayload?
             /// ID of the entity's current owner
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/ownerId`.
@@ -4324,19 +4470,19 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/website`.
             public var website: Swift.String?
-            /// Country where the entity is located
+            /// Country where the entity comes from
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/country`.
             public var country: Components.Schemas.Country?
-            /// Region where the entity is located
+            /// Region where the entity comes from
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/region`.
             public var region: Components.Schemas.Region?
-            /// Physical address of the entity
+            /// Address where the entity comes from
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/address`.
             public var address: Swift.String?
-            /// Geographic coordinates of the entity
+            /// Geographic coordinates where the entity comes from
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/location`.
             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -4344,6 +4490,10 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/totalTastings`.
             public var totalTastings: Swift.Double
+            /// Total public reviews and tastings for this entity's bottles
+            ///
+            /// - Remark: Generated from `#/components/schemas/Entity/publicReviewAndTastingCount`.
+            public var publicReviewAndTastingCount: Swift.Int
             /// Total number of bottles associated with this entity
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/totalBottles`.
@@ -4368,17 +4518,19 @@ public enum Components {
             ///   - name: Name of the entity (brand, distillery, etc.)
             ///   - shortName: Abbreviated or short name for the entity
             ///   - kind: Best short description of what this entity is
+            ///   - status: Current status, or null when it is unknown
             ///   - ownerId: ID of the entity's current owner
             ///   - owner: Current direct owner
             ///   - description: Detailed description of the entity
             ///   - descriptionSrc: Source of the entity description
             ///   - yearEstablished: Year the entity was established
             ///   - website: Official website URL
-            ///   - country: Country where the entity is located
-            ///   - region: Region where the entity is located
-            ///   - address: Physical address of the entity
-            ///   - location: Geographic coordinates of the entity
+            ///   - country: Country where the entity comes from
+            ///   - region: Region where the entity comes from
+            ///   - address: Address where the entity comes from
+            ///   - location: Geographic coordinates where the entity comes from
             ///   - totalTastings: Total number of tastings for bottles from this entity
+            ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
             ///   - totalBottles: Total number of bottles associated with this entity
             ///   - isFollowing: Whether the current user follows this entity
             ///   - createdAt: Timestamp when the entity was created
@@ -4389,6 +4541,7 @@ public enum Components {
                 name: Swift.String,
                 shortName: Swift.String? = nil,
                 kind: Components.Schemas.Entity.kindPayload,
+                status: Components.Schemas.Entity.statusPayload? = nil,
                 ownerId: Swift.Double? = nil,
                 owner: Components.Schemas.Entity.ownerPayload? = nil,
                 description: Swift.String? = nil,
@@ -4400,6 +4553,7 @@ public enum Components {
                 address: Swift.String? = nil,
                 location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                 totalTastings: Swift.Double,
+                publicReviewAndTastingCount: Swift.Int,
                 totalBottles: Swift.Double,
                 isFollowing: Swift.Bool,
                 createdAt: Foundation.Date,
@@ -4410,6 +4564,7 @@ public enum Components {
                 self.name = name
                 self.shortName = shortName
                 self.kind = kind
+                self.status = status
                 self.ownerId = ownerId
                 self.owner = owner
                 self.description = description
@@ -4421,6 +4576,7 @@ public enum Components {
                 self.address = address
                 self.location = location
                 self.totalTastings = totalTastings
+                self.publicReviewAndTastingCount = publicReviewAndTastingCount
                 self.totalBottles = totalBottles
                 self.isFollowing = isFollowing
                 self.createdAt = createdAt
@@ -4432,6 +4588,7 @@ public enum Components {
                 case name
                 case shortName
                 case kind
+                case status
                 case ownerId
                 case owner
                 case description
@@ -4443,6 +4600,7 @@ public enum Components {
                 case address
                 case location
                 case totalTastings
+                case publicReviewAndTastingCount
                 case totalBottles
                 case isFollowing
                 case createdAt
@@ -5081,6 +5239,8 @@ public enum Components {
                     public var memberScoreCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/externalScoreCount`.
                     public var externalScoreCount: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/raterCount`.
+                    public var raterCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/scoreCount`.
                     public var scoreCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/reviewScoreBandCounts`.
@@ -5171,6 +5331,10 @@ public enum Components {
                     public var tastingBandCounts: Components.Schemas.Tasting.bottlePayload.groupPayload.tastingBandCountsPayload
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/totalTastings`.
                     public var totalTastings: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/publicReviewAndTastingCount`.
+                    public var publicReviewAndTastingCount: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/notedReviewAndTastingCount`.
+                    public var notedReviewAndTastingCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/totalBottles`.
                     public var totalBottles: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/group/createdByActorId`.
@@ -5199,10 +5363,13 @@ public enum Components {
                     ///   - maxScore:
                     ///   - memberScoreCount:
                     ///   - externalScoreCount:
+                    ///   - raterCount:
                     ///   - scoreCount:
                     ///   - reviewScoreBandCounts:
                     ///   - tastingBandCounts:
                     ///   - totalTastings:
+                    ///   - publicReviewAndTastingCount:
+                    ///   - notedReviewAndTastingCount:
                     ///   - totalBottles:
                     ///   - createdByActorId:
                     ///   - createdAt:
@@ -5225,10 +5392,13 @@ public enum Components {
                         maxScore: Swift.Int? = nil,
                         memberScoreCount: Swift.Int,
                         externalScoreCount: Swift.Int,
+                        raterCount: Swift.Int,
                         scoreCount: Swift.Int,
                         reviewScoreBandCounts: Components.Schemas.Tasting.bottlePayload.groupPayload.reviewScoreBandCountsPayload,
                         tastingBandCounts: Components.Schemas.Tasting.bottlePayload.groupPayload.tastingBandCountsPayload,
                         totalTastings: Swift.Int,
+                        publicReviewAndTastingCount: Swift.Int,
+                        notedReviewAndTastingCount: Swift.Int,
                         totalBottles: Swift.Int,
                         createdByActorId: Swift.Int,
                         createdAt: Foundation.Date,
@@ -5251,10 +5421,13 @@ public enum Components {
                         self.maxScore = maxScore
                         self.memberScoreCount = memberScoreCount
                         self.externalScoreCount = externalScoreCount
+                        self.raterCount = raterCount
                         self.scoreCount = scoreCount
                         self.reviewScoreBandCounts = reviewScoreBandCounts
                         self.tastingBandCounts = tastingBandCounts
                         self.totalTastings = totalTastings
+                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                        self.notedReviewAndTastingCount = notedReviewAndTastingCount
                         self.totalBottles = totalBottles
                         self.createdByActorId = createdByActorId
                         self.createdAt = createdAt
@@ -5278,10 +5451,13 @@ public enum Components {
                         case maxScore
                         case memberScoreCount
                         case externalScoreCount
+                        case raterCount
                         case scoreCount
                         case reviewScoreBandCounts
                         case tastingBandCounts
                         case totalTastings
+                        case publicReviewAndTastingCount
+                        case notedReviewAndTastingCount
                         case totalBottles
                         case createdByActorId
                         case createdAt
@@ -5416,6 +5592,19 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/kind`.
                     public var kind: Components.Schemas.Tasting.bottlePayload.brandPayload.kindPayload
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/status`.
+                    @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                        case active = "active"
+                        case mothballed = "mothballed"
+                        case closed = "closed"
+                        case discontinued = "discontinued"
+                    }
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/status`.
+                    public var status: Components.Schemas.Tasting.bottlePayload.brandPayload.statusPayload?
                     /// ID of the entity's current owner
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/ownerId`.
@@ -5497,19 +5686,19 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/website`.
                     public var website: Swift.String?
-                    /// Country where the entity is located
+                    /// Country where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/country`.
                     public var country: Components.Schemas.Country?
-                    /// Region where the entity is located
+                    /// Region where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/region`.
                     public var region: Components.Schemas.Region?
-                    /// Physical address of the entity
+                    /// Address where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/address`.
                     public var address: Swift.String?
-                    /// Geographic coordinates of the entity
+                    /// Geographic coordinates where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/location`.
                     public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -5517,6 +5706,10 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/totalTastings`.
                     public var totalTastings: Swift.Double
+                    /// Total public reviews and tastings for this entity's bottles
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/publicReviewAndTastingCount`.
+                    public var publicReviewAndTastingCount: Swift.Int
                     /// Total number of bottles associated with this entity
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/totalBottles`.
@@ -5541,17 +5734,19 @@ public enum Components {
                     ///   - name: Name of the entity (brand, distillery, etc.)
                     ///   - shortName: Abbreviated or short name for the entity
                     ///   - kind: Best short description of what this entity is
+                    ///   - status: Current status, or null when it is unknown
                     ///   - ownerId: ID of the entity's current owner
                     ///   - owner: Current direct owner
                     ///   - description: Detailed description of the entity
                     ///   - descriptionSrc: Source of the entity description
                     ///   - yearEstablished: Year the entity was established
                     ///   - website: Official website URL
-                    ///   - country: Country where the entity is located
-                    ///   - region: Region where the entity is located
-                    ///   - address: Physical address of the entity
-                    ///   - location: Geographic coordinates of the entity
+                    ///   - country: Country where the entity comes from
+                    ///   - region: Region where the entity comes from
+                    ///   - address: Address where the entity comes from
+                    ///   - location: Geographic coordinates where the entity comes from
                     ///   - totalTastings: Total number of tastings for bottles from this entity
+                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                     ///   - totalBottles: Total number of bottles associated with this entity
                     ///   - isFollowing: Whether the current user follows this entity
                     ///   - createdAt: Timestamp when the entity was created
@@ -5562,6 +5757,7 @@ public enum Components {
                         name: Swift.String,
                         shortName: Swift.String? = nil,
                         kind: Components.Schemas.Tasting.bottlePayload.brandPayload.kindPayload,
+                        status: Components.Schemas.Tasting.bottlePayload.brandPayload.statusPayload? = nil,
                         ownerId: Swift.Double? = nil,
                         owner: Components.Schemas.Tasting.bottlePayload.brandPayload.ownerPayload? = nil,
                         description: Swift.String? = nil,
@@ -5573,6 +5769,7 @@ public enum Components {
                         address: Swift.String? = nil,
                         location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                         totalTastings: Swift.Double,
+                        publicReviewAndTastingCount: Swift.Int,
                         totalBottles: Swift.Double,
                         isFollowing: Swift.Bool,
                         createdAt: Foundation.Date,
@@ -5583,6 +5780,7 @@ public enum Components {
                         self.name = name
                         self.shortName = shortName
                         self.kind = kind
+                        self.status = status
                         self.ownerId = ownerId
                         self.owner = owner
                         self.description = description
@@ -5594,6 +5792,7 @@ public enum Components {
                         self.address = address
                         self.location = location
                         self.totalTastings = totalTastings
+                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                         self.totalBottles = totalBottles
                         self.isFollowing = isFollowing
                         self.createdAt = createdAt
@@ -5605,6 +5804,7 @@ public enum Components {
                         case name
                         case shortName
                         case kind
+                        case status
                         case ownerId
                         case owner
                         case description
@@ -5616,6 +5816,7 @@ public enum Components {
                         case address
                         case location
                         case totalTastings
+                        case publicReviewAndTastingCount
                         case totalBottles
                         case isFollowing
                         case createdAt
@@ -5740,6 +5941,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Tasting/bottle/externalScoreCount`.
                 public var externalScoreCount: Swift.Int
+                /// Number of distinct members and external critics with a rating for this exact Bottle
+                ///
+                /// - Remark: Generated from `#/components/schemas/Tasting/bottle/raterCount`.
+                public var raterCount: Swift.Int
                 /// Combined member and external score count
                 ///
                 /// - Remark: Generated from `#/components/schemas/Tasting/bottle/scoreCount`.
@@ -5842,6 +6047,14 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Tasting/bottle/totalTastings`.
                 public var totalTastings: Swift.Double
+                /// Total public reviews and tastings for this exact Bottle
+                ///
+                /// - Remark: Generated from `#/components/schemas/Tasting/bottle/publicReviewAndTastingCount`.
+                public var publicReviewAndTastingCount: Swift.Int
+                /// Public reviews and tastings with recognized tasting notes
+                ///
+                /// - Remark: Generated from `#/components/schemas/Tasting/bottle/notedReviewAndTastingCount`.
+                public var notedReviewAndTastingCount: Swift.Int
                 /// Timestamp when the bottle was created
                 ///
                 /// - Remark: Generated from `#/components/schemas/Tasting/bottle/createdAt`.
@@ -5905,10 +6118,13 @@ public enum Components {
                 ///   - maxScore:
                 ///   - memberScoreCount: Number of member review scores for this exact Bottle
                 ///   - externalScoreCount: Number of permitted external scores for this exact Bottle
+                ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
                 ///   - scoreCount: Combined member and external score count
                 ///   - reviewScoreBandCounts: Review score counts in each rating range
                 ///   - tastingBandCounts: Tasting counts in each rating band
                 ///   - totalTastings: Total number of recorded tastings for this bottle
+                ///   - publicReviewAndTastingCount: Total public reviews and tastings for this exact Bottle
+                ///   - notedReviewAndTastingCount: Public reviews and tastings with recognized tasting notes
                 ///   - createdAt: Timestamp when the bottle was created
                 ///   - updatedAt: Timestamp when the bottle was last updated
                 ///   - isFavorite: Whether the current user has marked this bottle as a favorite
@@ -5955,10 +6171,13 @@ public enum Components {
                     maxScore: Swift.Int? = nil,
                     memberScoreCount: Swift.Int,
                     externalScoreCount: Swift.Int,
+                    raterCount: Swift.Int,
                     scoreCount: Swift.Int,
                     reviewScoreBandCounts: Components.Schemas.Tasting.bottlePayload.reviewScoreBandCountsPayload,
                     tastingBandCounts: Components.Schemas.Tasting.bottlePayload.tastingBandCountsPayload,
                     totalTastings: Swift.Double,
+                    publicReviewAndTastingCount: Swift.Int,
+                    notedReviewAndTastingCount: Swift.Int,
                     createdAt: Foundation.Date,
                     updatedAt: Foundation.Date,
                     isFavorite: Swift.Bool,
@@ -6005,10 +6224,13 @@ public enum Components {
                     self.maxScore = maxScore
                     self.memberScoreCount = memberScoreCount
                     self.externalScoreCount = externalScoreCount
+                    self.raterCount = raterCount
                     self.scoreCount = scoreCount
                     self.reviewScoreBandCounts = reviewScoreBandCounts
                     self.tastingBandCounts = tastingBandCounts
                     self.totalTastings = totalTastings
+                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                    self.notedReviewAndTastingCount = notedReviewAndTastingCount
                     self.createdAt = createdAt
                     self.updatedAt = updatedAt
                     self.isFavorite = isFavorite
@@ -6056,10 +6278,13 @@ public enum Components {
                     case maxScore
                     case memberScoreCount
                     case externalScoreCount
+                    case raterCount
                     case scoreCount
                     case reviewScoreBandCounts
                     case tastingBandCounts
                     case totalTastings
+                    case publicReviewAndTastingCount
+                    case notedReviewAndTastingCount
                     case createdAt
                     case updatedAt
                     case isFavorite
@@ -6154,6 +6379,42 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/Tasting/tags`.
             public var tags: [Swift.String]?
+            /// Stored category for each known tasting note
+            ///
+            /// - Remark: Generated from `#/components/schemas/Tasting/tagCategories`.
+            public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/Tasting/tagCategories/additionalProperties`.
+                @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case cereal = "cereal"
+                    case fruit = "fruit"
+                    case floral = "floral"
+                    case smoke = "smoke"
+                    case earthy = "earthy"
+                    case sulfur = "sulfur"
+                    case sweet = "sweet"
+                    case spice = "spice"
+                    case wood = "wood"
+                }
+                /// A container of undocumented properties.
+                public var additionalProperties: [String: Components.Schemas.Tasting.tagCategoriesPayload.additionalPropertiesPayload]
+                /// Creates a new `tagCategoriesPayload`.
+                ///
+                /// - Parameters:
+                ///   - additionalProperties: A container of undocumented properties.
+                public init(additionalProperties: [String: Components.Schemas.Tasting.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                    self.additionalProperties = additionalProperties
+                }
+                public init(from decoder: any Decoder) throws {
+                    additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                }
+                public func encode(to encoder: any Encoder) throws {
+                    try encoder.encodeAdditionalProperties(additionalProperties)
+                }
+            }
+            /// Stored category for each known tasting note
+            ///
+            /// - Remark: Generated from `#/components/schemas/Tasting/tagCategories`.
+            public var tagCategories: Components.Schemas.Tasting.tagCategoriesPayload?
             /// Color rating on a scale from 0-20
             ///
             /// - Remark: Generated from `#/components/schemas/Tasting/color`.
@@ -6209,6 +6470,7 @@ public enum Components {
             ///   - legacySimpleRating: Historical simple rating: -1 (Pass), 1 (Sip), 2 (Savor)
             ///   - legacyStarRating:
             ///   - tags: Tags associated with this tasting
+            ///   - tagCategories: Stored category for each known tasting note
             ///   - color: Color rating on a scale from 0-20
             ///   - servingStyle: How the whisky was served (neat, rocks, etc.)
             ///   - friends: Friends who were present during this tasting
@@ -6227,6 +6489,7 @@ public enum Components {
                 legacySimpleRating: Components.Schemas.Tasting.legacySimpleRatingPayload? = nil,
                 legacyStarRating: Swift.Double? = nil,
                 tags: [Swift.String]? = nil,
+                tagCategories: Components.Schemas.Tasting.tagCategoriesPayload? = nil,
                 color: Swift.Double? = nil,
                 servingStyle: Components.Schemas.Tasting.servingStylePayload? = nil,
                 friends: [Components.Schemas.User]? = nil,
@@ -6245,6 +6508,7 @@ public enum Components {
                 self.legacySimpleRating = legacySimpleRating
                 self.legacyStarRating = legacyStarRating
                 self.tags = tags
+                self.tagCategories = tagCategories
                 self.color = color
                 self.servingStyle = servingStyle
                 self.friends = friends
@@ -6264,6 +6528,7 @@ public enum Components {
                 case legacySimpleRating
                 case legacyStarRating
                 case tags
+                case tagCategories
                 case color
                 case servingStyle
                 case friends
@@ -6950,6 +7215,8 @@ public enum Components {
                     public var memberScoreCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/externalScoreCount`.
                     public var externalScoreCount: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/raterCount`.
+                    public var raterCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/scoreCount`.
                     public var scoreCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/reviewScoreBandCounts`.
@@ -7040,6 +7307,10 @@ public enum Components {
                     public var tastingBandCounts: Components.Schemas.CollectionBottle.bottlePayload.groupPayload.tastingBandCountsPayload
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/totalTastings`.
                     public var totalTastings: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/publicReviewAndTastingCount`.
+                    public var publicReviewAndTastingCount: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/notedReviewAndTastingCount`.
+                    public var notedReviewAndTastingCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/totalBottles`.
                     public var totalBottles: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/group/createdByActorId`.
@@ -7068,10 +7339,13 @@ public enum Components {
                     ///   - maxScore:
                     ///   - memberScoreCount:
                     ///   - externalScoreCount:
+                    ///   - raterCount:
                     ///   - scoreCount:
                     ///   - reviewScoreBandCounts:
                     ///   - tastingBandCounts:
                     ///   - totalTastings:
+                    ///   - publicReviewAndTastingCount:
+                    ///   - notedReviewAndTastingCount:
                     ///   - totalBottles:
                     ///   - createdByActorId:
                     ///   - createdAt:
@@ -7094,10 +7368,13 @@ public enum Components {
                         maxScore: Swift.Int? = nil,
                         memberScoreCount: Swift.Int,
                         externalScoreCount: Swift.Int,
+                        raterCount: Swift.Int,
                         scoreCount: Swift.Int,
                         reviewScoreBandCounts: Components.Schemas.CollectionBottle.bottlePayload.groupPayload.reviewScoreBandCountsPayload,
                         tastingBandCounts: Components.Schemas.CollectionBottle.bottlePayload.groupPayload.tastingBandCountsPayload,
                         totalTastings: Swift.Int,
+                        publicReviewAndTastingCount: Swift.Int,
+                        notedReviewAndTastingCount: Swift.Int,
                         totalBottles: Swift.Int,
                         createdByActorId: Swift.Int,
                         createdAt: Foundation.Date,
@@ -7120,10 +7397,13 @@ public enum Components {
                         self.maxScore = maxScore
                         self.memberScoreCount = memberScoreCount
                         self.externalScoreCount = externalScoreCount
+                        self.raterCount = raterCount
                         self.scoreCount = scoreCount
                         self.reviewScoreBandCounts = reviewScoreBandCounts
                         self.tastingBandCounts = tastingBandCounts
                         self.totalTastings = totalTastings
+                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                        self.notedReviewAndTastingCount = notedReviewAndTastingCount
                         self.totalBottles = totalBottles
                         self.createdByActorId = createdByActorId
                         self.createdAt = createdAt
@@ -7147,10 +7427,13 @@ public enum Components {
                         case maxScore
                         case memberScoreCount
                         case externalScoreCount
+                        case raterCount
                         case scoreCount
                         case reviewScoreBandCounts
                         case tastingBandCounts
                         case totalTastings
+                        case publicReviewAndTastingCount
+                        case notedReviewAndTastingCount
                         case totalBottles
                         case createdByActorId
                         case createdAt
@@ -7285,6 +7568,19 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/kind`.
                     public var kind: Components.Schemas.CollectionBottle.bottlePayload.brandPayload.kindPayload
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/status`.
+                    @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                        case active = "active"
+                        case mothballed = "mothballed"
+                        case closed = "closed"
+                        case discontinued = "discontinued"
+                    }
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/status`.
+                    public var status: Components.Schemas.CollectionBottle.bottlePayload.brandPayload.statusPayload?
                     /// ID of the entity's current owner
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/ownerId`.
@@ -7366,19 +7662,19 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/website`.
                     public var website: Swift.String?
-                    /// Country where the entity is located
+                    /// Country where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/country`.
                     public var country: Components.Schemas.Country?
-                    /// Region where the entity is located
+                    /// Region where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/region`.
                     public var region: Components.Schemas.Region?
-                    /// Physical address of the entity
+                    /// Address where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/address`.
                     public var address: Swift.String?
-                    /// Geographic coordinates of the entity
+                    /// Geographic coordinates where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/location`.
                     public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -7386,6 +7682,10 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/totalTastings`.
                     public var totalTastings: Swift.Double
+                    /// Total public reviews and tastings for this entity's bottles
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/publicReviewAndTastingCount`.
+                    public var publicReviewAndTastingCount: Swift.Int
                     /// Total number of bottles associated with this entity
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/totalBottles`.
@@ -7410,17 +7710,19 @@ public enum Components {
                     ///   - name: Name of the entity (brand, distillery, etc.)
                     ///   - shortName: Abbreviated or short name for the entity
                     ///   - kind: Best short description of what this entity is
+                    ///   - status: Current status, or null when it is unknown
                     ///   - ownerId: ID of the entity's current owner
                     ///   - owner: Current direct owner
                     ///   - description: Detailed description of the entity
                     ///   - descriptionSrc: Source of the entity description
                     ///   - yearEstablished: Year the entity was established
                     ///   - website: Official website URL
-                    ///   - country: Country where the entity is located
-                    ///   - region: Region where the entity is located
-                    ///   - address: Physical address of the entity
-                    ///   - location: Geographic coordinates of the entity
+                    ///   - country: Country where the entity comes from
+                    ///   - region: Region where the entity comes from
+                    ///   - address: Address where the entity comes from
+                    ///   - location: Geographic coordinates where the entity comes from
                     ///   - totalTastings: Total number of tastings for bottles from this entity
+                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                     ///   - totalBottles: Total number of bottles associated with this entity
                     ///   - isFollowing: Whether the current user follows this entity
                     ///   - createdAt: Timestamp when the entity was created
@@ -7431,6 +7733,7 @@ public enum Components {
                         name: Swift.String,
                         shortName: Swift.String? = nil,
                         kind: Components.Schemas.CollectionBottle.bottlePayload.brandPayload.kindPayload,
+                        status: Components.Schemas.CollectionBottle.bottlePayload.brandPayload.statusPayload? = nil,
                         ownerId: Swift.Double? = nil,
                         owner: Components.Schemas.CollectionBottle.bottlePayload.brandPayload.ownerPayload? = nil,
                         description: Swift.String? = nil,
@@ -7442,6 +7745,7 @@ public enum Components {
                         address: Swift.String? = nil,
                         location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                         totalTastings: Swift.Double,
+                        publicReviewAndTastingCount: Swift.Int,
                         totalBottles: Swift.Double,
                         isFollowing: Swift.Bool,
                         createdAt: Foundation.Date,
@@ -7452,6 +7756,7 @@ public enum Components {
                         self.name = name
                         self.shortName = shortName
                         self.kind = kind
+                        self.status = status
                         self.ownerId = ownerId
                         self.owner = owner
                         self.description = description
@@ -7463,6 +7768,7 @@ public enum Components {
                         self.address = address
                         self.location = location
                         self.totalTastings = totalTastings
+                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                         self.totalBottles = totalBottles
                         self.isFollowing = isFollowing
                         self.createdAt = createdAt
@@ -7474,6 +7780,7 @@ public enum Components {
                         case name
                         case shortName
                         case kind
+                        case status
                         case ownerId
                         case owner
                         case description
@@ -7485,6 +7792,7 @@ public enum Components {
                         case address
                         case location
                         case totalTastings
+                        case publicReviewAndTastingCount
                         case totalBottles
                         case isFollowing
                         case createdAt
@@ -7609,6 +7917,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/externalScoreCount`.
                 public var externalScoreCount: Swift.Int
+                /// Number of distinct members and external critics with a rating for this exact Bottle
+                ///
+                /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/raterCount`.
+                public var raterCount: Swift.Int
                 /// Combined member and external score count
                 ///
                 /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/scoreCount`.
@@ -7711,6 +8023,14 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/totalTastings`.
                 public var totalTastings: Swift.Double
+                /// Total public reviews and tastings for this exact Bottle
+                ///
+                /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/publicReviewAndTastingCount`.
+                public var publicReviewAndTastingCount: Swift.Int
+                /// Public reviews and tastings with recognized tasting notes
+                ///
+                /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/notedReviewAndTastingCount`.
+                public var notedReviewAndTastingCount: Swift.Int
                 /// Timestamp when the bottle was created
                 ///
                 /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/createdAt`.
@@ -7774,10 +8094,13 @@ public enum Components {
                 ///   - maxScore:
                 ///   - memberScoreCount: Number of member review scores for this exact Bottle
                 ///   - externalScoreCount: Number of permitted external scores for this exact Bottle
+                ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
                 ///   - scoreCount: Combined member and external score count
                 ///   - reviewScoreBandCounts: Review score counts in each rating range
                 ///   - tastingBandCounts: Tasting counts in each rating band
                 ///   - totalTastings: Total number of recorded tastings for this bottle
+                ///   - publicReviewAndTastingCount: Total public reviews and tastings for this exact Bottle
+                ///   - notedReviewAndTastingCount: Public reviews and tastings with recognized tasting notes
                 ///   - createdAt: Timestamp when the bottle was created
                 ///   - updatedAt: Timestamp when the bottle was last updated
                 ///   - isFavorite: Whether the current user has marked this bottle as a favorite
@@ -7824,10 +8147,13 @@ public enum Components {
                     maxScore: Swift.Int? = nil,
                     memberScoreCount: Swift.Int,
                     externalScoreCount: Swift.Int,
+                    raterCount: Swift.Int,
                     scoreCount: Swift.Int,
                     reviewScoreBandCounts: Components.Schemas.CollectionBottle.bottlePayload.reviewScoreBandCountsPayload,
                     tastingBandCounts: Components.Schemas.CollectionBottle.bottlePayload.tastingBandCountsPayload,
                     totalTastings: Swift.Double,
+                    publicReviewAndTastingCount: Swift.Int,
+                    notedReviewAndTastingCount: Swift.Int,
                     createdAt: Foundation.Date,
                     updatedAt: Foundation.Date,
                     isFavorite: Swift.Bool,
@@ -7874,10 +8200,13 @@ public enum Components {
                     self.maxScore = maxScore
                     self.memberScoreCount = memberScoreCount
                     self.externalScoreCount = externalScoreCount
+                    self.raterCount = raterCount
                     self.scoreCount = scoreCount
                     self.reviewScoreBandCounts = reviewScoreBandCounts
                     self.tastingBandCounts = tastingBandCounts
                     self.totalTastings = totalTastings
+                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                    self.notedReviewAndTastingCount = notedReviewAndTastingCount
                     self.createdAt = createdAt
                     self.updatedAt = updatedAt
                     self.isFavorite = isFavorite
@@ -7925,10 +8254,13 @@ public enum Components {
                     case maxScore
                     case memberScoreCount
                     case externalScoreCount
+                    case raterCount
                     case scoreCount
                     case reviewScoreBandCounts
                     case tastingBandCounts
                     case totalTastings
+                    case publicReviewAndTastingCount
+                    case notedReviewAndTastingCount
                     case createdAt
                     case updatedAt
                     case isFavorite
@@ -9423,6 +9755,8 @@ public enum Components {
                     public var memberScoreCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/externalScoreCount`.
                     public var externalScoreCount: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/raterCount`.
+                    public var raterCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/scoreCount`.
                     public var scoreCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/reviewScoreBandCounts`.
@@ -9513,6 +9847,10 @@ public enum Components {
                     public var tastingBandCounts: Components.Schemas.PriceChange.bottlePayload.groupPayload.tastingBandCountsPayload
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/totalTastings`.
                     public var totalTastings: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/publicReviewAndTastingCount`.
+                    public var publicReviewAndTastingCount: Swift.Int
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/notedReviewAndTastingCount`.
+                    public var notedReviewAndTastingCount: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/totalBottles`.
                     public var totalBottles: Swift.Int
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/group/createdByActorId`.
@@ -9541,10 +9879,13 @@ public enum Components {
                     ///   - maxScore:
                     ///   - memberScoreCount:
                     ///   - externalScoreCount:
+                    ///   - raterCount:
                     ///   - scoreCount:
                     ///   - reviewScoreBandCounts:
                     ///   - tastingBandCounts:
                     ///   - totalTastings:
+                    ///   - publicReviewAndTastingCount:
+                    ///   - notedReviewAndTastingCount:
                     ///   - totalBottles:
                     ///   - createdByActorId:
                     ///   - createdAt:
@@ -9567,10 +9908,13 @@ public enum Components {
                         maxScore: Swift.Int? = nil,
                         memberScoreCount: Swift.Int,
                         externalScoreCount: Swift.Int,
+                        raterCount: Swift.Int,
                         scoreCount: Swift.Int,
                         reviewScoreBandCounts: Components.Schemas.PriceChange.bottlePayload.groupPayload.reviewScoreBandCountsPayload,
                         tastingBandCounts: Components.Schemas.PriceChange.bottlePayload.groupPayload.tastingBandCountsPayload,
                         totalTastings: Swift.Int,
+                        publicReviewAndTastingCount: Swift.Int,
+                        notedReviewAndTastingCount: Swift.Int,
                         totalBottles: Swift.Int,
                         createdByActorId: Swift.Int,
                         createdAt: Foundation.Date,
@@ -9593,10 +9937,13 @@ public enum Components {
                         self.maxScore = maxScore
                         self.memberScoreCount = memberScoreCount
                         self.externalScoreCount = externalScoreCount
+                        self.raterCount = raterCount
                         self.scoreCount = scoreCount
                         self.reviewScoreBandCounts = reviewScoreBandCounts
                         self.tastingBandCounts = tastingBandCounts
                         self.totalTastings = totalTastings
+                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                        self.notedReviewAndTastingCount = notedReviewAndTastingCount
                         self.totalBottles = totalBottles
                         self.createdByActorId = createdByActorId
                         self.createdAt = createdAt
@@ -9620,10 +9967,13 @@ public enum Components {
                         case maxScore
                         case memberScoreCount
                         case externalScoreCount
+                        case raterCount
                         case scoreCount
                         case reviewScoreBandCounts
                         case tastingBandCounts
                         case totalTastings
+                        case publicReviewAndTastingCount
+                        case notedReviewAndTastingCount
                         case totalBottles
                         case createdByActorId
                         case createdAt
@@ -9758,6 +10108,19 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/kind`.
                     public var kind: Components.Schemas.PriceChange.bottlePayload.brandPayload.kindPayload
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/status`.
+                    @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                        case active = "active"
+                        case mothballed = "mothballed"
+                        case closed = "closed"
+                        case discontinued = "discontinued"
+                    }
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/status`.
+                    public var status: Components.Schemas.PriceChange.bottlePayload.brandPayload.statusPayload?
                     /// ID of the entity's current owner
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/ownerId`.
@@ -9839,19 +10202,19 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/website`.
                     public var website: Swift.String?
-                    /// Country where the entity is located
+                    /// Country where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/country`.
                     public var country: Components.Schemas.Country?
-                    /// Region where the entity is located
+                    /// Region where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/region`.
                     public var region: Components.Schemas.Region?
-                    /// Physical address of the entity
+                    /// Address where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/address`.
                     public var address: Swift.String?
-                    /// Geographic coordinates of the entity
+                    /// Geographic coordinates where the entity comes from
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/location`.
                     public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -9859,6 +10222,10 @@ public enum Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/totalTastings`.
                     public var totalTastings: Swift.Double
+                    /// Total public reviews and tastings for this entity's bottles
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/publicReviewAndTastingCount`.
+                    public var publicReviewAndTastingCount: Swift.Int
                     /// Total number of bottles associated with this entity
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/totalBottles`.
@@ -9883,17 +10250,19 @@ public enum Components {
                     ///   - name: Name of the entity (brand, distillery, etc.)
                     ///   - shortName: Abbreviated or short name for the entity
                     ///   - kind: Best short description of what this entity is
+                    ///   - status: Current status, or null when it is unknown
                     ///   - ownerId: ID of the entity's current owner
                     ///   - owner: Current direct owner
                     ///   - description: Detailed description of the entity
                     ///   - descriptionSrc: Source of the entity description
                     ///   - yearEstablished: Year the entity was established
                     ///   - website: Official website URL
-                    ///   - country: Country where the entity is located
-                    ///   - region: Region where the entity is located
-                    ///   - address: Physical address of the entity
-                    ///   - location: Geographic coordinates of the entity
+                    ///   - country: Country where the entity comes from
+                    ///   - region: Region where the entity comes from
+                    ///   - address: Address where the entity comes from
+                    ///   - location: Geographic coordinates where the entity comes from
                     ///   - totalTastings: Total number of tastings for bottles from this entity
+                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                     ///   - totalBottles: Total number of bottles associated with this entity
                     ///   - isFollowing: Whether the current user follows this entity
                     ///   - createdAt: Timestamp when the entity was created
@@ -9904,6 +10273,7 @@ public enum Components {
                         name: Swift.String,
                         shortName: Swift.String? = nil,
                         kind: Components.Schemas.PriceChange.bottlePayload.brandPayload.kindPayload,
+                        status: Components.Schemas.PriceChange.bottlePayload.brandPayload.statusPayload? = nil,
                         ownerId: Swift.Double? = nil,
                         owner: Components.Schemas.PriceChange.bottlePayload.brandPayload.ownerPayload? = nil,
                         description: Swift.String? = nil,
@@ -9915,6 +10285,7 @@ public enum Components {
                         address: Swift.String? = nil,
                         location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                         totalTastings: Swift.Double,
+                        publicReviewAndTastingCount: Swift.Int,
                         totalBottles: Swift.Double,
                         isFollowing: Swift.Bool,
                         createdAt: Foundation.Date,
@@ -9925,6 +10296,7 @@ public enum Components {
                         self.name = name
                         self.shortName = shortName
                         self.kind = kind
+                        self.status = status
                         self.ownerId = ownerId
                         self.owner = owner
                         self.description = description
@@ -9936,6 +10308,7 @@ public enum Components {
                         self.address = address
                         self.location = location
                         self.totalTastings = totalTastings
+                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                         self.totalBottles = totalBottles
                         self.isFollowing = isFollowing
                         self.createdAt = createdAt
@@ -9947,6 +10320,7 @@ public enum Components {
                         case name
                         case shortName
                         case kind
+                        case status
                         case ownerId
                         case owner
                         case description
@@ -9958,6 +10332,7 @@ public enum Components {
                         case address
                         case location
                         case totalTastings
+                        case publicReviewAndTastingCount
                         case totalBottles
                         case isFollowing
                         case createdAt
@@ -10082,6 +10457,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/externalScoreCount`.
                 public var externalScoreCount: Swift.Int
+                /// Number of distinct members and external critics with a rating for this exact Bottle
+                ///
+                /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/raterCount`.
+                public var raterCount: Swift.Int
                 /// Combined member and external score count
                 ///
                 /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/scoreCount`.
@@ -10184,6 +10563,14 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/totalTastings`.
                 public var totalTastings: Swift.Double
+                /// Total public reviews and tastings for this exact Bottle
+                ///
+                /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/publicReviewAndTastingCount`.
+                public var publicReviewAndTastingCount: Swift.Int
+                /// Public reviews and tastings with recognized tasting notes
+                ///
+                /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/notedReviewAndTastingCount`.
+                public var notedReviewAndTastingCount: Swift.Int
                 /// Timestamp when the bottle was created
                 ///
                 /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/createdAt`.
@@ -10247,10 +10634,13 @@ public enum Components {
                 ///   - maxScore:
                 ///   - memberScoreCount: Number of member review scores for this exact Bottle
                 ///   - externalScoreCount: Number of permitted external scores for this exact Bottle
+                ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
                 ///   - scoreCount: Combined member and external score count
                 ///   - reviewScoreBandCounts: Review score counts in each rating range
                 ///   - tastingBandCounts: Tasting counts in each rating band
                 ///   - totalTastings: Total number of recorded tastings for this bottle
+                ///   - publicReviewAndTastingCount: Total public reviews and tastings for this exact Bottle
+                ///   - notedReviewAndTastingCount: Public reviews and tastings with recognized tasting notes
                 ///   - createdAt: Timestamp when the bottle was created
                 ///   - updatedAt: Timestamp when the bottle was last updated
                 ///   - isFavorite: Whether the current user has marked this bottle as a favorite
@@ -10297,10 +10687,13 @@ public enum Components {
                     maxScore: Swift.Int? = nil,
                     memberScoreCount: Swift.Int,
                     externalScoreCount: Swift.Int,
+                    raterCount: Swift.Int,
                     scoreCount: Swift.Int,
                     reviewScoreBandCounts: Components.Schemas.PriceChange.bottlePayload.reviewScoreBandCountsPayload,
                     tastingBandCounts: Components.Schemas.PriceChange.bottlePayload.tastingBandCountsPayload,
                     totalTastings: Swift.Double,
+                    publicReviewAndTastingCount: Swift.Int,
+                    notedReviewAndTastingCount: Swift.Int,
                     createdAt: Foundation.Date,
                     updatedAt: Foundation.Date,
                     isFavorite: Swift.Bool,
@@ -10347,10 +10740,13 @@ public enum Components {
                     self.maxScore = maxScore
                     self.memberScoreCount = memberScoreCount
                     self.externalScoreCount = externalScoreCount
+                    self.raterCount = raterCount
                     self.scoreCount = scoreCount
                     self.reviewScoreBandCounts = reviewScoreBandCounts
                     self.tastingBandCounts = tastingBandCounts
                     self.totalTastings = totalTastings
+                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                    self.notedReviewAndTastingCount = notedReviewAndTastingCount
                     self.createdAt = createdAt
                     self.updatedAt = updatedAt
                     self.isFavorite = isFavorite
@@ -10398,10 +10794,13 @@ public enum Components {
                     case maxScore
                     case memberScoreCount
                     case externalScoreCount
+                    case raterCount
                     case scoreCount
                     case reviewScoreBandCounts
                     case tastingBandCounts
                     case totalTastings
+                    case publicReviewAndTastingCount
+                    case notedReviewAndTastingCount
                     case createdAt
                     case updatedAt
                     case isFavorite
@@ -10959,10 +11358,58 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/score`.
                                     public var score: Swift.Int
-                                    /// Tasting notes associated with this review
+                                    /// All flavors found in this review
                                     ///
                                     /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/tags`.
                                     public var tags: [Swift.String]?
+                                    /// Flavors found on the nose
+                                    ///
+                                    /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/noseTags`.
+                                    public var noseTags: [Swift.String]?
+                                    /// Flavors found on the palate
+                                    ///
+                                    /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/palateTags`.
+                                    public var palateTags: [Swift.String]?
+                                    /// Flavors in the finish
+                                    ///
+                                    /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/finishTags`.
+                                    public var finishTags: [Swift.String]?
+                                    /// Stored category for each known tasting note
+                                    ///
+                                    /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/tagCategories`.
+                                    public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                                        /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/tagCategories/additionalProperties`.
+                                        @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                            case cereal = "cereal"
+                                            case fruit = "fruit"
+                                            case floral = "floral"
+                                            case smoke = "smoke"
+                                            case earthy = "earthy"
+                                            case sulfur = "sulfur"
+                                            case sweet = "sweet"
+                                            case spice = "spice"
+                                            case wood = "wood"
+                                        }
+                                        /// A container of undocumented properties.
+                                        public var additionalProperties: [String: Operations.listActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                                        /// Creates a new `tagCategoriesPayload`.
+                                        ///
+                                        /// - Parameters:
+                                        ///   - additionalProperties: A container of undocumented properties.
+                                        public init(additionalProperties: [String: Operations.listActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                            self.additionalProperties = additionalProperties
+                                        }
+                                        public init(from decoder: any Decoder) throws {
+                                            additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                                        }
+                                        public func encode(to encoder: any Encoder) throws {
+                                            try encoder.encodeAdditionalProperties(additionalProperties)
+                                        }
+                                    }
+                                    /// Stored category for each known tasting note
+                                    ///
+                                    /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/tagCategories`.
+                                    public var tagCategories: Operations.listActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload?
                                     /// Observed color on a scale from 0 through 20
                                     ///
                                     /// - Remark: Generated from `#/paths/activity/GET/responses/200/content/json/resultsPayload/value3/review/color`.
@@ -11003,7 +11450,11 @@ public enum Operations {
                                     ///   - id:
                                     ///   - bottleId:
                                     ///   - score: Whole-number Bottle score from 0 through 100
-                                    ///   - tags: Tasting notes associated with this review
+                                    ///   - tags: All flavors found in this review
+                                    ///   - noseTags: Flavors found on the nose
+                                    ///   - palateTags: Flavors found on the palate
+                                    ///   - finishTags: Flavors in the finish
+                                    ///   - tagCategories: Stored category for each known tasting note
                                     ///   - color: Observed color on a scale from 0 through 20
                                     ///   - notes: Optional review notes
                                     ///   - servingStyle: How the reviewed pour was served
@@ -11018,6 +11469,10 @@ public enum Operations {
                                         bottleId: Swift.Int,
                                         score: Swift.Int,
                                         tags: [Swift.String]? = nil,
+                                        noseTags: [Swift.String]? = nil,
+                                        palateTags: [Swift.String]? = nil,
+                                        finishTags: [Swift.String]? = nil,
+                                        tagCategories: Operations.listActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload? = nil,
                                         color: Swift.Double? = nil,
                                         notes: Swift.String? = nil,
                                         servingStyle: Operations.listActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.servingStylePayload? = nil,
@@ -11032,6 +11487,10 @@ public enum Operations {
                                         self.bottleId = bottleId
                                         self.score = score
                                         self.tags = tags
+                                        self.noseTags = noseTags
+                                        self.palateTags = palateTags
+                                        self.finishTags = finishTags
+                                        self.tagCategories = tagCategories
                                         self.color = color
                                         self.notes = notes
                                         self.servingStyle = servingStyle
@@ -11047,6 +11506,10 @@ public enum Operations {
                                         case bottleId
                                         case score
                                         case tags
+                                        case noseTags
+                                        case palateTags
+                                        case finishTags
+                                        case tagCategories
                                         case color
                                         case notes
                                         case servingStyle
@@ -12606,9 +13069,1773 @@ public enum Operations {
             }
         }
     }
+    /// List reviews and tastings
+    ///
+    /// List tastings, member reviews, and published critic reviews for one bottle, brand, bottler, or distillery in newest-first order.
+    ///
+    /// - Remark: HTTP `GET /reviews-and-tastings`.
+    /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)`.
+    public enum listReviewsAndTastings {
+        public static let id: Swift.String = "listReviewsAndTastings"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/query`.
+            public struct Query: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/query/bottle`.
+                public var bottle: Swift.Int?
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/query/entity`.
+                public var entity: Swift.Int?
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/query/cursor`.
+                public var cursor: Swift.String?
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/query/limit`.
+                public var limit: Swift.Int?
+                /// Creates a new `Query`.
+                ///
+                /// - Parameters:
+                ///   - bottle:
+                ///   - entity:
+                ///   - cursor:
+                ///   - limit:
+                public init(
+                    bottle: Swift.Int? = nil,
+                    entity: Swift.Int? = nil,
+                    cursor: Swift.String? = nil,
+                    limit: Swift.Int? = nil
+                ) {
+                    self.bottle = bottle
+                    self.entity = entity
+                    self.cursor = cursor
+                    self.limit = limit
+                }
+            }
+            public var query: Operations.listReviewsAndTastings.Input.Query
+            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.listReviewsAndTastings.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.listReviewsAndTastings.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.listReviewsAndTastings.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - query:
+            ///   - headers:
+            public init(
+                query: Operations.listReviewsAndTastings.Input.Query = .init(),
+                headers: Operations.listReviewsAndTastings.Input.Headers = .init()
+            ) {
+                self.query = query
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json`.
+                    public struct jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload`.
+                        public struct resultsPayloadPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value1`.
+                            public struct Value1Payload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value1/type`.
+                                public var _type: OpenAPIRuntime.OpenAPIValueContainer
+                                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value1/tasting`.
+                                public var tasting: Components.Schemas.Tasting
+                                /// Creates a new `Value1Payload`.
+                                ///
+                                /// - Parameters:
+                                ///   - _type:
+                                ///   - tasting:
+                                public init(
+                                    _type: OpenAPIRuntime.OpenAPIValueContainer,
+                                    tasting: Components.Schemas.Tasting
+                                ) {
+                                    self._type = _type
+                                    self.tasting = tasting
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case _type = "type"
+                                    case tasting
+                                }
+                            }
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value1`.
+                            public var value1: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value1Payload?
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2`.
+                            public struct Value2Payload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/type`.
+                                public var _type: OpenAPIRuntime.OpenAPIValueContainer
+                                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review`.
+                                public struct reviewPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/id`.
+                                    public var id: Swift.Int
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/bottleId`.
+                                    public var bottleId: Swift.Int
+                                    /// Whole-number Bottle score from 0 through 100
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/score`.
+                                    public var score: Swift.Int
+                                    /// All flavors found in this review
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/tags`.
+                                    public var tags: [Swift.String]?
+                                    /// Flavors found on the nose
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/noseTags`.
+                                    public var noseTags: [Swift.String]?
+                                    /// Flavors found on the palate
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/palateTags`.
+                                    public var palateTags: [Swift.String]?
+                                    /// Flavors in the finish
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/finishTags`.
+                                    public var finishTags: [Swift.String]?
+                                    /// Stored category for each known tasting note
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/tagCategories`.
+                                    public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/tagCategories/additionalProperties`.
+                                        @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                            case cereal = "cereal"
+                                            case fruit = "fruit"
+                                            case floral = "floral"
+                                            case smoke = "smoke"
+                                            case earthy = "earthy"
+                                            case sulfur = "sulfur"
+                                            case sweet = "sweet"
+                                            case spice = "spice"
+                                            case wood = "wood"
+                                        }
+                                        /// A container of undocumented properties.
+                                        public var additionalProperties: [String: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                                        /// Creates a new `tagCategoriesPayload`.
+                                        ///
+                                        /// - Parameters:
+                                        ///   - additionalProperties: A container of undocumented properties.
+                                        public init(additionalProperties: [String: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                            self.additionalProperties = additionalProperties
+                                        }
+                                        public init(from decoder: any Decoder) throws {
+                                            additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                                        }
+                                        public func encode(to encoder: any Encoder) throws {
+                                            try encoder.encodeAdditionalProperties(additionalProperties)
+                                        }
+                                    }
+                                    /// Stored category for each known tasting note
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/tagCategories`.
+                                    public var tagCategories: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload.tagCategoriesPayload?
+                                    /// Observed color on a scale from 0 through 20
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/color`.
+                                    public var color: Swift.Double?
+                                    /// Optional review notes
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/notes`.
+                                    public var notes: Swift.String?
+                                    /// How the reviewed pour was served
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/servingStyle`.
+                                    @frozen public enum servingStylePayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                        case neat = "neat"
+                                        case rocks = "rocks"
+                                        case splash = "splash"
+                                    }
+                                    /// How the reviewed pour was served
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/servingStyle`.
+                                    public var servingStyle: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload.servingStylePayload?
+                                    /// Friends who were present for the reviewed pour
+                                    ///
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/friends`.
+                                    public var friends: [Components.Schemas.User]?
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/imageUrl`.
+                                    public var imageUrl: Swift.String?
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/createdBy`.
+                                    public var createdBy: Components.Schemas.User
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/createdAt`.
+                                    public var createdAt: Foundation.Date
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/updatedAt`.
+                                    public var updatedAt: Foundation.Date
+                                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review/bottle`.
+                                    public var bottle: Components.Schemas.Bottle
+                                    /// Creates a new `reviewPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - id:
+                                    ///   - bottleId:
+                                    ///   - score: Whole-number Bottle score from 0 through 100
+                                    ///   - tags: All flavors found in this review
+                                    ///   - noseTags: Flavors found on the nose
+                                    ///   - palateTags: Flavors found on the palate
+                                    ///   - finishTags: Flavors in the finish
+                                    ///   - tagCategories: Stored category for each known tasting note
+                                    ///   - color: Observed color on a scale from 0 through 20
+                                    ///   - notes: Optional review notes
+                                    ///   - servingStyle: How the reviewed pour was served
+                                    ///   - friends: Friends who were present for the reviewed pour
+                                    ///   - imageUrl:
+                                    ///   - createdBy:
+                                    ///   - createdAt:
+                                    ///   - updatedAt:
+                                    ///   - bottle:
+                                    public init(
+                                        id: Swift.Int,
+                                        bottleId: Swift.Int,
+                                        score: Swift.Int,
+                                        tags: [Swift.String]? = nil,
+                                        noseTags: [Swift.String]? = nil,
+                                        palateTags: [Swift.String]? = nil,
+                                        finishTags: [Swift.String]? = nil,
+                                        tagCategories: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload.tagCategoriesPayload? = nil,
+                                        color: Swift.Double? = nil,
+                                        notes: Swift.String? = nil,
+                                        servingStyle: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload.servingStylePayload? = nil,
+                                        friends: [Components.Schemas.User]? = nil,
+                                        imageUrl: Swift.String? = nil,
+                                        createdBy: Components.Schemas.User,
+                                        createdAt: Foundation.Date,
+                                        updatedAt: Foundation.Date,
+                                        bottle: Components.Schemas.Bottle
+                                    ) {
+                                        self.id = id
+                                        self.bottleId = bottleId
+                                        self.score = score
+                                        self.tags = tags
+                                        self.noseTags = noseTags
+                                        self.palateTags = palateTags
+                                        self.finishTags = finishTags
+                                        self.tagCategories = tagCategories
+                                        self.color = color
+                                        self.notes = notes
+                                        self.servingStyle = servingStyle
+                                        self.friends = friends
+                                        self.imageUrl = imageUrl
+                                        self.createdBy = createdBy
+                                        self.createdAt = createdAt
+                                        self.updatedAt = updatedAt
+                                        self.bottle = bottle
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case id
+                                        case bottleId
+                                        case score
+                                        case tags
+                                        case noseTags
+                                        case palateTags
+                                        case finishTags
+                                        case tagCategories
+                                        case color
+                                        case notes
+                                        case servingStyle
+                                        case friends
+                                        case imageUrl
+                                        case createdBy
+                                        case createdAt
+                                        case updatedAt
+                                        case bottle
+                                    }
+                                }
+                                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2/review`.
+                                public var review: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload
+                                /// Creates a new `Value2Payload`.
+                                ///
+                                /// - Parameters:
+                                ///   - _type:
+                                ///   - review:
+                                public init(
+                                    _type: OpenAPIRuntime.OpenAPIValueContainer,
+                                    review: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload.reviewPayload
+                                ) {
+                                    self._type = _type
+                                    self.review = review
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case _type = "type"
+                                    case review
+                                }
+                            }
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value2`.
+                            public var value2: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload?
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value3`.
+                            public struct Value3Payload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value3/type`.
+                                public var _type: OpenAPIRuntime.OpenAPIValueContainer
+                                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value3/review`.
+                                public var review: Components.Schemas.ExternalReview
+                                /// Creates a new `Value3Payload`.
+                                ///
+                                /// - Parameters:
+                                ///   - _type:
+                                ///   - review:
+                                public init(
+                                    _type: OpenAPIRuntime.OpenAPIValueContainer,
+                                    review: Components.Schemas.ExternalReview
+                                ) {
+                                    self._type = _type
+                                    self.review = review
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case _type = "type"
+                                    case review
+                                }
+                            }
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/resultsPayload/value3`.
+                            public var value3: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload?
+                            /// Creates a new `resultsPayloadPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value1:
+                            ///   - value2:
+                            ///   - value3:
+                            public init(
+                                value1: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value1Payload? = nil,
+                                value2: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value2Payload? = nil,
+                                value3: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload? = nil
+                            ) {
+                                self.value1 = value1
+                                self.value2 = value2
+                                self.value3 = value3
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                var errors: [any Error] = []
+                                do {
+                                    self.value1 = try .init(from: decoder)
+                                } catch {
+                                    errors.append(error)
+                                }
+                                do {
+                                    self.value2 = try .init(from: decoder)
+                                } catch {
+                                    errors.append(error)
+                                }
+                                do {
+                                    self.value3 = try .init(from: decoder)
+                                } catch {
+                                    errors.append(error)
+                                }
+                                try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
+                                    [
+                                        self.value1,
+                                        self.value2,
+                                        self.value3
+                                    ],
+                                    type: Self.self,
+                                    codingPath: decoder.codingPath,
+                                    errors: errors
+                                )
+                            }
+                            public func encode(to encoder: any Encoder) throws {
+                                try self.value1?.encode(to: encoder)
+                                try self.value2?.encode(to: encoder)
+                                try self.value3?.encode(to: encoder)
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/results`.
+                        public typealias resultsPayload = [Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayloadPayload]
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/results`.
+                        public var results: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayload
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/rel`.
+                        public struct relPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/rel/nextCursor`.
+                            public var nextCursor: Swift.String?
+                            /// Creates a new `relPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - nextCursor:
+                            public init(nextCursor: Swift.String? = nil) {
+                                self.nextCursor = nextCursor
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case nextCursor
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/json/rel`.
+                        public var rel: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.relPayload
+                        /// Creates a new `jsonPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - results:
+                        ///   - rel:
+                        public init(
+                            results: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.resultsPayload,
+                            rel: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload.relPayload
+                        ) {
+                            self.results = results
+                            self.rel = rel
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case results
+                            case rel
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/200/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.Ok.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// OK
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.listReviewsAndTastings.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.listReviewsAndTastings.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct BadRequest: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case1`.
+                        case case1(Operations.listReviewsAndTastings.Output.BadRequest.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/json/case2`.
+                        case case2(Operations.listReviewsAndTastings.Output.BadRequest.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/400/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.BadRequest.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.BadRequest.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.BadRequest.Body
+                /// Creates a new `BadRequest`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.BadRequest.Body) {
+                    self.body = body
+                }
+            }
+            /// 400
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Operations.listReviewsAndTastings.Output.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Operations.listReviewsAndTastings.Output.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Unauthorized: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case1`.
+                        case case1(Operations.listReviewsAndTastings.Output.Unauthorized.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/json/case2`.
+                        case case2(Operations.listReviewsAndTastings.Output.Unauthorized.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/401/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.Unauthorized.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.Unauthorized.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.Unauthorized.Body
+                /// Creates a new `Unauthorized`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.Unauthorized.Body) {
+                    self.body = body
+                }
+            }
+            /// 401
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Operations.listReviewsAndTastings.Output.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Operations.listReviewsAndTastings.Output.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Forbidden: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case1`.
+                        case case1(Operations.listReviewsAndTastings.Output.Forbidden.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/json/case2`.
+                        case case2(Operations.listReviewsAndTastings.Output.Forbidden.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/403/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.Forbidden.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.Forbidden.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.Forbidden.Body
+                /// Creates a new `Forbidden`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.Forbidden.Body) {
+                    self.body = body
+                }
+            }
+            /// 403
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/403`.
+            ///
+            /// HTTP response code: `403 forbidden`.
+            case forbidden(Operations.listReviewsAndTastings.Output.Forbidden)
+            /// The associated value of the enum case if `self` is `.forbidden`.
+            ///
+            /// - Throws: An error if `self` is not `.forbidden`.
+            /// - SeeAlso: `.forbidden`.
+            public var forbidden: Operations.listReviewsAndTastings.Output.Forbidden {
+                get throws {
+                    switch self {
+                    case let .forbidden(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "forbidden",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct NotFound: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case1`.
+                        case case1(Operations.listReviewsAndTastings.Output.NotFound.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/json/case2`.
+                        case case2(Operations.listReviewsAndTastings.Output.NotFound.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/404/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.NotFound.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.NotFound.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.NotFound.Body
+                /// Creates a new `NotFound`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.NotFound.Body) {
+                    self.body = body
+                }
+            }
+            /// 404
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Operations.listReviewsAndTastings.Output.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Operations.listReviewsAndTastings.Output.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Conflict: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case1`.
+                        case case1(Operations.listReviewsAndTastings.Output.Conflict.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/json/case2`.
+                        case case2(Operations.listReviewsAndTastings.Output.Conflict.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/409/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.Conflict.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.Conflict.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.Conflict.Body
+                /// Creates a new `Conflict`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.Conflict.Body) {
+                    self.body = body
+                }
+            }
+            /// 409
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/409`.
+            ///
+            /// HTTP response code: `409 conflict`.
+            case conflict(Operations.listReviewsAndTastings.Output.Conflict)
+            /// The associated value of the enum case if `self` is `.conflict`.
+            ///
+            /// - Throws: An error if `self` is not `.conflict`.
+            /// - SeeAlso: `.conflict`.
+            public var conflict: Operations.listReviewsAndTastings.Output.Conflict {
+                get throws {
+                    switch self {
+                    case let .conflict(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "conflict",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct ContentTooLarge: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case1`.
+                        case case1(Operations.listReviewsAndTastings.Output.ContentTooLarge.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/json/case2`.
+                        case case2(Operations.listReviewsAndTastings.Output.ContentTooLarge.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/413/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.ContentTooLarge.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.ContentTooLarge.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.ContentTooLarge.Body
+                /// Creates a new `ContentTooLarge`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.ContentTooLarge.Body) {
+                    self.body = body
+                }
+            }
+            /// 413
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/413`.
+            ///
+            /// HTTP response code: `413 contentTooLarge`.
+            case contentTooLarge(Operations.listReviewsAndTastings.Output.ContentTooLarge)
+            /// The associated value of the enum case if `self` is `.contentTooLarge`.
+            ///
+            /// - Throws: An error if `self` is not `.contentTooLarge`.
+            /// - SeeAlso: `.contentTooLarge`.
+            public var contentTooLarge: Operations.listReviewsAndTastings.Output.ContentTooLarge {
+                get throws {
+                    switch self {
+                    case let .contentTooLarge(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "contentTooLarge",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct InternalServerError: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case1`.
+                        case case1(Operations.listReviewsAndTastings.Output.InternalServerError.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case2/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case2/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case2`.
+                        case case2(Operations.listReviewsAndTastings.Output.InternalServerError.Body.jsonPayload.Case2Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case3`.
+                        public struct Case3Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case3/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case3/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case3/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case3/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case3/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case3Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case3`.
+                        case case3(Operations.listReviewsAndTastings.Output.InternalServerError.Body.jsonPayload.Case3Payload)
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case4`.
+                        public struct Case4Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case4/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case4/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case4/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case4/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case4/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case4Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/json/case4`.
+                        case case4(Operations.listReviewsAndTastings.Output.InternalServerError.Body.jsonPayload.Case4Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case3(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case4(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            case let .case3(value):
+                                try value.encode(to: encoder)
+                            case let .case4(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/reviews-and-tastings/GET/responses/500/content/application\/json`.
+                    case json(Operations.listReviewsAndTastings.Output.InternalServerError.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listReviewsAndTastings.Output.InternalServerError.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listReviewsAndTastings.Output.InternalServerError.Body
+                /// Creates a new `InternalServerError`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listReviewsAndTastings.Output.InternalServerError.Body) {
+                    self.body = body
+                }
+            }
+            /// 500
+            ///
+            /// - Remark: Generated from `#/paths//reviews-and-tastings/get(listReviewsAndTastings)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Operations.listReviewsAndTastings.Output.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Operations.listReviewsAndTastings.Output.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
     /// User login
     ///
-    /// Sign in with email and password, a Google OAuth code, or a Google ID token
+    /// Sign in with email and password, a Google OAuth code, a Google ID token, or an Apple identity token
     ///
     /// - Remark: HTTP `POST /auth/login`.
     /// - Remark: Generated from `#/paths//auth/login/post(login)`.
@@ -12730,20 +14957,64 @@ public enum Operations {
                     ///
                     /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value3`.
                     public var value3: Operations.login.Input.Body.jsonPayload.Value3Payload?
+                    /// Sign in with Apple (identity token)
+                    ///
+                    /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value4`.
+                    public struct Value4Payload: Codable, Hashable, Sendable {
+                        /// Identity token (JWT) from Sign in with Apple. Its audience must be the app's bundle ID.
+                        ///
+                        /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value4/appleIdentityToken`.
+                        public var appleIdentityToken: Swift.String
+                        /// The user's name as Apple sends it on the first sign-in. Used to pick a username for a new account.
+                        ///
+                        /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value4/fullName`.
+                        public var fullName: Swift.String?
+                        /// Whether the user accepted the Terms of Service
+                        ///
+                        /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value4/tosAccepted`.
+                        public var tosAccepted: Swift.Bool?
+                        /// Creates a new `Value4Payload`.
+                        ///
+                        /// - Parameters:
+                        ///   - appleIdentityToken: Identity token (JWT) from Sign in with Apple. Its audience must be the app's bundle ID.
+                        ///   - fullName: The user's name as Apple sends it on the first sign-in. Used to pick a username for a new account.
+                        ///   - tosAccepted: Whether the user accepted the Terms of Service
+                        public init(
+                            appleIdentityToken: Swift.String,
+                            fullName: Swift.String? = nil,
+                            tosAccepted: Swift.Bool? = nil
+                        ) {
+                            self.appleIdentityToken = appleIdentityToken
+                            self.fullName = fullName
+                            self.tosAccepted = tosAccepted
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case appleIdentityToken
+                            case fullName
+                            case tosAccepted
+                        }
+                    }
+                    /// Sign in with Apple (identity token)
+                    ///
+                    /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/json/value4`.
+                    public var value4: Operations.login.Input.Body.jsonPayload.Value4Payload?
                     /// Creates a new `jsonPayload`.
                     ///
                     /// - Parameters:
                     ///   - value1: Email and password
                     ///   - value2: Google OAuth (code)
                     ///   - value3: Google OAuth (idToken)
+                    ///   - value4: Sign in with Apple (identity token)
                     public init(
                         value1: Operations.login.Input.Body.jsonPayload.Value1Payload? = nil,
                         value2: Operations.login.Input.Body.jsonPayload.Value2Payload? = nil,
-                        value3: Operations.login.Input.Body.jsonPayload.Value3Payload? = nil
+                        value3: Operations.login.Input.Body.jsonPayload.Value3Payload? = nil,
+                        value4: Operations.login.Input.Body.jsonPayload.Value4Payload? = nil
                     ) {
                         self.value1 = value1
                         self.value2 = value2
                         self.value3 = value3
+                        self.value4 = value4
                     }
                     public init(from decoder: any Decoder) throws {
                         var errors: [any Error] = []
@@ -12762,11 +15033,17 @@ public enum Operations {
                         } catch {
                             errors.append(error)
                         }
+                        do {
+                            self.value4 = try .init(from: decoder)
+                        } catch {
+                            errors.append(error)
+                        }
                         try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
                             [
                                 self.value1,
                                 self.value2,
-                                self.value3
+                                self.value3,
+                                self.value4
                             ],
                             type: Self.self,
                             codingPath: decoder.codingPath,
@@ -12777,6 +15054,7 @@ public enum Operations {
                         try self.value1?.encode(to: encoder)
                         try self.value2?.encode(to: encoder)
                         try self.value3?.encode(to: encoder)
+                        try self.value4?.encode(to: encoder)
                     }
                 }
                 /// - Remark: Generated from `#/paths/auth/login/POST/requestBody/content/application\/json`.
@@ -44288,7 +46566,7 @@ public enum Operations {
     }
     /// Get a bottle flavor profile
     ///
-    /// Count public tastings of one active Bottle with each tasting-note category. Each tasting counts once per category. Only tastings with recognized notes enter the denominator; private and suggested notes are excluded.
+    /// Count how many public reviews and tastings of one active bottle mention each tasting-note category. Each review or tasting counts once per category. Private entries and suggested notes are excluded.
     ///
     /// - Remark: HTTP `GET /bottles/{bottle}/flavor-profile`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/flavor-profile/get(getBottleFlavorProfile)`.
@@ -44339,6 +46617,8 @@ public enum Operations {
                 @frozen public enum Body: Sendable, Hashable {
                     /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json`.
                     public struct jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/notedReviewAndTastingCount`.
+                        public var notedReviewAndTastingCount: Swift.Int
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/notedTastings`.
                         public var notedTastings: Swift.Int
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload`.
@@ -44357,28 +46637,36 @@ public enum Operations {
                             }
                             /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload/category`.
                             public var category: Operations.getBottleFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.categoryPayload
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload/reviewAndTastingCount`.
+                            public var reviewAndTastingCount: Swift.Int
                             /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload/tastingCount`.
                             public var tastingCount: Swift.Int
                             /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notesPayload`.
                             public struct notesPayloadPayload: Codable, Hashable, Sendable {
                                 /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notesPayload/name`.
                                 public var name: Swift.String
+                                /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notesPayload/reviewAndTastingCount`.
+                                public var reviewAndTastingCount: Swift.Int
                                 /// - Remark: Generated from `#/paths/bottles/{bottle}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notesPayload/tastingCount`.
                                 public var tastingCount: Swift.Int
                                 /// Creates a new `notesPayloadPayload`.
                                 ///
                                 /// - Parameters:
                                 ///   - name:
+                                ///   - reviewAndTastingCount:
                                 ///   - tastingCount:
                                 public init(
                                     name: Swift.String,
+                                    reviewAndTastingCount: Swift.Int,
                                     tastingCount: Swift.Int
                                 ) {
                                     self.name = name
+                                    self.reviewAndTastingCount = reviewAndTastingCount
                                     self.tastingCount = tastingCount
                                 }
                                 public enum CodingKeys: String, CodingKey {
                                     case name
+                                    case reviewAndTastingCount
                                     case tastingCount
                                 }
                             }
@@ -44390,19 +46678,23 @@ public enum Operations {
                             ///
                             /// - Parameters:
                             ///   - category:
+                            ///   - reviewAndTastingCount:
                             ///   - tastingCount:
                             ///   - notes:
                             public init(
                                 category: Operations.getBottleFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.categoryPayload,
+                                reviewAndTastingCount: Swift.Int,
                                 tastingCount: Swift.Int,
                                 notes: Operations.getBottleFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.notesPayload
                             ) {
                                 self.category = category
+                                self.reviewAndTastingCount = reviewAndTastingCount
                                 self.tastingCount = tastingCount
                                 self.notes = notes
                             }
                             public enum CodingKeys: String, CodingKey {
                                 case category
+                                case reviewAndTastingCount
                                 case tastingCount
                                 case notes
                             }
@@ -44414,16 +46706,20 @@ public enum Operations {
                         /// Creates a new `jsonPayload`.
                         ///
                         /// - Parameters:
+                        ///   - notedReviewAndTastingCount:
                         ///   - notedTastings:
                         ///   - categories:
                         public init(
+                            notedReviewAndTastingCount: Swift.Int,
                             notedTastings: Swift.Int,
                             categories: Operations.getBottleFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayload
                         ) {
+                            self.notedReviewAndTastingCount = notedReviewAndTastingCount
                             self.notedTastings = notedTastings
                             self.categories = categories
                         }
                         public enum CodingKeys: String, CodingKey {
+                            case notedReviewAndTastingCount
                             case notedTastings
                             case categories
                         }
@@ -47561,6 +49857,19 @@ public enum Operations {
                             }
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/kind`.
                             public var kind: Operations.createBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.kindPayload?
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/status`.
+                            public var status: Operations.createBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/ownerId`.
@@ -47588,19 +49897,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/website`.
                             public var website: Swift.String?
-                            /// Country ID where the entity is located
+                            /// Country ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/country`.
                             public var country: Swift.Double?
-                            /// Region ID where the entity is located
+                            /// Region ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/region`.
                             public var region: Swift.Double?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/brand/value1/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -47614,20 +49923,22 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind:
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country ID where the entity is located
-                            ///   - region: Region ID where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country ID where the entity comes from
+                            ///   - region: Region ID where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - id: Optional ID for the entity
                             public init(
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.createBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.kindPayload? = nil,
+                                status: Operations.createBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 description: Swift.String? = nil,
                                 descriptionSrc: Operations.createBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.descriptionSrcPayload? = nil,
@@ -47642,6 +49953,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.description = description
                                 self.descriptionSrc = descriptionSrc
@@ -47657,6 +49969,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case description
                                 case descriptionSrc
@@ -47737,6 +50050,19 @@ public enum Operations {
                             }
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/kind`.
                             public var kind: Operations.createBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.kindPayload?
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/status`.
+                            public var status: Operations.createBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/ownerId`.
@@ -47764,19 +50090,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/website`.
                             public var website: Swift.String?
-                            /// Country ID where the entity is located
+                            /// Country ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/country`.
                             public var country: Swift.Double?
-                            /// Region ID where the entity is located
+                            /// Region ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/region`.
                             public var region: Swift.Double?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/distillersPayload/value1/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -47790,20 +50116,22 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind:
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country ID where the entity is located
-                            ///   - region: Region ID where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country ID where the entity comes from
+                            ///   - region: Region ID where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - id: Optional ID for the entity
                             public init(
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.createBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.kindPayload? = nil,
+                                status: Operations.createBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 description: Swift.String? = nil,
                                 descriptionSrc: Operations.createBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.descriptionSrcPayload? = nil,
@@ -47818,6 +50146,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.description = description
                                 self.descriptionSrc = descriptionSrc
@@ -47833,6 +50162,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case description
                                 case descriptionSrc
@@ -47915,6 +50245,19 @@ public enum Operations {
                             }
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/kind`.
                             public var kind: Operations.createBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.kindPayload?
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/status`.
+                            public var status: Operations.createBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/ownerId`.
@@ -47942,19 +50285,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/website`.
                             public var website: Swift.String?
-                            /// Country ID where the entity is located
+                            /// Country ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/country`.
                             public var country: Swift.Double?
-                            /// Region ID where the entity is located
+                            /// Region ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/region`.
                             public var region: Swift.Double?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/POST/requestBody/json/bottler/value1/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -47968,20 +50311,22 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind:
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country ID where the entity is located
-                            ///   - region: Region ID where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country ID where the entity comes from
+                            ///   - region: Region ID where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - id: Optional ID for the entity
                             public init(
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.createBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.kindPayload? = nil,
+                                status: Operations.createBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 description: Swift.String? = nil,
                                 descriptionSrc: Operations.createBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.descriptionSrcPayload? = nil,
@@ -47996,6 +50341,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.description = description
                                 self.descriptionSrc = descriptionSrc
@@ -48011,6 +50357,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case description
                                 case descriptionSrc
@@ -50208,8 +52555,1189 @@ public enum Operations {
                 @frozen public enum Body: Sendable, Hashable {
                     /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json`.
                     public struct jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload`.
+                        public struct resultsPayloadPayload: Codable, Hashable, Sendable {
+                            /// Unique identifier for the bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/id`.
+                            public var id: Swift.Double
+                            /// Permanent Peated ID for the bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/peatedId`.
+                            public var peatedId: Swift.String
+                            /// Canonical marketed Bottle name including the brand
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/fullName`.
+                            public var fullName: Swift.String
+                            /// Marketed Bottle name excluding the brand
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/name`.
+                            public var name: Swift.String
+                            /// Shared editing and aggregate context for this independently complete Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group`.
+                            public struct groupPayload: Codable, Hashable, Sendable {
+                                /// Version of the catalog identity result contract
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/schemaVersion`.
+                                public var schemaVersion: OpenAPIRuntime.OpenAPIValueContainer
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/id`.
+                                public var id: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/fullName`.
+                                public var fullName: Swift.String
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/name`.
+                                public var name: Swift.String
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/brandId`.
+                                public var brandId: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/bottlerId`.
+                                public var bottlerId: Swift.Int?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/distillerIds`.
+                                public var distillerIds: [Swift.Int]
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/category`.
+                                @frozen public enum categoryPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case blend = "blend"
+                                    case blended_grain = "blended_grain"
+                                    case blended_malt = "blended_malt"
+                                    case bourbon = "bourbon"
+                                    case corn = "corn"
+                                    case rye = "rye"
+                                    case single_grain = "single_grain"
+                                    case single_malt = "single_malt"
+                                    case single_pot_still = "single_pot_still"
+                                    case wheat = "wheat"
+                                }
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/category`.
+                                public var category: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.categoryPayload?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/seriesId`.
+                                public var seriesId: Swift.Int?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/statedAge`.
+                                public var statedAge: Swift.Int?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/representativeBottleId`.
+                                public var representativeBottleId: Swift.Int?
+                                /// Deprecated legacy Bottle classification. Preserve existing values for compatibility, but do not set it for new or updated Bottles.
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/flavorProfile`.
+                                @frozen public enum flavorProfilePayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case young_spritely = "young_spritely"
+                                    case sweet_fruit_mellow = "sweet_fruit_mellow"
+                                    case spicy_sweet = "spicy_sweet"
+                                    case spicy_dry = "spicy_dry"
+                                    case deep_rich_dried_fruit = "deep_rich_dried_fruit"
+                                    case old_dignified = "old_dignified"
+                                    case light_delicate = "light_delicate"
+                                    case juicy_oak_vanilla = "juicy_oak_vanilla"
+                                    case oily_coastal = "oily_coastal"
+                                    case lightly_peated = "lightly_peated"
+                                    case peated = "peated"
+                                    case heavily_peated = "heavily_peated"
+                                }
+                                /// Deprecated legacy Bottle classification. Preserve existing values for compatibility, but do not set it for new or updated Bottles.
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/flavorProfile`.
+                                @available(*, deprecated)
+                                public var flavorProfile: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.flavorProfilePayload?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/medianScore`.
+                                public var medianScore: Swift.Int?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/minScore`.
+                                public var minScore: Swift.Int?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/maxScore`.
+                                public var maxScore: Swift.Int?
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/memberScoreCount`.
+                                public var memberScoreCount: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/externalScoreCount`.
+                                public var externalScoreCount: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/raterCount`.
+                                public var raterCount: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/scoreCount`.
+                                public var scoreCount: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/reviewScoreBandCounts`.
+                                public struct reviewScoreBandCountsPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/reviewScoreBandCounts/mediocre`.
+                                    public var mediocre: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/reviewScoreBandCounts/good`.
+                                    public var good: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/reviewScoreBandCounts/very_good`.
+                                    public var very_good: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/reviewScoreBandCounts/outstanding`.
+                                    public var outstanding: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/reviewScoreBandCounts/unicorn`.
+                                    public var unicorn: Swift.Int
+                                    /// Creates a new `reviewScoreBandCountsPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - mediocre:
+                                    ///   - good:
+                                    ///   - very_good:
+                                    ///   - outstanding:
+                                    ///   - unicorn:
+                                    public init(
+                                        mediocre: Swift.Int,
+                                        good: Swift.Int,
+                                        very_good: Swift.Int,
+                                        outstanding: Swift.Int,
+                                        unicorn: Swift.Int
+                                    ) {
+                                        self.mediocre = mediocre
+                                        self.good = good
+                                        self.very_good = very_good
+                                        self.outstanding = outstanding
+                                        self.unicorn = unicorn
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case mediocre
+                                        case good
+                                        case very_good
+                                        case outstanding
+                                        case unicorn
+                                    }
+                                }
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/reviewScoreBandCounts`.
+                                public var reviewScoreBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.reviewScoreBandCountsPayload
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/tastingBandCounts`.
+                                public struct tastingBandCountsPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/tastingBandCounts/mediocre`.
+                                    public var mediocre: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/tastingBandCounts/good`.
+                                    public var good: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/tastingBandCounts/very_good`.
+                                    public var very_good: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/tastingBandCounts/outstanding`.
+                                    public var outstanding: Swift.Int
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/tastingBandCounts/unicorn`.
+                                    public var unicorn: Swift.Int
+                                    /// Creates a new `tastingBandCountsPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - mediocre:
+                                    ///   - good:
+                                    ///   - very_good:
+                                    ///   - outstanding:
+                                    ///   - unicorn:
+                                    public init(
+                                        mediocre: Swift.Int,
+                                        good: Swift.Int,
+                                        very_good: Swift.Int,
+                                        outstanding: Swift.Int,
+                                        unicorn: Swift.Int
+                                    ) {
+                                        self.mediocre = mediocre
+                                        self.good = good
+                                        self.very_good = very_good
+                                        self.outstanding = outstanding
+                                        self.unicorn = unicorn
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case mediocre
+                                        case good
+                                        case very_good
+                                        case outstanding
+                                        case unicorn
+                                    }
+                                }
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/tastingBandCounts`.
+                                public var tastingBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.tastingBandCountsPayload
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/totalTastings`.
+                                public var totalTastings: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/publicReviewAndTastingCount`.
+                                public var publicReviewAndTastingCount: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/notedReviewAndTastingCount`.
+                                public var notedReviewAndTastingCount: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/totalBottles`.
+                                public var totalBottles: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/createdByActorId`.
+                                public var createdByActorId: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/createdAt`.
+                                public var createdAt: Foundation.Date
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group/updatedAt`.
+                                public var updatedAt: Foundation.Date
+                                /// Creates a new `groupPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - schemaVersion: Version of the catalog identity result contract
+                                ///   - id:
+                                ///   - fullName:
+                                ///   - name:
+                                ///   - brandId:
+                                ///   - bottlerId:
+                                ///   - distillerIds:
+                                ///   - category:
+                                ///   - seriesId:
+                                ///   - statedAge:
+                                ///   - representativeBottleId:
+                                ///   - flavorProfile: Deprecated legacy Bottle classification. Preserve existing values for compatibility, but do not set it for new or updated Bottles.
+                                ///   - medianScore:
+                                ///   - minScore:
+                                ///   - maxScore:
+                                ///   - memberScoreCount:
+                                ///   - externalScoreCount:
+                                ///   - raterCount:
+                                ///   - scoreCount:
+                                ///   - reviewScoreBandCounts:
+                                ///   - tastingBandCounts:
+                                ///   - totalTastings:
+                                ///   - publicReviewAndTastingCount:
+                                ///   - notedReviewAndTastingCount:
+                                ///   - totalBottles:
+                                ///   - createdByActorId:
+                                ///   - createdAt:
+                                ///   - updatedAt:
+                                public init(
+                                    schemaVersion: OpenAPIRuntime.OpenAPIValueContainer,
+                                    id: Swift.Int,
+                                    fullName: Swift.String,
+                                    name: Swift.String,
+                                    brandId: Swift.Int,
+                                    bottlerId: Swift.Int? = nil,
+                                    distillerIds: [Swift.Int],
+                                    category: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.categoryPayload? = nil,
+                                    seriesId: Swift.Int? = nil,
+                                    statedAge: Swift.Int? = nil,
+                                    representativeBottleId: Swift.Int? = nil,
+                                    flavorProfile: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.flavorProfilePayload? = nil,
+                                    medianScore: Swift.Int? = nil,
+                                    minScore: Swift.Int? = nil,
+                                    maxScore: Swift.Int? = nil,
+                                    memberScoreCount: Swift.Int,
+                                    externalScoreCount: Swift.Int,
+                                    raterCount: Swift.Int,
+                                    scoreCount: Swift.Int,
+                                    reviewScoreBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.reviewScoreBandCountsPayload,
+                                    tastingBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload.tastingBandCountsPayload,
+                                    totalTastings: Swift.Int,
+                                    publicReviewAndTastingCount: Swift.Int,
+                                    notedReviewAndTastingCount: Swift.Int,
+                                    totalBottles: Swift.Int,
+                                    createdByActorId: Swift.Int,
+                                    createdAt: Foundation.Date,
+                                    updatedAt: Foundation.Date
+                                ) {
+                                    self.schemaVersion = schemaVersion
+                                    self.id = id
+                                    self.fullName = fullName
+                                    self.name = name
+                                    self.brandId = brandId
+                                    self.bottlerId = bottlerId
+                                    self.distillerIds = distillerIds
+                                    self.category = category
+                                    self.seriesId = seriesId
+                                    self.statedAge = statedAge
+                                    self.representativeBottleId = representativeBottleId
+                                    self.flavorProfile = flavorProfile
+                                    self.medianScore = medianScore
+                                    self.minScore = minScore
+                                    self.maxScore = maxScore
+                                    self.memberScoreCount = memberScoreCount
+                                    self.externalScoreCount = externalScoreCount
+                                    self.raterCount = raterCount
+                                    self.scoreCount = scoreCount
+                                    self.reviewScoreBandCounts = reviewScoreBandCounts
+                                    self.tastingBandCounts = tastingBandCounts
+                                    self.totalTastings = totalTastings
+                                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                                    self.notedReviewAndTastingCount = notedReviewAndTastingCount
+                                    self.totalBottles = totalBottles
+                                    self.createdByActorId = createdByActorId
+                                    self.createdAt = createdAt
+                                    self.updatedAt = updatedAt
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case schemaVersion
+                                    case id
+                                    case fullName
+                                    case name
+                                    case brandId
+                                    case bottlerId
+                                    case distillerIds
+                                    case category
+                                    case seriesId
+                                    case statedAge
+                                    case representativeBottleId
+                                    case flavorProfile
+                                    case medianScore
+                                    case minScore
+                                    case maxScore
+                                    case memberScoreCount
+                                    case externalScoreCount
+                                    case raterCount
+                                    case scoreCount
+                                    case reviewScoreBandCounts
+                                    case tastingBandCounts
+                                    case totalTastings
+                                    case publicReviewAndTastingCount
+                                    case notedReviewAndTastingCount
+                                    case totalBottles
+                                    case createdByActorId
+                                    case createdAt
+                                    case updatedAt
+                                }
+                            }
+                            /// Shared editing and aggregate context for this independently complete Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/group`.
+                            public var group: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload?
+                            /// Series or family name for this bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/series`.
+                            public var series: Components.Schemas.BottleSeries?
+                            /// Category of the whisky (e.g., Scotch, Bourbon, etc.)
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/category`.
+                            @frozen public enum categoryPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case blend = "blend"
+                                case blended_grain = "blended_grain"
+                                case blended_malt = "blended_malt"
+                                case bourbon = "bourbon"
+                                case corn = "corn"
+                                case rye = "rye"
+                                case single_grain = "single_grain"
+                                case single_malt = "single_malt"
+                                case single_pot_still = "single_pot_still"
+                                case wheat = "wheat"
+                            }
+                            /// Category of the whisky (e.g., Scotch, Bourbon, etc.)
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/category`.
+                            public var category: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.categoryPayload?
+                            /// Optional edition label for this Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/edition`.
+                            public var edition: Swift.String?
+                            /// Effective stated age for this exact Bottle, in years
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/statedAge`.
+                            public var statedAge: Swift.Double?
+                            /// Whether the label was confirmed to have no age statement
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/noAgeStatement`.
+                            public var noAgeStatement: Swift.Bool?
+                            /// Whether the whisky is bottled at cask strength
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/caskStrength`.
+                            public var caskStrength: Swift.Bool?
+                            /// Whether the whisky comes from a single cask
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/singleCask`.
+                            public var singleCask: Swift.Bool?
+                            /// Whether the whisky has no added coloring
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/naturalColor`.
+                            public var naturalColor: Swift.Bool?
+                            /// Whether the whisky was bottled without chill filtration
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/nonChillFiltered`.
+                            public var nonChillFiltered: Swift.Bool?
+                            /// Producer-stated phenol level of the malted barley, in parts per million
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/maltPhenolPpm`.
+                            public var maltPhenolPpm: Swift.Double?
+                            /// Alcohol by volume percentage
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/abv`.
+                            public var abv: Swift.Double?
+                            /// Year this whisky was distilled
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/vintageYear`.
+                            public var vintageYear: Swift.Double?
+                            /// Year this whisky was bottled
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/bottlingYear`.
+                            public var bottlingYear: Swift.Double?
+                            /// Year this release became available
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/releaseYear`.
+                            public var releaseYear: Swift.Double?
+                            /// Month this release became available, when known
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/releaseMonth`.
+                            public var releaseMonth: Swift.Int?
+                            /// Day of the month this release became available, when known
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/releaseDay`.
+                            public var releaseDay: Swift.Int?
+                            /// Producer-stated cask or maturation details
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/maturation`.
+                            public var maturation: Swift.String?
+                            /// Marketed cask or barrel identifier
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/caskNumber`.
+                            public var caskNumber: Swift.String?
+                            /// Producer-stated total number of bottles in the release
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/outturn`.
+                            public var outturn: Swift.Int?
+                            /// The brand that produces this bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand`.
+                            public struct brandPayload: Codable, Hashable, Sendable {
+                                /// Unique identifier for the entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/id`.
+                                public var id: Swift.Double
+                                /// Permanent Peated ID for the entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/peatedId`.
+                                public var peatedId: Swift.String
+                                /// Name of the entity (brand, distillery, etc.)
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/name`.
+                                public var name: Swift.String
+                                /// Abbreviated or short name for the entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/shortName`.
+                                public var shortName: Swift.String?
+                                /// Best short description of what this entity is
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/kind`.
+                                @frozen public enum kindPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case brand = "brand"
+                                    case distillery = "distillery"
+                                    case bottler = "bottler"
+                                    case company = "company"
+                                }
+                                /// Best short description of what this entity is
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/kind`.
+                                public var kind: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.kindPayload
+                                /// Current status, or null when it is unknown
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/status`.
+                                @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case active = "active"
+                                    case mothballed = "mothballed"
+                                    case closed = "closed"
+                                    case discontinued = "discontinued"
+                                }
+                                /// Current status, or null when it is unknown
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/status`.
+                                public var status: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.statusPayload?
+                                /// ID of the entity's current owner
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/ownerId`.
+                                public var ownerId: Swift.Double?
+                                /// Current direct owner
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/owner`.
+                                public struct ownerPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/owner/id`.
+                                    public var id: Swift.Double
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/owner/peatedId`.
+                                    public var peatedId: Swift.String
+                                    /// Name of the entity (brand, distillery, etc.)
+                                    ///
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/owner/name`.
+                                    public var name: Swift.String
+                                    /// Best short description of what this entity is
+                                    ///
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/owner/kind`.
+                                    @frozen public enum kindPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                        case brand = "brand"
+                                        case distillery = "distillery"
+                                        case bottler = "bottler"
+                                        case company = "company"
+                                    }
+                                    /// Best short description of what this entity is
+                                    ///
+                                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/owner/kind`.
+                                    public var kind: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.ownerPayload.kindPayload
+                                    /// Creates a new `ownerPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - id:
+                                    ///   - peatedId:
+                                    ///   - name: Name of the entity (brand, distillery, etc.)
+                                    ///   - kind: Best short description of what this entity is
+                                    public init(
+                                        id: Swift.Double,
+                                        peatedId: Swift.String,
+                                        name: Swift.String,
+                                        kind: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.ownerPayload.kindPayload
+                                    ) {
+                                        self.id = id
+                                        self.peatedId = peatedId
+                                        self.name = name
+                                        self.kind = kind
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case id
+                                        case peatedId
+                                        case name
+                                        case kind
+                                    }
+                                }
+                                /// Current direct owner
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/owner`.
+                                public var owner: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.ownerPayload?
+                                /// Detailed description of the entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/description`.
+                                public var description: Swift.String?
+                                /// Source of the entity description
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/descriptionSrc`.
+                                @frozen public enum descriptionSrcPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case generated = "generated"
+                                    case user = "user"
+                                }
+                                /// Source of the entity description
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/descriptionSrc`.
+                                public var descriptionSrc: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.descriptionSrcPayload?
+                                /// Year the entity was established
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/yearEstablished`.
+                                public var yearEstablished: Swift.Double?
+                                /// Official website URL
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/website`.
+                                public var website: Swift.String?
+                                /// Country where the entity comes from
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/country`.
+                                public var country: Components.Schemas.Country?
+                                /// Region where the entity comes from
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/region`.
+                                public var region: Components.Schemas.Region?
+                                /// Address where the entity comes from
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/address`.
+                                public var address: Swift.String?
+                                /// Geographic coordinates where the entity comes from
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/location`.
+                                public var location: OpenAPIRuntime.OpenAPIArrayContainer?
+                                /// Total number of tastings for bottles from this entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/totalTastings`.
+                                public var totalTastings: Swift.Double
+                                /// Total public reviews and tastings for this entity's bottles
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/publicReviewAndTastingCount`.
+                                public var publicReviewAndTastingCount: Swift.Int
+                                /// Total number of bottles associated with this entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/totalBottles`.
+                                public var totalBottles: Swift.Double
+                                /// Whether the current user follows this entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/isFollowing`.
+                                public var isFollowing: Swift.Bool
+                                /// Timestamp when the entity was created
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/createdAt`.
+                                public var createdAt: Foundation.Date
+                                /// Timestamp when the entity was last updated
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand/updatedAt`.
+                                public var updatedAt: Foundation.Date
+                                /// Creates a new `brandPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - id: Unique identifier for the entity
+                                ///   - peatedId: Permanent Peated ID for the entity
+                                ///   - name: Name of the entity (brand, distillery, etc.)
+                                ///   - shortName: Abbreviated or short name for the entity
+                                ///   - kind: Best short description of what this entity is
+                                ///   - status: Current status, or null when it is unknown
+                                ///   - ownerId: ID of the entity's current owner
+                                ///   - owner: Current direct owner
+                                ///   - description: Detailed description of the entity
+                                ///   - descriptionSrc: Source of the entity description
+                                ///   - yearEstablished: Year the entity was established
+                                ///   - website: Official website URL
+                                ///   - country: Country where the entity comes from
+                                ///   - region: Region where the entity comes from
+                                ///   - address: Address where the entity comes from
+                                ///   - location: Geographic coordinates where the entity comes from
+                                ///   - totalTastings: Total number of tastings for bottles from this entity
+                                ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
+                                ///   - totalBottles: Total number of bottles associated with this entity
+                                ///   - isFollowing: Whether the current user follows this entity
+                                ///   - createdAt: Timestamp when the entity was created
+                                ///   - updatedAt: Timestamp when the entity was last updated
+                                public init(
+                                    id: Swift.Double,
+                                    peatedId: Swift.String,
+                                    name: Swift.String,
+                                    shortName: Swift.String? = nil,
+                                    kind: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.kindPayload,
+                                    status: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.statusPayload? = nil,
+                                    ownerId: Swift.Double? = nil,
+                                    owner: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.ownerPayload? = nil,
+                                    description: Swift.String? = nil,
+                                    descriptionSrc: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.descriptionSrcPayload? = nil,
+                                    yearEstablished: Swift.Double? = nil,
+                                    website: Swift.String? = nil,
+                                    country: Components.Schemas.Country? = nil,
+                                    region: Components.Schemas.Region? = nil,
+                                    address: Swift.String? = nil,
+                                    location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
+                                    totalTastings: Swift.Double,
+                                    publicReviewAndTastingCount: Swift.Int,
+                                    totalBottles: Swift.Double,
+                                    isFollowing: Swift.Bool,
+                                    createdAt: Foundation.Date,
+                                    updatedAt: Foundation.Date
+                                ) {
+                                    self.id = id
+                                    self.peatedId = peatedId
+                                    self.name = name
+                                    self.shortName = shortName
+                                    self.kind = kind
+                                    self.status = status
+                                    self.ownerId = ownerId
+                                    self.owner = owner
+                                    self.description = description
+                                    self.descriptionSrc = descriptionSrc
+                                    self.yearEstablished = yearEstablished
+                                    self.website = website
+                                    self.country = country
+                                    self.region = region
+                                    self.address = address
+                                    self.location = location
+                                    self.totalTastings = totalTastings
+                                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                                    self.totalBottles = totalBottles
+                                    self.isFollowing = isFollowing
+                                    self.createdAt = createdAt
+                                    self.updatedAt = updatedAt
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case id
+                                    case peatedId
+                                    case name
+                                    case shortName
+                                    case kind
+                                    case status
+                                    case ownerId
+                                    case owner
+                                    case description
+                                    case descriptionSrc
+                                    case yearEstablished
+                                    case website
+                                    case country
+                                    case region
+                                    case address
+                                    case location
+                                    case totalTastings
+                                    case publicReviewAndTastingCount
+                                    case totalBottles
+                                    case isFollowing
+                                    case createdAt
+                                    case updatedAt
+                                }
+                            }
+                            /// The brand that produces this bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/brand`.
+                            public var brand: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload
+                            /// List of distilleries that produced this whisky
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/distillers`.
+                            public var distillers: [Components.Schemas.Entity]?
+                            /// Evidenced bottling company, which may also be the brand
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/bottler`.
+                            public var bottler: Components.Schemas.Entity?
+                            /// Detailed description of the bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/description`.
+                            public var description: Swift.String?
+                            /// Source of the bottle description
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/descriptionSrc`.
+                            @frozen public enum descriptionSrcPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case generated = "generated"
+                                case user = "user"
+                            }
+                            /// Source of the bottle description
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/descriptionSrc`.
+                            public var descriptionSrc: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.descriptionSrcPayload?
+                            /// URL to the bottle's image
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/imageUrl`.
+                            public var imageUrl: Swift.String?
+                            /// Original source page for the bottle image
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/imageSourceUrl`.
+                            public var imageSourceUrl: Swift.String?
+                            /// License or reuse terms for the bottle image
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/imageLicense`.
+                            public var imageLicense: Swift.String?
+                            /// Deprecated legacy Bottle classification. Preserve existing values for compatibility, but do not set it for new or updated Bottles.
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/flavorProfile`.
+                            @frozen public enum flavorProfilePayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case young_spritely = "young_spritely"
+                                case sweet_fruit_mellow = "sweet_fruit_mellow"
+                                case spicy_sweet = "spicy_sweet"
+                                case spicy_dry = "spicy_dry"
+                                case deep_rich_dried_fruit = "deep_rich_dried_fruit"
+                                case old_dignified = "old_dignified"
+                                case light_delicate = "light_delicate"
+                                case juicy_oak_vanilla = "juicy_oak_vanilla"
+                                case oily_coastal = "oily_coastal"
+                                case lightly_peated = "lightly_peated"
+                                case peated = "peated"
+                                case heavily_peated = "heavily_peated"
+                            }
+                            /// Deprecated legacy Bottle classification. Preserve existing values for compatibility, but do not set it for new or updated Bottles.
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/flavorProfile`.
+                            @available(*, deprecated)
+                            public var flavorProfile: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.flavorProfilePayload?
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingNotes`.
+                            public struct tastingNotesPayload: Codable, Hashable, Sendable {
+                                /// Aroma characteristics of the whisky
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingNotes/nose`.
+                                public var nose: Swift.String
+                                /// Taste characteristics of the whisky
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingNotes/palate`.
+                                public var palate: Swift.String
+                                /// Aftertaste characteristics of the whisky
+                                ///
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingNotes/finish`.
+                                public var finish: Swift.String
+                                /// Creates a new `tastingNotesPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - nose: Aroma characteristics of the whisky
+                                ///   - palate: Taste characteristics of the whisky
+                                ///   - finish: Aftertaste characteristics of the whisky
+                                public init(
+                                    nose: Swift.String,
+                                    palate: Swift.String,
+                                    finish: Swift.String
+                                ) {
+                                    self.nose = nose
+                                    self.palate = palate
+                                    self.finish = finish
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case nose
+                                    case palate
+                                    case finish
+                                }
+                            }
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingNotes`.
+                            public var tastingNotes: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tastingNotesPayload?
+                            /// System-generated tags based on the bottle's characteristics
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/suggestedTags`.
+                            public var suggestedTags: [Swift.String]?
+                            /// Published median review score for this exact Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/medianScore`.
+                            public var medianScore: Swift.Int?
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/minScore`.
+                            public var minScore: Swift.Int?
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/maxScore`.
+                            public var maxScore: Swift.Int?
+                            /// Number of member review scores for this exact Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/memberScoreCount`.
+                            public var memberScoreCount: Swift.Int
+                            /// Number of permitted external scores for this exact Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/externalScoreCount`.
+                            public var externalScoreCount: Swift.Int
+                            /// Number of distinct members and external critics with a rating for this exact Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/raterCount`.
+                            public var raterCount: Swift.Int
+                            /// Combined member and external score count
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/scoreCount`.
+                            public var scoreCount: Swift.Int
+                            /// Review score counts in each rating range
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/reviewScoreBandCounts`.
+                            public struct reviewScoreBandCountsPayload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/reviewScoreBandCounts/mediocre`.
+                                public var mediocre: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/reviewScoreBandCounts/good`.
+                                public var good: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/reviewScoreBandCounts/very_good`.
+                                public var very_good: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/reviewScoreBandCounts/outstanding`.
+                                public var outstanding: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/reviewScoreBandCounts/unicorn`.
+                                public var unicorn: Swift.Int
+                                /// Creates a new `reviewScoreBandCountsPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - mediocre:
+                                ///   - good:
+                                ///   - very_good:
+                                ///   - outstanding:
+                                ///   - unicorn:
+                                public init(
+                                    mediocre: Swift.Int,
+                                    good: Swift.Int,
+                                    very_good: Swift.Int,
+                                    outstanding: Swift.Int,
+                                    unicorn: Swift.Int
+                                ) {
+                                    self.mediocre = mediocre
+                                    self.good = good
+                                    self.very_good = very_good
+                                    self.outstanding = outstanding
+                                    self.unicorn = unicorn
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case mediocre
+                                    case good
+                                    case very_good
+                                    case outstanding
+                                    case unicorn
+                                }
+                            }
+                            /// Review score counts in each rating range
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/reviewScoreBandCounts`.
+                            public var reviewScoreBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.reviewScoreBandCountsPayload
+                            /// Tasting counts in each rating band
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingBandCounts`.
+                            public struct tastingBandCountsPayload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingBandCounts/mediocre`.
+                                public var mediocre: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingBandCounts/good`.
+                                public var good: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingBandCounts/very_good`.
+                                public var very_good: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingBandCounts/outstanding`.
+                                public var outstanding: Swift.Int
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingBandCounts/unicorn`.
+                                public var unicorn: Swift.Int
+                                /// Creates a new `tastingBandCountsPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - mediocre:
+                                ///   - good:
+                                ///   - very_good:
+                                ///   - outstanding:
+                                ///   - unicorn:
+                                public init(
+                                    mediocre: Swift.Int,
+                                    good: Swift.Int,
+                                    very_good: Swift.Int,
+                                    outstanding: Swift.Int,
+                                    unicorn: Swift.Int
+                                ) {
+                                    self.mediocre = mediocre
+                                    self.good = good
+                                    self.very_good = very_good
+                                    self.outstanding = outstanding
+                                    self.unicorn = unicorn
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case mediocre
+                                    case good
+                                    case very_good
+                                    case outstanding
+                                    case unicorn
+                                }
+                            }
+                            /// Tasting counts in each rating band
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/tastingBandCounts`.
+                            public var tastingBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tastingBandCountsPayload
+                            /// Total number of recorded tastings for this bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/totalTastings`.
+                            public var totalTastings: Swift.Double
+                            /// Total public reviews and tastings for this exact Bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/publicReviewAndTastingCount`.
+                            public var publicReviewAndTastingCount: Swift.Int
+                            /// Public reviews and tastings with recognized tasting notes
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/notedReviewAndTastingCount`.
+                            public var notedReviewAndTastingCount: Swift.Int
+                            /// Timestamp when the bottle was created
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/createdAt`.
+                            public var createdAt: Foundation.Date
+                            /// Timestamp when the bottle was last updated
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/updatedAt`.
+                            public var updatedAt: Foundation.Date
+                            /// Whether the current user has marked this bottle as a favorite
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/isFavorite`.
+                            public var isFavorite: Swift.Bool
+                            /// Whether the current user has saved this bottle to their library
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/isLibrary`.
+                            public var isLibrary: Swift.Bool
+                            /// Whether the current user has recorded a tasting this bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/hasTasted`.
+                            public var hasTasted: Swift.Bool
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/comparison`.
+                            public struct comparisonPayload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/comparison/agreements`.
+                                public var agreements: [Swift.String]
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/comparison/missing`.
+                                public var missing: [Swift.String]
+                                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/comparison/conflicts`.
+                                public var conflicts: [Swift.String]
+                                /// Creates a new `comparisonPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - agreements:
+                                ///   - missing:
+                                ///   - conflicts:
+                                public init(
+                                    agreements: [Swift.String],
+                                    missing: [Swift.String],
+                                    conflicts: [Swift.String]
+                                ) {
+                                    self.agreements = agreements
+                                    self.missing = missing
+                                    self.conflicts = conflicts
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case agreements
+                                    case missing
+                                    case conflicts
+                                }
+                            }
+                            /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/resultsPayload/comparison`.
+                            public var comparison: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.comparisonPayload
+                            /// Creates a new `resultsPayloadPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - id: Unique identifier for the bottle
+                            ///   - peatedId: Permanent Peated ID for the bottle
+                            ///   - fullName: Canonical marketed Bottle name including the brand
+                            ///   - name: Marketed Bottle name excluding the brand
+                            ///   - group: Shared editing and aggregate context for this independently complete Bottle
+                            ///   - series: Series or family name for this bottle
+                            ///   - category: Category of the whisky (e.g., Scotch, Bourbon, etc.)
+                            ///   - edition: Optional edition label for this Bottle
+                            ///   - statedAge: Effective stated age for this exact Bottle, in years
+                            ///   - noAgeStatement: Whether the label was confirmed to have no age statement
+                            ///   - caskStrength: Whether the whisky is bottled at cask strength
+                            ///   - singleCask: Whether the whisky comes from a single cask
+                            ///   - naturalColor: Whether the whisky has no added coloring
+                            ///   - nonChillFiltered: Whether the whisky was bottled without chill filtration
+                            ///   - maltPhenolPpm: Producer-stated phenol level of the malted barley, in parts per million
+                            ///   - abv: Alcohol by volume percentage
+                            ///   - vintageYear: Year this whisky was distilled
+                            ///   - bottlingYear: Year this whisky was bottled
+                            ///   - releaseYear: Year this release became available
+                            ///   - releaseMonth: Month this release became available, when known
+                            ///   - releaseDay: Day of the month this release became available, when known
+                            ///   - maturation: Producer-stated cask or maturation details
+                            ///   - caskNumber: Marketed cask or barrel identifier
+                            ///   - outturn: Producer-stated total number of bottles in the release
+                            ///   - brand: The brand that produces this bottle
+                            ///   - distillers: List of distilleries that produced this whisky
+                            ///   - bottler: Evidenced bottling company, which may also be the brand
+                            ///   - description: Detailed description of the bottle
+                            ///   - descriptionSrc: Source of the bottle description
+                            ///   - imageUrl: URL to the bottle's image
+                            ///   - imageSourceUrl: Original source page for the bottle image
+                            ///   - imageLicense: License or reuse terms for the bottle image
+                            ///   - flavorProfile: Deprecated legacy Bottle classification. Preserve existing values for compatibility, but do not set it for new or updated Bottles.
+                            ///   - tastingNotes:
+                            ///   - suggestedTags: System-generated tags based on the bottle's characteristics
+                            ///   - medianScore: Published median review score for this exact Bottle
+                            ///   - minScore:
+                            ///   - maxScore:
+                            ///   - memberScoreCount: Number of member review scores for this exact Bottle
+                            ///   - externalScoreCount: Number of permitted external scores for this exact Bottle
+                            ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
+                            ///   - scoreCount: Combined member and external score count
+                            ///   - reviewScoreBandCounts: Review score counts in each rating range
+                            ///   - tastingBandCounts: Tasting counts in each rating band
+                            ///   - totalTastings: Total number of recorded tastings for this bottle
+                            ///   - publicReviewAndTastingCount: Total public reviews and tastings for this exact Bottle
+                            ///   - notedReviewAndTastingCount: Public reviews and tastings with recognized tasting notes
+                            ///   - createdAt: Timestamp when the bottle was created
+                            ///   - updatedAt: Timestamp when the bottle was last updated
+                            ///   - isFavorite: Whether the current user has marked this bottle as a favorite
+                            ///   - isLibrary: Whether the current user has saved this bottle to their library
+                            ///   - hasTasted: Whether the current user has recorded a tasting this bottle
+                            ///   - comparison:
+                            public init(
+                                id: Swift.Double,
+                                peatedId: Swift.String,
+                                fullName: Swift.String,
+                                name: Swift.String,
+                                group: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.groupPayload? = nil,
+                                series: Components.Schemas.BottleSeries? = nil,
+                                category: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.categoryPayload? = nil,
+                                edition: Swift.String? = nil,
+                                statedAge: Swift.Double? = nil,
+                                noAgeStatement: Swift.Bool? = nil,
+                                caskStrength: Swift.Bool? = nil,
+                                singleCask: Swift.Bool? = nil,
+                                naturalColor: Swift.Bool? = nil,
+                                nonChillFiltered: Swift.Bool? = nil,
+                                maltPhenolPpm: Swift.Double? = nil,
+                                abv: Swift.Double? = nil,
+                                vintageYear: Swift.Double? = nil,
+                                bottlingYear: Swift.Double? = nil,
+                                releaseYear: Swift.Double? = nil,
+                                releaseMonth: Swift.Int? = nil,
+                                releaseDay: Swift.Int? = nil,
+                                maturation: Swift.String? = nil,
+                                caskNumber: Swift.String? = nil,
+                                outturn: Swift.Int? = nil,
+                                brand: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload,
+                                distillers: [Components.Schemas.Entity]? = nil,
+                                bottler: Components.Schemas.Entity? = nil,
+                                description: Swift.String? = nil,
+                                descriptionSrc: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.descriptionSrcPayload? = nil,
+                                imageUrl: Swift.String? = nil,
+                                imageSourceUrl: Swift.String? = nil,
+                                imageLicense: Swift.String? = nil,
+                                flavorProfile: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.flavorProfilePayload? = nil,
+                                tastingNotes: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tastingNotesPayload? = nil,
+                                suggestedTags: [Swift.String]? = nil,
+                                medianScore: Swift.Int? = nil,
+                                minScore: Swift.Int? = nil,
+                                maxScore: Swift.Int? = nil,
+                                memberScoreCount: Swift.Int,
+                                externalScoreCount: Swift.Int,
+                                raterCount: Swift.Int,
+                                scoreCount: Swift.Int,
+                                reviewScoreBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.reviewScoreBandCountsPayload,
+                                tastingBandCounts: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tastingBandCountsPayload,
+                                totalTastings: Swift.Double,
+                                publicReviewAndTastingCount: Swift.Int,
+                                notedReviewAndTastingCount: Swift.Int,
+                                createdAt: Foundation.Date,
+                                updatedAt: Foundation.Date,
+                                isFavorite: Swift.Bool,
+                                isLibrary: Swift.Bool,
+                                hasTasted: Swift.Bool,
+                                comparison: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload.comparisonPayload
+                            ) {
+                                self.id = id
+                                self.peatedId = peatedId
+                                self.fullName = fullName
+                                self.name = name
+                                self.group = group
+                                self.series = series
+                                self.category = category
+                                self.edition = edition
+                                self.statedAge = statedAge
+                                self.noAgeStatement = noAgeStatement
+                                self.caskStrength = caskStrength
+                                self.singleCask = singleCask
+                                self.naturalColor = naturalColor
+                                self.nonChillFiltered = nonChillFiltered
+                                self.maltPhenolPpm = maltPhenolPpm
+                                self.abv = abv
+                                self.vintageYear = vintageYear
+                                self.bottlingYear = bottlingYear
+                                self.releaseYear = releaseYear
+                                self.releaseMonth = releaseMonth
+                                self.releaseDay = releaseDay
+                                self.maturation = maturation
+                                self.caskNumber = caskNumber
+                                self.outturn = outturn
+                                self.brand = brand
+                                self.distillers = distillers
+                                self.bottler = bottler
+                                self.description = description
+                                self.descriptionSrc = descriptionSrc
+                                self.imageUrl = imageUrl
+                                self.imageSourceUrl = imageSourceUrl
+                                self.imageLicense = imageLicense
+                                self.flavorProfile = flavorProfile
+                                self.tastingNotes = tastingNotes
+                                self.suggestedTags = suggestedTags
+                                self.medianScore = medianScore
+                                self.minScore = minScore
+                                self.maxScore = maxScore
+                                self.memberScoreCount = memberScoreCount
+                                self.externalScoreCount = externalScoreCount
+                                self.raterCount = raterCount
+                                self.scoreCount = scoreCount
+                                self.reviewScoreBandCounts = reviewScoreBandCounts
+                                self.tastingBandCounts = tastingBandCounts
+                                self.totalTastings = totalTastings
+                                self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                                self.notedReviewAndTastingCount = notedReviewAndTastingCount
+                                self.createdAt = createdAt
+                                self.updatedAt = updatedAt
+                                self.isFavorite = isFavorite
+                                self.isLibrary = isLibrary
+                                self.hasTasted = hasTasted
+                                self.comparison = comparison
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case id
+                                case peatedId
+                                case fullName
+                                case name
+                                case group
+                                case series
+                                case category
+                                case edition
+                                case statedAge
+                                case noAgeStatement
+                                case caskStrength
+                                case singleCask
+                                case naturalColor
+                                case nonChillFiltered
+                                case maltPhenolPpm
+                                case abv
+                                case vintageYear
+                                case bottlingYear
+                                case releaseYear
+                                case releaseMonth
+                                case releaseDay
+                                case maturation
+                                case caskNumber
+                                case outturn
+                                case brand
+                                case distillers
+                                case bottler
+                                case description
+                                case descriptionSrc
+                                case imageUrl
+                                case imageSourceUrl
+                                case imageLicense
+                                case flavorProfile
+                                case tastingNotes
+                                case suggestedTags
+                                case medianScore
+                                case minScore
+                                case maxScore
+                                case memberScoreCount
+                                case externalScoreCount
+                                case raterCount
+                                case scoreCount
+                                case reviewScoreBandCounts
+                                case tastingBandCounts
+                                case totalTastings
+                                case publicReviewAndTastingCount
+                                case notedReviewAndTastingCount
+                                case createdAt
+                                case updatedAt
+                                case isFavorite
+                                case isLibrary
+                                case hasTasted
+                                case comparison
+                            }
+                        }
                         /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/results`.
-                        public var results: [Components.Schemas.Bottle]
+                        public typealias resultsPayload = [Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload]
+                        /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/results`.
+                        public var results: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayload
                         /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/responses/200/content/json/rel`.
                         public var rel: Components.Schemas.Cursor
                         /// Creates a new `jsonPayload`.
@@ -50218,7 +53746,7 @@ public enum Operations {
                         ///   - results:
                         ///   - rel:
                         public init(
-                            results: [Components.Schemas.Bottle],
+                            results: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayload,
                             rel: Components.Schemas.Cursor
                         ) {
                             self.results = results
@@ -51807,6 +55335,19 @@ public enum Operations {
                             }
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/kind`.
                             public var kind: Operations.validateBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.kindPayload?
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/status`.
+                            public var status: Operations.validateBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/ownerId`.
@@ -51834,19 +55375,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/website`.
                             public var website: Swift.String?
-                            /// Country ID where the entity is located
+                            /// Country ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/country`.
                             public var country: Swift.Double?
-                            /// Region ID where the entity is located
+                            /// Region ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/region`.
                             public var region: Swift.Double?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/brand/value1/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -51860,20 +55401,22 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind:
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country ID where the entity is located
-                            ///   - region: Region ID where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country ID where the entity comes from
+                            ///   - region: Region ID where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - id: Optional ID for the entity
                             public init(
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.validateBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.kindPayload? = nil,
+                                status: Operations.validateBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 description: Swift.String? = nil,
                                 descriptionSrc: Operations.validateBottle.Input.Body.jsonPayload.brandPayload.Value1Payload.descriptionSrcPayload? = nil,
@@ -51888,6 +55431,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.description = description
                                 self.descriptionSrc = descriptionSrc
@@ -51903,6 +55447,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case description
                                 case descriptionSrc
@@ -51983,6 +55528,19 @@ public enum Operations {
                             }
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/kind`.
                             public var kind: Operations.validateBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.kindPayload?
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/status`.
+                            public var status: Operations.validateBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/ownerId`.
@@ -52010,19 +55568,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/website`.
                             public var website: Swift.String?
-                            /// Country ID where the entity is located
+                            /// Country ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/country`.
                             public var country: Swift.Double?
-                            /// Region ID where the entity is located
+                            /// Region ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/region`.
                             public var region: Swift.Double?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/distillersPayload/value1/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -52036,20 +55594,22 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind:
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country ID where the entity is located
-                            ///   - region: Region ID where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country ID where the entity comes from
+                            ///   - region: Region ID where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - id: Optional ID for the entity
                             public init(
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.validateBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.kindPayload? = nil,
+                                status: Operations.validateBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 description: Swift.String? = nil,
                                 descriptionSrc: Operations.validateBottle.Input.Body.jsonPayload.distillersPayloadPayload.Value1Payload.descriptionSrcPayload? = nil,
@@ -52064,6 +55624,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.description = description
                                 self.descriptionSrc = descriptionSrc
@@ -52079,6 +55640,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case description
                                 case descriptionSrc
@@ -52161,6 +55723,19 @@ public enum Operations {
                             }
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/kind`.
                             public var kind: Operations.validateBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.kindPayload?
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/status`.
+                            public var status: Operations.validateBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/ownerId`.
@@ -52188,19 +55763,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/website`.
                             public var website: Swift.String?
-                            /// Country ID where the entity is located
+                            /// Country ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/country`.
                             public var country: Swift.Double?
-                            /// Region ID where the entity is located
+                            /// Region ID where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/region`.
                             public var region: Swift.Double?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/bottles/validations/POST/requestBody/json/bottler/value1/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -52214,20 +55789,22 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind:
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country ID where the entity is located
-                            ///   - region: Region ID where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country ID where the entity comes from
+                            ///   - region: Region ID where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - id: Optional ID for the entity
                             public init(
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.validateBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.kindPayload? = nil,
+                                status: Operations.validateBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 description: Swift.String? = nil,
                                 descriptionSrc: Operations.validateBottle.Input.Body.jsonPayload.bottlerPayload.Value1Payload.descriptionSrcPayload? = nil,
@@ -52242,6 +55819,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.description = description
                                 self.descriptionSrc = descriptionSrc
@@ -52257,6 +55835,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case description
                                 case descriptionSrc
@@ -56852,7 +60431,7 @@ public enum Operations {
     }
     /// Get bottle tags
     ///
-    /// Get common tasting tags for a bottle
+    /// Get common tasting tags from public reviews and tastings
     ///
     /// - Remark: HTTP `GET /bottles/{bottle}/tags`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/tags/get(getBottleTags)`.
@@ -56948,21 +60527,27 @@ public enum Operations {
                         public var results: Operations.getBottleTags.Output.Ok.Body.jsonPayload.resultsPayload
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/tags/GET/responses/200/content/json/totalCount`.
                         public var totalCount: Swift.Double
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/tags/GET/responses/200/content/json/publicReviewAndTastingCount`.
+                        public var publicReviewAndTastingCount: Swift.Int
                         /// Creates a new `jsonPayload`.
                         ///
                         /// - Parameters:
                         ///   - results:
                         ///   - totalCount:
+                        ///   - publicReviewAndTastingCount:
                         public init(
                             results: Operations.getBottleTags.Output.Ok.Body.jsonPayload.resultsPayload,
-                            totalCount: Swift.Double
+                            totalCount: Swift.Double,
+                            publicReviewAndTastingCount: Swift.Int
                         ) {
                             self.results = results
                             self.totalCount = totalCount
+                            self.publicReviewAndTastingCount = publicReviewAndTastingCount
                         }
                         public enum CodingKeys: String, CodingKey {
                             case results
                             case totalCount
+                            case publicReviewAndTastingCount
                         }
                     }
                     /// - Remark: Generated from `#/paths/bottles/{bottle}/tags/GET/responses/200/content/application\/json`.
@@ -65779,6 +69364,17 @@ public enum Operations {
                 public var name: Swift.String?
                 /// - Remark: Generated from `#/paths/bottlers/GET/query/owner`.
                 public var owner: Swift.Int?
+                /// Only return Entities with this status
+                ///
+                /// - Remark: Generated from `#/paths/bottlers/GET/query/status`.
+                @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case active = "active"
+                    case mothballed = "mothballed"
+                    case closed = "closed"
+                    case discontinued = "discontinued"
+                }
+                /// - Remark: Generated from `#/paths/bottlers/GET/query/status`.
+                public var status: Operations.listBottlers.Input.Query.statusPayload?
                 /// - Remark: Generated from `#/paths/bottlers/GET/query/country`.
                 public var country: Swift.String?
                 /// - Remark: Generated from `#/paths/bottlers/GET/query/region`.
@@ -65816,6 +69412,7 @@ public enum Operations {
                 ///   - query:
                 ///   - name:
                 ///   - owner:
+                ///   - status:
                 ///   - country:
                 ///   - region:
                 ///   - filter:
@@ -65826,6 +69423,7 @@ public enum Operations {
                     query: Swift.String? = nil,
                     name: Swift.String? = nil,
                     owner: Swift.Int? = nil,
+                    status: Operations.listBottlers.Input.Query.statusPayload? = nil,
                     country: Swift.String? = nil,
                     region: Swift.String? = nil,
                     filter: Operations.listBottlers.Input.Query.filterPayload? = nil,
@@ -65836,6 +69434,7 @@ public enum Operations {
                     self.query = query
                     self.name = name
                     self.owner = owner
+                    self.status = status
                     self.country = country
                     self.region = region
                     self.filter = filter
@@ -67277,6 +70876,17 @@ public enum Operations {
                 public var name: Swift.String?
                 /// - Remark: Generated from `#/paths/brands/GET/query/owner`.
                 public var owner: Swift.Int?
+                /// Only return Entities with this status
+                ///
+                /// - Remark: Generated from `#/paths/brands/GET/query/status`.
+                @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case active = "active"
+                    case mothballed = "mothballed"
+                    case closed = "closed"
+                    case discontinued = "discontinued"
+                }
+                /// - Remark: Generated from `#/paths/brands/GET/query/status`.
+                public var status: Operations.listBrands.Input.Query.statusPayload?
                 /// - Remark: Generated from `#/paths/brands/GET/query/country`.
                 public var country: Swift.String?
                 /// - Remark: Generated from `#/paths/brands/GET/query/region`.
@@ -67314,6 +70924,7 @@ public enum Operations {
                 ///   - query:
                 ///   - name:
                 ///   - owner:
+                ///   - status:
                 ///   - country:
                 ///   - region:
                 ///   - filter:
@@ -67324,6 +70935,7 @@ public enum Operations {
                     query: Swift.String? = nil,
                     name: Swift.String? = nil,
                     owner: Swift.Int? = nil,
+                    status: Operations.listBrands.Input.Query.statusPayload? = nil,
                     country: Swift.String? = nil,
                     region: Swift.String? = nil,
                     filter: Operations.listBrands.Input.Query.filterPayload? = nil,
@@ -67334,6 +70946,7 @@ public enum Operations {
                     self.query = query
                     self.name = name
                     self.owner = owner
+                    self.status = status
                     self.country = country
                     self.region = region
                     self.filter = filter
@@ -71838,6 +75451,8 @@ public enum Operations {
                         public var memberScoreCount: Swift.Int
                         /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/externalScoreCount`.
                         public var externalScoreCount: Swift.Int
+                        /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/raterCount`.
+                        public var raterCount: Swift.Int
                         /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/scoreCount`.
                         public var scoreCount: Swift.Int
                         /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/reviewScoreBandCounts`.
@@ -71928,6 +75543,10 @@ public enum Operations {
                         public var tastingBandCounts: Operations.getBottleGroup.Output.Ok.Body.jsonPayload.tastingBandCountsPayload
                         /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/totalTastings`.
                         public var totalTastings: Swift.Int
+                        /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/publicReviewAndTastingCount`.
+                        public var publicReviewAndTastingCount: Swift.Int
+                        /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/notedReviewAndTastingCount`.
+                        public var notedReviewAndTastingCount: Swift.Int
                         /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/totalBottles`.
                         public var totalBottles: Swift.Int
                         /// - Remark: Generated from `#/paths/bottle-groups/{group}/GET/responses/200/content/json/createdByActorId`.
@@ -71956,10 +75575,13 @@ public enum Operations {
                         ///   - maxScore:
                         ///   - memberScoreCount:
                         ///   - externalScoreCount:
+                        ///   - raterCount:
                         ///   - scoreCount:
                         ///   - reviewScoreBandCounts:
                         ///   - tastingBandCounts:
                         ///   - totalTastings:
+                        ///   - publicReviewAndTastingCount:
+                        ///   - notedReviewAndTastingCount:
                         ///   - totalBottles:
                         ///   - createdByActorId:
                         ///   - createdAt:
@@ -71982,10 +75604,13 @@ public enum Operations {
                             maxScore: Swift.Int? = nil,
                             memberScoreCount: Swift.Int,
                             externalScoreCount: Swift.Int,
+                            raterCount: Swift.Int,
                             scoreCount: Swift.Int,
                             reviewScoreBandCounts: Operations.getBottleGroup.Output.Ok.Body.jsonPayload.reviewScoreBandCountsPayload,
                             tastingBandCounts: Operations.getBottleGroup.Output.Ok.Body.jsonPayload.tastingBandCountsPayload,
                             totalTastings: Swift.Int,
+                            publicReviewAndTastingCount: Swift.Int,
+                            notedReviewAndTastingCount: Swift.Int,
                             totalBottles: Swift.Int,
                             createdByActorId: Swift.Int,
                             createdAt: Foundation.Date,
@@ -72008,10 +75633,13 @@ public enum Operations {
                             self.maxScore = maxScore
                             self.memberScoreCount = memberScoreCount
                             self.externalScoreCount = externalScoreCount
+                            self.raterCount = raterCount
                             self.scoreCount = scoreCount
                             self.reviewScoreBandCounts = reviewScoreBandCounts
                             self.tastingBandCounts = tastingBandCounts
                             self.totalTastings = totalTastings
+                            self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                            self.notedReviewAndTastingCount = notedReviewAndTastingCount
                             self.totalBottles = totalBottles
                             self.createdByActorId = createdByActorId
                             self.createdAt = createdAt
@@ -72035,10 +75663,13 @@ public enum Operations {
                             case maxScore
                             case memberScoreCount
                             case externalScoreCount
+                            case raterCount
                             case scoreCount
                             case reviewScoreBandCounts
                             case tastingBandCounts
                             case totalTastings
+                            case publicReviewAndTastingCount
+                            case notedReviewAndTastingCount
                             case totalBottles
                             case createdByActorId
                             case createdAt
@@ -74966,6 +78597,14 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/bottle-series/{series}/GET/responses/200/content/json/updatedAt`.
                         public var updatedAt: Foundation.Date
+                        /// Bottle whose primary image illustrates this series
+                        ///
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/GET/responses/200/content/json/representativeBottleId`.
+                        public var representativeBottleId: Swift.Int?
+                        /// Current primary image URL of the representative bottle
+                        ///
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/GET/responses/200/content/json/imageUrl`.
+                        public var imageUrl: Swift.String?
                         /// Brand that owns this bottle series
                         ///
                         /// - Remark: Generated from `#/paths/bottle-series/{series}/GET/responses/200/content/json/brand`.
@@ -75119,6 +78758,8 @@ public enum Operations {
                         ///   - numReleases: Number of releases in this series
                         ///   - createdAt: Timestamp when the series was created
                         ///   - updatedAt: Timestamp when the series was last updated
+                        ///   - representativeBottleId: Bottle whose primary image illustrates this series
+                        ///   - imageUrl: Current primary image URL of the representative bottle
                         ///   - brand: Brand that owns this bottle series
                         ///   - distillers: Distilleries represented by active Bottles in this Series
                         public init(
@@ -75130,6 +78771,8 @@ public enum Operations {
                             numReleases: Swift.Double? = nil,
                             createdAt: Foundation.Date,
                             updatedAt: Foundation.Date,
+                            representativeBottleId: Swift.Int? = nil,
+                            imageUrl: Swift.String? = nil,
                             brand: Operations.getBottleSeries.Output.Ok.Body.jsonPayload.brandPayload,
                             distillers: Operations.getBottleSeries.Output.Ok.Body.jsonPayload.distillersPayload
                         ) {
@@ -75141,6 +78784,8 @@ public enum Operations {
                             self.numReleases = numReleases
                             self.createdAt = createdAt
                             self.updatedAt = updatedAt
+                            self.representativeBottleId = representativeBottleId
+                            self.imageUrl = imageUrl
                             self.brand = brand
                             self.distillers = distillers
                         }
@@ -75153,6 +78798,8 @@ public enum Operations {
                             case numReleases
                             case createdAt
                             case updatedAt
+                            case representativeBottleId
+                            case imageUrl
                             case brand
                             case distillers
                         }
@@ -76514,9 +80161,1514 @@ public enum Operations {
             }
         }
     }
+    /// Get a bottle series flavor profile
+    ///
+    /// Count active bottles in a series with each family of public tasting notes. Each bottle counts once per family. Coverage includes only bottles with recognized tasting tags.
+    ///
+    /// - Remark: HTTP `GET /bottle-series/{series}/flavor-profile`.
+    /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)`.
+    public enum getBottleSeriesFlavorProfile {
+        public static let id: Swift.String = "getBottleSeriesFlavorProfile"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/path`.
+            public struct Path: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/path/series`.
+                public var series: Swift.Int
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - series:
+                public init(series: Swift.Int) {
+                    self.series = series
+                }
+            }
+            public var path: Operations.getBottleSeriesFlavorProfile.Input.Path
+            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getBottleSeriesFlavorProfile.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.getBottleSeriesFlavorProfile.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.getBottleSeriesFlavorProfile.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            public init(
+                path: Operations.getBottleSeriesFlavorProfile.Input.Path,
+                headers: Operations.getBottleSeriesFlavorProfile.Input.Headers = .init()
+            ) {
+                self.path = path
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json`.
+                    public struct jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/totalBottles`.
+                        public var totalBottles: Swift.Int
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/notedBottles`.
+                        public var notedBottles: Swift.Int
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload`.
+                        public struct categoriesPayloadPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/category`.
+                            @frozen public enum categoryPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case cereal = "cereal"
+                                case fruit = "fruit"
+                                case floral = "floral"
+                                case smoke = "smoke"
+                                case earthy = "earthy"
+                                case sulfur = "sulfur"
+                                case sweet = "sweet"
+                                case spice = "spice"
+                                case wood = "wood"
+                            }
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/category`.
+                            public var category: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.categoryPayload
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/bottleCount`.
+                            public var bottleCount: Swift.Int
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notesPayload`.
+                            public struct notesPayloadPayload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notesPayload/name`.
+                                public var name: Swift.String
+                                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notesPayload/bottleCount`.
+                                public var bottleCount: Swift.Int
+                                /// Creates a new `notesPayloadPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - name:
+                                ///   - bottleCount:
+                                public init(
+                                    name: Swift.String,
+                                    bottleCount: Swift.Int
+                                ) {
+                                    self.name = name
+                                    self.bottleCount = bottleCount
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case name
+                                    case bottleCount
+                                }
+                            }
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notes`.
+                            public typealias notesPayload = [Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.notesPayloadPayload]
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categoriesPayload/notes`.
+                            public var notes: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.notesPayload
+                            /// Creates a new `categoriesPayloadPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - category:
+                            ///   - bottleCount:
+                            ///   - notes:
+                            public init(
+                                category: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.categoryPayload,
+                                bottleCount: Swift.Int,
+                                notes: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload.notesPayload
+                            ) {
+                                self.category = category
+                                self.bottleCount = bottleCount
+                                self.notes = notes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case category
+                                case bottleCount
+                                case notes
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categories`.
+                        public typealias categoriesPayload = [Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayloadPayload]
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/json/categories`.
+                        public var categories: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayload
+                        /// Creates a new `jsonPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - totalBottles:
+                        ///   - notedBottles:
+                        ///   - categories:
+                        public init(
+                            totalBottles: Swift.Int,
+                            notedBottles: Swift.Int,
+                            categories: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload.categoriesPayload
+                        ) {
+                            self.totalBottles = totalBottles
+                            self.notedBottles = notedBottles
+                            self.categories = categories
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case totalBottles
+                            case notedBottles
+                            case categories
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/200/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// OK
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.getBottleSeriesFlavorProfile.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.getBottleSeriesFlavorProfile.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct BadRequest: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case1`.
+                        case case1(Operations.getBottleSeriesFlavorProfile.Output.BadRequest.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/json/case2`.
+                        case case2(Operations.getBottleSeriesFlavorProfile.Output.BadRequest.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/400/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.BadRequest.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.BadRequest.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.BadRequest.Body
+                /// Creates a new `BadRequest`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.BadRequest.Body) {
+                    self.body = body
+                }
+            }
+            /// 400
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Operations.getBottleSeriesFlavorProfile.Output.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Operations.getBottleSeriesFlavorProfile.Output.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Unauthorized: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case1`.
+                        case case1(Operations.getBottleSeriesFlavorProfile.Output.Unauthorized.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/json/case2`.
+                        case case2(Operations.getBottleSeriesFlavorProfile.Output.Unauthorized.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/401/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.Unauthorized.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.Unauthorized.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.Unauthorized.Body
+                /// Creates a new `Unauthorized`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.Unauthorized.Body) {
+                    self.body = body
+                }
+            }
+            /// 401
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Operations.getBottleSeriesFlavorProfile.Output.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Operations.getBottleSeriesFlavorProfile.Output.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Forbidden: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case1`.
+                        case case1(Operations.getBottleSeriesFlavorProfile.Output.Forbidden.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/json/case2`.
+                        case case2(Operations.getBottleSeriesFlavorProfile.Output.Forbidden.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/403/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.Forbidden.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.Forbidden.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.Forbidden.Body
+                /// Creates a new `Forbidden`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.Forbidden.Body) {
+                    self.body = body
+                }
+            }
+            /// 403
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/403`.
+            ///
+            /// HTTP response code: `403 forbidden`.
+            case forbidden(Operations.getBottleSeriesFlavorProfile.Output.Forbidden)
+            /// The associated value of the enum case if `self` is `.forbidden`.
+            ///
+            /// - Throws: An error if `self` is not `.forbidden`.
+            /// - SeeAlso: `.forbidden`.
+            public var forbidden: Operations.getBottleSeriesFlavorProfile.Output.Forbidden {
+                get throws {
+                    switch self {
+                    case let .forbidden(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "forbidden",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct NotFound: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case1`.
+                        case case1(Operations.getBottleSeriesFlavorProfile.Output.NotFound.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/json/case2`.
+                        case case2(Operations.getBottleSeriesFlavorProfile.Output.NotFound.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/404/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.NotFound.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.NotFound.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.NotFound.Body
+                /// Creates a new `NotFound`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.NotFound.Body) {
+                    self.body = body
+                }
+            }
+            /// 404
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Operations.getBottleSeriesFlavorProfile.Output.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Operations.getBottleSeriesFlavorProfile.Output.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Conflict: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case1`.
+                        case case1(Operations.getBottleSeriesFlavorProfile.Output.Conflict.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/json/case2`.
+                        case case2(Operations.getBottleSeriesFlavorProfile.Output.Conflict.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/409/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.Conflict.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.Conflict.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.Conflict.Body
+                /// Creates a new `Conflict`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.Conflict.Body) {
+                    self.body = body
+                }
+            }
+            /// 409
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/409`.
+            ///
+            /// HTTP response code: `409 conflict`.
+            case conflict(Operations.getBottleSeriesFlavorProfile.Output.Conflict)
+            /// The associated value of the enum case if `self` is `.conflict`.
+            ///
+            /// - Throws: An error if `self` is not `.conflict`.
+            /// - SeeAlso: `.conflict`.
+            public var conflict: Operations.getBottleSeriesFlavorProfile.Output.Conflict {
+                get throws {
+                    switch self {
+                    case let .conflict(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "conflict",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct ContentTooLarge: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case1`.
+                        case case1(Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/json/case2`.
+                        case case2(Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/413/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge.Body
+                /// Creates a new `ContentTooLarge`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge.Body) {
+                    self.body = body
+                }
+            }
+            /// 413
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/413`.
+            ///
+            /// HTTP response code: `413 contentTooLarge`.
+            case contentTooLarge(Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge)
+            /// The associated value of the enum case if `self` is `.contentTooLarge`.
+            ///
+            /// - Throws: An error if `self` is not `.contentTooLarge`.
+            /// - SeeAlso: `.contentTooLarge`.
+            public var contentTooLarge: Operations.getBottleSeriesFlavorProfile.Output.ContentTooLarge {
+                get throws {
+                    switch self {
+                    case let .contentTooLarge(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "contentTooLarge",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct InternalServerError: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case1`.
+                        case case1(Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case2/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case2/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case2`.
+                        case case2(Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body.jsonPayload.Case2Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case3`.
+                        public struct Case3Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case3/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case3/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case3/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case3/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case3/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case3Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case3`.
+                        case case3(Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body.jsonPayload.Case3Payload)
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case4`.
+                        public struct Case4Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case4/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case4/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case4/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case4/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case4/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case4Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/json/case4`.
+                        case case4(Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body.jsonPayload.Case4Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case3(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case4(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            case let .case3(value):
+                                try value.encode(to: encoder)
+                            case let .case4(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/bottle-series/{series}/flavor-profile/GET/responses/500/content/application\/json`.
+                    case json(Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body
+                /// Creates a new `InternalServerError`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.getBottleSeriesFlavorProfile.Output.InternalServerError.Body) {
+                    self.body = body
+                }
+            }
+            /// 500
+            ///
+            /// - Remark: Generated from `#/paths//bottle-series/{series}/flavor-profile/get(getBottleSeriesFlavorProfile)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Operations.getBottleSeriesFlavorProfile.Output.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Operations.getBottleSeriesFlavorProfile.Output.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
     /// List bottle series
     ///
-    /// List bottle series, with optional brand filtering, search, and pagination.
+    /// Find bottle series by name, brand, or distillery.
     ///
     /// - Remark: HTTP `GET /bottle-series`.
     /// - Remark: Generated from `#/paths//bottle-series/get(listBottleSeries)`.
@@ -76528,28 +81680,45 @@ public enum Operations {
                 /// - Remark: Generated from `#/paths/bottle-series/GET/query/query`.
                 public var query: Swift.String?
                 /// - Remark: Generated from `#/paths/bottle-series/GET/query/brand`.
-                public var brand: Swift.Double?
+                public var brand: Swift.Int?
+                /// - Remark: Generated from `#/paths/bottle-series/GET/query/distillery`.
+                public var distillery: Swift.Int?
                 /// - Remark: Generated from `#/paths/bottle-series/GET/query/cursor`.
                 public var cursor: Swift.Double?
                 /// - Remark: Generated from `#/paths/bottle-series/GET/query/limit`.
                 public var limit: Swift.Double?
+                /// Use `name` for A–Z or `-bottles` for the most matching bottles first.
+                ///
+                /// - Remark: Generated from `#/paths/bottle-series/GET/query/sort`.
+                @frozen public enum sortPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case name = "name"
+                    case _hyphen_bottles = "-bottles"
+                }
+                /// - Remark: Generated from `#/paths/bottle-series/GET/query/sort`.
+                public var sort: Operations.listBottleSeries.Input.Query.sortPayload?
                 /// Creates a new `Query`.
                 ///
                 /// - Parameters:
                 ///   - query:
                 ///   - brand:
+                ///   - distillery:
                 ///   - cursor:
                 ///   - limit:
+                ///   - sort:
                 public init(
                     query: Swift.String? = nil,
-                    brand: Swift.Double? = nil,
+                    brand: Swift.Int? = nil,
+                    distillery: Swift.Int? = nil,
                     cursor: Swift.Double? = nil,
-                    limit: Swift.Double? = nil
+                    limit: Swift.Double? = nil,
+                    sort: Operations.listBottleSeries.Input.Query.sortPayload? = nil
                 ) {
                     self.query = query
                     self.brand = brand
+                    self.distillery = distillery
                     self.cursor = cursor
                     self.limit = limit
+                    self.sort = sort
                 }
             }
             public var query: Operations.listBottleSeries.Input.Query
@@ -76584,8 +81753,179 @@ public enum Operations {
                 @frozen public enum Body: Sendable, Hashable {
                     /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json`.
                     public struct jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload`.
+                        public struct resultsPayloadPayload: Codable, Hashable, Sendable {
+                            /// Unique identifier for the bottle series
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/id`.
+                            public var id: Swift.Double
+                            /// Permanent Peated ID for the bottle series
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/peatedId`.
+                            public var peatedId: Swift.String
+                            /// Name of the series (e.g., Supernova, 18-year-old)
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/name`.
+                            public var name: Swift.String
+                            /// Full name of the series (brand name + series name)
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/fullName`.
+                            public var fullName: Swift.String
+                            /// Detailed description of the series
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/description`.
+                            public var description: Swift.String?
+                            /// Number of releases in this series
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/numReleases`.
+                            public var numReleases: Swift.Double?
+                            /// Timestamp when the series was created
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/createdAt`.
+                            public var createdAt: Foundation.Date
+                            /// Timestamp when the series was last updated
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/updatedAt`.
+                            public var updatedAt: Foundation.Date
+                            /// Bottle whose primary image illustrates this series
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/representativeBottleId`.
+                            public var representativeBottleId: Swift.Int?
+                            /// Current primary image URL of the representative bottle
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/imageUrl`.
+                            public var imageUrl: Swift.String?
+                            /// Brand that owns this bottle series
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand`.
+                            public struct brandPayload: Codable, Hashable, Sendable {
+                                /// Unique identifier for the entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand/id`.
+                                public var id: Swift.Double
+                                /// Permanent Peated ID for the entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand/peatedId`.
+                                public var peatedId: Swift.String
+                                /// Name of the entity (brand, distillery, etc.)
+                                ///
+                                /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand/name`.
+                                public var name: Swift.String
+                                /// Abbreviated or short name for the entity
+                                ///
+                                /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand/shortName`.
+                                public var shortName: Swift.String?
+                                /// Best short description of what this entity is
+                                ///
+                                /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand/kind`.
+                                @frozen public enum kindPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case brand = "brand"
+                                    case distillery = "distillery"
+                                    case bottler = "bottler"
+                                    case company = "company"
+                                }
+                                /// Best short description of what this entity is
+                                ///
+                                /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand/kind`.
+                                public var kind: Operations.listBottleSeries.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.kindPayload
+                                /// Creates a new `brandPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - id: Unique identifier for the entity
+                                ///   - peatedId: Permanent Peated ID for the entity
+                                ///   - name: Name of the entity (brand, distillery, etc.)
+                                ///   - shortName: Abbreviated or short name for the entity
+                                ///   - kind: Best short description of what this entity is
+                                public init(
+                                    id: Swift.Double,
+                                    peatedId: Swift.String,
+                                    name: Swift.String,
+                                    shortName: Swift.String? = nil,
+                                    kind: Operations.listBottleSeries.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload.kindPayload
+                                ) {
+                                    self.id = id
+                                    self.peatedId = peatedId
+                                    self.name = name
+                                    self.shortName = shortName
+                                    self.kind = kind
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case id
+                                    case peatedId
+                                    case name
+                                    case shortName
+                                    case kind
+                                }
+                            }
+                            /// Brand that owns this bottle series
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/brand`.
+                            public var brand: Operations.listBottleSeries.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload
+                            /// Number of active bottles matching the list filters
+                            ///
+                            /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/resultsPayload/numBottles`.
+                            public var numBottles: Swift.Int
+                            /// Creates a new `resultsPayloadPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - id: Unique identifier for the bottle series
+                            ///   - peatedId: Permanent Peated ID for the bottle series
+                            ///   - name: Name of the series (e.g., Supernova, 18-year-old)
+                            ///   - fullName: Full name of the series (brand name + series name)
+                            ///   - description: Detailed description of the series
+                            ///   - numReleases: Number of releases in this series
+                            ///   - createdAt: Timestamp when the series was created
+                            ///   - updatedAt: Timestamp when the series was last updated
+                            ///   - representativeBottleId: Bottle whose primary image illustrates this series
+                            ///   - imageUrl: Current primary image URL of the representative bottle
+                            ///   - brand: Brand that owns this bottle series
+                            ///   - numBottles: Number of active bottles matching the list filters
+                            public init(
+                                id: Swift.Double,
+                                peatedId: Swift.String,
+                                name: Swift.String,
+                                fullName: Swift.String,
+                                description: Swift.String? = nil,
+                                numReleases: Swift.Double? = nil,
+                                createdAt: Foundation.Date,
+                                updatedAt: Foundation.Date,
+                                representativeBottleId: Swift.Int? = nil,
+                                imageUrl: Swift.String? = nil,
+                                brand: Operations.listBottleSeries.Output.Ok.Body.jsonPayload.resultsPayloadPayload.brandPayload,
+                                numBottles: Swift.Int
+                            ) {
+                                self.id = id
+                                self.peatedId = peatedId
+                                self.name = name
+                                self.fullName = fullName
+                                self.description = description
+                                self.numReleases = numReleases
+                                self.createdAt = createdAt
+                                self.updatedAt = updatedAt
+                                self.representativeBottleId = representativeBottleId
+                                self.imageUrl = imageUrl
+                                self.brand = brand
+                                self.numBottles = numBottles
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case id
+                                case peatedId
+                                case name
+                                case fullName
+                                case description
+                                case numReleases
+                                case createdAt
+                                case updatedAt
+                                case representativeBottleId
+                                case imageUrl
+                                case brand
+                                case numBottles
+                            }
+                        }
                         /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/results`.
-                        public var results: [Components.Schemas.BottleSeries]
+                        public typealias resultsPayload = [Operations.listBottleSeries.Output.Ok.Body.jsonPayload.resultsPayloadPayload]
+                        /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/results`.
+                        public var results: Operations.listBottleSeries.Output.Ok.Body.jsonPayload.resultsPayload
                         /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/total`.
                         public var total: Swift.Double
                         /// - Remark: Generated from `#/paths/bottle-series/GET/responses/200/content/json/rel`.
@@ -76597,7 +81937,7 @@ public enum Operations {
                         ///   - total:
                         ///   - rel:
                         public init(
-                            results: [Components.Schemas.BottleSeries],
+                            results: Operations.listBottleSeries.Output.Ok.Body.jsonPayload.resultsPayload,
                             total: Swift.Double,
                             rel: Components.Schemas.Cursor
                         ) {
@@ -79549,6 +84889,8 @@ public enum Operations {
                                 case bottle_series = "bottle_series"
                                 case entity = "entity"
                                 case tasting = "tasting"
+                                case member_review = "member_review"
+                                case external_review = "external_review"
                             }
                             /// Type of object that was changed
                             ///
@@ -96440,6 +101782,17 @@ public enum Operations {
                 public var name: Swift.String?
                 /// - Remark: Generated from `#/paths/companies/GET/query/owner`.
                 public var owner: Swift.Int?
+                /// Only return Entities with this status
+                ///
+                /// - Remark: Generated from `#/paths/companies/GET/query/status`.
+                @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case active = "active"
+                    case mothballed = "mothballed"
+                    case closed = "closed"
+                    case discontinued = "discontinued"
+                }
+                /// - Remark: Generated from `#/paths/companies/GET/query/status`.
+                public var status: Operations.listCompanies.Input.Query.statusPayload?
                 /// - Remark: Generated from `#/paths/companies/GET/query/country`.
                 public var country: Swift.String?
                 /// - Remark: Generated from `#/paths/companies/GET/query/region`.
@@ -96477,6 +101830,7 @@ public enum Operations {
                 ///   - query:
                 ///   - name:
                 ///   - owner:
+                ///   - status:
                 ///   - country:
                 ///   - region:
                 ///   - filter:
@@ -96487,6 +101841,7 @@ public enum Operations {
                     query: Swift.String? = nil,
                     name: Swift.String? = nil,
                     owner: Swift.Int? = nil,
+                    status: Operations.listCompanies.Input.Query.statusPayload? = nil,
                     country: Swift.String? = nil,
                     region: Swift.String? = nil,
                     filter: Operations.listCompanies.Input.Query.filterPayload? = nil,
@@ -96497,6 +101852,7 @@ public enum Operations {
                     self.query = query
                     self.name = name
                     self.owner = owner
+                    self.status = status
                     self.country = country
                     self.region = region
                     self.filter = filter
@@ -102327,6 +107683,17 @@ public enum Operations {
                 public var name: Swift.String?
                 /// - Remark: Generated from `#/paths/distilleries/GET/query/owner`.
                 public var owner: Swift.Int?
+                /// Only return Entities with this status
+                ///
+                /// - Remark: Generated from `#/paths/distilleries/GET/query/status`.
+                @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case active = "active"
+                    case mothballed = "mothballed"
+                    case closed = "closed"
+                    case discontinued = "discontinued"
+                }
+                /// - Remark: Generated from `#/paths/distilleries/GET/query/status`.
+                public var status: Operations.listDistilleries.Input.Query.statusPayload?
                 /// - Remark: Generated from `#/paths/distilleries/GET/query/country`.
                 public var country: Swift.String?
                 /// - Remark: Generated from `#/paths/distilleries/GET/query/region`.
@@ -102364,6 +107731,7 @@ public enum Operations {
                 ///   - query:
                 ///   - name:
                 ///   - owner:
+                ///   - status:
                 ///   - country:
                 ///   - region:
                 ///   - filter:
@@ -102374,6 +107742,7 @@ public enum Operations {
                     query: Swift.String? = nil,
                     name: Swift.String? = nil,
                     owner: Swift.Int? = nil,
+                    status: Operations.listDistilleries.Input.Query.statusPayload? = nil,
                     country: Swift.String? = nil,
                     region: Swift.String? = nil,
                     filter: Operations.listDistilleries.Input.Query.filterPayload? = nil,
@@ -102384,6 +107753,7 @@ public enum Operations {
                     self.query = query
                     self.name = name
                     self.owner = owner
+                    self.status = status
                     self.country = country
                     self.region = region
                     self.filter = filter
@@ -106933,6 +112303,8 @@ public enum Operations {
                             public var fullName: Swift.String
                             /// - Remark: Generated from `#/paths/entities/{entity}/catalog/GET/responses/200/content/json/notableBottlesPayload/totalTastings`.
                             public var totalTastings: Swift.Double
+                            /// - Remark: Generated from `#/paths/entities/{entity}/catalog/GET/responses/200/content/json/notableBottlesPayload/publicReviewAndTastingCount`.
+                            public var publicReviewAndTastingCount: Swift.Int
                             /// - Remark: Generated from `#/paths/entities/{entity}/catalog/GET/responses/200/content/json/notableBottlesPayload/medianScore`.
                             public var medianScore: Swift.Int?
                             /// Creates a new `notableBottlesPayloadPayload`.
@@ -106941,22 +112313,26 @@ public enum Operations {
                             ///   - id:
                             ///   - fullName:
                             ///   - totalTastings:
+                            ///   - publicReviewAndTastingCount:
                             ///   - medianScore:
                             public init(
                                 id: Swift.Double,
                                 fullName: Swift.String,
                                 totalTastings: Swift.Double,
+                                publicReviewAndTastingCount: Swift.Int,
                                 medianScore: Swift.Int? = nil
                             ) {
                                 self.id = id
                                 self.fullName = fullName
                                 self.totalTastings = totalTastings
+                                self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                 self.medianScore = medianScore
                             }
                             public enum CodingKeys: String, CodingKey {
                                 case id
                                 case fullName
                                 case totalTastings
+                                case publicReviewAndTastingCount
                                 case medianScore
                             }
                         }
@@ -108371,6 +113747,17 @@ public enum Operations {
                 public var name: Swift.String?
                 /// - Remark: Generated from `#/paths/entities/GET/query/owner`.
                 public var owner: Swift.Int?
+                /// Only return Entities with this status
+                ///
+                /// - Remark: Generated from `#/paths/entities/GET/query/status`.
+                @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case active = "active"
+                    case mothballed = "mothballed"
+                    case closed = "closed"
+                    case discontinued = "discontinued"
+                }
+                /// - Remark: Generated from `#/paths/entities/GET/query/status`.
+                public var status: Operations.listEntities.Input.Query.statusPayload?
                 /// - Remark: Generated from `#/paths/entities/GET/query/country`.
                 public var country: Swift.String?
                 /// - Remark: Generated from `#/paths/entities/GET/query/region`.
@@ -108421,6 +113808,7 @@ public enum Operations {
                 ///   - query:
                 ///   - name:
                 ///   - owner:
+                ///   - status:
                 ///   - country:
                 ///   - region:
                 ///   - filter:
@@ -108432,6 +113820,7 @@ public enum Operations {
                     query: Swift.String? = nil,
                     name: Swift.String? = nil,
                     owner: Swift.Int? = nil,
+                    status: Operations.listEntities.Input.Query.statusPayload? = nil,
                     country: Swift.String? = nil,
                     region: Swift.String? = nil,
                     filter: Operations.listEntities.Input.Query.filterPayload? = nil,
@@ -108443,6 +113832,7 @@ public enum Operations {
                     self.query = query
                     self.name = name
                     self.owner = owner
+                    self.status = status
                     self.country = country
                     self.region = region
                     self.filter = filter
@@ -109914,6 +115304,19 @@ public enum Operations {
                     ///
                     /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/kind`.
                     public var kind: Operations.createEntity.Input.Body.jsonPayload.kindPayload
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/status`.
+                    @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                        case active = "active"
+                        case mothballed = "mothballed"
+                        case closed = "closed"
+                        case discontinued = "discontinued"
+                    }
+                    /// Current status, or null when it is unknown
+                    ///
+                    /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/status`.
+                    public var status: Operations.createEntity.Input.Body.jsonPayload.statusPayload?
                     /// ID of the entity's current owner
                     ///
                     /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/ownerId`.
@@ -109941,19 +115344,19 @@ public enum Operations {
                     ///
                     /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/website`.
                     public var website: Swift.String?
-                    /// Country ID where the entity is located
+                    /// Country ID where the entity comes from
                     ///
                     /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/country`.
                     public var country: Swift.Double?
-                    /// Region ID where the entity is located
+                    /// Region ID where the entity comes from
                     ///
                     /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/region`.
                     public var region: Swift.Double?
-                    /// Physical address of the entity
+                    /// Address where the entity comes from
                     ///
                     /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/address`.
                     public var address: Swift.String?
-                    /// Geographic coordinates of the entity
+                    /// Geographic coordinates where the entity comes from
                     ///
                     /// - Remark: Generated from `#/paths/entities/POST/requestBody/json/location`.
                     public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -109963,19 +115366,21 @@ public enum Operations {
                     ///   - name: Name of the entity (brand, distillery, etc.)
                     ///   - shortName: Abbreviated or short name for the entity
                     ///   - kind: Best short description of what this entity is
+                    ///   - status: Current status, or null when it is unknown
                     ///   - ownerId: ID of the entity's current owner
                     ///   - description: Detailed description of the entity
                     ///   - descriptionSrc: Source of the entity description
                     ///   - yearEstablished: Year the entity was established
                     ///   - website: Official website URL
-                    ///   - country: Country ID where the entity is located
-                    ///   - region: Region ID where the entity is located
-                    ///   - address: Physical address of the entity
-                    ///   - location: Geographic coordinates of the entity
+                    ///   - country: Country ID where the entity comes from
+                    ///   - region: Region ID where the entity comes from
+                    ///   - address: Address where the entity comes from
+                    ///   - location: Geographic coordinates where the entity comes from
                     public init(
                         name: Swift.String,
                         shortName: Swift.String? = nil,
                         kind: Operations.createEntity.Input.Body.jsonPayload.kindPayload,
+                        status: Operations.createEntity.Input.Body.jsonPayload.statusPayload? = nil,
                         ownerId: Swift.Double? = nil,
                         description: Swift.String? = nil,
                         descriptionSrc: Operations.createEntity.Input.Body.jsonPayload.descriptionSrcPayload? = nil,
@@ -109989,6 +115394,7 @@ public enum Operations {
                         self.name = name
                         self.shortName = shortName
                         self.kind = kind
+                        self.status = status
                         self.ownerId = ownerId
                         self.description = description
                         self.descriptionSrc = descriptionSrc
@@ -110003,6 +115409,7 @@ public enum Operations {
                         case name
                         case shortName
                         case kind
+                        case status
                         case ownerId
                         case description
                         case descriptionSrc
@@ -111474,6 +116881,19 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/kind`.
                         public var kind: Operations.getEntity.Output.Ok.Body.jsonPayload.kindPayload
+                        /// Current status, or null when it is unknown
+                        ///
+                        /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/status`.
+                        @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                            case active = "active"
+                            case mothballed = "mothballed"
+                            case closed = "closed"
+                            case discontinued = "discontinued"
+                        }
+                        /// Current status, or null when it is unknown
+                        ///
+                        /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/status`.
+                        public var status: Operations.getEntity.Output.Ok.Body.jsonPayload.statusPayload?
                         /// ID of the entity's current owner
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/ownerId`.
@@ -111555,19 +116975,19 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/website`.
                         public var website: Swift.String?
-                        /// Country where the entity is located
+                        /// Country where the entity comes from
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/country`.
                         public var country: Components.Schemas.Country?
-                        /// Region where the entity is located
+                        /// Region where the entity comes from
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/region`.
                         public var region: Components.Schemas.Region?
-                        /// Physical address of the entity
+                        /// Address where the entity comes from
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/address`.
                         public var address: Swift.String?
-                        /// Geographic coordinates of the entity
+                        /// Geographic coordinates where the entity comes from
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/location`.
                         public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -111575,6 +116995,10 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/totalTastings`.
                         public var totalTastings: Swift.Double
+                        /// Total public reviews and tastings for this entity's bottles
+                        ///
+                        /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/publicReviewAndTastingCount`.
+                        public var publicReviewAndTastingCount: Swift.Int
                         /// Total number of bottles associated with this entity
                         ///
                         /// - Remark: Generated from `#/paths/entities/{entity}/GET/responses/200/content/json/totalBottles`.
@@ -111686,17 +117110,19 @@ public enum Operations {
                         ///   - name: Name of the entity (brand, distillery, etc.)
                         ///   - shortName: Abbreviated or short name for the entity
                         ///   - kind: Best short description of what this entity is
+                        ///   - status: Current status, or null when it is unknown
                         ///   - ownerId: ID of the entity's current owner
                         ///   - owner: Current direct owner
                         ///   - description: Detailed description of the entity
                         ///   - descriptionSrc: Source of the entity description
                         ///   - yearEstablished: Year the entity was established
                         ///   - website: Official website URL
-                        ///   - country: Country where the entity is located
-                        ///   - region: Region where the entity is located
-                        ///   - address: Physical address of the entity
-                        ///   - location: Geographic coordinates of the entity
+                        ///   - country: Country where the entity comes from
+                        ///   - region: Region where the entity comes from
+                        ///   - address: Address where the entity comes from
+                        ///   - location: Geographic coordinates where the entity comes from
                         ///   - totalTastings: Total number of tastings for bottles from this entity
+                        ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                         ///   - totalBottles: Total number of bottles associated with this entity
                         ///   - isFollowing: Whether the current user follows this entity
                         ///   - createdAt: Timestamp when the entity was created
@@ -111708,6 +117134,7 @@ public enum Operations {
                             name: Swift.String,
                             shortName: Swift.String? = nil,
                             kind: Operations.getEntity.Output.Ok.Body.jsonPayload.kindPayload,
+                            status: Operations.getEntity.Output.Ok.Body.jsonPayload.statusPayload? = nil,
                             ownerId: Swift.Double? = nil,
                             owner: Operations.getEntity.Output.Ok.Body.jsonPayload.ownerPayload? = nil,
                             description: Swift.String? = nil,
@@ -111719,6 +117146,7 @@ public enum Operations {
                             address: Swift.String? = nil,
                             location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                             totalTastings: Swift.Double,
+                            publicReviewAndTastingCount: Swift.Int,
                             totalBottles: Swift.Double,
                             isFollowing: Swift.Bool,
                             createdAt: Foundation.Date,
@@ -111730,6 +117158,7 @@ public enum Operations {
                             self.name = name
                             self.shortName = shortName
                             self.kind = kind
+                            self.status = status
                             self.ownerId = ownerId
                             self.owner = owner
                             self.description = description
@@ -111741,6 +117170,7 @@ public enum Operations {
                             self.address = address
                             self.location = location
                             self.totalTastings = totalTastings
+                            self.publicReviewAndTastingCount = publicReviewAndTastingCount
                             self.totalBottles = totalBottles
                             self.isFollowing = isFollowing
                             self.createdAt = createdAt
@@ -111753,6 +117183,7 @@ public enum Operations {
                             case name
                             case shortName
                             case kind
+                            case status
                             case ownerId
                             case owner
                             case description
@@ -111764,6 +117195,7 @@ public enum Operations {
                             case address
                             case location
                             case totalTastings
+                            case publicReviewAndTastingCount
                             case totalBottles
                             case isFollowing
                             case createdAt
@@ -113262,6 +118694,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/kind`.
                             public var kind: Operations.listCompanyPortfolio.Output.Ok.Body.jsonPayload.resultsPayloadPayload.kindPayload
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/status`.
+                            public var status: Operations.listCompanyPortfolio.Output.Ok.Body.jsonPayload.resultsPayloadPayload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/ownerId`.
@@ -113343,19 +118788,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/website`.
                             public var website: Swift.String?
-                            /// Country where the entity is located
+                            /// Country where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/country`.
                             public var country: Components.Schemas.Country?
-                            /// Region where the entity is located
+                            /// Region where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/region`.
                             public var region: Components.Schemas.Region?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -113363,6 +118808,10 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/totalTastings`.
                             public var totalTastings: Swift.Double
+                            /// Total public reviews and tastings for this entity's bottles
+                            ///
+                            /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/publicReviewAndTastingCount`.
+                            public var publicReviewAndTastingCount: Swift.Int
                             /// Total number of bottles associated with this entity
                             ///
                             /// - Remark: Generated from `#/paths/entities/{company}/portfolio/GET/responses/200/content/json/resultsPayload/totalBottles`.
@@ -113447,17 +118896,19 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind: Best short description of what this entity is
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - owner: Current direct owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country where the entity is located
-                            ///   - region: Region where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country where the entity comes from
+                            ///   - region: Region where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - totalTastings: Total number of tastings for bottles from this entity
+                            ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                             ///   - totalBottles: Total number of bottles associated with this entity
                             ///   - isFollowing: Whether the current user follows this entity
                             ///   - createdAt: Timestamp when the entity was created
@@ -113469,6 +118920,7 @@ public enum Operations {
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.listCompanyPortfolio.Output.Ok.Body.jsonPayload.resultsPayloadPayload.kindPayload,
+                                status: Operations.listCompanyPortfolio.Output.Ok.Body.jsonPayload.resultsPayloadPayload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 owner: Operations.listCompanyPortfolio.Output.Ok.Body.jsonPayload.resultsPayloadPayload.ownerPayload? = nil,
                                 description: Swift.String? = nil,
@@ -113480,6 +118932,7 @@ public enum Operations {
                                 address: Swift.String? = nil,
                                 location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                                 totalTastings: Swift.Double,
+                                publicReviewAndTastingCount: Swift.Int,
                                 totalBottles: Swift.Double,
                                 isFollowing: Swift.Bool,
                                 createdAt: Foundation.Date,
@@ -113491,6 +118944,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.owner = owner
                                 self.description = description
@@ -113502,6 +118956,7 @@ public enum Operations {
                                 self.address = address
                                 self.location = location
                                 self.totalTastings = totalTastings
+                                self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                 self.totalBottles = totalBottles
                                 self.isFollowing = isFollowing
                                 self.createdAt = createdAt
@@ -113514,6 +118969,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case owner
                                 case description
@@ -113525,6 +118981,7 @@ public enum Operations {
                                 case address
                                 case location
                                 case totalTastings
+                                case publicReviewAndTastingCount
                                 case totalBottles
                                 case isFollowing
                                 case createdAt
@@ -131331,6 +136788,8 @@ public enum Operations {
                                     public var memberScoreCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/externalScoreCount`.
                                     public var externalScoreCount: Swift.Int
+                                    /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/raterCount`.
+                                    public var raterCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/scoreCount`.
                                     public var scoreCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/reviewScoreBandCounts`.
@@ -131421,6 +136880,10 @@ public enum Operations {
                                     public var tastingBandCounts: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.groupPayload.tastingBandCountsPayload
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/totalTastings`.
                                     public var totalTastings: Swift.Int
+                                    /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
+                                    /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/notedReviewAndTastingCount`.
+                                    public var notedReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/totalBottles`.
                                     public var totalBottles: Swift.Int
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/group/createdByActorId`.
@@ -131449,10 +136912,13 @@ public enum Operations {
                                     ///   - maxScore:
                                     ///   - memberScoreCount:
                                     ///   - externalScoreCount:
+                                    ///   - raterCount:
                                     ///   - scoreCount:
                                     ///   - reviewScoreBandCounts:
                                     ///   - tastingBandCounts:
                                     ///   - totalTastings:
+                                    ///   - publicReviewAndTastingCount:
+                                    ///   - notedReviewAndTastingCount:
                                     ///   - totalBottles:
                                     ///   - createdByActorId:
                                     ///   - createdAt:
@@ -131475,10 +136941,13 @@ public enum Operations {
                                         maxScore: Swift.Int? = nil,
                                         memberScoreCount: Swift.Int,
                                         externalScoreCount: Swift.Int,
+                                        raterCount: Swift.Int,
                                         scoreCount: Swift.Int,
                                         reviewScoreBandCounts: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.groupPayload.reviewScoreBandCountsPayload,
                                         tastingBandCounts: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.groupPayload.tastingBandCountsPayload,
                                         totalTastings: Swift.Int,
+                                        publicReviewAndTastingCount: Swift.Int,
+                                        notedReviewAndTastingCount: Swift.Int,
                                         totalBottles: Swift.Int,
                                         createdByActorId: Swift.Int,
                                         createdAt: Foundation.Date,
@@ -131501,10 +136970,13 @@ public enum Operations {
                                         self.maxScore = maxScore
                                         self.memberScoreCount = memberScoreCount
                                         self.externalScoreCount = externalScoreCount
+                                        self.raterCount = raterCount
                                         self.scoreCount = scoreCount
                                         self.reviewScoreBandCounts = reviewScoreBandCounts
                                         self.tastingBandCounts = tastingBandCounts
                                         self.totalTastings = totalTastings
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                                        self.notedReviewAndTastingCount = notedReviewAndTastingCount
                                         self.totalBottles = totalBottles
                                         self.createdByActorId = createdByActorId
                                         self.createdAt = createdAt
@@ -131528,10 +137000,13 @@ public enum Operations {
                                         case maxScore
                                         case memberScoreCount
                                         case externalScoreCount
+                                        case raterCount
                                         case scoreCount
                                         case reviewScoreBandCounts
                                         case tastingBandCounts
                                         case totalTastings
+                                        case publicReviewAndTastingCount
+                                        case notedReviewAndTastingCount
                                         case totalBottles
                                         case createdByActorId
                                         case createdAt
@@ -131666,6 +137141,19 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/kind`.
                                     public var kind: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.brandPayload.kindPayload
+                                    /// Current status, or null when it is unknown
+                                    ///
+                                    /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/status`.
+                                    @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                        case active = "active"
+                                        case mothballed = "mothballed"
+                                        case closed = "closed"
+                                        case discontinued = "discontinued"
+                                    }
+                                    /// Current status, or null when it is unknown
+                                    ///
+                                    /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/status`.
+                                    public var status: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.brandPayload.statusPayload?
                                     /// ID of the entity's current owner
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/ownerId`.
@@ -131747,19 +137235,19 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/website`.
                                     public var website: Swift.String?
-                                    /// Country where the entity is located
+                                    /// Country where the entity comes from
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/country`.
                                     public var country: Components.Schemas.Country?
-                                    /// Region where the entity is located
+                                    /// Region where the entity comes from
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/region`.
                                     public var region: Components.Schemas.Region?
-                                    /// Physical address of the entity
+                                    /// Address where the entity comes from
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/address`.
                                     public var address: Swift.String?
-                                    /// Geographic coordinates of the entity
+                                    /// Geographic coordinates where the entity comes from
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/location`.
                                     public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -131767,6 +137255,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/totalTastings`.
                                     public var totalTastings: Swift.Double
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// Total number of bottles associated with this entity
                                     ///
                                     /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/brand/totalBottles`.
@@ -131791,17 +137283,19 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - shortName: Abbreviated or short name for the entity
                                     ///   - kind: Best short description of what this entity is
+                                    ///   - status: Current status, or null when it is unknown
                                     ///   - ownerId: ID of the entity's current owner
                                     ///   - owner: Current direct owner
                                     ///   - description: Detailed description of the entity
                                     ///   - descriptionSrc: Source of the entity description
                                     ///   - yearEstablished: Year the entity was established
                                     ///   - website: Official website URL
-                                    ///   - country: Country where the entity is located
-                                    ///   - region: Region where the entity is located
-                                    ///   - address: Physical address of the entity
-                                    ///   - location: Geographic coordinates of the entity
+                                    ///   - country: Country where the entity comes from
+                                    ///   - region: Region where the entity comes from
+                                    ///   - address: Address where the entity comes from
+                                    ///   - location: Geographic coordinates where the entity comes from
                                     ///   - totalTastings: Total number of tastings for bottles from this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - totalBottles: Total number of bottles associated with this entity
                                     ///   - isFollowing: Whether the current user follows this entity
                                     ///   - createdAt: Timestamp when the entity was created
@@ -131812,6 +137306,7 @@ public enum Operations {
                                         name: Swift.String,
                                         shortName: Swift.String? = nil,
                                         kind: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.brandPayload.kindPayload,
+                                        status: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.brandPayload.statusPayload? = nil,
                                         ownerId: Swift.Double? = nil,
                                         owner: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.brandPayload.ownerPayload? = nil,
                                         description: Swift.String? = nil,
@@ -131823,6 +137318,7 @@ public enum Operations {
                                         address: Swift.String? = nil,
                                         location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                                         totalTastings: Swift.Double,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         totalBottles: Swift.Double,
                                         isFollowing: Swift.Bool,
                                         createdAt: Foundation.Date,
@@ -131833,6 +137329,7 @@ public enum Operations {
                                         self.name = name
                                         self.shortName = shortName
                                         self.kind = kind
+                                        self.status = status
                                         self.ownerId = ownerId
                                         self.owner = owner
                                         self.description = description
@@ -131844,6 +137341,7 @@ public enum Operations {
                                         self.address = address
                                         self.location = location
                                         self.totalTastings = totalTastings
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.totalBottles = totalBottles
                                         self.isFollowing = isFollowing
                                         self.createdAt = createdAt
@@ -131855,6 +137353,7 @@ public enum Operations {
                                         case name
                                         case shortName
                                         case kind
+                                        case status
                                         case ownerId
                                         case owner
                                         case description
@@ -131866,6 +137365,7 @@ public enum Operations {
                                         case address
                                         case location
                                         case totalTastings
+                                        case publicReviewAndTastingCount
                                         case totalBottles
                                         case isFollowing
                                         case createdAt
@@ -131990,6 +137490,10 @@ public enum Operations {
                                 ///
                                 /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/externalScoreCount`.
                                 public var externalScoreCount: Swift.Int
+                                /// Number of distinct members and external critics with a rating for this exact Bottle
+                                ///
+                                /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/raterCount`.
+                                public var raterCount: Swift.Int
                                 /// Combined member and external score count
                                 ///
                                 /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/scoreCount`.
@@ -132092,6 +137596,14 @@ public enum Operations {
                                 ///
                                 /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/totalTastings`.
                                 public var totalTastings: Swift.Double
+                                /// Total public reviews and tastings for this exact Bottle
+                                ///
+                                /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/publicReviewAndTastingCount`.
+                                public var publicReviewAndTastingCount: Swift.Int
+                                /// Public reviews and tastings with recognized tasting notes
+                                ///
+                                /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/notedReviewAndTastingCount`.
+                                public var notedReviewAndTastingCount: Swift.Int
                                 /// Timestamp when the bottle was created
                                 ///
                                 /// - Remark: Generated from `#/paths/flights/{flight}/GET/responses/200/content/json/bottlesPayload/bottle/createdAt`.
@@ -132155,10 +137667,13 @@ public enum Operations {
                                 ///   - maxScore:
                                 ///   - memberScoreCount: Number of member review scores for this exact Bottle
                                 ///   - externalScoreCount: Number of permitted external scores for this exact Bottle
+                                ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
                                 ///   - scoreCount: Combined member and external score count
                                 ///   - reviewScoreBandCounts: Review score counts in each rating range
                                 ///   - tastingBandCounts: Tasting counts in each rating band
                                 ///   - totalTastings: Total number of recorded tastings for this bottle
+                                ///   - publicReviewAndTastingCount: Total public reviews and tastings for this exact Bottle
+                                ///   - notedReviewAndTastingCount: Public reviews and tastings with recognized tasting notes
                                 ///   - createdAt: Timestamp when the bottle was created
                                 ///   - updatedAt: Timestamp when the bottle was last updated
                                 ///   - isFavorite: Whether the current user has marked this bottle as a favorite
@@ -132205,10 +137720,13 @@ public enum Operations {
                                     maxScore: Swift.Int? = nil,
                                     memberScoreCount: Swift.Int,
                                     externalScoreCount: Swift.Int,
+                                    raterCount: Swift.Int,
                                     scoreCount: Swift.Int,
                                     reviewScoreBandCounts: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.reviewScoreBandCountsPayload,
                                     tastingBandCounts: Operations.getFlight.Output.Ok.Body.jsonPayload.bottlesPayloadPayload.bottlePayload.tastingBandCountsPayload,
                                     totalTastings: Swift.Double,
+                                    publicReviewAndTastingCount: Swift.Int,
+                                    notedReviewAndTastingCount: Swift.Int,
                                     createdAt: Foundation.Date,
                                     updatedAt: Foundation.Date,
                                     isFavorite: Swift.Bool,
@@ -132255,10 +137773,13 @@ public enum Operations {
                                     self.maxScore = maxScore
                                     self.memberScoreCount = memberScoreCount
                                     self.externalScoreCount = externalScoreCount
+                                    self.raterCount = raterCount
                                     self.scoreCount = scoreCount
                                     self.reviewScoreBandCounts = reviewScoreBandCounts
                                     self.tastingBandCounts = tastingBandCounts
                                     self.totalTastings = totalTastings
+                                    self.publicReviewAndTastingCount = publicReviewAndTastingCount
+                                    self.notedReviewAndTastingCount = notedReviewAndTastingCount
                                     self.createdAt = createdAt
                                     self.updatedAt = updatedAt
                                     self.isFavorite = isFavorite
@@ -132306,10 +137827,13 @@ public enum Operations {
                                     case maxScore
                                     case memberScoreCount
                                     case externalScoreCount
+                                    case raterCount
                                     case scoreCount
                                     case reviewScoreBandCounts
                                     case tastingBandCounts
                                     case totalTastings
+                                    case publicReviewAndTastingCount
+                                    case notedReviewAndTastingCount
                                     case createdAt
                                     case updatedAt
                                     case isFavorite
@@ -142718,10 +148242,58 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/score`.
                         public var score: Swift.Int
-                        /// Tasting notes associated with this review
+                        /// All flavors found in this review
                         ///
                         /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/tags`.
                         public var tags: [Swift.String]?
+                        /// Flavors found on the nose
+                        ///
+                        /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/noseTags`.
+                        public var noseTags: [Swift.String]?
+                        /// Flavors found on the palate
+                        ///
+                        /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/palateTags`.
+                        public var palateTags: [Swift.String]?
+                        /// Flavors in the finish
+                        ///
+                        /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/finishTags`.
+                        public var finishTags: [Swift.String]?
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/tagCategories`.
+                        public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/tagCategories/additionalProperties`.
+                            @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case cereal = "cereal"
+                                case fruit = "fruit"
+                                case floral = "floral"
+                                case smoke = "smoke"
+                                case earthy = "earthy"
+                                case sulfur = "sulfur"
+                                case sweet = "sweet"
+                                case spice = "spice"
+                                case wood = "wood"
+                            }
+                            /// A container of undocumented properties.
+                            public var additionalProperties: [String: Operations.getMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                            /// Creates a new `tagCategoriesPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - additionalProperties: A container of undocumented properties.
+                            public init(additionalProperties: [String: Operations.getMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                self.additionalProperties = additionalProperties
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                            }
+                            public func encode(to encoder: any Encoder) throws {
+                                try encoder.encodeAdditionalProperties(additionalProperties)
+                            }
+                        }
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/tagCategories`.
+                        public var tagCategories: Operations.getMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload?
                         /// Observed color on a scale from 0 through 20
                         ///
                         /// - Remark: Generated from `#/paths/member-reviews/{review}/GET/responses/200/content/json/color`.
@@ -142762,7 +148334,11 @@ public enum Operations {
                         ///   - id:
                         ///   - bottleId:
                         ///   - score: Whole-number Bottle score from 0 through 100
-                        ///   - tags: Tasting notes associated with this review
+                        ///   - tags: All flavors found in this review
+                        ///   - noseTags: Flavors found on the nose
+                        ///   - palateTags: Flavors found on the palate
+                        ///   - finishTags: Flavors in the finish
+                        ///   - tagCategories: Stored category for each known tasting note
                         ///   - color: Observed color on a scale from 0 through 20
                         ///   - notes: Optional review notes
                         ///   - servingStyle: How the reviewed pour was served
@@ -142777,6 +148353,10 @@ public enum Operations {
                             bottleId: Swift.Int,
                             score: Swift.Int,
                             tags: [Swift.String]? = nil,
+                            noseTags: [Swift.String]? = nil,
+                            palateTags: [Swift.String]? = nil,
+                            finishTags: [Swift.String]? = nil,
+                            tagCategories: Operations.getMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload? = nil,
                             color: Swift.Double? = nil,
                             notes: Swift.String? = nil,
                             servingStyle: Operations.getMemberReview.Output.Ok.Body.jsonPayload.servingStylePayload? = nil,
@@ -142791,6 +148371,10 @@ public enum Operations {
                             self.bottleId = bottleId
                             self.score = score
                             self.tags = tags
+                            self.noseTags = noseTags
+                            self.palateTags = palateTags
+                            self.finishTags = finishTags
+                            self.tagCategories = tagCategories
                             self.color = color
                             self.notes = notes
                             self.servingStyle = servingStyle
@@ -142806,6 +148390,10 @@ public enum Operations {
                             case bottleId
                             case score
                             case tags
+                            case noseTags
+                            case palateTags
+                            case finishTags
+                            case tagCategories
                             case color
                             case notes
                             case servingStyle
@@ -144260,10 +149848,58 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/score`.
                             public var score: Swift.Int
-                            /// Tasting notes associated with this review
+                            /// All flavors found in this review
                             ///
                             /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/tags`.
                             public var tags: [Swift.String]?
+                            /// Flavors found on the nose
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/noseTags`.
+                            public var noseTags: [Swift.String]?
+                            /// Flavors found on the palate
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/palateTags`.
+                            public var palateTags: [Swift.String]?
+                            /// Flavors in the finish
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/finishTags`.
+                            public var finishTags: [Swift.String]?
+                            /// Stored category for each known tasting note
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/tagCategories`.
+                            public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/tagCategories/additionalProperties`.
+                                @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case cereal = "cereal"
+                                    case fruit = "fruit"
+                                    case floral = "floral"
+                                    case smoke = "smoke"
+                                    case earthy = "earthy"
+                                    case sulfur = "sulfur"
+                                    case sweet = "sweet"
+                                    case spice = "spice"
+                                    case wood = "wood"
+                                }
+                                /// A container of undocumented properties.
+                                public var additionalProperties: [String: Operations.listMemberReviews.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                                /// Creates a new `tagCategoriesPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - additionalProperties: A container of undocumented properties.
+                                public init(additionalProperties: [String: Operations.listMemberReviews.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                    self.additionalProperties = additionalProperties
+                                }
+                                public init(from decoder: any Decoder) throws {
+                                    additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                                }
+                                public func encode(to encoder: any Encoder) throws {
+                                    try encoder.encodeAdditionalProperties(additionalProperties)
+                                }
+                            }
+                            /// Stored category for each known tasting note
+                            ///
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/tagCategories`.
+                            public var tagCategories: Operations.listMemberReviews.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tagCategoriesPayload?
                             /// Observed color on a scale from 0 through 20
                             ///
                             /// - Remark: Generated from `#/paths/bottles/{bottle}/member-reviews/GET/responses/200/content/json/resultsPayload/color`.
@@ -144302,7 +149938,11 @@ public enum Operations {
                             ///   - id:
                             ///   - bottleId:
                             ///   - score: Whole-number Bottle score from 0 through 100
-                            ///   - tags: Tasting notes associated with this review
+                            ///   - tags: All flavors found in this review
+                            ///   - noseTags: Flavors found on the nose
+                            ///   - palateTags: Flavors found on the palate
+                            ///   - finishTags: Flavors in the finish
+                            ///   - tagCategories: Stored category for each known tasting note
                             ///   - color: Observed color on a scale from 0 through 20
                             ///   - notes: Optional review notes
                             ///   - servingStyle: How the reviewed pour was served
@@ -144316,6 +149956,10 @@ public enum Operations {
                                 bottleId: Swift.Int,
                                 score: Swift.Int,
                                 tags: [Swift.String]? = nil,
+                                noseTags: [Swift.String]? = nil,
+                                palateTags: [Swift.String]? = nil,
+                                finishTags: [Swift.String]? = nil,
+                                tagCategories: Operations.listMemberReviews.Output.Ok.Body.jsonPayload.resultsPayloadPayload.tagCategoriesPayload? = nil,
                                 color: Swift.Double? = nil,
                                 notes: Swift.String? = nil,
                                 servingStyle: Operations.listMemberReviews.Output.Ok.Body.jsonPayload.resultsPayloadPayload.servingStylePayload? = nil,
@@ -144329,6 +149973,10 @@ public enum Operations {
                                 self.bottleId = bottleId
                                 self.score = score
                                 self.tags = tags
+                                self.noseTags = noseTags
+                                self.palateTags = palateTags
+                                self.finishTags = finishTags
+                                self.tagCategories = tagCategories
                                 self.color = color
                                 self.notes = notes
                                 self.servingStyle = servingStyle
@@ -144343,6 +149991,10 @@ public enum Operations {
                                 case bottleId
                                 case score
                                 case tags
+                                case noseTags
+                                case palateTags
+                                case finishTags
+                                case tagCategories
                                 case color
                                 case notes
                                 case servingStyle
@@ -145794,10 +151446,58 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/score`.
                         public var score: Swift.Int
-                        /// Tasting notes associated with this review
+                        /// All flavors found in this review
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/tags`.
                         public var tags: [Swift.String]?
+                        /// Flavors found on the nose
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/noseTags`.
+                        public var noseTags: [Swift.String]?
+                        /// Flavors found on the palate
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/palateTags`.
+                        public var palateTags: [Swift.String]?
+                        /// Flavors in the finish
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/finishTags`.
+                        public var finishTags: [Swift.String]?
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/tagCategories`.
+                        public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/tagCategories/additionalProperties`.
+                            @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case cereal = "cereal"
+                                case fruit = "fruit"
+                                case floral = "floral"
+                                case smoke = "smoke"
+                                case earthy = "earthy"
+                                case sulfur = "sulfur"
+                                case sweet = "sweet"
+                                case spice = "spice"
+                                case wood = "wood"
+                            }
+                            /// A container of undocumented properties.
+                            public var additionalProperties: [String: Operations.getMyMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                            /// Creates a new `tagCategoriesPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - additionalProperties: A container of undocumented properties.
+                            public init(additionalProperties: [String: Operations.getMyMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                self.additionalProperties = additionalProperties
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                            }
+                            public func encode(to encoder: any Encoder) throws {
+                                try encoder.encodeAdditionalProperties(additionalProperties)
+                            }
+                        }
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/tagCategories`.
+                        public var tagCategories: Operations.getMyMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload?
                         /// Observed color on a scale from 0 through 20
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/GET/responses/200/content/json/color`.
@@ -145836,7 +151536,11 @@ public enum Operations {
                         ///   - id:
                         ///   - bottleId:
                         ///   - score: Whole-number Bottle score from 0 through 100
-                        ///   - tags: Tasting notes associated with this review
+                        ///   - tags: All flavors found in this review
+                        ///   - noseTags: Flavors found on the nose
+                        ///   - palateTags: Flavors found on the palate
+                        ///   - finishTags: Flavors in the finish
+                        ///   - tagCategories: Stored category for each known tasting note
                         ///   - color: Observed color on a scale from 0 through 20
                         ///   - notes: Optional review notes
                         ///   - servingStyle: How the reviewed pour was served
@@ -145850,6 +151554,10 @@ public enum Operations {
                             bottleId: Swift.Int,
                             score: Swift.Int,
                             tags: [Swift.String]? = nil,
+                            noseTags: [Swift.String]? = nil,
+                            palateTags: [Swift.String]? = nil,
+                            finishTags: [Swift.String]? = nil,
+                            tagCategories: Operations.getMyMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload? = nil,
                             color: Swift.Double? = nil,
                             notes: Swift.String? = nil,
                             servingStyle: Operations.getMyMemberReview.Output.Ok.Body.jsonPayload.servingStylePayload? = nil,
@@ -145863,6 +151571,10 @@ public enum Operations {
                             self.bottleId = bottleId
                             self.score = score
                             self.tags = tags
+                            self.noseTags = noseTags
+                            self.palateTags = palateTags
+                            self.finishTags = finishTags
+                            self.tagCategories = tagCategories
                             self.color = color
                             self.notes = notes
                             self.servingStyle = servingStyle
@@ -145877,6 +151589,10 @@ public enum Operations {
                             case bottleId
                             case score
                             case tags
+                            case noseTags
+                            case palateTags
+                            case finishTags
+                            case tagCategories
                             case color
                             case notes
                             case servingStyle
@@ -147286,10 +153002,18 @@ public enum Operations {
                     ///
                     /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/requestBody/json/score`.
                     public var score: Swift.Int
-                    /// Tasting notes associated with this review
+                    /// Flavors found on the nose
                     ///
-                    /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/requestBody/json/tags`.
-                    public var tags: [Swift.String]?
+                    /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/requestBody/json/noseTags`.
+                    public var noseTags: [Swift.String]?
+                    /// Flavors found on the palate
+                    ///
+                    /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/requestBody/json/palateTags`.
+                    public var palateTags: [Swift.String]?
+                    /// Flavors in the finish
+                    ///
+                    /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/requestBody/json/finishTags`.
+                    public var finishTags: [Swift.String]?
                     /// Observed color on a scale from 0 through 20
                     ///
                     /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/requestBody/json/color`.
@@ -147322,7 +153046,9 @@ public enum Operations {
                     ///
                     /// - Parameters:
                     ///   - score: Whole-number Bottle score from 0 through 100
-                    ///   - tags: Tasting notes associated with this review
+                    ///   - noseTags: Flavors found on the nose
+                    ///   - palateTags: Flavors found on the palate
+                    ///   - finishTags: Flavors in the finish
                     ///   - color: Observed color on a scale from 0 through 20
                     ///   - notes: Optional review notes
                     ///   - servingStyle: How the reviewed pour was served
@@ -147330,7 +153056,9 @@ public enum Operations {
                     ///   - pendingImageId: Pending upload ID with purpose `photo_tasting_entry`. Image attachment is best-effort; the review remains saved if attaching the image fails.
                     public init(
                         score: Swift.Int,
-                        tags: [Swift.String]? = nil,
+                        noseTags: [Swift.String]? = nil,
+                        palateTags: [Swift.String]? = nil,
+                        finishTags: [Swift.String]? = nil,
                         color: Swift.Double? = nil,
                         notes: Swift.String? = nil,
                         servingStyle: Operations.saveMemberReview.Input.Body.jsonPayload.servingStylePayload? = nil,
@@ -147338,7 +153066,9 @@ public enum Operations {
                         pendingImageId: Swift.String? = nil
                     ) {
                         self.score = score
-                        self.tags = tags
+                        self.noseTags = noseTags
+                        self.palateTags = palateTags
+                        self.finishTags = finishTags
                         self.color = color
                         self.notes = notes
                         self.servingStyle = servingStyle
@@ -147347,7 +153077,9 @@ public enum Operations {
                     }
                     public enum CodingKeys: String, CodingKey {
                         case score
-                        case tags
+                        case noseTags
+                        case palateTags
+                        case finishTags
                         case color
                         case notes
                         case servingStyle
@@ -147360,9 +153092,17 @@ public enum Operations {
                             Swift.Int.self,
                             forKey: .score
                         )
-                        self.tags = try container.decodeIfPresent(
+                        self.noseTags = try container.decodeIfPresent(
                             [Swift.String].self,
-                            forKey: .tags
+                            forKey: .noseTags
+                        )
+                        self.palateTags = try container.decodeIfPresent(
+                            [Swift.String].self,
+                            forKey: .palateTags
+                        )
+                        self.finishTags = try container.decodeIfPresent(
+                            [Swift.String].self,
+                            forKey: .finishTags
                         )
                         self.color = try container.decodeIfPresent(
                             Swift.Double.self,
@@ -147386,7 +153126,9 @@ public enum Operations {
                         )
                         try decoder.ensureNoAdditionalProperties(knownKeys: [
                             "score",
-                            "tags",
+                            "noseTags",
+                            "palateTags",
+                            "finishTags",
                             "color",
                             "notes",
                             "servingStyle",
@@ -147429,10 +153171,58 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/score`.
                         public var score: Swift.Int
-                        /// Tasting notes associated with this review
+                        /// All flavors found in this review
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/tags`.
                         public var tags: [Swift.String]?
+                        /// Flavors found on the nose
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/noseTags`.
+                        public var noseTags: [Swift.String]?
+                        /// Flavors found on the palate
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/palateTags`.
+                        public var palateTags: [Swift.String]?
+                        /// Flavors in the finish
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/finishTags`.
+                        public var finishTags: [Swift.String]?
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/tagCategories`.
+                        public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/tagCategories/additionalProperties`.
+                            @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case cereal = "cereal"
+                                case fruit = "fruit"
+                                case floral = "floral"
+                                case smoke = "smoke"
+                                case earthy = "earthy"
+                                case sulfur = "sulfur"
+                                case sweet = "sweet"
+                                case spice = "spice"
+                                case wood = "wood"
+                            }
+                            /// A container of undocumented properties.
+                            public var additionalProperties: [String: Operations.saveMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                            /// Creates a new `tagCategoriesPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - additionalProperties: A container of undocumented properties.
+                            public init(additionalProperties: [String: Operations.saveMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                self.additionalProperties = additionalProperties
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                            }
+                            public func encode(to encoder: any Encoder) throws {
+                                try encoder.encodeAdditionalProperties(additionalProperties)
+                            }
+                        }
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/tagCategories`.
+                        public var tagCategories: Operations.saveMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload?
                         /// Observed color on a scale from 0 through 20
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/PUT/responses/200/content/json/color`.
@@ -147471,7 +153261,11 @@ public enum Operations {
                         ///   - id:
                         ///   - bottleId:
                         ///   - score: Whole-number Bottle score from 0 through 100
-                        ///   - tags: Tasting notes associated with this review
+                        ///   - tags: All flavors found in this review
+                        ///   - noseTags: Flavors found on the nose
+                        ///   - palateTags: Flavors found on the palate
+                        ///   - finishTags: Flavors in the finish
+                        ///   - tagCategories: Stored category for each known tasting note
                         ///   - color: Observed color on a scale from 0 through 20
                         ///   - notes: Optional review notes
                         ///   - servingStyle: How the reviewed pour was served
@@ -147485,6 +153279,10 @@ public enum Operations {
                             bottleId: Swift.Int,
                             score: Swift.Int,
                             tags: [Swift.String]? = nil,
+                            noseTags: [Swift.String]? = nil,
+                            palateTags: [Swift.String]? = nil,
+                            finishTags: [Swift.String]? = nil,
+                            tagCategories: Operations.saveMemberReview.Output.Ok.Body.jsonPayload.tagCategoriesPayload? = nil,
                             color: Swift.Double? = nil,
                             notes: Swift.String? = nil,
                             servingStyle: Operations.saveMemberReview.Output.Ok.Body.jsonPayload.servingStylePayload? = nil,
@@ -147498,6 +153296,10 @@ public enum Operations {
                             self.bottleId = bottleId
                             self.score = score
                             self.tags = tags
+                            self.noseTags = noseTags
+                            self.palateTags = palateTags
+                            self.finishTags = finishTags
+                            self.tagCategories = tagCategories
                             self.color = color
                             self.notes = notes
                             self.servingStyle = servingStyle
@@ -147512,6 +153314,10 @@ public enum Operations {
                             case bottleId
                             case score
                             case tags
+                            case noseTags
+                            case palateTags
+                            case finishTags
+                            case tagCategories
                             case color
                             case notes
                             case servingStyle
@@ -150373,10 +156179,58 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/score`.
                         public var score: Swift.Int
-                        /// Tasting notes associated with this review
+                        /// All flavors found in this review
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/tags`.
                         public var tags: [Swift.String]?
+                        /// Flavors found on the nose
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/noseTags`.
+                        public var noseTags: [Swift.String]?
+                        /// Flavors found on the palate
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/palateTags`.
+                        public var palateTags: [Swift.String]?
+                        /// Flavors in the finish
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/finishTags`.
+                        public var finishTags: [Swift.String]?
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/tagCategories`.
+                        public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/tagCategories/additionalProperties`.
+                            @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case cereal = "cereal"
+                                case fruit = "fruit"
+                                case floral = "floral"
+                                case smoke = "smoke"
+                                case earthy = "earthy"
+                                case sulfur = "sulfur"
+                                case sweet = "sweet"
+                                case spice = "spice"
+                                case wood = "wood"
+                            }
+                            /// A container of undocumented properties.
+                            public var additionalProperties: [String: Operations.updateMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                            /// Creates a new `tagCategoriesPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - additionalProperties: A container of undocumented properties.
+                            public init(additionalProperties: [String: Operations.updateMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                self.additionalProperties = additionalProperties
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                            }
+                            public func encode(to encoder: any Encoder) throws {
+                                try encoder.encodeAdditionalProperties(additionalProperties)
+                            }
+                        }
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/tagCategories`.
+                        public var tagCategories: Operations.updateMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload?
                         /// Observed color on a scale from 0 through 20
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/POST/responses/200/content/json/color`.
@@ -150415,7 +156269,11 @@ public enum Operations {
                         ///   - id:
                         ///   - bottleId:
                         ///   - score: Whole-number Bottle score from 0 through 100
-                        ///   - tags: Tasting notes associated with this review
+                        ///   - tags: All flavors found in this review
+                        ///   - noseTags: Flavors found on the nose
+                        ///   - palateTags: Flavors found on the palate
+                        ///   - finishTags: Flavors in the finish
+                        ///   - tagCategories: Stored category for each known tasting note
                         ///   - color: Observed color on a scale from 0 through 20
                         ///   - notes: Optional review notes
                         ///   - servingStyle: How the reviewed pour was served
@@ -150429,6 +156287,10 @@ public enum Operations {
                             bottleId: Swift.Int,
                             score: Swift.Int,
                             tags: [Swift.String]? = nil,
+                            noseTags: [Swift.String]? = nil,
+                            palateTags: [Swift.String]? = nil,
+                            finishTags: [Swift.String]? = nil,
+                            tagCategories: Operations.updateMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload? = nil,
                             color: Swift.Double? = nil,
                             notes: Swift.String? = nil,
                             servingStyle: Operations.updateMemberReviewImage.Output.Ok.Body.jsonPayload.servingStylePayload? = nil,
@@ -150442,6 +156304,10 @@ public enum Operations {
                             self.bottleId = bottleId
                             self.score = score
                             self.tags = tags
+                            self.noseTags = noseTags
+                            self.palateTags = palateTags
+                            self.finishTags = finishTags
+                            self.tagCategories = tagCategories
                             self.color = color
                             self.notes = notes
                             self.servingStyle = servingStyle
@@ -150456,6 +156322,10 @@ public enum Operations {
                             case bottleId
                             case score
                             case tags
+                            case noseTags
+                            case palateTags
+                            case finishTags
+                            case tagCategories
                             case color
                             case notes
                             case servingStyle
@@ -151884,10 +157754,58 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/score`.
                         public var score: Swift.Int
-                        /// Tasting notes associated with this review
+                        /// All flavors found in this review
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/tags`.
                         public var tags: [Swift.String]?
+                        /// Flavors found on the nose
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/noseTags`.
+                        public var noseTags: [Swift.String]?
+                        /// Flavors found on the palate
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/palateTags`.
+                        public var palateTags: [Swift.String]?
+                        /// Flavors in the finish
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/finishTags`.
+                        public var finishTags: [Swift.String]?
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/tagCategories`.
+                        public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/tagCategories/additionalProperties`.
+                            @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case cereal = "cereal"
+                                case fruit = "fruit"
+                                case floral = "floral"
+                                case smoke = "smoke"
+                                case earthy = "earthy"
+                                case sulfur = "sulfur"
+                                case sweet = "sweet"
+                                case spice = "spice"
+                                case wood = "wood"
+                            }
+                            /// A container of undocumented properties.
+                            public var additionalProperties: [String: Operations.deleteMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                            /// Creates a new `tagCategoriesPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - additionalProperties: A container of undocumented properties.
+                            public init(additionalProperties: [String: Operations.deleteMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                self.additionalProperties = additionalProperties
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                            }
+                            public func encode(to encoder: any Encoder) throws {
+                                try encoder.encodeAdditionalProperties(additionalProperties)
+                            }
+                        }
+                        /// Stored category for each known tasting note
+                        ///
+                        /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/tagCategories`.
+                        public var tagCategories: Operations.deleteMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload?
                         /// Observed color on a scale from 0 through 20
                         ///
                         /// - Remark: Generated from `#/paths/bottles/{bottle}/member-review/image/DELETE/responses/200/content/json/color`.
@@ -151926,7 +157844,11 @@ public enum Operations {
                         ///   - id:
                         ///   - bottleId:
                         ///   - score: Whole-number Bottle score from 0 through 100
-                        ///   - tags: Tasting notes associated with this review
+                        ///   - tags: All flavors found in this review
+                        ///   - noseTags: Flavors found on the nose
+                        ///   - palateTags: Flavors found on the palate
+                        ///   - finishTags: Flavors in the finish
+                        ///   - tagCategories: Stored category for each known tasting note
                         ///   - color: Observed color on a scale from 0 through 20
                         ///   - notes: Optional review notes
                         ///   - servingStyle: How the reviewed pour was served
@@ -151940,6 +157862,10 @@ public enum Operations {
                             bottleId: Swift.Int,
                             score: Swift.Int,
                             tags: [Swift.String]? = nil,
+                            noseTags: [Swift.String]? = nil,
+                            palateTags: [Swift.String]? = nil,
+                            finishTags: [Swift.String]? = nil,
+                            tagCategories: Operations.deleteMemberReviewImage.Output.Ok.Body.jsonPayload.tagCategoriesPayload? = nil,
                             color: Swift.Double? = nil,
                             notes: Swift.String? = nil,
                             servingStyle: Operations.deleteMemberReviewImage.Output.Ok.Body.jsonPayload.servingStylePayload? = nil,
@@ -151953,6 +157879,10 @@ public enum Operations {
                             self.bottleId = bottleId
                             self.score = score
                             self.tags = tags
+                            self.noseTags = noseTags
+                            self.palateTags = palateTags
+                            self.finishTags = finishTags
+                            self.tagCategories = tagCategories
                             self.color = color
                             self.notes = notes
                             self.servingStyle = servingStyle
@@ -151967,6 +157897,10 @@ public enum Operations {
                             case bottleId
                             case score
                             case tags
+                            case noseTags
+                            case palateTags
+                            case finishTags
+                            case tagCategories
                             case color
                             case notes
                             case servingStyle
@@ -153400,6 +159334,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/kind`.
                             public var kind: Operations.listSmwsDistillers.Output.Ok.Body.jsonPayload.resultsPayloadPayload.kindPayload
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/status`.
+                            @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case active = "active"
+                                case mothballed = "mothballed"
+                                case closed = "closed"
+                                case discontinued = "discontinued"
+                            }
+                            /// Current status, or null when it is unknown
+                            ///
+                            /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/status`.
+                            public var status: Operations.listSmwsDistillers.Output.Ok.Body.jsonPayload.resultsPayloadPayload.statusPayload?
                             /// ID of the entity's current owner
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/ownerId`.
@@ -153481,19 +159428,19 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/website`.
                             public var website: Swift.String?
-                            /// Country where the entity is located
+                            /// Country where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/country`.
                             public var country: Components.Schemas.Country?
-                            /// Region where the entity is located
+                            /// Region where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/region`.
                             public var region: Components.Schemas.Region?
-                            /// Physical address of the entity
+                            /// Address where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/address`.
                             public var address: Swift.String?
-                            /// Geographic coordinates of the entity
+                            /// Geographic coordinates where the entity comes from
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/location`.
                             public var location: OpenAPIRuntime.OpenAPIArrayContainer?
@@ -153501,6 +159448,10 @@ public enum Operations {
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/totalTastings`.
                             public var totalTastings: Swift.Double
+                            /// Total public reviews and tastings for this entity's bottles
+                            ///
+                            /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/publicReviewAndTastingCount`.
+                            public var publicReviewAndTastingCount: Swift.Int
                             /// Total number of bottles associated with this entity
                             ///
                             /// - Remark: Generated from `#/paths/smws/distillers/GET/responses/200/content/json/resultsPayload/totalBottles`.
@@ -153529,17 +159480,19 @@ public enum Operations {
                             ///   - name: Name of the entity (brand, distillery, etc.)
                             ///   - shortName: Abbreviated or short name for the entity
                             ///   - kind: Best short description of what this entity is
+                            ///   - status: Current status, or null when it is unknown
                             ///   - ownerId: ID of the entity's current owner
                             ///   - owner: Current direct owner
                             ///   - description: Detailed description of the entity
                             ///   - descriptionSrc: Source of the entity description
                             ///   - yearEstablished: Year the entity was established
                             ///   - website: Official website URL
-                            ///   - country: Country where the entity is located
-                            ///   - region: Region where the entity is located
-                            ///   - address: Physical address of the entity
-                            ///   - location: Geographic coordinates of the entity
+                            ///   - country: Country where the entity comes from
+                            ///   - region: Region where the entity comes from
+                            ///   - address: Address where the entity comes from
+                            ///   - location: Geographic coordinates where the entity comes from
                             ///   - totalTastings: Total number of tastings for bottles from this entity
+                            ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                             ///   - totalBottles: Total number of bottles associated with this entity
                             ///   - isFollowing: Whether the current user follows this entity
                             ///   - createdAt: Timestamp when the entity was created
@@ -153551,6 +159504,7 @@ public enum Operations {
                                 name: Swift.String,
                                 shortName: Swift.String? = nil,
                                 kind: Operations.listSmwsDistillers.Output.Ok.Body.jsonPayload.resultsPayloadPayload.kindPayload,
+                                status: Operations.listSmwsDistillers.Output.Ok.Body.jsonPayload.resultsPayloadPayload.statusPayload? = nil,
                                 ownerId: Swift.Double? = nil,
                                 owner: Operations.listSmwsDistillers.Output.Ok.Body.jsonPayload.resultsPayloadPayload.ownerPayload? = nil,
                                 description: Swift.String? = nil,
@@ -153562,6 +159516,7 @@ public enum Operations {
                                 address: Swift.String? = nil,
                                 location: OpenAPIRuntime.OpenAPIArrayContainer? = nil,
                                 totalTastings: Swift.Double,
+                                publicReviewAndTastingCount: Swift.Int,
                                 totalBottles: Swift.Double,
                                 isFollowing: Swift.Bool,
                                 createdAt: Foundation.Date,
@@ -153573,6 +159528,7 @@ public enum Operations {
                                 self.name = name
                                 self.shortName = shortName
                                 self.kind = kind
+                                self.status = status
                                 self.ownerId = ownerId
                                 self.owner = owner
                                 self.description = description
@@ -153584,6 +159540,7 @@ public enum Operations {
                                 self.address = address
                                 self.location = location
                                 self.totalTastings = totalTastings
+                                self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                 self.totalBottles = totalBottles
                                 self.isFollowing = isFollowing
                                 self.createdAt = createdAt
@@ -153596,6 +159553,7 @@ public enum Operations {
                                 case name
                                 case shortName
                                 case kind
+                                case status
                                 case ownerId
                                 case owner
                                 case description
@@ -153607,6 +159565,7 @@ public enum Operations {
                                 case address
                                 case location
                                 case totalTastings
+                                case publicReviewAndTastingCount
                                 case totalBottles
                                 case isFollowing
                                 case createdAt
@@ -172496,6 +178455,1564 @@ public enum Operations {
             }
         }
     }
+    /// List active critics
+    ///
+    /// List review sites in Peated's activity order. Each site includes the public review used to place it.
+    ///
+    /// - Remark: HTTP `GET /external-reviews/active-critics`.
+    /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)`.
+    public enum listActiveCritics {
+        public static let id: Swift.String = "listActiveCritics"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/query`.
+            public struct Query: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/query/limit`.
+                public var limit: Swift.Int?
+                /// Creates a new `Query`.
+                ///
+                /// - Parameters:
+                ///   - limit:
+                public init(limit: Swift.Int? = nil) {
+                    self.limit = limit
+                }
+            }
+            public var query: Operations.listActiveCritics.Input.Query
+            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.listActiveCritics.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.listActiveCritics.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.listActiveCritics.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - query:
+            ///   - headers:
+            public init(
+                query: Operations.listActiveCritics.Input.Query = .init(),
+                headers: Operations.listActiveCritics.Input.Headers = .init()
+            ) {
+                self.query = query
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload`.
+                    public struct jsonPayloadPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/site`.
+                        public struct sitePayload: Codable, Hashable, Sendable {
+                            /// Stable key for the review site
+                            ///
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/site/type`.
+                            public var _type: Swift.String
+                            /// Name of the review site
+                            ///
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/site/name`.
+                            public var name: Swift.String
+                            /// Site icon URL
+                            ///
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/site/imageUrl`.
+                            public var imageUrl: Swift.String?
+                            /// Creates a new `sitePayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - _type: Stable key for the review site
+                            ///   - name: Name of the review site
+                            ///   - imageUrl: Site icon URL
+                            public init(
+                                _type: Swift.String,
+                                name: Swift.String,
+                                imageUrl: Swift.String? = nil
+                            ) {
+                                self._type = _type
+                                self.name = name
+                                self.imageUrl = imageUrl
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case _type = "type"
+                                case name
+                                case imageUrl
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self._type = try container.decode(
+                                    Swift.String.self,
+                                    forKey: ._type
+                                )
+                                self.name = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .name
+                                )
+                                self.imageUrl = try container.decodeIfPresent(
+                                    Swift.String.self,
+                                    forKey: .imageUrl
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "type",
+                                    "name",
+                                    "imageUrl"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/site`.
+                        public var site: Operations.listActiveCritics.Output.Ok.Body.jsonPayloadPayload.sitePayload
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/latestReview`.
+                        public struct latestReviewPayload: Codable, Hashable, Sendable {
+                            /// Full name of the Bottle reviewed
+                            ///
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/latestReview/bottleName`.
+                            public var bottleName: Swift.String
+                            /// Publication time of the review
+                            ///
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/latestReview/publishedAt`.
+                            public var publishedAt: Foundation.Date
+                            /// URL to the original review
+                            ///
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/latestReview/url`.
+                            public var url: Swift.String
+                            /// Creates a new `latestReviewPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - bottleName: Full name of the Bottle reviewed
+                            ///   - publishedAt: Publication time of the review
+                            ///   - url: URL to the original review
+                            public init(
+                                bottleName: Swift.String,
+                                publishedAt: Foundation.Date,
+                                url: Swift.String
+                            ) {
+                                self.bottleName = bottleName
+                                self.publishedAt = publishedAt
+                                self.url = url
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case bottleName
+                                case publishedAt
+                                case url
+                            }
+                            public init(from decoder: any Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.bottleName = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .bottleName
+                                )
+                                self.publishedAt = try container.decode(
+                                    Foundation.Date.self,
+                                    forKey: .publishedAt
+                                )
+                                self.url = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .url
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "bottleName",
+                                    "publishedAt",
+                                    "url"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/jsonPayload/latestReview`.
+                        public var latestReview: Operations.listActiveCritics.Output.Ok.Body.jsonPayloadPayload.latestReviewPayload
+                        /// Creates a new `jsonPayloadPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - site:
+                        ///   - latestReview:
+                        public init(
+                            site: Operations.listActiveCritics.Output.Ok.Body.jsonPayloadPayload.sitePayload,
+                            latestReview: Operations.listActiveCritics.Output.Ok.Body.jsonPayloadPayload.latestReviewPayload
+                        ) {
+                            self.site = site
+                            self.latestReview = latestReview
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case site
+                            case latestReview
+                        }
+                        public init(from decoder: any Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.site = try container.decode(
+                                Operations.listActiveCritics.Output.Ok.Body.jsonPayloadPayload.sitePayload.self,
+                                forKey: .site
+                            )
+                            self.latestReview = try container.decode(
+                                Operations.listActiveCritics.Output.Ok.Body.jsonPayloadPayload.latestReviewPayload.self,
+                                forKey: .latestReview
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "site",
+                                "latestReview"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/json`.
+                    public typealias jsonPayload = [Operations.listActiveCritics.Output.Ok.Body.jsonPayloadPayload]
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/200/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.Ok.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.Ok.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// OK
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.listActiveCritics.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.listActiveCritics.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct BadRequest: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case1`.
+                        case case1(Operations.listActiveCritics.Output.BadRequest.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/json/case2`.
+                        case case2(Operations.listActiveCritics.Output.BadRequest.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/400/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.BadRequest.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.BadRequest.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.BadRequest.Body
+                /// Creates a new `BadRequest`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.BadRequest.Body) {
+                    self.body = body
+                }
+            }
+            /// 400
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Operations.listActiveCritics.Output.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Operations.listActiveCritics.Output.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Unauthorized: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case1`.
+                        case case1(Operations.listActiveCritics.Output.Unauthorized.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/json/case2`.
+                        case case2(Operations.listActiveCritics.Output.Unauthorized.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/401/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.Unauthorized.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.Unauthorized.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.Unauthorized.Body
+                /// Creates a new `Unauthorized`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.Unauthorized.Body) {
+                    self.body = body
+                }
+            }
+            /// 401
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Operations.listActiveCritics.Output.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Operations.listActiveCritics.Output.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Forbidden: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case1`.
+                        case case1(Operations.listActiveCritics.Output.Forbidden.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/json/case2`.
+                        case case2(Operations.listActiveCritics.Output.Forbidden.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/403/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.Forbidden.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.Forbidden.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.Forbidden.Body
+                /// Creates a new `Forbidden`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.Forbidden.Body) {
+                    self.body = body
+                }
+            }
+            /// 403
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/403`.
+            ///
+            /// HTTP response code: `403 forbidden`.
+            case forbidden(Operations.listActiveCritics.Output.Forbidden)
+            /// The associated value of the enum case if `self` is `.forbidden`.
+            ///
+            /// - Throws: An error if `self` is not `.forbidden`.
+            /// - SeeAlso: `.forbidden`.
+            public var forbidden: Operations.listActiveCritics.Output.Forbidden {
+                get throws {
+                    switch self {
+                    case let .forbidden(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "forbidden",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct NotFound: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case1`.
+                        case case1(Operations.listActiveCritics.Output.NotFound.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/json/case2`.
+                        case case2(Operations.listActiveCritics.Output.NotFound.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/404/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.NotFound.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.NotFound.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.NotFound.Body
+                /// Creates a new `NotFound`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.NotFound.Body) {
+                    self.body = body
+                }
+            }
+            /// 404
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Operations.listActiveCritics.Output.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Operations.listActiveCritics.Output.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Conflict: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case1`.
+                        case case1(Operations.listActiveCritics.Output.Conflict.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/json/case2`.
+                        case case2(Operations.listActiveCritics.Output.Conflict.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/409/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.Conflict.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.Conflict.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.Conflict.Body
+                /// Creates a new `Conflict`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.Conflict.Body) {
+                    self.body = body
+                }
+            }
+            /// 409
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/409`.
+            ///
+            /// HTTP response code: `409 conflict`.
+            case conflict(Operations.listActiveCritics.Output.Conflict)
+            /// The associated value of the enum case if `self` is `.conflict`.
+            ///
+            /// - Throws: An error if `self` is not `.conflict`.
+            /// - SeeAlso: `.conflict`.
+            public var conflict: Operations.listActiveCritics.Output.Conflict {
+                get throws {
+                    switch self {
+                    case let .conflict(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "conflict",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct ContentTooLarge: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case1`.
+                        case case1(Operations.listActiveCritics.Output.ContentTooLarge.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/json/case2`.
+                        case case2(Operations.listActiveCritics.Output.ContentTooLarge.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/413/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.ContentTooLarge.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.ContentTooLarge.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.ContentTooLarge.Body
+                /// Creates a new `ContentTooLarge`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.ContentTooLarge.Body) {
+                    self.body = body
+                }
+            }
+            /// 413
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/413`.
+            ///
+            /// HTTP response code: `413 contentTooLarge`.
+            case contentTooLarge(Operations.listActiveCritics.Output.ContentTooLarge)
+            /// The associated value of the enum case if `self` is `.contentTooLarge`.
+            ///
+            /// - Throws: An error if `self` is not `.contentTooLarge`.
+            /// - SeeAlso: `.contentTooLarge`.
+            public var contentTooLarge: Operations.listActiveCritics.Output.ContentTooLarge {
+                get throws {
+                    switch self {
+                    case let .contentTooLarge(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "contentTooLarge",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct InternalServerError: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case1`.
+                        case case1(Operations.listActiveCritics.Output.InternalServerError.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case2/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case2/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case2`.
+                        case case2(Operations.listActiveCritics.Output.InternalServerError.Body.jsonPayload.Case2Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case3`.
+                        public struct Case3Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case3/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case3/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case3/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case3/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case3/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case3Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case3`.
+                        case case3(Operations.listActiveCritics.Output.InternalServerError.Body.jsonPayload.Case3Payload)
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case4`.
+                        public struct Case4Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case4/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case4/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case4/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case4/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case4/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case4Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/json/case4`.
+                        case case4(Operations.listActiveCritics.Output.InternalServerError.Body.jsonPayload.Case4Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case3(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case4(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            case let .case3(value):
+                                try value.encode(to: encoder)
+                            case let .case4(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/external-reviews/active-critics/GET/responses/500/content/application\/json`.
+                    case json(Operations.listActiveCritics.Output.InternalServerError.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.listActiveCritics.Output.InternalServerError.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.listActiveCritics.Output.InternalServerError.Body
+                /// Creates a new `InternalServerError`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.listActiveCritics.Output.InternalServerError.Body) {
+                    self.body = body
+                }
+            }
+            /// 500
+            ///
+            /// - Remark: Generated from `#/paths//external-reviews/active-critics/get(listActiveCritics)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Operations.listActiveCritics.Output.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Operations.listActiveCritics.Output.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
     /// List external reviews
     ///
     /// Find published external reviews by bottle, site, or name. Requests with `onlyUnknown: true`, or `sort: name` without a bottle, are for moderator review and include unpublished records.
@@ -175537,57 +183054,18 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/medianScore`.
                                     public var medianScore: Swift.Int?
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/minScore`.
+                                    public var minScore: Swift.Int?
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/maxScore`.
+                                    public var maxScore: Swift.Int?
+                                    /// Number of distinct members and external critics with a rating for this exact Bottle
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/raterCount`.
+                                    public var raterCount: Swift.Int
                                     /// Combined member and external score count
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/scoreCount`.
                                     public var scoreCount: Swift.Int
-                                    /// Review score counts in each rating range
-                                    ///
-                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/reviewScoreBandCounts`.
-                                    public struct reviewScoreBandCountsPayload: Codable, Hashable, Sendable {
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/reviewScoreBandCounts/mediocre`.
-                                        public var mediocre: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/reviewScoreBandCounts/good`.
-                                        public var good: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/reviewScoreBandCounts/very_good`.
-                                        public var very_good: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/reviewScoreBandCounts/outstanding`.
-                                        public var outstanding: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/reviewScoreBandCounts/unicorn`.
-                                        public var unicorn: Swift.Int
-                                        /// Creates a new `reviewScoreBandCountsPayload`.
-                                        ///
-                                        /// - Parameters:
-                                        ///   - mediocre:
-                                        ///   - good:
-                                        ///   - very_good:
-                                        ///   - outstanding:
-                                        ///   - unicorn:
-                                        public init(
-                                            mediocre: Swift.Int,
-                                            good: Swift.Int,
-                                            very_good: Swift.Int,
-                                            outstanding: Swift.Int,
-                                            unicorn: Swift.Int
-                                        ) {
-                                            self.mediocre = mediocre
-                                            self.good = good
-                                            self.very_good = very_good
-                                            self.outstanding = outstanding
-                                            self.unicorn = unicorn
-                                        }
-                                        public enum CodingKeys: String, CodingKey {
-                                            case mediocre
-                                            case good
-                                            case very_good
-                                            case outstanding
-                                            case unicorn
-                                        }
-                                    }
-                                    /// Review score counts in each rating range
-                                    ///
-                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/reviewScoreBandCounts`.
-                                    public var reviewScoreBandCounts: Operations.search.Output.Ok.Body.jsonPayload.exactPayload.Value1Payload.refPayload.reviewScoreBandCountsPayload
                                     /// Tasting counts in each rating band
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value1/ref/tastingBandCounts`.
@@ -175714,8 +183192,10 @@ public enum Operations {
                                     ///   - releaseYear: Year this release became available
                                     ///   - imageUrl: URL to the bottle's image
                                     ///   - medianScore: Published median review score for this exact Bottle
+                                    ///   - minScore:
+                                    ///   - maxScore:
+                                    ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
                                     ///   - scoreCount: Combined member and external score count
-                                    ///   - reviewScoreBandCounts: Review score counts in each rating range
                                     ///   - tastingBandCounts: Tasting counts in each rating band
                                     ///   - brand:
                                     ///   - series:
@@ -175734,8 +183214,10 @@ public enum Operations {
                                         releaseYear: Swift.Double? = nil,
                                         imageUrl: Swift.String? = nil,
                                         medianScore: Swift.Int? = nil,
+                                        minScore: Swift.Int? = nil,
+                                        maxScore: Swift.Int? = nil,
+                                        raterCount: Swift.Int,
                                         scoreCount: Swift.Int,
-                                        reviewScoreBandCounts: Operations.search.Output.Ok.Body.jsonPayload.exactPayload.Value1Payload.refPayload.reviewScoreBandCountsPayload,
                                         tastingBandCounts: Operations.search.Output.Ok.Body.jsonPayload.exactPayload.Value1Payload.refPayload.tastingBandCountsPayload,
                                         brand: Operations.search.Output.Ok.Body.jsonPayload.exactPayload.Value1Payload.refPayload.brandPayload,
                                         series: Operations.search.Output.Ok.Body.jsonPayload.exactPayload.Value1Payload.refPayload.seriesPayload? = nil,
@@ -175754,8 +183236,10 @@ public enum Operations {
                                         self.releaseYear = releaseYear
                                         self.imageUrl = imageUrl
                                         self.medianScore = medianScore
+                                        self.minScore = minScore
+                                        self.maxScore = maxScore
+                                        self.raterCount = raterCount
                                         self.scoreCount = scoreCount
-                                        self.reviewScoreBandCounts = reviewScoreBandCounts
                                         self.tastingBandCounts = tastingBandCounts
                                         self.brand = brand
                                         self.series = series
@@ -175775,8 +183259,10 @@ public enum Operations {
                                         case releaseYear
                                         case imageUrl
                                         case medianScore
+                                        case minScore
+                                        case maxScore
+                                        case raterCount
                                         case scoreCount
-                                        case reviewScoreBandCounts
                                         case tastingBandCounts
                                         case brand
                                         case series
@@ -175835,6 +183321,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value2/ref/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value2/ref/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value2/ref/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/exact/value2/ref/region/name`.
@@ -175859,18 +183349,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.exactPayload.Value2Payload.refPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.exactPayload.Value2Payload.refPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -175878,6 +183371,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -176172,57 +183666,18 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/medianScore`.
                                     public var medianScore: Swift.Int?
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/minScore`.
+                                    public var minScore: Swift.Int?
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/maxScore`.
+                                    public var maxScore: Swift.Int?
+                                    /// Number of distinct members and external critics with a rating for this exact Bottle
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/raterCount`.
+                                    public var raterCount: Swift.Int
                                     /// Combined member and external score count
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/scoreCount`.
                                     public var scoreCount: Swift.Int
-                                    /// Review score counts in each rating range
-                                    ///
-                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/reviewScoreBandCounts`.
-                                    public struct reviewScoreBandCountsPayload: Codable, Hashable, Sendable {
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/reviewScoreBandCounts/mediocre`.
-                                        public var mediocre: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/reviewScoreBandCounts/good`.
-                                        public var good: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/reviewScoreBandCounts/very_good`.
-                                        public var very_good: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/reviewScoreBandCounts/outstanding`.
-                                        public var outstanding: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/reviewScoreBandCounts/unicorn`.
-                                        public var unicorn: Swift.Int
-                                        /// Creates a new `reviewScoreBandCountsPayload`.
-                                        ///
-                                        /// - Parameters:
-                                        ///   - mediocre:
-                                        ///   - good:
-                                        ///   - very_good:
-                                        ///   - outstanding:
-                                        ///   - unicorn:
-                                        public init(
-                                            mediocre: Swift.Int,
-                                            good: Swift.Int,
-                                            very_good: Swift.Int,
-                                            outstanding: Swift.Int,
-                                            unicorn: Swift.Int
-                                        ) {
-                                            self.mediocre = mediocre
-                                            self.good = good
-                                            self.very_good = very_good
-                                            self.outstanding = outstanding
-                                            self.unicorn = unicorn
-                                        }
-                                        public enum CodingKeys: String, CodingKey {
-                                            case mediocre
-                                            case good
-                                            case very_good
-                                            case outstanding
-                                            case unicorn
-                                        }
-                                    }
-                                    /// Review score counts in each rating range
-                                    ///
-                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/reviewScoreBandCounts`.
-                                    public var reviewScoreBandCounts: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value1Payload.resultsPayloadPayload.reviewScoreBandCountsPayload
                                     /// Tasting counts in each rating band
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value1/resultsPayload/tastingBandCounts`.
@@ -176349,8 +183804,10 @@ public enum Operations {
                                     ///   - releaseYear: Year this release became available
                                     ///   - imageUrl: URL to the bottle's image
                                     ///   - medianScore: Published median review score for this exact Bottle
+                                    ///   - minScore:
+                                    ///   - maxScore:
+                                    ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
                                     ///   - scoreCount: Combined member and external score count
-                                    ///   - reviewScoreBandCounts: Review score counts in each rating range
                                     ///   - tastingBandCounts: Tasting counts in each rating band
                                     ///   - brand:
                                     ///   - series:
@@ -176369,8 +183826,10 @@ public enum Operations {
                                         releaseYear: Swift.Double? = nil,
                                         imageUrl: Swift.String? = nil,
                                         medianScore: Swift.Int? = nil,
+                                        minScore: Swift.Int? = nil,
+                                        maxScore: Swift.Int? = nil,
+                                        raterCount: Swift.Int,
                                         scoreCount: Swift.Int,
-                                        reviewScoreBandCounts: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value1Payload.resultsPayloadPayload.reviewScoreBandCountsPayload,
                                         tastingBandCounts: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value1Payload.resultsPayloadPayload.tastingBandCountsPayload,
                                         brand: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value1Payload.resultsPayloadPayload.brandPayload,
                                         series: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value1Payload.resultsPayloadPayload.seriesPayload? = nil,
@@ -176389,8 +183848,10 @@ public enum Operations {
                                         self.releaseYear = releaseYear
                                         self.imageUrl = imageUrl
                                         self.medianScore = medianScore
+                                        self.minScore = minScore
+                                        self.maxScore = maxScore
+                                        self.raterCount = raterCount
                                         self.scoreCount = scoreCount
-                                        self.reviewScoreBandCounts = reviewScoreBandCounts
                                         self.tastingBandCounts = tastingBandCounts
                                         self.brand = brand
                                         self.series = series
@@ -176410,8 +183871,10 @@ public enum Operations {
                                         case releaseYear
                                         case imageUrl
                                         case medianScore
+                                        case minScore
+                                        case maxScore
+                                        case raterCount
                                         case scoreCount
-                                        case reviewScoreBandCounts
                                         case tastingBandCounts
                                         case brand
                                         case series
@@ -176628,6 +184091,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value3/resultsPayload/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value3/resultsPayload/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value3/resultsPayload/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value3/resultsPayload/region/name`.
@@ -176652,18 +184119,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value3Payload.resultsPayloadPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value3Payload.resultsPayloadPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -176671,6 +184141,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -176734,6 +184205,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value4/resultsPayload/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value4/resultsPayload/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value4/resultsPayload/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value4/resultsPayload/region/name`.
@@ -176758,18 +184233,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value4Payload.resultsPayloadPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value4Payload.resultsPayloadPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -176777,6 +184255,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -176840,6 +184319,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value5/resultsPayload/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value5/resultsPayload/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value5/resultsPayload/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value5/resultsPayload/region/name`.
@@ -176864,18 +184347,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value5Payload.resultsPayloadPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value5Payload.resultsPayloadPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -176883,6 +184369,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -176946,6 +184433,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value6/resultsPayload/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value6/resultsPayload/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value6/resultsPayload/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/groupsPayload/value6/resultsPayload/region/name`.
@@ -176970,18 +184461,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value6Payload.resultsPayloadPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.groupsPayloadPayload.Value6Payload.resultsPayloadPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -176989,6 +184483,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -177393,57 +184888,18 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/medianScore`.
                                     public var medianScore: Swift.Int?
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/minScore`.
+                                    public var minScore: Swift.Int?
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/maxScore`.
+                                    public var maxScore: Swift.Int?
+                                    /// Number of distinct members and external critics with a rating for this exact Bottle
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/raterCount`.
+                                    public var raterCount: Swift.Int
                                     /// Combined member and external score count
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/scoreCount`.
                                     public var scoreCount: Swift.Int
-                                    /// Review score counts in each rating range
-                                    ///
-                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/reviewScoreBandCounts`.
-                                    public struct reviewScoreBandCountsPayload: Codable, Hashable, Sendable {
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/reviewScoreBandCounts/mediocre`.
-                                        public var mediocre: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/reviewScoreBandCounts/good`.
-                                        public var good: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/reviewScoreBandCounts/very_good`.
-                                        public var very_good: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/reviewScoreBandCounts/outstanding`.
-                                        public var outstanding: Swift.Int
-                                        /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/reviewScoreBandCounts/unicorn`.
-                                        public var unicorn: Swift.Int
-                                        /// Creates a new `reviewScoreBandCountsPayload`.
-                                        ///
-                                        /// - Parameters:
-                                        ///   - mediocre:
-                                        ///   - good:
-                                        ///   - very_good:
-                                        ///   - outstanding:
-                                        ///   - unicorn:
-                                        public init(
-                                            mediocre: Swift.Int,
-                                            good: Swift.Int,
-                                            very_good: Swift.Int,
-                                            outstanding: Swift.Int,
-                                            unicorn: Swift.Int
-                                        ) {
-                                            self.mediocre = mediocre
-                                            self.good = good
-                                            self.very_good = very_good
-                                            self.outstanding = outstanding
-                                            self.unicorn = unicorn
-                                        }
-                                        public enum CodingKeys: String, CodingKey {
-                                            case mediocre
-                                            case good
-                                            case very_good
-                                            case outstanding
-                                            case unicorn
-                                        }
-                                    }
-                                    /// Review score counts in each rating range
-                                    ///
-                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/reviewScoreBandCounts`.
-                                    public var reviewScoreBandCounts: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value1Payload.resultPayload.reviewScoreBandCountsPayload
                                     /// Tasting counts in each rating band
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value1/result/tastingBandCounts`.
@@ -177570,8 +185026,10 @@ public enum Operations {
                                     ///   - releaseYear: Year this release became available
                                     ///   - imageUrl: URL to the bottle's image
                                     ///   - medianScore: Published median review score for this exact Bottle
+                                    ///   - minScore:
+                                    ///   - maxScore:
+                                    ///   - raterCount: Number of distinct members and external critics with a rating for this exact Bottle
                                     ///   - scoreCount: Combined member and external score count
-                                    ///   - reviewScoreBandCounts: Review score counts in each rating range
                                     ///   - tastingBandCounts: Tasting counts in each rating band
                                     ///   - brand:
                                     ///   - series:
@@ -177590,8 +185048,10 @@ public enum Operations {
                                         releaseYear: Swift.Double? = nil,
                                         imageUrl: Swift.String? = nil,
                                         medianScore: Swift.Int? = nil,
+                                        minScore: Swift.Int? = nil,
+                                        maxScore: Swift.Int? = nil,
+                                        raterCount: Swift.Int,
                                         scoreCount: Swift.Int,
-                                        reviewScoreBandCounts: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value1Payload.resultPayload.reviewScoreBandCountsPayload,
                                         tastingBandCounts: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value1Payload.resultPayload.tastingBandCountsPayload,
                                         brand: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value1Payload.resultPayload.brandPayload,
                                         series: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value1Payload.resultPayload.seriesPayload? = nil,
@@ -177610,8 +185070,10 @@ public enum Operations {
                                         self.releaseYear = releaseYear
                                         self.imageUrl = imageUrl
                                         self.medianScore = medianScore
+                                        self.minScore = minScore
+                                        self.maxScore = maxScore
+                                        self.raterCount = raterCount
                                         self.scoreCount = scoreCount
-                                        self.reviewScoreBandCounts = reviewScoreBandCounts
                                         self.tastingBandCounts = tastingBandCounts
                                         self.brand = brand
                                         self.series = series
@@ -177631,8 +185093,10 @@ public enum Operations {
                                         case releaseYear
                                         case imageUrl
                                         case medianScore
+                                        case minScore
+                                        case maxScore
+                                        case raterCount
                                         case scoreCount
-                                        case reviewScoreBandCounts
                                         case tastingBandCounts
                                         case brand
                                         case series
@@ -177833,6 +185297,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value3/result/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value3/result/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value3/result/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value3/result/region/name`.
@@ -177857,18 +185325,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value3Payload.resultPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value3Payload.resultPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -177876,6 +185347,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -177931,6 +185403,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value4/result/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value4/result/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value4/result/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value4/result/region/name`.
@@ -177955,18 +185431,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value4Payload.resultPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value4Payload.resultPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -177974,6 +185453,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -178029,6 +185509,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value5/result/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value5/result/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value5/result/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value5/result/region/name`.
@@ -178053,18 +185537,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value5Payload.resultPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value5Payload.resultPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -178072,6 +185559,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -178127,6 +185615,10 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value6/result/isFollowing`.
                                     public var isFollowing: Swift.Bool
+                                    /// Total public reviews and tastings for this entity's bottles
+                                    ///
+                                    /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value6/result/publicReviewAndTastingCount`.
+                                    public var publicReviewAndTastingCount: Swift.Int
                                     /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value6/result/region`.
                                     public struct regionPayload: Codable, Hashable, Sendable {
                                         /// - Remark: Generated from `#/paths/search/GET/responses/200/content/json/nearestPayload/value6/result/region/name`.
@@ -178151,18 +185643,21 @@ public enum Operations {
                                     ///   - name: Name of the entity (brand, distillery, etc.)
                                     ///   - kind: Best short description of what this entity is
                                     ///   - isFollowing: Whether the current user follows this entity
+                                    ///   - publicReviewAndTastingCount: Total public reviews and tastings for this entity's bottles
                                     ///   - region:
                                     public init(
                                         id: Swift.Double,
                                         name: Swift.String,
                                         kind: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value6Payload.resultPayload.kindPayload,
                                         isFollowing: Swift.Bool,
+                                        publicReviewAndTastingCount: Swift.Int,
                                         region: Operations.search.Output.Ok.Body.jsonPayload.nearestPayloadPayload.Value6Payload.resultPayload.regionPayload? = nil
                                     ) {
                                         self.id = id
                                         self.name = name
                                         self.kind = kind
                                         self.isFollowing = isFollowing
+                                        self.publicReviewAndTastingCount = publicReviewAndTastingCount
                                         self.region = region
                                     }
                                     public enum CodingKeys: String, CodingKey {
@@ -178170,6 +185665,7 @@ public enum Operations {
                                         case name
                                         case kind
                                         case isFollowing
+                                        case publicReviewAndTastingCount
                                         case region
                                     }
                                 }
@@ -181334,7 +188830,7 @@ public enum Operations {
     }
     /// Find bottles by tasting note
     ///
-    /// Rank bottles by the share of tastings with notes that mention a category or note. Break ties by matching tasting count, then bottle ID.
+    /// Rank bottles by how often a category or note appears in their public reviews and tastings. Break ties by the number of matches, then bottle ID.
     ///
     /// - Remark: HTTP `GET /tags/bottles`.
     /// - Remark: Generated from `#/paths//tags/bottles/get(listTastingNoteBottles)`.
@@ -181413,6 +188909,10 @@ public enum Operations {
                         public struct resultsPayloadPayload: Codable, Hashable, Sendable {
                             /// - Remark: Generated from `#/paths/tags/bottles/GET/responses/200/content/json/resultsPayload/bottle`.
                             public var bottle: Components.Schemas.Bottle
+                            /// - Remark: Generated from `#/paths/tags/bottles/GET/responses/200/content/json/resultsPayload/matchingReviewAndTastingCount`.
+                            public var matchingReviewAndTastingCount: Swift.Int
+                            /// - Remark: Generated from `#/paths/tags/bottles/GET/responses/200/content/json/resultsPayload/notedReviewAndTastingCount`.
+                            public var notedReviewAndTastingCount: Swift.Int
                             /// - Remark: Generated from `#/paths/tags/bottles/GET/responses/200/content/json/resultsPayload/matchingTastings`.
                             public var matchingTastings: Swift.Int
                             /// - Remark: Generated from `#/paths/tags/bottles/GET/responses/200/content/json/resultsPayload/taggedTastings`.
@@ -181421,19 +188921,27 @@ public enum Operations {
                             ///
                             /// - Parameters:
                             ///   - bottle:
+                            ///   - matchingReviewAndTastingCount:
+                            ///   - notedReviewAndTastingCount:
                             ///   - matchingTastings:
                             ///   - taggedTastings:
                             public init(
                                 bottle: Components.Schemas.Bottle,
+                                matchingReviewAndTastingCount: Swift.Int,
+                                notedReviewAndTastingCount: Swift.Int,
                                 matchingTastings: Swift.Int,
                                 taggedTastings: Swift.Int
                             ) {
                                 self.bottle = bottle
+                                self.matchingReviewAndTastingCount = matchingReviewAndTastingCount
+                                self.notedReviewAndTastingCount = notedReviewAndTastingCount
                                 self.matchingTastings = matchingTastings
                                 self.taggedTastings = taggedTastings
                             }
                             public enum CodingKeys: String, CodingKey {
                                 case bottle
+                                case matchingReviewAndTastingCount
+                                case notedReviewAndTastingCount
                                 case matchingTastings
                                 case taggedTastings
                             }
@@ -199531,6 +207039,174 @@ public enum Operations {
                     }
                 }
             }
+            public struct ServiceUnavailable: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case1`.
+                        case case1(Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/json/case2`.
+                        case case2(Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/503/content/application\/json`.
+                    case json(Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable.Body
+                /// Creates a new `ServiceUnavailable`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable.Body) {
+                    self.body = body
+                }
+            }
+            /// 503
+            ///
+            /// - Remark: Generated from `#/paths//tastings/photo-identification/post(identifyTastingBottleFromPhoto)/responses/503`.
+            ///
+            /// HTTP response code: `503 serviceUnavailable`.
+            case serviceUnavailable(Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable)
+            /// The associated value of the enum case if `self` is `.serviceUnavailable`.
+            ///
+            /// - Throws: An error if `self` is not `.serviceUnavailable`.
+            /// - SeeAlso: `.serviceUnavailable`.
+            public var serviceUnavailable: Operations.identifyTastingBottleFromPhoto.Output.ServiceUnavailable {
+                get throws {
+                    switch self {
+                    case let .serviceUnavailable(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "serviceUnavailable",
+                            response: self
+                        )
+                    }
+                }
+            }
             /// Undocumented response.
             ///
             /// A response with a code that is not documented in the OpenAPI document.
@@ -202814,10 +210490,58 @@ public enum Operations {
                                     ///
                                     /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/score`.
                                     public var score: Swift.Int
-                                    /// Tasting notes associated with this review
+                                    /// All flavors found in this review
                                     ///
                                     /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/tags`.
                                     public var tags: [Swift.String]?
+                                    /// Flavors found on the nose
+                                    ///
+                                    /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/noseTags`.
+                                    public var noseTags: [Swift.String]?
+                                    /// Flavors found on the palate
+                                    ///
+                                    /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/palateTags`.
+                                    public var palateTags: [Swift.String]?
+                                    /// Flavors in the finish
+                                    ///
+                                    /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/finishTags`.
+                                    public var finishTags: [Swift.String]?
+                                    /// Stored category for each known tasting note
+                                    ///
+                                    /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/tagCategories`.
+                                    public struct tagCategoriesPayload: Codable, Hashable, Sendable {
+                                        /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/tagCategories/additionalProperties`.
+                                        @frozen public enum additionalPropertiesPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                            case cereal = "cereal"
+                                            case fruit = "fruit"
+                                            case floral = "floral"
+                                            case smoke = "smoke"
+                                            case earthy = "earthy"
+                                            case sulfur = "sulfur"
+                                            case sweet = "sweet"
+                                            case spice = "spice"
+                                            case wood = "wood"
+                                        }
+                                        /// A container of undocumented properties.
+                                        public var additionalProperties: [String: Operations.listUserActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload.additionalPropertiesPayload]
+                                        /// Creates a new `tagCategoriesPayload`.
+                                        ///
+                                        /// - Parameters:
+                                        ///   - additionalProperties: A container of undocumented properties.
+                                        public init(additionalProperties: [String: Operations.listUserActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload.additionalPropertiesPayload] = .init()) {
+                                            self.additionalProperties = additionalProperties
+                                        }
+                                        public init(from decoder: any Decoder) throws {
+                                            additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                                        }
+                                        public func encode(to encoder: any Encoder) throws {
+                                            try encoder.encodeAdditionalProperties(additionalProperties)
+                                        }
+                                    }
+                                    /// Stored category for each known tasting note
+                                    ///
+                                    /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/tagCategories`.
+                                    public var tagCategories: Operations.listUserActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload?
                                     /// Observed color on a scale from 0 through 20
                                     ///
                                     /// - Remark: Generated from `#/paths/users/{user}/activity/GET/responses/200/content/json/resultsPayload/value3/review/color`.
@@ -202858,7 +210582,11 @@ public enum Operations {
                                     ///   - id:
                                     ///   - bottleId:
                                     ///   - score: Whole-number Bottle score from 0 through 100
-                                    ///   - tags: Tasting notes associated with this review
+                                    ///   - tags: All flavors found in this review
+                                    ///   - noseTags: Flavors found on the nose
+                                    ///   - palateTags: Flavors found on the palate
+                                    ///   - finishTags: Flavors in the finish
+                                    ///   - tagCategories: Stored category for each known tasting note
                                     ///   - color: Observed color on a scale from 0 through 20
                                     ///   - notes: Optional review notes
                                     ///   - servingStyle: How the reviewed pour was served
@@ -202873,6 +210601,10 @@ public enum Operations {
                                         bottleId: Swift.Int,
                                         score: Swift.Int,
                                         tags: [Swift.String]? = nil,
+                                        noseTags: [Swift.String]? = nil,
+                                        palateTags: [Swift.String]? = nil,
+                                        finishTags: [Swift.String]? = nil,
+                                        tagCategories: Operations.listUserActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.tagCategoriesPayload? = nil,
                                         color: Swift.Double? = nil,
                                         notes: Swift.String? = nil,
                                         servingStyle: Operations.listUserActivity.Output.Ok.Body.jsonPayload.resultsPayloadPayload.Value3Payload.reviewPayload.servingStylePayload? = nil,
@@ -202887,6 +210619,10 @@ public enum Operations {
                                         self.bottleId = bottleId
                                         self.score = score
                                         self.tags = tags
+                                        self.noseTags = noseTags
+                                        self.palateTags = palateTags
+                                        self.finishTags = finishTags
+                                        self.tagCategories = tagCategories
                                         self.color = color
                                         self.notes = notes
                                         self.servingStyle = servingStyle
@@ -202902,6 +210638,10 @@ public enum Operations {
                                         case bottleId
                                         case score
                                         case tags
+                                        case noseTags
+                                        case palateTags
+                                        case finishTags
+                                        case tagCategories
                                         case color
                                         case notes
                                         case servingStyle

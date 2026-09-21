@@ -45,10 +45,10 @@ git -C ../peated show origin/main:DESIGN.md
 git -C ../peated show origin/main:apps/web/src/styles/tokens.stylex.ts
 ```
 
-In managed worktrees, `../peated` may not exist. The Git common directory points back to the main `peated-ios` checkout, so the backend beside it can be found without a machine-specific path:
+In managed worktrees, `../peated` may not exist. The Git common directory points back to the main `peated-ios` checkout, so the backend beside that checkout can be found without a machine-specific path:
 
 ```bash
-git -C "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")/peated" status --short --branch
+git -C "$(dirname "$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")")/peated" status --short --branch
 ```
 
 Use that resolved path anywhere this guide says `../peated`.
