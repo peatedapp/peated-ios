@@ -120,6 +120,8 @@ extension BottlePhotoIdentificationRepository {
             .requestFailed("That photo is already being processed. Try again in a moment.")
         case .contentTooLarge:
             .requestFailed("That photo is too large. Choose a smaller image.")
+        case .serviceUnavailable:
+            .requestFailed("Photo identification is temporarily unavailable. Try again later.")
         case .internalServerError:
             .serverError(500, nil)
         case let .undocumented(statusCode, _):
