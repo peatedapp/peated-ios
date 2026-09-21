@@ -1,0 +1,21 @@
+# Sign in with Apple Setup
+
+The app offers Sign in with Apple beside Google and email sign-in, as App Store Review Guideline 4.8 requires when a third-party login is offered.
+
+## How it works
+
+1. `AppleSignInButton` presents the system authorization sheet and requests the user's name and email.
+2. `AppleSignInCredential` extracts the identity token (a JWT) and the formatted name. Apple sends the name only on the first authorization for that Apple ID.
+3. `AuthenticationManager.loginWithApple` posts `{"appleIdentityToken": "...", "fullName": "..."}` to `POST /auth/login` and stores the returned session like every other sign-in.
+
+The server verifies the token against Apple's public keys and requires the token audience to match the app bundle ID `com.peated.Peated`. It links the Apple identity to an existing verified account with the same email, or creates a new account and uses `fullName` to pick a username. Apple relay addresses are treated as ordinary emails.
+
+## Configuration
+
+- `Peated/Peated/Peated.entitlements` declares `com.apple.developer.applesignin`. The App ID in the developer portal must have the Sign in with Apple capability enabled; Xcode adds it when it manages signing.
+- No client identifiers or secrets are needed on the device. The server accepts the bundle ID by default and reads `APPLE_CLIENT_IDS` for any other audience.
+- Sign out clears the stored session token. The app does not track Apple credential revocation.
+
+## Testing
+
+Sign in with Apple needs a device or simulator signed in to an Apple ID. Check both the first authorization, which sends a name, and a repeat authorization, which does not. Cancelling the sheet closes it without an error alert.

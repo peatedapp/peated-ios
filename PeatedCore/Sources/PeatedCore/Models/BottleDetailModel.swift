@@ -64,6 +64,7 @@ public final class BottleDetailModel {
             async let similarBottlesTask: Void = loadSimilarBottles(category: bottle.category)
             _ = await (recentTastingsTask, similarBottlesTask)
         } catch {
+            Telemetry.capture(error, feature: "bottle", operation: "load")
             if case .loading = state {
                 state = .error(error.localizedDescription)
             }
@@ -92,6 +93,7 @@ public final class BottleDetailModel {
                 try await collectionRepository.removeBottleFromLibrary(bottleId: bottleId, user: "me")
             }
         } catch {
+            Telemetry.capture(error, feature: "bottle", operation: "toggle_library")
             // Revert on failure
             current.isLibrary.toggle()
             bottle = current
@@ -113,8 +115,8 @@ public final class BottleDetailModel {
             )
             recentTastings = Array(feedPage.tastings.prefix(5))
         } catch {
-            // Silently fail for additional data
-            print("Failed to load recent tastings: \(error)")
+            // Optional content; report but do not fail the screen
+            Telemetry.capture(error, feature: "bottle", operation: "load_recent_tastings")
         }
     }
 
@@ -131,8 +133,8 @@ public final class BottleDetailModel {
             // Filter out the current bottle
             similarBottles = bottles.filter { $0.id != bottleId }
         } catch {
-            // Silently fail for additional data
-            print("Failed to load similar bottles: \(error)")
+            // Optional content; report but do not fail the screen
+            Telemetry.capture(error, feature: "bottle", operation: "load_similar_bottles")
         }
     }
 
@@ -155,6 +157,7 @@ public final class BottleDetailModel {
                 ToastManager.shared.showSuccess("Cheers! 🥃")
             }
         } catch {
+            Telemetry.capture(error, feature: "bottle", operation: "toggle_toast")
             if let currentIndex = recentTastings.firstIndex(where: { $0.id == tastingId }) {
                 recentTastings[currentIndex] = original
             }

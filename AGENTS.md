@@ -75,6 +75,7 @@ Read the relevant policy and owning feature documentation before changing code i
 | SwiftUI and accessibility | `docs/policies/swiftui-accessibility.md` |
 | Development toolchain | `docs/how-to/toolchain.md` |
 | App Store Connect and Xcode Cloud | `docs/how-to/app-store-connect.md` |
+| Sentry and error reporting | `docs/how-to/sentry.md` |
 | Swift 6 migration | `docs/how-to/swift-6-migration.md` |
 | Testing strategy | `docs/how-to/testing-strategy.md` |
 | API generation workflow | `docs/specs/openapi-workflow.md` |
@@ -83,6 +84,7 @@ Read the relevant policy and owning feature documentation before changing code i
 | Upstream migration status | `docs/notes/upstream-migration.md` |
 | Architecture | `docs/design/architecture/overview.md` |
 | Google Sign-In setup | `docs/how-to/google-signin-setup.md` |
+| Sign in with Apple setup | `docs/how-to/apple-signin-setup.md` |
 | Module-specific rules | Nearest child `AGENTS.md` |
 
 Policy documents contain repo-wide defaults. Feature architecture and non-obvious invariants belong in the owning package, module, or feature documentation. Code, generated API contracts, exported types, and tests are authoritative. Temporary notes and plans cannot override policy.

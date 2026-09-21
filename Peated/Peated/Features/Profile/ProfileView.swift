@@ -356,6 +356,7 @@ struct ProfileView: View {
             try await AuthenticationManager.shared.resendVerificationEmail()
             ToastManager.shared.showSuccess("Verification email sent. Check your inbox.")
         } catch {
+            Telemetry.capture(error, feature: "profile", operation: "resend_verification")
             ToastManager.shared.showAPIError(error)
         }
         isResendingVerification = false
@@ -575,6 +576,7 @@ struct ProfileView: View {
             activityCursor = feedPage.cursor
             activityHasMore = feedPage.hasMore
         } catch {
+            Telemetry.capture(error, feature: "profile", operation: "load_activity")
             activityError = error
         }
 
@@ -613,7 +615,8 @@ struct ProfileView: View {
             hasToasted: newToastedState,
             tags: currentTasting.tags,
             location: currentTasting.location,
-            friendUsernames: currentTasting.friendUsernames
+            friendUsernames: currentTasting.friendUsernames,
+            bottleIdentity: currentTasting.bottleIdentity
         )
 
         // Optimistic update
@@ -650,13 +653,15 @@ struct ProfileView: View {
                 hasToasted: actualToastedState,
                 tags: currentTasting.tags,
                 location: currentTasting.location,
-                friendUsernames: currentTasting.friendUsernames
+                friendUsernames: currentTasting.friendUsernames,
+                bottleIdentity: currentTasting.bottleIdentity
             )
 
             if let currentIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) {
                 activityTastings[currentIndex] = correctTasting
             }
         } catch {
+            Telemetry.capture(error, feature: "profile", operation: "toggle_toast")
             // Revert on error
             if let revertIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) {
                 activityTastings[revertIndex] = currentTasting

@@ -10,7 +10,13 @@ import SwiftUI
 public final class AuthenticationManager: ObservableObject, @unchecked Sendable {
     public static let shared = AuthenticationManager()
 
-    @Published public private(set) var authState: AuthState = .unknown
+    @Published public private(set) var authState: AuthState = .unknown {
+        didSet {
+            // Error reports carry the stable account id only, and only while signed in.
+            Telemetry.setUser(id: currentUser?.id)
+        }
+    }
+
     @Published public private(set) var isLoading = false
     @Published public var error: Error?
     @Published public var needsTermsAcceptance = false
@@ -63,7 +69,8 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                 print("AuthenticationManager: User authenticated - admin: \(user.admin), mod: \(user.mod)")
                 authState = .authenticated(user)
             } catch {
-                // Token might be invalid
+                // An expired token is expected and is dropped by the report classifier.
+                Telemetry.capture(error, feature: "auth", operation: "restore_session")
                 authState = .unauthenticated
             }
         } else {
@@ -76,7 +83,8 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                     return
                 }
             } catch {
-                // Ignore restore failures; fall through to unauthenticated
+                // A missing Google session is normal; anything else is reported.
+                captureAuthFailure(error, operation: "restore_google_session")
             }
             authState = .unauthenticated
         }
@@ -89,56 +97,15 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         print("AuthenticationManager: Attempting login for \(email)")
 
         do {
-            let client = await apiClient.generatedClient
-
-            // Create the request body
-            let body = Operations.login.Input.Body.json(
-                .init(
-                    value1: .init(email: email, password: password)
-                )
+            let user = try await exchangeForSession(
+                body: .json(.init(value1: .init(email: email, password: password)))
             )
-
-            let response = try await client.login(body: body)
-
-            // Extract the successful response
-            if case let .ok(okResponse) = response,
-               case let .json(jsonPayload) = okResponse.body {
-                // Save tokens
-                if let accessToken = jsonPayload.accessToken {
-                    try keychain.saveToken(accessToken)
-                }
-
-                // Convert API user to local User
-                let apiUser = jsonPayload.user
-                var user = User(from: apiUser)
-
-                // Fetch additional user details including stats
-                do {
-                    let detailsResponse = try await client.getUser(
-                        path: .init(user: .init(value1: apiUser.id))
-                    )
-
-                    if case let .ok(detailsOk) = detailsResponse,
-                       case let .json(detailsJson) = detailsOk.body {
-                        user.tastingsCount = Int(detailsJson.stats.tastings)
-                        user.bottlesCount = Int(detailsJson.stats.bottles)
-                        user.collectedCount = Int(detailsJson.stats.collected)
-                        user.contributionsCount = Int(detailsJson.stats.contributions)
-                    }
-                } catch {
-                    // Continue without stats if details fail
-                    print("Failed to fetch user details: \(error)")
-                }
-
-                // Update auth state
-                authState = .authenticated(user)
-                isLoading = false
-                print("AuthenticationManager: Login successful, authState updated to authenticated")
-                return user
-            } else {
-                throw AuthError.invalidResponse
-            }
+            authState = .authenticated(user)
+            isLoading = false
+            print("AuthenticationManager: Login successful, authState updated to authenticated")
+            return user
         } catch {
+            captureAuthFailure(error, operation: "sign_in")
             self.error = error
             authState = .unauthenticated
             isLoading = false
@@ -177,6 +144,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                     throw AuthError.noIDToken
                 }
             } catch {
+                captureAuthFailure(error, operation: "google_sign_in")
                 self.error = error
                 authState = .unauthenticated
                 isLoading = false
@@ -185,6 +153,32 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         #else
             throw AuthError.noPresentingViewController
         #endif
+    }
+
+    /// Exchanges a Sign in with Apple identity token for a Peated session.
+    ///
+    /// The app presents the Apple authorization UI and hands over the identity
+    /// token (a JWT whose audience is the app's bundle ID). Apple sends
+    /// `fullName` only on the first authorization, and the server uses it to
+    /// pick a username when it creates a new account.
+    public func loginWithApple(identityToken: String, fullName: String?) async throws -> User {
+        isLoading = true
+        error = nil
+
+        do {
+            let user = try await exchangeForSession(
+                body: .json(.init(value4: .init(appleIdentityToken: identityToken, fullName: fullName)))
+            )
+            authState = .authenticated(user)
+            isLoading = false
+            return user
+        } catch {
+            captureAuthFailure(error, operation: "apple_sign_in")
+            self.error = error
+            authState = .unauthenticated
+            isLoading = false
+            throw error
+        }
     }
 
     public func register(username: String, email: String, password: String,
@@ -224,7 +218,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                     }
                 } catch {
                     // Non-fatal
-                    print("Failed to fetch user details after register: \(error)")
+                    Telemetry.capture(error, feature: "auth", operation: "load_user_details")
                 }
 
                 authState = .authenticated(user)
@@ -234,6 +228,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                 throw AuthError.invalidResponse
             }
         } catch {
+            captureAuthFailure(error, operation: "sign_in")
             self.error = error
             authState = .unauthenticated
             isLoading = false
@@ -250,6 +245,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         do {
             try deleteStoredToken()
         } catch {
+            Telemetry.capture(error, feature: "auth", operation: "sign_out")
             logoutError = error
         }
 
@@ -271,7 +267,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
             authState = .authenticated(user)
         } catch {
             // Non-fatal
-            print("Failed to refresh user after accepting terms: \(error)")
+            Telemetry.capture(error, feature: "auth", operation: "refresh_after_terms")
         }
     }
 
@@ -292,7 +288,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
             authState = .authenticated(user)
         } catch {
             // Non-fatal
-            print("Failed to refresh user after verify: \(error)")
+            Telemetry.capture(error, feature: "auth", operation: "refresh_after_verify")
         }
     }
 
@@ -361,44 +357,55 @@ public enum AuthError: LocalizedError {
 // MARK: - Private helpers
 
 extension AuthenticationManager {
+    /// Reports an unexpected sign-in failure. User cancellation and a missing
+    /// Google session are normal outcomes and are not reported.
+    private func captureAuthFailure(_ error: any Error, operation: String) {
+        if let googleError = error as? GIDSignInError,
+           googleError.code == .canceled || googleError.code == .hasNoAuthInKeychain {
+            return
+        }
+        Telemetry.capture(error, feature: "auth", operation: operation)
+    }
+
     private func exchangeGoogleIDTokenForSession(idToken: String) async throws -> User {
+        try await exchangeForSession(body: .json(.init(value3: .init(idToken: idToken))))
+    }
+
+    /// Sends one `/auth/login` request, stores the returned access token, and
+    /// returns the signed-in user with their stats. Callers own `authState`.
+    private func exchangeForSession(body: Operations.login.Input.Body) async throws -> User {
         let client = await apiClient.generatedClient
-        // Create the request body for Google auth (using idToken)
-        let body = Operations.login.Input.Body.json(
-            .init(
-                value3: .init(idToken: idToken)
-            )
-        )
         let response = try await client.login(body: body)
-        // Extract the successful response
-        if case let .ok(okResponse) = response,
-           case let .json(jsonPayload) = okResponse.body {
-            // Save tokens
-            if let accessToken = jsonPayload.accessToken {
-                try keychain.saveToken(accessToken)
-            }
-            // Convert API user to local User
-            let apiUser = jsonPayload.user
-            var user = User(from: apiUser)
-            // Fetch additional user details including stats
-            do {
-                let detailsResponse = try await client.getUser(
-                    path: .init(user: .init(value1: apiUser.id))
-                )
-                if case let .ok(detailsOk) = detailsResponse,
-                   case let .json(detailsJson) = detailsOk.body {
-                    user.tastingsCount = Int(detailsJson.stats.tastings)
-                    user.bottlesCount = Int(detailsJson.stats.bottles)
-                    user.collectedCount = Int(detailsJson.stats.collected)
-                    user.contributionsCount = Int(detailsJson.stats.contributions)
-                }
-            } catch {
-                // Continue without stats if details fail
-                print("Failed to fetch user details: \(error)")
-            }
-            return user
-        } else {
+
+        guard case let .ok(okResponse) = response,
+              case let .json(jsonPayload) = okResponse.body
+        else {
             throw AuthError.invalidResponse
         }
+
+        if let accessToken = jsonPayload.accessToken {
+            try keychain.saveToken(accessToken)
+        }
+
+        let apiUser = jsonPayload.user
+        var user = User(from: apiUser)
+
+        // Fetch additional user details including stats
+        do {
+            let detailsResponse = try await client.getUser(
+                path: .init(user: .init(value1: apiUser.id))
+            )
+            if case let .ok(detailsOk) = detailsResponse,
+               case let .json(detailsJson) = detailsOk.body {
+                user.tastingsCount = Int(detailsJson.stats.tastings)
+                user.bottlesCount = Int(detailsJson.stats.bottles)
+                user.collectedCount = Int(detailsJson.stats.collected)
+                user.contributionsCount = Int(detailsJson.stats.contributions)
+            }
+        } catch {
+            // Continue without stats if details fail
+            Telemetry.capture(error, feature: "auth", operation: "load_user_details")
+        }
+        return user
     }
 }

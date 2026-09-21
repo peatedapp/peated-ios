@@ -2,12 +2,13 @@ import Foundation
 import PeatedAPI
 
 public protocol FeedRepositoryProtocol: Sendable {
-    func getFeed(type: FeedType, cursor: String?, limit: Int) async throws -> FeedPage
-    func refreshFeed(type: FeedType) async throws -> FeedPage
+    func getActivity(type: FeedType, cursor: String?, limit: Int) async throws -> ActivityPage
+    func refreshActivity(type: FeedType) async throws -> ActivityPage
     func getBottleTastings(bottleId: String, cursor: String?, limit: Int) async throws -> FeedPage
     func getUserTastings(userId: String, cursor: String?, limit: Int) async throws -> FeedPage
 }
 
+/// One page of tastings for a bottle, entity, or member profile.
 public struct FeedPage: Sendable {
     public let tastings: [TastingFeedItem]
     public let cursor: String?
@@ -22,223 +23,85 @@ public struct FeedPage: Sendable {
 
 public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
     public let apiClient: APIClient
-    private let authManager = AuthenticationManager.shared
 
     public init(apiClient: APIClient? = nil) {
         self.apiClient = apiClient ?? APIClient.shared
     }
 
-    public func getFeed(type: FeedType, cursor: String?, limit: Int = 20) async throws -> FeedPage {
-        let client = await client
-        let query = try Self.makeFeedQuery(
-            type: type,
-            cursor: cursor,
-            limit: limit,
-            currentUserId: authManager.currentUser?.id
-        )
+    // MARK: - Activity
 
-        let response: Operations.listTastings.Output
-        let payload: Operations.listTastings.Output.Ok.Body.jsonPayload
-
-        do {
-            response = try await client.listTastings(Operations.listTastings.Input(query: query))
-            Logger.api.info("✅ Received listTastings response")
-
-            payload = try response.extractPayload()
-            Logger.api.info("✅ Extracted payload with \(payload.results.count) results")
-        } catch {
-            Logger.api.error("❌ FeedRepository ERROR: \(error.localizedDescription)")
-            throw error
-        }
-
-        let tastings = payload.results.map { item -> TastingFeedItem in
-            let t = TastingFeedItem.from(item)
-            // Seed cache for referenced entities, including per-user flags
-            Task {
-                var u = User(id: t.userId, email: "", username: t.username)
-                u.pictureUrl = t.userAvatarUrl
-                await NormalizedStore.shared.upsert(.user(t.userId), value: u)
-                await SnapshotStore.upsertUser(UserProfileSnapshot(
-                    id: t.userId,
-                    username: t.username,
-                    pictureUrl: t.userAvatarUrl
-                ))
-                await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
-                // Persist tasting into DB tasting cache for instant detail seeding
-                try? await DatabaseManager.shared.cacheTasting(t)
-            }
-            return t
-        }
-
-        // Use the cursor from the API response
-        let nextCursor: String? = if let apiCursor = payload.rel.nextCursor {
-            String(Int(apiCursor))
-        } else {
-            nil
-        }
-
-        // Check if there are more results based on cursor presence
-        let hasMore = nextCursor != nil
-
-        return FeedPage(
-            tastings: tastings,
-            cursor: nextCursor,
-            hasMore: hasMore
-        )
-    }
-
-    static func makeFeedQuery(
-        type: FeedType,
-        cursor: String?,
-        limit: Int,
-        currentUserId: String?
-    ) throws -> Operations.listTastings.Input.Query {
-        var query = Operations.listTastings.Input.Query(
-            cursor: cursor.flatMap(Double.init),
-            limit: Double(limit)
-        )
-
+    static func makeActivityQuery(type: FeedType, cursor: String?, limit: Int) -> Operations.listActivity.Input.Query {
         switch type {
         case .friends:
-            query.filter = .friends
-        case .personal:
-            guard let currentUserId, let numericUserId = Double(currentUserId) else {
-                throw APIError.requestFailed("Not authenticated")
-            }
-            query.user = .init(value1: numericUserId)
+            .init(filter: .friends, cursor: cursor, limit: Double(limit))
         case .global:
-            query.filter = .global
+            // Critic reviews only join the global feed; the API ignores the flag for friends.
+            .init(filter: .global, includeCriticReviews: true, cursor: cursor, limit: Double(limit))
         }
-
-        return query
     }
 
-    public func refreshFeed(type: FeedType) async throws -> FeedPage {
-        // For refresh, we always start from the beginning
-        try await getFeed(type: type, cursor: nil, limit: 20)
+    public func getActivity(type: FeedType, cursor: String?, limit: Int = 20) async throws -> ActivityPage {
+        let client = await client
+        let query = Self.makeActivityQuery(type: type, cursor: cursor, limit: limit)
+        let response = try await client.listActivity(.init(query: query))
+        let payload = try response.extractPayload()
+        let mappings = payload.results.map(ActivityFeedMapping.init)
+        let nextCursor = payload.rel.nextCursor
+
+        let entries = mappings.flatMap(\.entries)
+        Logger.api.info("✅ Received \(entries.count) activity entries")
+        for entry in entries {
+            seedStores(with: entry)
+        }
+        seedBottles(mappings.flatMap(\.bottles))
+
+        return ActivityPage(entries: entries, cursor: nextCursor, hasMore: nextCursor != nil)
     }
+
+    public func refreshActivity(type: FeedType) async throws -> ActivityPage {
+        try await getActivity(type: type, cursor: nil, limit: 20)
+    }
+
+    // MARK: - Tasting lists
 
     public func getEntityTastings(entityId: String, cursor: String? = nil, limit: Int = 20) async throws -> FeedPage {
-        let client = await client
-
         guard let entityIdDouble = Double(entityId) else {
             throw APIError.requestFailed("Invalid entity ID")
         }
 
-        // Create the query
         var query = Operations.listTastings.Input.Query()
         query.entity = entityIdDouble
-        query.limit = Double(limit)
-
-        if let cursor {
-            query.cursor = Double(cursor)
-        }
-
-        let response = try await client.listTastings(Operations.listTastings.Input(query: query))
-        let payload = try response.extractPayload()
-
-        let tastings = payload.results.map { item -> TastingFeedItem in
-            let t = TastingFeedItem.from(item)
-            Task {
-                var u = User(id: t.userId, email: "", username: t.username)
-                u.pictureUrl = t.userAvatarUrl
-                await NormalizedStore.shared.upsert(.user(t.userId), value: u)
-                await SnapshotStore.upsertUser(UserProfileSnapshot(
-                    id: t.userId,
-                    username: t.username,
-                    pictureUrl: t.userAvatarUrl
-                ))
-                await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
-                try? await DatabaseManager.shared.cacheTasting(t)
-            }
-            return t
-        }
-
-        // Use the cursor from the API response
-        let nextCursor: String? = if let apiCursor = payload.rel.nextCursor {
-            String(Int(apiCursor))
-        } else {
-            nil
-        }
-
-        // Check if there are more results based on cursor presence
-        let hasMore = nextCursor != nil
-
-        return FeedPage(
-            tastings: tastings,
-            cursor: nextCursor,
-            hasMore: hasMore
-        )
+        return try await tastingPage(query: query, cursor: cursor, limit: limit)
     }
 
     public func getBottleTastings(bottleId: String, cursor: String?, limit: Int = 20) async throws -> FeedPage {
-        let client = await client
-
         guard let bottleId = Int(bottleId) else {
             throw APIError.requestFailed("Invalid bottle ID")
         }
 
-        // Build the query parameters
         var query = Operations.listTastings.Input.Query()
         query.bottle = bottleId
-        query.limit = Double(limit)
-
-        if let cursor {
-            query.cursor = Double(cursor)
-        }
-
-        let response = try await client.listTastings(Operations.listTastings.Input(query: query))
-        let payload = try response.extractPayload()
-
-        let tastings = payload.results.map { item -> TastingFeedItem in
-            let t = TastingFeedItem.from(item)
-            Task {
-                var u = User(id: t.userId, email: "", username: t.username)
-                u.pictureUrl = t.userAvatarUrl
-                await NormalizedStore.shared.upsert(.user(t.userId), value: u)
-                await SnapshotStore.upsertUser(UserProfileSnapshot(
-                    id: t.userId,
-                    username: t.username,
-                    pictureUrl: t.userAvatarUrl
-                ))
-                await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
-                try? await DatabaseManager.shared.cacheTasting(t)
-            }
-            return t
-        }
-
-        // Use the cursor from the API response
-        let nextCursor: String? = if let apiCursor = payload.rel.nextCursor {
-            String(Int(apiCursor))
-        } else {
-            nil
-        }
-
-        // Check if there are more results based on cursor presence
-        let hasMore = nextCursor != nil
-
-        return FeedPage(
-            tastings: tastings,
-            cursor: nextCursor,
-            hasMore: hasMore
-        )
+        return try await tastingPage(query: query, cursor: cursor, limit: limit)
     }
 
     public func getUserTastings(userId: String, cursor: String?, limit: Int = 20) async throws -> FeedPage {
-        let client = await client
-
         guard let userIdDouble = Double(userId) else {
             throw APIError.requestFailed("Invalid user ID")
         }
 
-        // Build the query parameters
         var query = Operations.listTastings.Input.Query()
         query.user = Operations.listTastings.Input.Query.userPayload(value1: userIdDouble)
-        query.limit = Double(limit)
+        return try await tastingPage(query: query, cursor: cursor, limit: limit)
+    }
 
+    private func tastingPage(
+        query: Operations.listTastings.Input.Query,
+        cursor: String?,
+        limit: Int
+    ) async throws -> FeedPage {
+        let client = await client
+        var query = query
+        query.limit = Double(limit)
         if let cursor {
             query.cursor = Double(cursor)
         }
@@ -247,37 +110,52 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
         let payload = try response.extractPayload()
 
         let tastings = payload.results.map { item -> TastingFeedItem in
-            let t = TastingFeedItem.from(item)
+            let tasting = TastingFeedItem.from(item)
+            seedStores(with: .tasting(tasting))
+            return tasting
+        }
+        seedBottles(payload.results.map { Bottle(from: $0.bottle) })
+
+        let nextCursor: String? = payload.rel.nextCursor.map { String(Int($0)) }
+
+        return FeedPage(tastings: tastings, cursor: nextCursor, hasMore: nextCursor != nil)
+    }
+
+    // MARK: - Store seeding
+
+    /// Seeds the user and tasting caches so profile and tasting screens open instantly.
+    private func seedStores(with entry: ActivityFeedEntry) {
+        switch entry {
+        case let .tasting(tasting):
+            seedUser(id: tasting.userId, username: tasting.username, pictureUrl: tasting.userAvatarUrl)
             Task {
-                var u = User(id: t.userId, email: "", username: t.username)
-                u.pictureUrl = t.userAvatarUrl
-                await NormalizedStore.shared.upsert(.user(t.userId), value: u)
-                await SnapshotStore.upsertUser(UserProfileSnapshot(
-                    id: t.userId,
-                    username: t.username,
-                    pictureUrl: t.userAvatarUrl
-                ))
-                await SnapshotStore.appendUserRecent(userId: t.userId, tastingIds: [t.id])
-                await NormalizedStore.shared.upsert(.bottle(t.bottleId), value: Bottle(from: item.bottle))
-                try? await DatabaseManager.shared.cacheTasting(t)
+                await SnapshotStore.appendUserRecent(userId: tasting.userId, tastingIds: [tasting.id])
+                // Persist tasting into DB tasting cache for instant detail seeding
+                try? await DatabaseManager.shared.cacheTasting(tasting)
             }
-            return t
+        case let .memberReview(review):
+            seedUser(id: review.userId, username: review.username, pictureUrl: review.userAvatarUrl)
+        case let .collectionAdd(add):
+            seedUser(id: add.userId, username: add.username, pictureUrl: add.userAvatarUrl)
+        case .criticReview:
+            break
         }
+    }
 
-        // Use the cursor from the API response
-        let nextCursor: String? = if let apiCursor = payload.rel.nextCursor {
-            String(Int(apiCursor))
-        } else {
-            nil
+    private func seedBottles(_ bottles: [Bottle]) {
+        Task {
+            for bottle in bottles {
+                await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle)
+            }
         }
+    }
 
-        // Check if there are more results based on cursor presence
-        let hasMore = nextCursor != nil
-
-        return FeedPage(
-            tastings: tastings,
-            cursor: nextCursor,
-            hasMore: hasMore
-        )
+    private func seedUser(id: String, username: String, pictureUrl: String?) {
+        Task {
+            var user = User(id: id, email: "", username: username)
+            user.pictureUrl = pictureUrl
+            await NormalizedStore.shared.upsert(.user(id), value: user)
+            await SnapshotStore.upsertUser(UserProfileSnapshot(id: id, username: username, pictureUrl: pictureUrl))
+        }
     }
 }

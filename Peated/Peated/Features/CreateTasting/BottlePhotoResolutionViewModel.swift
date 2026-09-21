@@ -1,6 +1,5 @@
 import Foundation
 import PeatedCore
-import Sentry
 
 @MainActor
 final class BottlePhotoResolutionViewModel: ObservableObject {
@@ -59,40 +58,10 @@ final class BottlePhotoResolutionViewModel: ObservableObject {
         operation: String,
         imageByteCount: Int? = nil
     ) {
-        SentrySDK.capture(error: error) { scope in
-            scope.setTag(value: "bottle_photo", key: "feature")
-            scope.setTag(value: operation, key: "bottle_photo.operation")
-            scope.setTag(value: Self.errorKind(error), key: "bottle_photo.error_kind")
-            if let imageByteCount {
-                scope.setExtra(value: imageByteCount, key: "bottle_photo.image_byte_count")
-            }
+        var attributes: [String: TelemetryAttribute] = [:]
+        if let imageByteCount {
+            attributes["image_byte_count"] = .int(imageByteCount)
         }
-    }
-
-    private static func errorKind(_ error: any Error) -> String {
-        guard let apiError = error as? APIError else {
-            return String(describing: type(of: error))
-        }
-
-        return switch apiError {
-        case .invalidResponse, .decodingError:
-            "invalid_response"
-        case .requestFailed:
-            "request_failed"
-        case let .unexpectedResponse(statusCode):
-            "http_\(statusCode)"
-        case .unauthorized:
-            "unauthorized"
-        case .notFound:
-            "not_found"
-        case let .serverError(statusCode, _):
-            "http_\(statusCode)"
-        case .networkError, .timeout:
-            "network"
-        case .notImplemented:
-            "not_implemented"
-        case .termsAcceptanceRequired:
-            "terms_acceptance_required"
-        }
+        Telemetry.capture(error, feature: "bottle_photo", operation: operation, attributes: attributes)
     }
 }

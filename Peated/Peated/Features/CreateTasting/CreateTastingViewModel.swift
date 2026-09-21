@@ -99,19 +99,14 @@ class CreateTastingViewModel: ObservableObject {
                         print("Successfully uploaded photo: \(imageUrl)")
                     } catch {
                         // Don't fail the entire submission if photo upload fails
-                        print("Failed to upload photo: \(error)")
+                        Telemetry.capture(error, feature: "create_tasting", operation: "upload_photo")
                     }
                 }
             }
 
             submissionSuccessful = true
         } catch {
-            // Log detailed error information for debugging
-            print("CreateTastingViewModel: Failed to submit tasting - \(error)")
-            if let apiError = error as? APIError {
-                print("CreateTastingViewModel: API Error type: \(apiError)")
-            }
-
+            Telemetry.capture(error, feature: "create_tasting", operation: "submit")
             errorMessage = error.localizedDescription
             showingError = true
         }
@@ -140,6 +135,7 @@ class CreateTastingViewModel: ObservableObject {
             suggestedTags = tags
         } catch {
             guard selectedBottle?.id == bottleId else { return }
+            Telemetry.capture(error, feature: "create_tasting", operation: "load_suggested_tags")
             suggestedTags = bottle.suggestedTags.map {
                 TastingTag(name: $0, category: "suggested")
             }
@@ -168,6 +164,7 @@ class CreateTastingViewModel: ObservableObject {
         } catch is CancellationError {
             return
         } catch {
+            Telemetry.capture(error, feature: "create_tasting", operation: "search_bottles")
             searchResults = []
             errorMessage = "We couldn't search for bottles. \(error.localizedDescription)"
             showingError = true
@@ -185,6 +182,7 @@ class CreateTastingViewModel: ObservableObject {
             showingError = true
             return nil
         } catch {
+            Telemetry.capture(error, feature: "create_tasting", operation: "lookup_barcode")
             errorMessage = "We couldn't look up that barcode. \(error.localizedDescription)"
             showingError = true
             return nil

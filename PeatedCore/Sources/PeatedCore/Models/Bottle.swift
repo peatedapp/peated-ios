@@ -3,10 +3,13 @@ import Foundation
 public struct Brand: Codable, Equatable, Sendable {
     public let id: String
     public let name: String
+    /// The short marketed name, preferred over `name` in bottle titles when set.
+    public let shortName: String?
 
-    public init(id: String, name: String) {
+    public init(id: String, name: String, shortName: String? = nil) {
         self.id = id
         self.name = name
+        self.shortName = shortName
     }
 }
 
@@ -152,6 +155,8 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
     public let description: String?
     public let edition: String?
     public let series: BottleSeriesSummary?
+    /// The release family name; when set it is the expression shown in the title.
+    public let groupName: String?
     public let caskStrength: Bool
     public let singleCask: Bool
     public let statedAge: Int?
@@ -194,6 +199,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         description: String? = nil,
         edition: String? = nil,
         series: BottleSeriesSummary? = nil,
+        groupName: String? = nil,
         caskStrength: Bool = false,
         singleCask: Bool = false,
         statedAge: Int? = nil,
@@ -229,6 +235,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         self.description = description
         self.edition = edition
         self.series = series
+        self.groupName = groupName
         self.caskStrength = caskStrength
         self.singleCask = singleCask
         self.statedAge = statedAge
@@ -266,6 +273,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         case description
         case edition
         case series
+        case groupName
         case caskStrength
         case singleCask
         case statedAge
@@ -304,6 +312,7 @@ public struct Bottle: Codable, Equatable, Sendable, Identifiable {
         description = try container.decodeIfPresent(String.self, forKey: .description)
         edition = try container.decodeIfPresent(String.self, forKey: .edition)
         series = try container.decodeIfPresent(BottleSeriesSummary.self, forKey: .series)
+        groupName = try container.decodeIfPresent(String.self, forKey: .groupName)
         caskStrength = try container.decodeIfPresent(Bool.self, forKey: .caskStrength) ?? false
         singleCask = try container.decodeIfPresent(Bool.self, forKey: .singleCask) ?? false
         statedAge = try container.decodeIfPresent(Int.self, forKey: .statedAge)

@@ -15,7 +15,7 @@ struct PeatedLogo: View {
         } else {
             // Fallback text logo
             Text("PEATED")
-                .font(.system(size: height * 0.4, weight: .black, design: .default))
+                .font(.custom(PeatedFontName.display, size: height * 0.4))
                 .foregroundColor(.brand)
                 .tracking(height * 0.08)
         }

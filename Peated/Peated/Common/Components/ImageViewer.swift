@@ -35,7 +35,7 @@ struct ImageViewer: View {
                             .scaledToFit()
                             // Render the image over white so transparent pixels appear on white,
                             // while the surrounding edges use our dark app background.
-                            .background(Color.white)
+                            .background(Color.imageBackground)
                             .scaleEffect(scale * magnifyBy)
                             .offset(offset)
                             .gesture(

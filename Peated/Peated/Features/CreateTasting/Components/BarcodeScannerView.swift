@@ -42,11 +42,11 @@ struct BarcodeScannerView: View {
                     // Instructions
                     VStack(spacing: DesignSystem.Spacing.small) {
                         Text("Position barcode within frame")
-                            .font(.system(size: DesignSystem.FontSize.title, weight: .medium))
+                            .font(.peatedBody)
                             .foregroundColor(.onStatus)
 
                         Text("Scanning will happen automatically")
-                            .font(.system(size: DesignSystem.FontSize.body))
+                            .font(.peatedBody)
                             .foregroundColor(.onStatus.opacity(DesignSystem.Opacity.dimmed))
                     }
                     .padding(.horizontal, DesignSystem.Spacing.screenPadding)
@@ -108,6 +108,7 @@ struct BarcodeScannerCameraView: UIViewRepresentable {
         do {
             videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
         } catch {
+            Telemetry.capture(error, feature: "barcode_scanner", operation: "camera_input")
             return view
         }
 

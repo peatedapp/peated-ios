@@ -11,6 +11,11 @@ extension Color {
         ThemeProvider.current.brandEmphasis
     }
 
+    /// 15% brand for selected and related data.
+    static var brandTint: Color {
+        ThemeProvider.current.brandTint
+    }
+
     static var onBrand: Color {
         ThemeProvider.current.onBrand
     }
@@ -24,12 +29,28 @@ extension Color {
         ThemeProvider.current.surface
     }
 
+    /// Fields and neutral tracks.
     static var surfaceSubtle: Color {
         ThemeProvider.current.surfaceSubtle
     }
 
+    /// Deepest neutral surface, used for rating tracks on tonal surfaces.
+    static var surfaceSunken: Color {
+        ThemeProvider.current.surfaceSunken
+    }
+
+    /// Catalog image canvas. Always white in both appearances.
+    static var imageBackground: Color {
+        ThemeProvider.current.imageBackground
+    }
+
     static var border: Color {
         ThemeProvider.current.border
+    }
+
+    /// Stronger hairline for chip and section outlines.
+    static var sectionRule: Color {
+        ThemeProvider.current.sectionRule
     }
 
     static var formSurface: Color {
@@ -74,6 +95,32 @@ extension Color {
         ThemeProvider.current.overlayStrong
     }
 
+    /// Shadow color for floating overlays. See `View.overlayShadow()`.
+    static var overlayShadow: Color {
+        ThemeProvider.current.overlayShadow
+    }
+
+    /// Data
+    static var dataAccent: Color {
+        ThemeProvider.current.dataAccent
+    }
+
+    static var dataRange: Color {
+        ThemeProvider.current.dataRange
+    }
+
+    static var ratingFill: Color {
+        ThemeProvider.current.ratingFill
+    }
+
+    static var ratingTrack: Color {
+        ThemeProvider.current.ratingTrack
+    }
+
+    static var passportEmpty: Color {
+        ThemeProvider.current.passportEmpty
+    }
+
     /// Status
     static var success: Color {
         ThemeProvider.current.success
@@ -87,6 +134,10 @@ extension Color {
         ThemeProvider.current.danger
     }
 
+    static var dangerQuiet: Color {
+        ThemeProvider.current.dangerQuiet
+    }
+
     static var info: Color {
         ThemeProvider.current.info
     }
@@ -95,37 +146,59 @@ extension Color {
         ThemeProvider.current.onStatus
     }
 
-    /// Domain accents (Flavor categories)
-    static var flavorSweet: Color {
-        ThemeProvider.current.flavorSweet
+    /// Tasting-note categories. Use them only to connect one category across the tasting
+    /// wheel, note vocabulary, saved tags, and flavor charts, never for text or actions.
+    static var categoryCereal: Color {
+        ThemeProvider.current.categoryCereal
     }
 
-    static var flavorFruity: Color {
-        ThemeProvider.current.flavorFruity
+    static var categoryFruit: Color {
+        ThemeProvider.current.categoryFruit
     }
 
-    static var flavorSpicy: Color {
-        ThemeProvider.current.flavorSpicy
+    static var categoryFloral: Color {
+        ThemeProvider.current.categoryFloral
     }
 
-    static var flavorWoody: Color {
-        ThemeProvider.current.flavorWoody
+    static var categorySmoke: Color {
+        ThemeProvider.current.categorySmoke
     }
 
-    static var flavorSmoky: Color {
-        ThemeProvider.current.flavorSmoky
+    static var categoryEarthy: Color {
+        ThemeProvider.current.categoryEarthy
     }
 
-    static var flavorFloral: Color {
-        ThemeProvider.current.flavorFloral
+    static var categorySulfur: Color {
+        ThemeProvider.current.categorySulfur
     }
 
-    static var flavorNutty: Color {
-        ThemeProvider.current.flavorNutty
+    static var categorySweet: Color {
+        ThemeProvider.current.categorySweet
     }
 
-    static var flavorOther: Color {
-        ThemeProvider.current.flavorOther
+    static var categorySpice: Color {
+        ThemeProvider.current.categorySpice
+    }
+
+    static var categoryWood: Color {
+        ThemeProvider.current.categoryWood
+    }
+
+    /// Color for an API tag category raw value. Unknown categories return nil so callers fall
+    /// back to the neutral tag border.
+    static func tastingCategory(named name: String) -> Color? {
+        switch name {
+        case "cereal": categoryCereal
+        case "fruit": categoryFruit
+        case "floral": categoryFloral
+        case "smoke": categorySmoke
+        case "earthy": categoryEarthy
+        case "sulfur": categorySulfur
+        case "sweet": categorySweet
+        case "spice": categorySpice
+        case "wood": categoryWood
+        default: nil
+        }
     }
 
     // No legacy aliases are kept; use semantic tokens above.

@@ -9,48 +9,11 @@ public class CacheManager {
     private let database = DatabaseManager.shared
 
     // Cache validity durations
-    private let feedCacheDuration: TimeInterval = 300 // 5 minutes
     private let tastingDetailCacheDuration: TimeInterval = 600 // 10 minutes
     private let bottleCacheDuration: TimeInterval = 3600 // 1 hour
     private let userCacheDuration: TimeInterval = 1800 // 30 minutes
 
     private init() {}
-
-    /// Gets feed data with stale-while-revalidate strategy
-    public func getFeedData(
-        type: FeedType,
-        repository: FeedRepository,
-        forceRefresh: Bool = false
-    ) async throws -> (data: [TastingFeedItem], isFresh: Bool) {
-        // 1. Always return cached data first if available
-        let cachedData = try await database.getCachedFeed(type: type)
-        let cacheAge = cachedData.lastUpdated.map { Date().timeIntervalSince($0) } ?? .infinity
-        let isStale = cacheAge > feedCacheDuration
-
-        // 2. Return cached data immediately if not forcing refresh
-        if !forceRefresh, !cachedData.items.isEmpty {
-            // 3. If stale, trigger background refresh
-            if isStale {
-                Task {
-                    try? await refreshFeedInBackground(type: type, repository: repository)
-                }
-            }
-            return (cachedData.items, !isStale)
-        }
-
-        // 4. If no cache or force refresh, fetch from network
-        do {
-            let freshData = try await repository.getFeed(type: type, cursor: nil)
-            try await database.cacheFeed(type: type, items: freshData.tastings)
-            return (freshData.tastings, true)
-        } catch {
-            // 5. On network error, return stale cache if available
-            if !cachedData.items.isEmpty {
-                return (cachedData.items, false)
-            }
-            throw error
-        }
-    }
 
     /// Gets tasting detail with intelligent caching
     public func getTastingDetail(
@@ -119,7 +82,8 @@ public class CacheManager {
             hasToasted: newToastState,
             tags: originalTasting.tags,
             location: originalTasting.location,
-            friendUsernames: originalTasting.friendUsernames
+            friendUsernames: originalTasting.friendUsernames,
+            bottleIdentity: originalTasting.bottleIdentity
         )
 
         try await database.updateCachedTasting(updatedTasting)
@@ -150,7 +114,8 @@ public class CacheManager {
                     hasToasted: actualState,
                     tags: originalTasting.tags,
                     location: originalTasting.location,
-                    friendUsernames: originalTasting.friendUsernames
+                    friendUsernames: originalTasting.friendUsernames,
+                    bottleIdentity: originalTasting.bottleIdentity
                 )
                 try await database.updateCachedTasting(serverTasting)
                 return actualState
@@ -175,32 +140,7 @@ public class CacheManager {
         try await database.clearAllCaches()
     }
 
-    /// Invalidates specific feed cache
-    public func invalidateFeedCache(type: FeedType) async throws {
-        try await database.clearFeedCache(type: type)
-    }
-
     // MARK: - Private Methods
-
-    private func refreshFeedInBackground(
-        type: FeedType,
-        repository: FeedRepository
-    ) async throws {
-        do {
-            let freshData = try await repository.getFeed(type: type, cursor: nil)
-            try await database.cacheFeed(type: type, items: freshData.tastings)
-
-            // Post notification for UI updates
-            NotificationCenter.default.post(
-                name: .feedDataRefreshed,
-                object: nil,
-                userInfo: ["feedType": type]
-            )
-        } catch {
-            // Log error but don't throw - this is background refresh
-            print("Background refresh failed for \(type): \(error)")
-        }
-    }
 
     private func refreshTastingInBackground(
         id: String,
@@ -217,7 +157,7 @@ public class CacheManager {
                 userInfo: ["tastingId": id]
             )
         } catch {
-            print("Background refresh failed for tasting \(id): \(error)")
+            Telemetry.capture(error, feature: "tasting", operation: "background_refresh")
         }
     }
 }

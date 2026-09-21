@@ -66,7 +66,7 @@ struct TastingPreviewCard: View {
                     Spacer()
 
                     if let band = viewModel.ratingBand {
-                        TastingRatingView(band: band, showRange: true, fontSize: 12)
+                        TastingRatingView(band: band, size: .small)
                     }
                 }
 

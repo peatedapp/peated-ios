@@ -1,40 +1,49 @@
 import SwiftUI
 
 enum DesignSystem {
+    /// Glyph and figure sizes for rating components that size text to their geometry.
+    /// Interface text uses the `Font.peated*` roles instead.
     enum FontSize {
         static let tiny: CGFloat = 10
         static let caption: CGFloat = 11
-        static let small: CGFloat = 12
-        static let body: CGFloat = 14
-        static let medium: CGFloat = 15
-        static let title: CGFloat = 16
-        static let large: CGFloat = 17
-        static let headline: CGFloat = 18
-        static let xLarge: CGFloat = 20
-        static let xxLarge: CGFloat = 22
-        static let largeTitle: CGFloat = 24
-        static let avatar: CGFloat = 14
-        static let icon: CGFloat = 16
-        static let largeIcon: CGFloat = 40
+        static let small: CGFloat = 13
+        static let large: CGFloat = 16
     }
 
+    /// Letter spacing for the display roles, in points at the role's base size.
+    enum Tracking {
+        static let pageTitle: CGFloat = -1.8 // -0.045em at 40
+        static let pageTitleCompact: CGFloat = -1.28 // -0.04em at 32
+        static let sectionHeading: CGFloat = -0.5 // -0.025em at 20
+        static let rowTitle: CGFloat = -0.45 // -0.025em at 18
+        static let rowTitleCompact: CGFloat = -0.375 // -0.025em at 15
+    }
+
+    /// The 4-point scale shared with the web: 4, 8, 12, 16, 24, 32, and 48.
     enum Spacing {
-        static let xxSmall: CGFloat = 3
         static let xSmall: CGFloat = 4
         static let small: CGFloat = 8
         static let medium: CGFloat = 12
         static let large: CGFloat = 16
-        static let xLarge: CGFloat = 20
-        static let xxLarge: CGFloat = 24
+        static let xLarge: CGFloat = 24
+        static let xxLarge: CGFloat = 32
+        static let xxxLarge: CGFloat = 48
         static let cardPadding: CGFloat = 16
-        static let screenPadding: CGFloat = 20
+        static let screenPadding: CGFloat = 16
     }
 
+    /// Controls and framed regions use 3. Chips, tags, image slots, and bar segments use 2. No pills.
     enum CornerRadius {
         static let small: CGFloat = 2
         static let medium: CGFloat = 3
         static let large: CGFloat = 3
-        static let capsule: CGFloat = 3
+    }
+
+    /// Use 40 by default and 44 on touch screens. Controls in one action row share a height.
+    enum ControlHeight {
+        static let small: CGFloat = 34
+        static let standard: CGFloat = 44
+        static let large: CGFloat = 44
     }
 
     enum ImageSize {
@@ -67,6 +76,12 @@ enum DesignSystem {
         static let medium: CGFloat = 1.5
         static let thick: CGFloat = 2
     }
+
+    /// Floating overlays are the only elements that cast a shadow.
+    enum OverlayShadow {
+        static let radius: CGFloat = 20
+        static let y: CGFloat = 18
+    }
 }
 
 // MARK: - View Extensions for Easy Access
@@ -95,12 +110,13 @@ extension View {
             )
     }
 
-    func tagStyle() -> some View {
-        font(.system(size: DesignSystem.FontSize.small))
-            .foregroundColor(.brand)
-            .padding(.horizontal, DesignSystem.Spacing.medium)
-            .padding(.vertical, DesignSystem.Spacing.xSmall + 1) // 5
-            .background(Color.brand.opacity(DesignSystem.Opacity.subtle))
-            .clipShape(Capsule())
+    /// Shadow for menus, typeahead results, and dialogs. Web: `0 18px 40px`, 16% ink or 55% black.
+    func overlayShadow() -> some View {
+        shadow(
+            color: Color.overlayShadow,
+            radius: DesignSystem.OverlayShadow.radius,
+            x: 0,
+            y: DesignSystem.OverlayShadow.y
+        )
     }
 }

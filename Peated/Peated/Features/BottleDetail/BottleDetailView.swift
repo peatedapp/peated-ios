@@ -137,7 +137,8 @@ extension BottleDetailView {
                     // Title + brand link + status icons
                     VStack(spacing: 8) {
                         Text(bottle.fullName)
-                            .font(.peatedDisplaySerifLarge)
+                            .font(.peatedPageTitle)
+                            .tracking(DesignSystem.Tracking.pageTitle)
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .lineLimit(nil)
@@ -162,40 +163,12 @@ extension BottleDetailView {
                                     .font(.system(size: 10))
                                 Text(bottle.brandName)
                             }
-                            .font(.system(size: DesignSystem.FontSize.small))
+                            .font(.peatedMetadata)
                             .foregroundColor(.white.opacity(0.9))
                         }
                         .buttonStyle(.plain)
 
-                        // Status badges with labels for clarity (hero)
-                        if bottle.hasTasted || bottle.isLibrary {
-                            HStack(spacing: 10) {
-                                if bottle.hasTasted {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "checkmark.circle.fill")
-                                            .font(.system(size: 12))
-                                            .foregroundColor(.white.opacity(0.9))
-                                        Text("Tasted")
-                                            .font(.system(size: DesignSystem.FontSize.small))
-                                            .foregroundColor(.white.opacity(0.9))
-                                    }
-                                }
-                                if bottle.hasTasted, bottle.isLibrary {
-                                    Text("•")
-                                        .foregroundColor(.white.opacity(0.7))
-                                }
-                                if bottle.isLibrary {
-                                    HStack(spacing: 4) {
-                                        Image(systemName: "books.vertical.fill")
-                                            .font(.system(size: 12))
-                                            .foregroundColor(.white.opacity(0.9))
-                                        Text("In Library")
-                                            .font(.system(size: DesignSystem.FontSize.small))
-                                            .foregroundColor(.white.opacity(0.9))
-                                    }
-                                }
-                            }
-                        }
+                        heroStatusBadges(bottle)
                     }
                     .padding(.vertical, 16)
                     .padding(.horizontal, 16)
@@ -214,12 +187,46 @@ extension BottleDetailView {
         }
     }
 
+    /// Status badges with labels for clarity (hero)
+    @ViewBuilder
+    private func heroStatusBadges(_ bottle: Bottle) -> some View {
+        if bottle.hasTasted || bottle.isLibrary {
+            HStack(spacing: 10) {
+                if bottle.hasTasted {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.9))
+                        Text("Tasted")
+                            .font(.peatedMetadata)
+                            .foregroundColor(.white.opacity(0.9))
+                    }
+                }
+                if bottle.hasTasted, bottle.isLibrary {
+                    Text("•")
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                if bottle.isLibrary {
+                    HStack(spacing: 4) {
+                        Image(systemName: "books.vertical.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(.white.opacity(0.9))
+                        Text("In Library")
+                            .font(.peatedMetadata)
+                            .foregroundColor(.white.opacity(0.9))
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Name Banner (no-image fallback)
 
     private func nameCardSection(_ bottle: Bottle) -> some View {
         VStack(spacing: 8) {
             Text(bottle.fullName)
-                .font(.peatedDisplaySerifLarge)
+                .font(.peatedPageTitle)
+                .tracking(DesignSystem.Tracking.pageTitle)
                 .foregroundColor(.text)
                 .multilineTextAlignment(.center)
                 .lineLimit(nil)
@@ -245,7 +252,7 @@ extension BottleDetailView {
                         .font(.system(size: 10))
                     Text(bottle.brandName)
                 }
-                .font(.system(size: DesignSystem.FontSize.small))
+                .font(.peatedMetadata)
                 .foregroundColor(.textSecondary)
             }
             .buttonStyle(.plain)
@@ -259,7 +266,7 @@ extension BottleDetailView {
                                 .font(.system(size: 12))
                                 .foregroundColor(.textSecondary)
                             Text("Tasted")
-                                .font(.system(size: DesignSystem.FontSize.small))
+                                .font(.peatedMetadata)
                                 .foregroundColor(.textSecondary)
                         }
                     }
@@ -273,7 +280,7 @@ extension BottleDetailView {
                                 .font(.system(size: 12))
                                 .foregroundColor(.textSecondary)
                             Text("In Library")
-                                .font(.system(size: DesignSystem.FontSize.small))
+                                .font(.peatedMetadata)
                                 .foregroundColor(.textSecondary)
                         }
                     }
@@ -360,7 +367,7 @@ extension BottleDetailView {
             if let category = bottle.category {
                 VStack(spacing: 8) {
                     Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                        .font(.system(size: DesignSystem.FontSize.small))
+                        .font(.peatedMetadata)
                         .fontWeight(.semibold)
                         .foregroundColor(.text)
                         .lineLimit(1)
@@ -439,13 +446,13 @@ extension BottleDetailView {
     private func descriptionSection(_ bottle: Bottle) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("ABOUT")
-                .font(.system(size: DesignSystem.FontSize.small))
+                .font(.peatedMetadata)
                 .fontWeight(.semibold)
                 .foregroundColor(.textSecondary)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(bottle.description ?? "")
-                    .font(.system(size: DesignSystem.FontSize.body))
+                    .font(.peatedBody)
                     .foregroundColor(.text)
                     .lineLimit(isDescriptionExpanded ? nil : 3)
                     .fixedSize(horizontal: false, vertical: true)
@@ -458,7 +465,7 @@ extension BottleDetailView {
                         }
                     }) {
                         Text(isDescriptionExpanded ? "Show less" : "Read more")
-                            .font(.system(size: DesignSystem.FontSize.small))
+                            .font(.peatedMetadata)
                             .fontWeight(.medium)
                             .foregroundColor(.brand)
                     }

@@ -58,6 +58,7 @@ final class SearchModel {
                 self?.state = .results(results)
             } catch {
                 guard !Task.isCancelled else { return }
+                Telemetry.capture(error, feature: "search", operation: "query")
                 self?.state = .error(error.localizedDescription)
             }
         }
@@ -118,6 +119,7 @@ final class SearchModel {
                 try await userRepository.unfollowUser(id: result.id)
             }
         } catch {
+            Telemetry.capture(error, feature: "search", operation: "toggle_friend")
             updateFriendStatus(userId: result.id, status: previousStatus)
             friendshipErrorMessage = "Couldn't update friendship. Please try again."
         }
@@ -151,7 +153,7 @@ final class SearchModel {
                 popularBottles = try await popular
                 topRatedBottles = try await topRated
             } catch {
-                print("Failed to load popular content: \(error)")
+                Telemetry.capture(error, feature: "search", operation: "load_popular")
             }
         }
     }

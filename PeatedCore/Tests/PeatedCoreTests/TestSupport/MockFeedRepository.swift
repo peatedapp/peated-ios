@@ -6,7 +6,7 @@ import Foundation
 public class MockFeedRepository: FeedRepositoryProtocol {
     // MARK: - Mock Configuration
 
-    public var mockFeedPage: FeedPage?
+    public var mockPage: ActivityPage?
     public var mockError: Error?
     public var networkDelay: TimeInterval = 0
 
@@ -34,7 +34,7 @@ public class MockFeedRepository: FeedRepositoryProtocol {
 
     // MARK: - FeedRepositoryProtocol Implementation
 
-    public func getFeed(type: FeedType, cursor: String?, limit: Int) async throws -> FeedPage {
+    public func getActivity(type: FeedType, cursor: String?, limit: Int) async throws -> ActivityPage {
         getFeedCallCount += 1
         lastFeedType = type
         lastCursor = cursor
@@ -51,7 +51,7 @@ public class MockFeedRepository: FeedRepositoryProtocol {
         return try await response()
     }
 
-    public func refreshFeed(type: FeedType) async throws -> FeedPage {
+    public func refreshActivity(type: FeedType) async throws -> ActivityPage {
         refreshFeedCallCount += 1
 
         // Record refresh call
@@ -70,7 +70,7 @@ public class MockFeedRepository: FeedRepositoryProtocol {
         cursor: String?,
         limit: Int
     ) async throws -> FeedPage {
-        try await getFeed(type: .global, cursor: cursor, limit: limit)
+        try await tastingPage(type: .global, cursor: cursor, limit: limit)
     }
 
     public func getUserTastings(
@@ -78,7 +78,7 @@ public class MockFeedRepository: FeedRepositoryProtocol {
         cursor: String?,
         limit: Int
     ) async throws -> FeedPage {
-        try await getFeed(type: .personal, cursor: cursor, limit: limit)
+        try await tastingPage(type: .friends, cursor: cursor, limit: limit)
     }
 
     // MARK: - Test Helpers
@@ -92,7 +92,7 @@ public class MockFeedRepository: FeedRepositoryProtocol {
         lastCursor = nil
         lastLimit = nil
         mockError = nil
-        mockFeedPage = nil
+        mockPage = nil
         networkDelay = 0
     }
 
@@ -108,7 +108,12 @@ public class MockFeedRepository: FeedRepositoryProtocol {
         getFeedCallCount + refreshFeedCallCount
     }
 
-    private func response() async throws -> FeedPage {
+    private func tastingPage(type: FeedType, cursor: String?, limit: Int) async throws -> FeedPage {
+        let page = try await getActivity(type: type, cursor: cursor, limit: limit)
+        return FeedPage(tastings: page.entries.compactMap(\.tasting), cursor: page.cursor, hasMore: page.hasMore)
+    }
+
+    private func response() async throws -> ActivityPage {
         if networkDelay > 0 {
             try await Task.sleep(for: .seconds(networkDelay))
         }
@@ -117,6 +122,6 @@ public class MockFeedRepository: FeedRepositoryProtocol {
             throw error
         }
 
-        return mockFeedPage ?? FeedPage(tastings: [], cursor: nil, hasMore: false)
+        return mockPage ?? ActivityPage(entries: [], cursor: nil, hasMore: false)
     }
 }

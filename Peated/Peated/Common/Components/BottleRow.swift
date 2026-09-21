@@ -19,11 +19,11 @@ struct BottleRow: View {
             case let .lastTasting(tasting):
                 HStack(spacing: DesignSystem.Spacing.xSmall) {
                     if let band = tasting.ratingBand {
-                        TastingRatingView(band: band, fontSize: DesignSystem.FontSize.tiny)
+                        TastingRatingView(band: band, size: .small)
                     }
 
                     Text("Last: \(tasting.timeAgo)")
-                        .font(.system(size: DesignSystem.FontSize.small))
+                        .font(.peatedMetadata)
                         .foregroundColor(.secondary)
                 }
             }
@@ -52,10 +52,11 @@ struct BottleRow: View {
                         height: DesignSystem.ImageSize.bottleThumb.height
                     )
 
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
                     // Bottle name with proper truncation
                     Text(bottle.fullName)
-                        .font(.system(size: DesignSystem.FontSize.title, weight: .semibold, design: .default))
+                        .font(.peatedRowTitle)
+                        .tracking(DesignSystem.Tracking.rowTitle)
                         .foregroundColor(.text)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -63,7 +64,7 @@ struct BottleRow: View {
                     // Brand • Category on one line
                     HStack(spacing: DesignSystem.Spacing.xSmall) {
                         Text(bottle.brandName)
-                            .font(.system(size: DesignSystem.FontSize.body))
+                            .font(.peatedBody)
                             .foregroundColor(.textSecondary)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -71,11 +72,11 @@ struct BottleRow: View {
 
                         if let category = bottle.category {
                             Text("•")
-                                .font(.system(size: DesignSystem.FontSize.body))
+                                .font(.peatedBody)
                                 .foregroundColor(.textMuted)
 
                             Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
-                                .font(.system(size: DesignSystem.FontSize.body))
+                                .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                                 .lineLimit(1)
                         }

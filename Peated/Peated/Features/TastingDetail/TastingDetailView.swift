@@ -78,6 +78,7 @@ struct TastingDetailView: View {
                         try await model.deleteTasting()
                         dismiss()
                     } catch {
+                        Telemetry.capture(error, feature: "tasting", operation: "delete")
                         ToastManager.shared.showError("Failed to delete tasting")
                     }
                 }
@@ -159,12 +160,13 @@ struct TastingDetailView: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text("Comments")
-                    .font(.peatedHeadline)
+                    .font(.peatedSectionHeading)
+                    .tracking(DesignSystem.Tracking.sectionHeading)
                     .foregroundColor(.text)
 
                 if case let .loaded(comments) = model.commentState, !comments.isEmpty {
                     Text("(\(comments.count))")
-                        .font(.peatedSubheadline)
+                        .font(.peatedBody)
                         .foregroundColor(.textSecondary)
                 }
 
@@ -197,7 +199,7 @@ struct TastingDetailView: View {
             case let .loaded(comments):
                 if comments.isEmpty {
                     Text("No comments yet. Be the first!")
-                        .font(.peatedBody)
+                        .font(.peatedProse)
                         .foregroundColor(.textSecondary)
                         .padding(.vertical, 20)
                 } else {
@@ -225,7 +227,7 @@ struct TastingDetailView: View {
                         .foregroundColor(.warning)
 
                     Text("Failed to load comments")
-                        .font(.peatedSubheadline)
+                        .font(.peatedBody)
                         .foregroundColor(.text)
 
                     Button {
@@ -234,7 +236,7 @@ struct TastingDetailView: View {
                         }
                     } label: {
                         Text("Try Again")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.brand)
                     }
                 }
@@ -251,7 +253,7 @@ struct TastingDetailView: View {
         HStack(spacing: 12) {
             HStack(spacing: 8) {
                 TextEditor(text: $commentText)
-                    .font(.peatedBody)
+                    .font(.peatedProse)
                     .foregroundColor(.text)
                     .frame(minHeight: 20, maxHeight: 80)
                     .focused($isCommentFieldFocused)
@@ -296,12 +298,13 @@ struct TastingDetailView: View {
                 .foregroundColor(.warning)
 
             Text("Unable to load tasting")
-                .font(.peatedTitle3)
+                .font(.peatedSectionHeading)
+                .tracking(DesignSystem.Tracking.sectionHeading)
                 .fontWeight(.semibold)
                 .foregroundColor(.text)
 
             Text(message)
-                .font(.peatedBody)
+                .font(.peatedProse)
                 .foregroundColor(.textSecondary)
                 .multilineTextAlignment(.center)
 
@@ -311,7 +314,7 @@ struct TastingDetailView: View {
                 }
             } label: {
                 Text("Try Again")
-                    .font(.peatedBody)
+                    .font(.peatedProse)
                     .fontWeight(.medium)
                     .foregroundColor(.onBrand)
                     .padding(.horizontal, 24)
@@ -356,7 +359,8 @@ struct TastingDetailCard: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(tasting.bottleName)
-                        .font(.peatedDisplaySerif)
+                        .font(.peatedRowTitle)
+                        .tracking(DesignSystem.Tracking.rowTitle)
                         .foregroundColor(.text)
                         .lineLimit(2)
                         .fixedSize(horizontal: false, vertical: true)
@@ -364,22 +368,22 @@ struct TastingDetailCard: View {
 
                     HStack(spacing: 4) {
                         Text(tasting.bottleBrandName)
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                             .foregroundColor(.textSecondary)
 
                         if let category = tasting.bottleCategory {
                             Text("•")
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                                 .foregroundColor(.textMuted)
 
                             Text(category.capitalized)
-                                .font(.peatedSubheadline)
+                                .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                         }
                     }
 
                     if let band = tasting.ratingBand {
-                        TastingRatingView(band: band, showRange: true, fontSize: DesignSystem.FontSize.body)
+                        TastingRatingView(band: band, size: .large)
                             .padding(.top, 4)
                     }
                 }
@@ -390,7 +394,7 @@ struct TastingDetailCard: View {
             // Notes (full, not truncated)
             if let notes = tasting.notes, !notes.isEmpty {
                 Text(notes)
-                    .font(.peatedBody)
+                    .font(.peatedProse)
                     .italic()
                     .foregroundColor(.text)
                     .fixedSize(horizontal: false, vertical: true)
@@ -402,7 +406,7 @@ struct TastingDetailCard: View {
                     HStack(spacing: 8) {
                         ForEach(tasting.tags, id: \.self) { tag in
                             Text("#\(tag)")
-                                .font(.peatedFootnote)
+                                .font(.peatedMetadata)
                                 .foregroundColor(.textSecondary)
                                 .padding(.horizontal, 12)
                                 .padding(.vertical, 6)
@@ -441,12 +445,12 @@ struct TastingDetailCard: View {
 
                     VStack(alignment: .leading, spacing: 2) {
                         Text(tasting.authorDisplayName)
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                             .fontWeight(.medium)
                             .foregroundColor(.text)
 
                         Text("@\(tasting.username) • \(tasting.timeAgo)")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }
                 }
@@ -467,7 +471,7 @@ struct TastingDetailCard: View {
                         Image(systemName: tasting.hasToasted ? "hands.clap.fill" : "hands.clap")
                             .font(.system(size: 16))
                         Text("\(tasting.toastCount)")
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                     }
                     .foregroundColor(tasting.hasToasted ? .brand : .textSecondary)
                 }
@@ -501,7 +505,7 @@ struct CommentView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack(spacing: 6) {
                         Text(comment.authorDisplayName)
-                            .font(.peatedSubheadline)
+                            .font(.peatedBody)
                             .fontWeight(.semibold)
                             .foregroundColor(.text)
 
@@ -516,16 +520,16 @@ struct CommentView: View {
                         }
 
                         Text("•")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textMuted)
 
                         Text(comment.timeAgo)
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }
 
                     Text(comment.text)
-                        .font(.peatedBody)
+                        .font(.peatedProse)
                         .italic()
                         .foregroundColor(.text)
                         .fixedSize(horizontal: false, vertical: true)
@@ -542,7 +546,7 @@ struct CommentView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis")
-                            .font(.peatedCaption)
+                            .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                             .frame(width: 24, height: 24)
                     }

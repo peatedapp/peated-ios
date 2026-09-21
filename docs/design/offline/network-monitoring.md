@@ -146,7 +146,7 @@ struct OfflineIndicator: View {
                 Image(systemName: "wifi.slash")
                     .font(.system(size: 14))
                 Text("You're offline")
-                    .font(.peatedCaption)
+                    .font(.peatedMetadata)
             }
             .foregroundColor(.onStatus)
             .padding(.horizontal, 12)

@@ -65,7 +65,7 @@ struct TermsAcceptanceView: View {
                 .disabled(isAccepting)
 
                 // View terms link
-                Link(destination: URL(string: "https://peated.com/terms")!) {
+                Link(destination: LegalDocument.terms.url) {
                     Text("View Terms of Service")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
@@ -98,6 +98,7 @@ struct TermsAcceptanceView: View {
                     onAccepted()
                 }
             } catch {
+                Telemetry.capture(error, feature: "auth", operation: "accept_terms")
                 await MainActor.run {
                     self.error = error
                     isAccepting = false

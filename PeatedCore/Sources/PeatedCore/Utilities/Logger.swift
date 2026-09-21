@@ -23,6 +23,9 @@ public struct Logger {
     /// Sync operations and background tasks
     public static let sync = os.Logger(subsystem: "com.peated.PeatedCore", category: "Sync")
 
+    /// Failures captured for the error reporter
+    public static let telemetry = os.Logger(subsystem: "com.peated.PeatedCore", category: "Telemetry")
+
     // MARK: - Convenience Methods
 
     /// Log API request with standardized format
@@ -68,6 +71,12 @@ public struct Logger {
             duration=\(duration)
             """
         )
+        Telemetry.log(.error, "API failure", attributes: [
+            "operation": .string(endpoint),
+            "method": .string(method),
+            "error_kind": .string(errorKind),
+            "duration_ms": .int(Int(duration * 1000))
+        ])
     }
 
     /// Log model state change
@@ -100,6 +109,10 @@ public struct Logger {
             user=\(userId ?? "", privacy: .private(mask: .hash))
             """
         )
+        Telemetry.log(success ? .info : .warning, "Auth event", attributes: [
+            "event": .string(event),
+            "success": .bool(success)
+        ])
     }
 
     /// Log network connectivity changes
@@ -110,6 +123,12 @@ public struct Logger {
         network.info(
             "Network connected=\(connected) type=\(connectionType ?? "unknown", privacy: .public)"
         )
+        Telemetry.addBreadcrumb(TelemetryBreadcrumb(
+            category: "network",
+            message: connected ? "Network connected" : "Network disconnected",
+            level: connected ? .info : .warning,
+            data: ["type": .string(connectionType ?? "unknown")]
+        ))
     }
 
     /// Log database operations
@@ -137,6 +156,12 @@ public struct Logger {
         count: Int? = nil,
         success: Bool = true
     ) {
+        Telemetry.log(success ? .info : .warning, "Sync operation", attributes: [
+            "operation": .string(operation),
+            "entity": .string(entityType ?? "unknown"),
+            "count": .int(count ?? 0),
+            "success": .bool(success)
+        ])
         if success {
             sync.info(
                 """

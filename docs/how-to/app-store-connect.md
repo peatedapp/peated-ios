@@ -59,6 +59,7 @@ Keep one active workflow named `Release to TestFlight` with these settings:
 - Action: archive the Peated iOS app
 - Post-action: distribute to the internal Peated TestFlight group
 - Automatic pull-request and branch-change triggers: disabled
+- Environment: `SENTRY_AUTH_TOKEN` as a secret variable, so the post-archive script can upload debug symbols (see `@docs/how-to/sentry.md`)
 
 The workflow should not add separate Build, Test, or Analyze actions. The tagged or selected commit must already have passed the required GitHub `Apple build and tests` check. Run broader analysis or device matrices locally or in a deliberately started diagnostic workflow.
 
@@ -110,3 +111,15 @@ Use a dedicated key. Do not reuse a personal release key with broader permission
 - [App Store Connect API](https://developer.apple.com/documentation/appstoreconnectapi)
 - [Xcode Cloud workflows and builds](https://developer.apple.com/documentation/appstoreconnectapi/xcode-cloud-workflows-and-builds)
 - [Xcode Cloud pricing and compute hours](https://developer.apple.com/xcode-cloud/get-started/)
+
+## App Store submission settings
+
+These project settings exist to satisfy App Review and must stay in sync with the App Store Connect record:
+
+- The app targets iPhone only, in portrait. No screen adapts to iPad size classes, so widening the device family needs iPad QA first.
+- `Peated/Peated/PrivacyInfo.xcprivacy` lists every data type the app sends off the device. Update it and the App Privacy answers together whenever a new field, permission, or SDK ships.
+- `Peated/Peated/Peated.entitlements` holds only iOS entitlements: Sign in with Apple. See `docs/how-to/apple-signin-setup.md`.
+- Settings and sign-up link to `https://peated.com/terms` and `https://peated.com/privacy` through `LegalDocument`. App Store Connect needs the same privacy URL.
+- The support URL is `https://peated.com/about`.
+- Age rating must declare frequent alcohol references.
+- App Review needs a demo account that has accepted the Terms of Service and is verified, because the API rejects writes otherwise.

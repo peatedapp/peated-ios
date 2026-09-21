@@ -71,8 +71,8 @@ public actor ImageUploadService: ImageUploadServiceProtocol {
                 let url = try await uploadTastingImage(tastingId: tastingId, image: imageData)
                 uploadedUrls.append(url)
             } catch {
-                // Log the error but continue with other uploads
-                print("Failed to upload image: \(error)")
+                // Report the error but continue with other uploads
+                Telemetry.capture(error, feature: "tasting_image", operation: "upload")
                 // Optionally, you might want to throw here to fail fast
                 // throw error
             }

@@ -166,3 +166,31 @@ public extension Operations.listUserBadges.Output {
         }
     }
 }
+
+public extension Operations.listActivity.Output {
+    func extractPayload() throws -> Operations.listActivity.Output.Ok.Body.jsonPayload {
+        switch self {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                return payload
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Bad request")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("Forbidden")
+        case .notFound:
+            throw APIError.notFound
+        case .conflict:
+            throw APIError.requestFailed("Conflict")
+        case .contentTooLarge:
+            throw APIError.requestFailed("Content too large")
+        case .internalServerError:
+            throw APIError.serverError(500, "Internal server error")
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        }
+    }
+}

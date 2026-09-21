@@ -11,7 +11,7 @@ struct SignUpView: View {
     @State private var acceptedTerms = false
     @State private var isLoading = false
     @State private var error: String?
-    @State private var showTerms = false
+    @State private var legalDocument: LegalDocument?
 
     private let authManager = AuthenticationManager.shared
 
@@ -25,8 +25,11 @@ struct SignUpView: View {
                     headerSection
                         .padding(.top, 60)
 
-                    googleSignUpButton
-                        .padding(.horizontal)
+                    VStack(spacing: 12) {
+                        appleSignUpButton
+                        googleSignUpButton
+                    }
+                    .padding(.horizontal)
 
                     divider
                         .padding(.horizontal)
@@ -58,11 +61,9 @@ struct SignUpView: View {
             Text(error ?? "An error occurred")
         }
         .overlay(loadingOverlay)
-        .sheet(isPresented: $showTerms) {
-            if let url = URL(string: "https://peated.com/terms") {
-                SafariView(url: url)
-                    .ignoresSafeArea(edges: .bottom)
-            }
+        .sheet(item: $legalDocument) { document in
+            SafariView(url: document.url)
+                .ignoresSafeArea(edges: .bottom)
         }
     }
 
@@ -72,11 +73,12 @@ struct SignUpView: View {
         VStack(spacing: 8) {
             PeatedLogo(height: 60)
             Text("Join Peated")
-                .font(.peatedTitle2)
+                .font(.peatedPageTitleCompact)
+                .tracking(DesignSystem.Tracking.pageTitleCompact)
                 .fontWeight(.bold)
                 .foregroundColor(.text)
             Text("Track and share your whisky journey")
-                .font(.peatedBody)
+                .font(.peatedProse)
                 .foregroundColor(.textSecondary)
         }
     }
@@ -84,7 +86,7 @@ struct SignUpView: View {
     private var divider: some View {
         HStack {
             Rectangle().fill(Color.border).frame(height: 1)
-            Text("OR").font(.peatedCaption).foregroundColor(.textMuted).padding(.horizontal, 16)
+            Text("OR").font(.peatedMetadata).foregroundColor(.textMuted).padding(.horizontal, 16)
             Rectangle().fill(Color.border).frame(height: 1)
         }
     }
@@ -131,22 +133,30 @@ struct SignUpView: View {
             HStack(spacing: 4) {
                 Text("I agree to the")
                     .foregroundColor(.textSecondary)
-                Button(action: { showTerms = true }) {
-                    Text("Terms of Service")
-                        .foregroundColor(.brand)
-                        .underline()
-                }
-                .buttonStyle(.plain)
+                legalLink("Terms of Service", document: .terms)
+                Text("and")
+                    .foregroundColor(.textSecondary)
+                legalLink("Privacy Policy", document: .privacy)
             }
         }
-        .font(.peatedCaption)
+        .font(.peatedMetadata)
+    }
+
+    private func legalLink(_ title: String, document: LegalDocument) -> some View {
+        Button {
+            legalDocument = document
+        } label: {
+            Text(title)
+                .foregroundColor(.brand)
+                .underline()
+        }
+        .buttonStyle(.plain)
     }
 
     private var signUpButton: some View {
         Button(action: handleEmailSignUp) {
             Text("Create Account")
-                .font(.peatedBody)
-                .fontWeight(.semibold)
+                .font(.peatedInteractive)
                 .foregroundColor(.onBrand)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
@@ -160,6 +170,18 @@ struct SignUpView: View {
         !username.isEmpty && !email.isEmpty && !password.isEmpty && acceptedTerms && !isLoading
     }
 
+    private var appleSignUpButton: some View {
+        AppleSignInButton(label: .continue) { result in
+            switch result {
+            case let .success(credential):
+                handleAppleSignUp(credential)
+            case let .failure(error):
+                self.error = error.localizedDescription
+            }
+        }
+        .disabled(isLoading)
+    }
+
     private var googleSignUpButton: some View {
         Button(action: handleGoogleSignUp) {
             HStack(spacing: 12) {
@@ -171,8 +193,7 @@ struct SignUpView: View {
                         .tint(.onBrand)
                 } else {
                     Text("Continue with Google")
-                        .font(.peatedBody)
-                        .fontWeight(.semibold)
+                        .font(.peatedInteractive)
                         .foregroundColor(.onBrand)
                 }
             }
@@ -211,6 +232,26 @@ struct SignUpView: View {
                     email: email,
                     password: password,
                     tosAccepted: acceptedTerms
+                )
+                await MainActor.run { onSignUpSuccess(user) }
+            } catch {
+                await MainActor.run {
+                    self.error = error.localizedDescription
+                    isLoading = false
+                }
+            }
+        }
+    }
+
+    private func handleAppleSignUp(_ credential: AppleSignInCredential) {
+        // The backend links or creates the account on the first successful Apple auth.
+        Task {
+            isLoading = true
+            error = nil
+            do {
+                let user = try await authManager.loginWithApple(
+                    identityToken: credential.identityToken,
+                    fullName: credential.fullName
                 )
                 await MainActor.run { onSignUpSuccess(user) }
             } catch {

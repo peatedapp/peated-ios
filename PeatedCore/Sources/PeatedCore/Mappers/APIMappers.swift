@@ -47,8 +47,9 @@ extension TastingFeedItem {
         let username = apiUser.username
         let userDisplayName: String? = nil
         let userAvatarUrl = apiUser.pictureUrl
+        let bottleIdentity = BottleIdentity(bottle: Bottle(from: apiBottle))
         let bottleId = String(Int(apiBottle.id))
-        let bottleName = apiBottle.fullName
+        let bottleName = bottleIdentity.name
         let bottleBrandName = apiBottle.brand.name
         let bottleCategory = apiBottle.category?.rawValue
         let bottleImageUrl: String? = apiBottle.imageUrl
@@ -80,7 +81,8 @@ extension TastingFeedItem {
             hasToasted: hasToasted,
             tags: tags,
             location: location,
-            friendUsernames: friendUsernames
+            friendUsernames: friendUsernames,
+            bottleIdentity: bottleIdentity
         )
     }
 }
@@ -133,7 +135,8 @@ extension Bottle {
             fullName: apiBottle.fullName,
             brand: Brand(
                 id: String(Int(apiBottle.brand.id)),
-                name: apiBottle.brand.name
+                name: apiBottle.brand.name,
+                shortName: apiBottle.brand.shortName
             ),
             category: category,
             description: apiBottle.description,
@@ -141,6 +144,7 @@ extension Bottle {
             series: apiBottle.series.map {
                 BottleSeriesSummary(id: String(Int($0.id)), name: $0.name)
             },
+            groupName: apiBottle.group?.name,
             caskStrength: apiBottle.caskStrength ?? false,
             singleCask: apiBottle.singleCask ?? false,
             statedAge: apiBottle.statedAge.map { Int($0) },
@@ -203,13 +207,18 @@ extension Bottle {
             id: String(Int(apiBottle.id)),
             name: apiBottle.name,
             fullName: apiBottle.fullName,
-            brand: Brand(id: String(Int(apiBottle.brand.id)), name: apiBottle.brand.name),
+            brand: Brand(
+                id: String(Int(apiBottle.brand.id)),
+                name: apiBottle.brand.name,
+                shortName: apiBottle.brand.shortName
+            ),
             category: apiBottle.category?.rawValue,
             description: apiBottle.description,
             edition: apiBottle.edition,
             series: apiBottle.series.map {
                 BottleSeriesSummary(id: String(Int($0.id)), name: $0.name)
             },
+            groupName: apiBottle.group?.name,
             caskStrength: apiBottle.caskStrength ?? false,
             singleCask: apiBottle.singleCask ?? false,
             statedAge: apiBottle.statedAge.map { Int($0) },
@@ -276,13 +285,18 @@ extension Bottle {
             id: String(Int(apiBottle.id)),
             name: apiBottle.name,
             fullName: apiBottle.fullName,
-            brand: Brand(id: String(Int(apiBottle.brand.id)), name: apiBottle.brand.name),
+            brand: Brand(
+                id: String(Int(apiBottle.brand.id)),
+                name: apiBottle.brand.name,
+                shortName: apiBottle.brand.shortName
+            ),
             category: apiBottle.category?.rawValue,
             description: apiBottle.description,
             edition: apiBottle.edition,
             series: apiBottle.series.map {
                 BottleSeriesSummary(id: String(Int($0.id)), name: $0.name)
             },
+            groupName: apiBottle.group?.name,
             caskStrength: apiBottle.caskStrength ?? false,
             singleCask: apiBottle.singleCask ?? false,
             statedAge: apiBottle.statedAge.map { Int($0) },

@@ -14,7 +14,8 @@ struct TastingCard: View {
             VStack(alignment: .leading, spacing: 4) {
                 // Bottle name
                 Text(tasting.bottleName)
-                    .font(.peatedDisplaySerif)
+                    .font(.peatedRowTitle)
+                    .tracking(DesignSystem.Tracking.rowTitle)
                     .foregroundColor(.text)
                     .lineLimit(2)
                     .fixedSize(horizontal: false, vertical: true)
@@ -56,7 +57,7 @@ struct TastingCard: View {
                         HStack(spacing: 6) {
                             ForEach(tasting.tags, id: \.self) { tag in
                                 Text("#\(tag)")
-                                    .font(.peatedFootnote)
+                                    .font(.peatedMetadata)
                                     .foregroundColor(.textSecondary)
                                     .padding(.horizontal, 8)
                                     .padding(.vertical, 4)

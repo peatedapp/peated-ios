@@ -3,43 +3,22 @@ import Testing
 
 struct FeedRepositoryTests {
     @Test
-    func friendsFeedUsesFriendsFilter() throws {
-        let query = try FeedRepository.makeFeedQuery(
-            type: .friends,
-            cursor: "42",
-            limit: 25,
-            currentUserId: "7"
-        )
+    func friendsFeedUsesFriendsFilterWithoutCritics() {
+        let query = FeedRepository.makeActivityQuery(type: .friends, cursor: "abc", limit: 25)
 
         #expect(query.filter == .friends)
-        #expect(query.user == nil)
-        #expect(query.cursor == 42)
+        #expect(query.includeCriticReviews == nil)
+        #expect(query.cursor == "abc")
         #expect(query.limit == 25)
     }
 
     @Test
-    func globalFeedUsesGlobalFilter() throws {
-        let query = try FeedRepository.makeFeedQuery(
-            type: .global,
-            cursor: nil,
-            limit: 20,
-            currentUserId: "7"
-        )
+    func globalFeedIncludesCriticReviews() {
+        let query = FeedRepository.makeActivityQuery(type: .global, cursor: nil, limit: 20)
 
         #expect(query.filter == .global)
-        #expect(query.user == nil)
-    }
-
-    @Test
-    func personalFeedUsesCurrentUser() throws {
-        let query = try FeedRepository.makeFeedQuery(
-            type: .personal,
-            cursor: nil,
-            limit: 20,
-            currentUserId: "7"
-        )
-
-        #expect(query.filter == nil)
-        #expect(query.user?.value1 == 7)
+        #expect(query.includeCriticReviews == true)
+        #expect(query.cursor == nil)
+        #expect(query.limit == 20)
     }
 }
