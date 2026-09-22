@@ -78,10 +78,13 @@ struct CreateTastingScreen {
         continueButton.expectToAppear(file: file, line: line).tap()
     }
 
-    /// Moves from the rating step to the location step.
+    /// Moves from the rating step to the location step and answers the location
+    /// prompt with "Don't Allow". The prompt usually interrupts the Continue tap
+    /// and is denied by the interruption monitor; this covers it arriving later.
     func continueToLocationStep(file: StaticString = #filePath, line: UInt = #line) {
         tapContinue(file: file, line: line) // notes
         tapContinue(file: file, line: line) // location
+        SystemPermissionAlert.deny(timeout: 3)
         atHomeButton.expectToBeHittable("Expected the location step", file: file, line: line)
     }
 
@@ -91,9 +94,6 @@ struct CreateTastingScreen {
         selectBottle(named: name, file: file, line: line)
         ratingButton("very_good").tap()
         continueToLocationStep(file: file, line: line)
-        // The location prompt usually interrupts the previous tap and is denied there;
-        // answer it here if it is still up so it cannot cover the step's controls.
-        SystemPermissionAlert.deny(timeout: 2)
         atHomeButton.tap()
         tapContinue(file: file, line: line) // photos
         takePhotoButton.expectToBeHittable("Expected the photos step", file: file, line: line)

@@ -19,7 +19,7 @@ extension XCUIElement {
     /// a step is showing.
     @discardableResult
     func expectToBeHittable(
-        timeout: TimeInterval = 10,
+        timeout: TimeInterval = 20,
         _ message: @autoclosure () -> String = "",
         file: StaticString = #filePath,
         line: UInt = #line

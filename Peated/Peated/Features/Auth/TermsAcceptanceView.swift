@@ -9,6 +9,18 @@ struct TermsAcceptanceView: View {
     var onAccepted: () -> Void
 
     var body: some View {
+        // The content scrolls at large Dynamic Type sizes instead of clipping.
+        GeometryReader { proxy in
+            ScrollView {
+                content
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: proxy.size.height)
+            }
+        }
+        .background(Color.background)
+    }
+
+    private var content: some View {
         VStack(spacing: 24) {
             Spacer()
 
@@ -49,7 +61,7 @@ struct TermsAcceptanceView: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .onBrand))
                             .frame(maxWidth: .infinity)
-                            .frame(height: 50)
+                            .frame(minHeight: 50)
                             .background(Color.brand)
                             .cornerRadius(12)
                     } else {
@@ -57,7 +69,7 @@ struct TermsAcceptanceView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.onBrand)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 50)
+                            .frame(minHeight: 50)
                             .background(Color.brand)
                             .cornerRadius(12)
                     }
@@ -87,8 +99,6 @@ struct TermsAcceptanceView: View {
             .padding(.horizontal, 32)
             .padding(.bottom, 32)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.background)
     }
 
     private func acceptTerms() {

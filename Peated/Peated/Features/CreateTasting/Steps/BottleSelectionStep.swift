@@ -147,11 +147,13 @@ struct BottleSelectionStep: View {
                 HStack {
                     Image(systemName: "photo.on.rectangle")
                         .font(.title3)
+                        .foregroundColor(.brand)
                     Text("Choose Bottle Photo")
                         .font(.body)
                         .fontWeight(.medium)
                 }
-                .foregroundColor(.brand)
+                // Ink text keeps the label readable on the brand tint; brand-on-tint is below 4.5:1.
+                .foregroundColor(.text)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.brand.opacity(0.1))
@@ -164,11 +166,12 @@ struct BottleSelectionStep: View {
                 HStack {
                     Image(systemName: "barcode.viewfinder")
                         .font(.title3)
+                        .foregroundColor(.brand)
                     Text("Scan Barcode")
                         .font(.body)
                         .fontWeight(.medium)
                 }
-                .foregroundColor(.brand)
+                .foregroundColor(.text)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.brand.opacity(0.1))

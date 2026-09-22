@@ -54,8 +54,6 @@ final class PermissionDeniedUITests: XCTestCase {
 
         flow.selectBottle(named: Fixtures.bottleName)
         flow.continueToLocationStep()
-        // The prompt may already have interrupted the previous tap; answer it if it is still up.
-        SystemPermissionAlert.deny(timeout: 2)
 
         flow.locationDeniedNotice.expectToAppear("Expected the location-off notice")
         XCTAssertTrue(flow.openSettingsButton.isHittable, "The notice must offer Settings")
