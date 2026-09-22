@@ -32,9 +32,9 @@ struct AuthenticationManagerRegisterTests {
     }
 
     @Test
-    func failureWithoutMessageFallsBackToGenericError() async throws {
+    func undocumentedFailureWithoutMessageFallsBackToGenericError() async throws {
         let transport = StubAPITransport([
-            "register": [.json(500, "{}")]
+            "register": [.json(418, "{}")]
         ])
         let manager = makeManager(transport: transport)
 

@@ -422,33 +422,40 @@ extension AuthenticationManager {
     /// Turns a refused `register` call into the reason the server gave.
     private static func registrationFailure(_ response: Operations.register.Output) async -> AuthError {
         switch response {
-        case .ok:
-            return .invalidResponse
-        case let .badRequest(failure):
-            guard case let .json(payload) = failure.body else { return .invalidResponse }
-            switch payload {
-            case let .case1(body): return .registrationRejected(body.message)
-            case let .case2(body): return .registrationRejected(body.message)
-            }
-        case let .unauthorized(failure):
-            guard case let .json(payload) = failure.body else { return .invalidResponse }
-            switch payload {
-            case let .case1(body): return .registrationRejected(body.message)
-            case let .case2(body): return .registrationRejected(body.message)
-            }
-        case let .undocumented(_, payload):
-            // The generated contract does not list 409 for a taken username or
-            // email; the server still answers with its standard error body.
-            let message = await serverMessage(from: payload.body)
-            return .registrationRejected(message ?? AuthError.invalidResponse.localizedDescription)
+        case .ok: .invalidResponse
+        case let .badRequest(failure): rejected(try? failure.body.json)
+        case let .unauthorized(failure): rejected(try? failure.body.json)
+        case let .forbidden(failure): rejected(try? failure.body.json)
+        case let .notFound(failure): rejected(try? failure.body.json)
+        case let .conflict(failure): rejected(try? failure.body.json)
+        case let .contentTooLarge(failure): rejected(try? failure.body.json)
+        case let .internalServerError(failure): rejected(try? failure.body.json)
+        case let .undocumented(_, payload): await rejection(message: serverMessage(from: payload.body))
         }
+    }
+
+    /// Every documented failure body is the standard server error with a
+    /// `message`. The generated types differ per status, so the payload is
+    /// re-encoded and read once instead of matched type by type.
+    private static func rejected(_ payload: (some Encodable)?) -> AuthError {
+        guard let payload, let data = try? JSONEncoder().encode(payload) else {
+            return .invalidResponse
+        }
+        return rejection(message: serverMessage(in: data))
+    }
+
+    private static func rejection(message: String?) -> AuthError {
+        .registrationRejected(message ?? AuthError.invalidResponse.localizedDescription)
     }
 
     /// Reads the `message` field of a standard server error body.
     private static func serverMessage(from body: HTTPBody?) async -> String? {
-        guard let body,
-              let data = try? await Data(collecting: body, upTo: 10000),
-              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+        guard let body, let data = try? await Data(collecting: body, upTo: 10000) else { return nil }
+        return serverMessage(in: data)
+    }
+
+    private static func serverMessage(in data: Data) -> String? {
+        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let message = object["message"] as? String,
               !message.isEmpty
         else { return nil }
