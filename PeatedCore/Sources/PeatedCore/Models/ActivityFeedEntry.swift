@@ -27,6 +27,16 @@ public enum ActivityFeedEntry: Identifiable, Hashable, Sendable {
         }
     }
 
+    /// The member behind the entry. Critic reviews come from publications, not members.
+    public var actorUserId: String? {
+        switch self {
+        case let .tasting(item): item.userId
+        case let .memberReview(item): item.userId
+        case .criticReview: nil
+        case let .collectionAdd(item): item.userId
+        }
+    }
+
     /// The tasting when this entry is one; toasts and comments only apply to tastings.
     public var tasting: TastingFeedItem? {
         if case let .tasting(item) = self {

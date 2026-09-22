@@ -172,6 +172,14 @@ private actor UserRepositoryStub: UserRepositoryProtocol {
         return try result()
     }
 
+    func blockUser(id _: String) async throws {}
+
+    func unblockUser(id _: String) async throws {}
+
+    func listBlockedUsers(cursor _: Int, limit _: Int) async throws -> BlockedUsersPage {
+        BlockedUsersPage(users: [], nextCursor: nil)
+    }
+
     private func result() throws -> User {
         guard let user else { throw DeletionFailure() }
         return user

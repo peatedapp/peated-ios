@@ -52,6 +52,11 @@ public class TastingFeedItemBuilder {
         return self
     }
 
+    public func withUserId(_ userId: String) -> TastingFeedItemBuilder {
+        self.userId = userId
+        return self
+    }
+
     public func withUsername(_ username: String) -> TastingFeedItemBuilder {
         self.username = username
         return self

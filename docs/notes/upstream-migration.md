@@ -35,6 +35,8 @@ The client was regenerated again on 2026-09-21 against backend commit `83f8fb064
 
 The client was regenerated a third time on 2026-09-21 against backend commit `d920eab790015071b1e57dffdb52d4a2bbff1667`. That refresh added self-service account deletion (`DELETE /users/me` and `DELETE /users/me/deletion`) and the self-only `deletionScheduledAt` user field, which Settings now uses. The privacy policy at `https://peated.com/privacy` went live in the same backend change.
 
+The client was regenerated a fourth time on 2026-09-22 against backend commit `0d320d66de7b83bd3e44a38752a49ea6a1f7ce4f`. That refresh added member reports (`POST /reports`), blocking (`POST` and `DELETE /users/{user}/block`, `GET /users/me/blocks`), the `blocked`, `suspendedAt`, and `suspensionReason` user fields, and an `ACCOUNT_SUSPENDED` 403 body on every authenticated route. The app now offers Report on tastings, member reviews, comments, and profiles, Block and Unblock on profiles, and a Blocked Members list in Settings. The server keeps blocked members' content visible, so `BlockList` in `PeatedCore` hides it on the device.
+
 The first update also moved tastings and saved offline actions to the five new ratings, added the current bottle details and rating summaries, updated entity, search, and library data, and added a database update for saved tasting ratings. The old numeric rating column remains in existing databases so upgrades stay safe, but the app no longer reads or writes it.
 
 ## Design changes

@@ -270,6 +270,7 @@ struct AppView: View {
             await model.checkAuthStatus()
             if model.isAuthenticated {
                 prewarmCurrentUserAssets()
+                await BlockList.shared.refresh(using: UserRepository())
             }
             // Prune caches on startup
             await SnapshotStore.pruneAll()
@@ -279,9 +280,14 @@ struct AppView: View {
         .onChange(of: model.isAuthenticated) { _, newVal in
             if newVal {
                 prewarmCurrentUserAssets()
+                Task { await BlockList.shared.refresh(using: UserRepository()) }
+            } else {
+                // The block list belongs to the account that signed out.
+                BlockList.shared.clear()
             }
         }
         .withToastContainer() // Add toast container at root level
+        .reportSheet() // One report sheet for every Report menu item
         .onAppear { configureAppearance() } // Ensure appearance is also applied for auth flow
         #if DEBUG
             .onShake {
