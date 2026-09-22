@@ -24,11 +24,16 @@ extension XCUIElement {
         file: StaticString = #filePath,
         line: UInt = #line
     ) -> XCUIElement {
+        XCTAssertTrue(waitUntilHittable(timeout: timeout), message(), file: file, line: line)
+        return self
+    }
+
+    /// Waits for the element to be on screen and tappable without failing the test.
+    func waitUntilHittable(timeout: TimeInterval = 20) -> Bool {
         let hittable = NSPredicate(format: "isHittable == true")
         let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: hittable, object: self)],
                                     timeout: timeout)
-        XCTAssertEqual(result, .completed, message(), file: file, line: line)
-        return self
+        return result == .completed
     }
 
     /// Returns once the element's frame stops moving, so a screen presented

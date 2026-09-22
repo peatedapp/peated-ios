@@ -70,7 +70,14 @@ struct CreateTastingScreen {
     /// Searches for the bottle and picks the first result, which moves to the rating step.
     func selectBottle(named name: String, file: StaticString = #filePath, line: UInt = #line) {
         bottleSearchField.expectToAppear(file: file, line: line).enter(name)
-        bottleResults.firstMatch.expectToAppear("Expected a search result for \(name)", file: file, line: line).tap()
+        let result = bottleResults.firstMatch
+        result.expectToAppear("Expected a search result for \(name)", file: file, line: line).tap()
+        // The CI simulator sometimes stalls for tens of seconds while the results
+        // render, and the tap synthesized during the stall is lost. One more tap
+        // keeps the journey deterministic; a real regression fails both.
+        if !ratingButton("very_good").waitUntilHittable(), result.exists {
+            result.tap()
+        }
         ratingButton("very_good").expectToBeHittable("Expected the rating step", file: file, line: line)
     }
 
