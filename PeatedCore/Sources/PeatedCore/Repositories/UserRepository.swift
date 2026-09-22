@@ -1,7 +1,7 @@
 import Foundation
 import PeatedAPI
 
-public protocol UserRepositoryProtocol {
+public protocol UserRepositoryProtocol: Sendable {
     func getCurrentUser() async throws -> User
     func getUser(id: String) async throws -> User
     func updateProfile(_ input: UpdateProfileInput) async throws -> User

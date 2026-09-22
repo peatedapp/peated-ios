@@ -1,7 +1,7 @@
 import Foundation
 import PeatedAPI
 
-public protocol ReportRepositoryProtocol {
+public protocol ReportRepositoryProtocol: Sendable {
     /// Sends a report to moderators. Repeating an open report is not an error; the server returns the open one.
     func report(_ target: ReportTarget, reason: ReportReason, comment: String?) async throws
 }
