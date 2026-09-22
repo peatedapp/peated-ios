@@ -188,6 +188,7 @@ struct LoginViewSimple: View {
                     .frame(minHeight: DesignSystem.ControlHeight.standard)
                     .contentShape(Rectangle())
             }
+            .accessibilityIdentifier(AccessibilityID.Auth.signUpLink)
         }
     }
 

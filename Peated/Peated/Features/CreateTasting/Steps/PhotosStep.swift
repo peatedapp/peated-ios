@@ -8,7 +8,7 @@ import SwiftUI
 struct PhotosStep: View {
     @ObservedObject var viewModel: CreateTastingViewModel
     @State private var selectedPhotos: [PhotosPickerItem] = []
-    @State private var showingCamera = false
+    @State private var showingCameraPermissionAlert = false
     @State private var showingImagePicker = false
     @State private var sourceType: UIImagePickerController.SourceType = .camera
 
@@ -52,11 +52,9 @@ struct PhotosStep: View {
                                 icon: "camera.fill",
                                 title: "Take Photo",
                                 subtitle: "Capture the moment",
-                                onTap: {
-                                    sourceType = .camera
-                                    showingImagePicker = true
-                                }
+                                onTap: openCamera
                             )
+                            .accessibilityIdentifier(AccessibilityID.CreateTasting.takePhoto)
 
                             // Photo Library Button
                             PhotosPicker(
@@ -103,6 +101,10 @@ struct PhotosStep: View {
             .padding(.bottom, 100) // Space for navigation buttons
         }
         .background(Color.background)
+        .cameraAccessDeniedAlert(
+            isPresented: $showingCameraPermissionAlert,
+            message: "Allow camera access in Settings to take photos of your tastings."
+        )
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(
                 sourceType: sourceType,
@@ -112,6 +114,17 @@ struct PhotosStep: View {
                     }
                 }
             )
+        }
+    }
+
+    private func openCamera() {
+        CameraAccess.request { granted in
+            if granted {
+                sourceType = .camera
+                showingImagePicker = true
+            } else {
+                showingCameraPermissionAlert = true
+            }
         }
     }
 

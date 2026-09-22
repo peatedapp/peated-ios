@@ -70,6 +70,17 @@ The command writes `.test-results/Peated.xcresult`. Open that bundle in Xcode to
 
 Do not use UI tests to prove repository or model behavior that a faster package or app test can own.
 
+#### Launching into a known state
+
+UI tests run the app as a separate process, so they describe the starting state in the launch environment and never touch the live API:
+
+- `AppLaunch.launch(session:stubs:resetting:)` in `PeatedUITests/Support/` launches the app signed out or signed in and passes a table of canned API responses.
+- The app's debug-only `UITestHarness` reads that table, clears the keychain, and installs a `StubAPITransport` through `APIClient.launchTransport`. Every generated operation then answers from the table, keyed by operation id, and an operation with no entry answers 404.
+- `Fixtures` holds JSON bodies that satisfy the generated schema. Add optional fields only when a test asserts on them.
+- Screen objects under `PeatedUITests/Support/Screens/` own the queries and waits for one screen each. Tests read as user journeys and never query the element tree directly.
+- Controls that tests drive carry an identifier from `AccessibilityID`. The app and the UI test bundle each hold a copy of that file; keep them identical.
+- Permission tests reset the protected resource before launch with `resetAuthorizationStatus(for:)`, answer the system prompt through SpringBoard, and then assert the app's own recovery message.
+
 ## Swift Testing conventions
 
 - Group related tests in a suite type.

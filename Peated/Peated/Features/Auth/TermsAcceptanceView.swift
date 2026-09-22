@@ -63,6 +63,7 @@ struct TermsAcceptanceView: View {
                     }
                 }
                 .disabled(isAccepting)
+                .accessibilityIdentifier(AccessibilityID.Terms.accept)
 
                 // View terms link
                 Link(destination: LegalDocument.terms.url) {

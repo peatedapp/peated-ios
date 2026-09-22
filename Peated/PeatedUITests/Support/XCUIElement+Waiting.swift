@@ -1,0 +1,55 @@
+import XCTest
+
+extension XCUIElement {
+    /// Asserts the element appears within the timeout and returns it for chaining.
+    @discardableResult
+    func expectToAppear(
+        timeout: TimeInterval = 10,
+        _ message: @autoclosure () -> String = "",
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> XCUIElement {
+        XCTAssertTrue(waitForExistence(timeout: timeout), message(), file: file, line: line)
+        return self
+    }
+
+    /// Asserts the element is on screen and can be tapped. Paged steps keep
+    /// neighbouring pages in the hierarchy, so existence alone does not prove
+    /// a step is showing.
+    @discardableResult
+    func expectToBeHittable(
+        timeout: TimeInterval = 10,
+        _ message: @autoclosure () -> String = "",
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> XCUIElement {
+        let hittable = NSPredicate(format: "isHittable == true")
+        let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: hittable, object: self)],
+                                    timeout: timeout)
+        XCTAssertEqual(result, .completed, message(), file: file, line: line)
+        return self
+    }
+
+    /// Asserts the element leaves the screen within the timeout.
+    func expectToDisappear(
+        timeout: TimeInterval = 10,
+        _ message: @autoclosure () -> String = "",
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        XCTAssertTrue(waitForNonExistence(withTimeout: timeout), message(), file: file, line: line)
+    }
+
+    /// Focuses the field and types, replacing nothing because the field starts empty.
+    func enter(_ text: String) {
+        tap()
+        typeText(text)
+    }
+}
+
+extension XCUIElementQuery {
+    /// Elements whose accessibility label contains the text.
+    func withLabelContaining(_ text: String) -> XCUIElementQuery {
+        matching(NSPredicate(format: "label CONTAINS[c] %@", text))
+    }
+}

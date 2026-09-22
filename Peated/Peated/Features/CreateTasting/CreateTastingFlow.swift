@@ -72,6 +72,7 @@ struct CreateTastingFlow: View {
                     Button("Cancel") {
                         showCancelConfirmation()
                     }
+                    .accessibilityIdentifier(AccessibilityID.CreateTasting.cancel)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -115,6 +116,7 @@ struct CreateTastingFlow: View {
                     .font(.body)
                     .foregroundColor(.brand)
                 }
+                .accessibilityIdentifier(AccessibilityID.CreateTasting.back)
             }
 
             Spacer()
@@ -138,6 +140,7 @@ struct CreateTastingFlow: View {
                     .cornerRadius(20)
                 }
                 .disabled(!canProceed)
+                .accessibilityIdentifier(AccessibilityID.CreateTasting.continueButton)
             } else {
                 Button(action: submitTasting) {
                     Group {
@@ -161,6 +164,7 @@ struct CreateTastingFlow: View {
                     .cornerRadius(25)
                 }
                 .disabled(viewModel.isSubmitting)
+                .accessibilityIdentifier(AccessibilityID.CreateTasting.submit)
             }
         }
     }

@@ -211,39 +211,40 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
 
             let response = try await client.register(body: body)
 
-            if case let .ok(okResponse) = response,
-               case let .json(jsonPayload) = okResponse.body {
-                if let accessToken = jsonPayload.accessToken {
-                    try keychain.saveToken(accessToken)
-                }
-
-                let apiUser = jsonPayload.user
-                var user = User(from: apiUser)
-
-                // Enrich with stats similar to login flow
-                do {
-                    let detailsResponse = try await client.getUser(
-                        path: .init(user: .init(value1: apiUser.id))
-                    )
-                    if case let .ok(detailsOk) = detailsResponse,
-                       case let .json(detailsJson) = detailsOk.body {
-                        user.tastingsCount = Int(detailsJson.stats.tastings)
-                        user.bottlesCount = Int(detailsJson.stats.bottles)
-                        user.collectedCount = Int(detailsJson.stats.collected)
-                        user.contributionsCount = Int(detailsJson.stats.contributions)
-                    }
-                } catch {
-                    // Non-fatal
-                    Telemetry.capture(error, feature: "auth", operation: "load_user_details")
-                }
-
-                signInProvider = .password
-                authState = .authenticated(user)
-                isLoading = false
-                return user
-            } else {
+            guard case let .ok(okResponse) = response else {
+                throw await Self.registrationFailure(response)
+            }
+            guard case let .json(jsonPayload) = okResponse.body else {
                 throw AuthError.invalidResponse
             }
+            if let accessToken = jsonPayload.accessToken {
+                try keychain.saveToken(accessToken)
+            }
+
+            let apiUser = jsonPayload.user
+            var user = User(from: apiUser)
+
+            // Enrich with stats similar to login flow
+            do {
+                let detailsResponse = try await client.getUser(
+                    path: .init(user: .init(value1: apiUser.id))
+                )
+                if case let .ok(detailsOk) = detailsResponse,
+                   case let .json(detailsJson) = detailsOk.body {
+                    user.tastingsCount = Int(detailsJson.stats.tastings)
+                    user.bottlesCount = Int(detailsJson.stats.bottles)
+                    user.collectedCount = Int(detailsJson.stats.collected)
+                    user.contributionsCount = Int(detailsJson.stats.contributions)
+                }
+            } catch {
+                // Non-fatal
+                Telemetry.capture(error, feature: "auth", operation: "load_user_details")
+            }
+
+            signInProvider = .password
+            authState = .authenticated(user)
+            isLoading = false
+            return user
         } catch {
             captureAuthFailure(error, operation: "sign_in")
             self.error = error
@@ -383,10 +384,13 @@ public enum SignInProvider: String, Sendable {
 
 // MARK: - Auth Errors
 
-public enum AuthError: LocalizedError {
+public enum AuthError: LocalizedError, Equatable {
     case noPresentingViewController
     case noIDToken
     case invalidResponse
+    /// The server refused to create the account and said why, for example a
+    /// taken username or a password that fails its rules.
+    case registrationRejected(String)
 
     public var errorDescription: String? {
         switch self {
@@ -396,6 +400,8 @@ public enum AuthError: LocalizedError {
             "Failed to get ID token from Google"
         case .invalidResponse:
             "Invalid response from server"
+        case let .registrationRejected(message):
+            message
         }
     }
 }
@@ -411,6 +417,42 @@ extension AuthenticationManager {
             return
         }
         Telemetry.capture(error, feature: "auth", operation: operation)
+    }
+
+    /// Turns a refused `register` call into the reason the server gave.
+    private static func registrationFailure(_ response: Operations.register.Output) async -> AuthError {
+        switch response {
+        case .ok:
+            return .invalidResponse
+        case let .badRequest(failure):
+            guard case let .json(payload) = failure.body else { return .invalidResponse }
+            switch payload {
+            case let .case1(body): return .registrationRejected(body.message)
+            case let .case2(body): return .registrationRejected(body.message)
+            }
+        case let .unauthorized(failure):
+            guard case let .json(payload) = failure.body else { return .invalidResponse }
+            switch payload {
+            case let .case1(body): return .registrationRejected(body.message)
+            case let .case2(body): return .registrationRejected(body.message)
+            }
+        case let .undocumented(_, payload):
+            // The generated contract does not list 409 for a taken username or
+            // email; the server still answers with its standard error body.
+            let message = await serverMessage(from: payload.body)
+            return .registrationRejected(message ?? AuthError.invalidResponse.localizedDescription)
+        }
+    }
+
+    /// Reads the `message` field of a standard server error body.
+    private static func serverMessage(from body: HTTPBody?) async -> String? {
+        guard let body,
+              let data = try? await Data(collecting: body, upTo: 10000),
+              let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let message = object["message"] as? String,
+              !message.isEmpty
+        else { return nil }
+        return message
     }
 
     private func exchangeGoogleIDTokenForSession(idToken: String) async throws -> User {
