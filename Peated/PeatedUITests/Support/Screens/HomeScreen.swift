@@ -1,6 +1,7 @@
 import XCTest
 
 /// The signed-in tab bar and Activity feed.
+@MainActor
 struct HomeScreen {
     let app: XCUIApplication
 

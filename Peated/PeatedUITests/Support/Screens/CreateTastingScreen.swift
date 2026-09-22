@@ -2,6 +2,7 @@ import XCTest
 
 /// The six-step Add Tasting sheet. Steps are paged, so tests move with the
 /// Continue and Back buttons rather than swipes.
+@MainActor
 struct CreateTastingScreen {
     let app: XCUIApplication
 

@@ -1,6 +1,7 @@
 import XCTest
 
 /// The Create account form.
+@MainActor
 struct SignUpScreen {
     let app: XCUIApplication
 

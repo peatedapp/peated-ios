@@ -60,6 +60,7 @@ final class PermissionDeniedUITests: XCTestCase {
         XCTAssertTrue(flow.atHomeButton.isEnabled, "At Home stays available without location")
     }
 
+    @MainActor
     private func expectCameraDeniedAlert(_ flow: CreateTastingScreen, file: StaticString = #filePath,
                                          line: UInt = #line) {
         flow.cameraDeniedAlert.expectToAppear("Expected the camera-off alert", file: file, line: line)

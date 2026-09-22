@@ -1,5 +1,6 @@
 import XCTest
 
+@MainActor
 extension XCUIElement {
     /// Asserts the element appears within the timeout and returns it for chaining.
     @discardableResult
@@ -47,6 +48,7 @@ extension XCUIElement {
     }
 }
 
+@MainActor
 extension XCUIElementQuery {
     /// Elements whose accessibility label contains the text.
     func withLabelContaining(_ text: String) -> XCUIElementQuery {

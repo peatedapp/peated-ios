@@ -1,6 +1,7 @@
 import XCTest
 
 /// The signed-out landing screen.
+@MainActor
 struct LoginScreen {
     let app: XCUIApplication
 

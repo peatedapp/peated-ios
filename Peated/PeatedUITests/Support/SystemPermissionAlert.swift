@@ -2,6 +2,7 @@ import XCTest
 
 /// The system permission prompts belong to SpringBoard, not the app, so they
 /// are driven through SpringBoard's own element tree.
+@MainActor
 enum SystemPermissionAlert {
     static let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
 

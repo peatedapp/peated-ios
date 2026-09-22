@@ -11,6 +11,7 @@ enum Session: String {
 ///
 /// This is the test half of the contract in `Peated/App/UITestHarness.swift`:
 /// the same launch argument and environment keys, sent from the test process.
+@MainActor
 enum AppLaunch {
     static let argument = "--ui-testing"
     static let sessionKey = "PEATED_UI_TEST_SESSION"

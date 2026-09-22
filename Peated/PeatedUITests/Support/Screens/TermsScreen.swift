@@ -1,6 +1,7 @@
 import XCTest
 
 /// The full-screen Terms of Service acceptance gate.
+@MainActor
 struct TermsScreen {
     let app: XCUIApplication
 
