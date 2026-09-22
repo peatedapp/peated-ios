@@ -3,7 +3,7 @@
 import Testing
 
 struct ReportRepositoryTests {
-    private typealias ObjectType = Operations.createReport.Input.Body.jsonPayload.objectTypePayload
+    typealias ObjectType = Operations.createReport.Input.Body.jsonPayload.objectTypePayload
 
     private static let targets: [(ReportTarget, ObjectType)] = [
         (.tasting(id: "12"), .tasting),
