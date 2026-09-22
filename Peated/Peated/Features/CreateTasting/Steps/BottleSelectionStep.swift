@@ -275,15 +275,20 @@ struct BottleSelectionStep: View {
             } label: {
                 HStack {
                     Text("Add it manually")
+                        .underline()
+                        .foregroundColor(.text)
                     Image(systemName: "arrow.right")
                         .font(.caption)
+                        .foregroundColor(.brand)
                 }
                 .font(.body)
-                .foregroundColor(.brand)
+                // Ink text keeps the link readable on the tinted card; brand-on-tint is below 4.5:1.
+                .frame(minHeight: DesignSystem.ControlHeight.standard)
+                .contentShape(Rectangle())
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
+        .padding(.vertical, 12)
         .background(Color.formSurface)
         .cornerRadius(12)
     }
