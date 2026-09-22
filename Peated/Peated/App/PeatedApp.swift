@@ -6,6 +6,10 @@ import SwiftUI
 @main
 struct PeatedApp: App {
     init() {
+        #if DEBUG
+            UITestHarness.installIfActive()
+        #endif
+
         // Skip initialization when running tests
         guard !isRunningTests else { return }
 
@@ -51,6 +55,11 @@ struct PeatedApp: App {
 
     /// Detect if we're running in a test environment
     private var isRunningTests: Bool {
-        ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        #if DEBUG
+            if UITestHarness.isActive {
+                return true
+            }
+        #endif
+        return ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
     }
 }

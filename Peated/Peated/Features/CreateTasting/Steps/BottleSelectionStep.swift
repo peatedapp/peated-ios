@@ -1,11 +1,9 @@
-import AVFoundation
 import PeatedCore
 import PhotosUI
 import SwiftUI
 import VisionKit
 
 struct BottleSelectionStep: View {
-    @Environment(\.openURL) private var openURL
     @ObservedObject var viewModel: CreateTastingViewModel
     @State private var searchText = ""
     @State private var showingScanner = false
@@ -88,16 +86,10 @@ struct BottleSelectionStep: View {
                 selectBottle(bottle)
             }
         }
-        .alert("Camera Access Needed", isPresented: $showingCameraPermissionAlert) {
-            Button("Open Settings") {
-                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                    openURL(settingsURL)
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Allow camera access in Settings to scan bottle labels and barcodes.")
-        }
+        .cameraAccessDeniedAlert(
+            isPresented: $showingCameraPermissionAlert,
+            message: "Allow camera access in Settings to scan bottle labels and barcodes."
+        )
         .alert("Label Scanner Unavailable", isPresented: $showingLabelScannerUnavailableAlert) {
             Button("OK", role: .cancel) {}
         } message: {
@@ -120,14 +112,14 @@ struct BottleSelectionStep: View {
     private var searchBar: some View {
         SearchInput(placeholder: "Search for a bottle...", text: $searchText, onSubmit: {
             Task { await searchBottles() }
-        })
-        .onChange(of: searchText) { _, newValue in
-            if newValue.isEmpty {
-                viewModel.searchResults = []
-            } else {
-                searchBottlesDebounced(newValue)
+        }, identifier: AccessibilityID.CreateTasting.bottleSearch)
+            .onChange(of: searchText) { _, newValue in
+                if newValue.isEmpty {
+                    viewModel.searchResults = []
+                } else {
+                    searchBottlesDebounced(newValue)
+                }
             }
-        }
     }
 
     // MARK: - Scanner Buttons
@@ -155,11 +147,13 @@ struct BottleSelectionStep: View {
                 HStack {
                     Image(systemName: "photo.on.rectangle")
                         .font(.title3)
+                        .foregroundColor(.brand)
                     Text("Choose Bottle Photo")
                         .font(.body)
                         .fontWeight(.medium)
                 }
-                .foregroundColor(.brand)
+                // Ink text keeps the label readable on the brand tint; brand-on-tint is below 4.5:1.
+                .foregroundColor(.text)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.brand.opacity(0.1))
@@ -172,16 +166,18 @@ struct BottleSelectionStep: View {
                 HStack {
                     Image(systemName: "barcode.viewfinder")
                         .font(.title3)
+                        .foregroundColor(.brand)
                     Text("Scan Barcode")
                         .font(.body)
                         .fontWeight(.medium)
                 }
-                .foregroundColor(.brand)
+                .foregroundColor(.text)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.brand.opacity(0.1))
                 .cornerRadius(10)
             }
+            .accessibilityIdentifier(AccessibilityID.CreateTasting.scanBarcode)
         }
     }
 
@@ -233,6 +229,7 @@ struct BottleSelectionStep: View {
                             selectBottle(bottle)
                         }
                     )
+                    .accessibilityIdentifier(AccessibilityID.CreateTasting.bottleResult)
                     .padding(.horizontal)
                 }
             }
@@ -278,15 +275,20 @@ struct BottleSelectionStep: View {
             } label: {
                 HStack {
                     Text("Add it manually")
+                        .underline()
+                        .foregroundColor(.text)
                     Image(systemName: "arrow.right")
                         .font(.caption)
+                        .foregroundColor(.brand)
                 }
                 .font(.body)
-                .foregroundColor(.brand)
+                // Ink text keeps the link readable on the tinted card; brand-on-tint is below 4.5:1.
+                .frame(minHeight: DesignSystem.ControlHeight.standard)
+                .contentShape(Rectangle())
             }
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 20)
+        .padding(.vertical, 12)
         .background(Color.formSurface)
         .cornerRadius(12)
     }
@@ -331,23 +333,12 @@ struct BottleSelectionStep: View {
             return
         }
 
-        switch AVCaptureDevice.authorizationStatus(for: .video) {
-        case .authorized:
-            showScanner(destination)
-        case .notDetermined:
-            AVCaptureDevice.requestAccess(for: .video) { granted in
-                DispatchQueue.main.async {
-                    if granted {
-                        showScanner(destination)
-                    } else {
-                        showingCameraPermissionAlert = true
-                    }
-                }
+        CameraAccess.request { granted in
+            if granted {
+                showScanner(destination)
+            } else {
+                showingCameraPermissionAlert = true
             }
-        case .denied, .restricted:
-            showingCameraPermissionAlert = true
-        @unknown default:
-            showingCameraPermissionAlert = true
         }
     }
 

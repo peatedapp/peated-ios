@@ -155,5 +155,6 @@ private struct RatingBandSelectionButton: View {
         .buttonStyle(.plain)
         .accessibilityLabel("\(band.displayName), \(band.description)")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+        .accessibilityIdentifier(AccessibilityID.CreateTasting.rating(band.rawValue))
     }
 }

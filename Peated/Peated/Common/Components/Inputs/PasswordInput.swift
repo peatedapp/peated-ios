@@ -9,6 +9,8 @@ struct PasswordInput: View {
     @Binding var text: String
     var submitLabel: SubmitLabel = .done
     var onSubmit: (() -> Void)?
+    /// Stable identifier for UI tests. See `AccessibilityID`.
+    var identifier: String?
 
     @State private var isVisible = false
     @FocusState private var isFocused: Bool
@@ -35,6 +37,7 @@ struct PasswordInput: View {
                 .focused($isFocused)
                 .submitLabel(submitLabel)
                 .onSubmit { onSubmit?() }
+                .accessibilityIdentifier(identifier ?? "")
 
                 Button { isVisible.toggle() } label: {
                     Image(systemName: isVisible ? "eye.slash" : "eye")
