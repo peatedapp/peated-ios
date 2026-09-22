@@ -33,6 +33,8 @@ The production client has now been regenerated. `PeatedAPI` builds and its decod
 
 The client was regenerated again on 2026-09-21 against backend commit `83f8fb064b213a420269b54750a7362928a41668` to pick up Sign in with Apple. That refresh also brought new required bottle and entity counts (`raterCount`, `publicReviewAndTastingCount`, `notedReviewAndTastingCount`), an entity `status`, review tag categories, and three endpoints the app does not use yet: bottle series flavor profiles, active critics, and combined reviews and tastings.
 
+The client was regenerated a third time on 2026-09-21 against backend commit `d920eab790015071b1e57dffdb52d4a2bbff1667`. That refresh added self-service account deletion (`DELETE /users/me` and `DELETE /users/me/deletion`) and the self-only `deletionScheduledAt` user field, which Settings now uses. The privacy policy at `https://peated.com/privacy` went live in the same backend change.
+
 The first update also moved tastings and saved offline actions to the five new ratings, added the current bottle details and rating summaries, updated entity, search, and library data, and added a database update for saved tasting ratings. The old numeric rating column remains in existing databases so upgrades stay safe, but the app no longer reads or writes it.
 
 ## Design changes

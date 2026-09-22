@@ -120,6 +120,7 @@ These project settings exist to satisfy App Review and must stay in sync with th
 - `Peated/Peated/PrivacyInfo.xcprivacy` lists every data type the app sends off the device. Update it and the App Privacy answers together whenever a new field, permission, or SDK ships.
 - `Peated/Peated/Peated.entitlements` holds only iOS entitlements: Sign in with Apple. See `docs/how-to/apple-signin-setup.md`.
 - Settings and sign-up link to `https://peated.com/terms` and `https://peated.com/privacy` through `LegalDocument`. App Store Connect needs the same privacy URL.
+- Settings offers account deletion through `AccountDeletionSection`, as Guideline 5.1.1(v) requires. It calls `DELETE /users/me`, which schedules the deletion 24 hours out and can be cancelled from the same section until then. Accounts that signed in with Apple confirm through a fresh Sign in with Apple prompt so the server can revoke the Apple grant.
 - The support URL is `https://peated.com/about`.
 - Age rating must declare frequent alcohol references.
-- App Review needs a demo account that has accepted the Terms of Service and is verified, because the API rejects writes otherwise.
+- App Review needs a demo account that has accepted the Terms of Service and is verified, because the API rejects writes otherwise. Reviewers may schedule deletion on it while testing; check the account after each review and cancel the deletion from Settings within 24 hours.

@@ -7,6 +7,10 @@ public protocol UserRepositoryProtocol {
     func updateProfile(_ input: UpdateProfileInput) async throws -> User
     func followUser(id: String) async throws
     func unfollowUser(id: String) async throws
+    /// Schedules the signed-in member's account for deletion and returns the member with `deletionScheduledAt` set.
+    func requestAccountDeletion(appleAuthorizationCode: String?) async throws -> User
+    /// Cancels a pending deletion and returns the member with `deletionScheduledAt` cleared.
+    func cancelAccountDeletion() async throws -> User
 }
 
 public struct UpdateProfileInput: Sendable {
@@ -200,6 +204,68 @@ public actor UserRepository: UserRepositoryProtocol, BaseRepositoryProtocol {
             throw APIError.unauthorized
         case .notFound:
             throw APIError.notFound
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        default:
+            throw APIError.invalidResponse
+        }
+    }
+
+    // MARK: - Account deletion
+
+    /// Only the signed-in member can delete their account, so the path is always `me`.
+    /// The server ignores `appleAuthorizationCode` unless the account has an Apple identity.
+    public func requestAccountDeletion(appleAuthorizationCode: String?) async throws -> User {
+        let client = await client
+        let response = try await client.deleteUser(
+            path: .init(user: .init(value3: "me")),
+            body: appleAuthorizationCode.map {
+                Operations.deleteUser.Input.Body.json(.init(appleAuthorizationCode: $0))
+            }
+        )
+
+        switch response {
+        case let .ok(ok):
+            switch ok.body {
+            case let .json(payload):
+                return User(from: payload)
+            }
+        case .badRequest:
+            // Apple refused the authorization code. Nothing was scheduled.
+            throw APIError.requestFailed("Apple did not accept the sign-in. Try Sign in with Apple again.")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("You can only delete your own account.")
+        case .notFound:
+            throw APIError.notFound
+        case .internalServerError:
+            throw APIError.serverError(500, "We couldn't schedule the deletion. Nothing has changed. Try again.")
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        default:
+            throw APIError.invalidResponse
+        }
+    }
+
+    public func cancelAccountDeletion() async throws -> User {
+        let client = await client
+        let response = try await client.cancelUserDeletion(path: .init(user: .init(value3: "me")))
+
+        switch response {
+        case let .ok(ok):
+            switch ok.body {
+            case let .json(payload):
+                return User(from: payload)
+            }
+        case .unauthorized:
+            throw APIError.unauthorized
+        case .forbidden:
+            throw APIError.requestFailed("You can only cancel your own account deletion.")
+        case .notFound:
+            throw APIError.notFound
+        case .internalServerError:
+            throw APIError.serverError(500, "We couldn't cancel the deletion. It's still scheduled. Try again.")
         case let .undocumented(statusCode, _):
             throw APIError.unexpectedResponse(statusCode)
         default:

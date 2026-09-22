@@ -914,6 +914,20 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `PATCH /users/{user}`.
     /// - Remark: Generated from `#/paths//users/{user}/patch(updateUser)`.
     func updateUser(_ input: Operations.updateUser.Input) async throws -> Operations.updateUser.Output
+    /// Request account deletion
+    ///
+    /// Schedule the signed-in member's account for deletion 24 hours from now and email a confirmation. The account keeps working until then, and `DELETE /users/{user}/deletion` cancels the request. When the deletion runs, the profile, sign-in methods, comments, collections, and uploaded images are removed, tastings and reviews are hidden, and catalog contributions stay with the member's name removed. Only the signed-in member can request this, and the Terms of Service do not need to be accepted. When the account used Sign in with Apple, send a fresh `appleAuthorizationCode` so the Apple grant is revoked now, as Apple requires. Repeating the request returns the existing schedule.
+    ///
+    /// - Remark: HTTP `DELETE /users/{user}`.
+    /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)`.
+    func deleteUser(_ input: Operations.deleteUser.Input) async throws -> Operations.deleteUser.Output
+    /// Cancel account deletion
+    ///
+    /// Cancel the signed-in member's pending account deletion. The account stays as it is. Only the signed-in member can cancel, and the Terms of Service do not need to be accepted. When no deletion is pending, the current account is returned unchanged.
+    ///
+    /// - Remark: HTTP `DELETE /users/{user}/deletion`.
+    /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)`.
+    func cancelUserDeletion(_ input: Operations.cancelUserDeletion.Input) async throws -> Operations.cancelUserDeletion.Output
     /// List users
     ///
     /// Search for members by username or email. Only administrators can list users without a search query; other members receive an empty list. Requires authentication.
@@ -2928,6 +2942,38 @@ extension APIProtocol {
             body: body
         ))
     }
+    /// Request account deletion
+    ///
+    /// Schedule the signed-in member's account for deletion 24 hours from now and email a confirmation. The account keeps working until then, and `DELETE /users/{user}/deletion` cancels the request. When the deletion runs, the profile, sign-in methods, comments, collections, and uploaded images are removed, tastings and reviews are hidden, and catalog contributions stay with the member's name removed. Only the signed-in member can request this, and the Terms of Service do not need to be accepted. When the account used Sign in with Apple, send a fresh `appleAuthorizationCode` so the Apple grant is revoked now, as Apple requires. Repeating the request returns the existing schedule.
+    ///
+    /// - Remark: HTTP `DELETE /users/{user}`.
+    /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)`.
+    public func deleteUser(
+        path: Operations.deleteUser.Input.Path,
+        headers: Operations.deleteUser.Input.Headers = .init(),
+        body: Operations.deleteUser.Input.Body? = nil
+    ) async throws -> Operations.deleteUser.Output {
+        try await deleteUser(Operations.deleteUser.Input(
+            path: path,
+            headers: headers,
+            body: body
+        ))
+    }
+    /// Cancel account deletion
+    ///
+    /// Cancel the signed-in member's pending account deletion. The account stays as it is. Only the signed-in member can cancel, and the Terms of Service do not need to be accepted. When no deletion is pending, the current account is returned unchanged.
+    ///
+    /// - Remark: HTTP `DELETE /users/{user}/deletion`.
+    /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)`.
+    public func cancelUserDeletion(
+        path: Operations.cancelUserDeletion.Input.Path,
+        headers: Operations.cancelUserDeletion.Input.Headers = .init()
+    ) async throws -> Operations.cancelUserDeletion.Output {
+        try await cancelUserDeletion(Operations.cancelUserDeletion.Input(
+            path: path,
+            headers: headers
+        ))
+    }
     /// List users
     ///
     /// Search for members by username or email. Only administrators can list users without a search query; other members receive an empty list. Requires authentication.
@@ -4276,6 +4322,10 @@ public enum Components {
             ///
             /// - Remark: Generated from `#/components/schemas/User/notifyComments`.
             public var notifyComments: Swift.Bool?
+            /// When the account will be deleted, if the member requested deletion. Only shown to the member.
+            ///
+            /// - Remark: Generated from `#/components/schemas/User/deletionScheduledAt`.
+            public var deletionScheduledAt: Foundation.Date?
             /// Friendship status with the current user
             ///
             /// - Remark: Generated from `#/components/schemas/User/friendStatus`.
@@ -4302,6 +4352,7 @@ public enum Components {
             ///   - createdAt: Timestamp when the user account was created
             ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
             ///   - notifyComments: Whether to notify user of comments on their content
+            ///   - deletionScheduledAt: When the account will be deleted, if the member requested deletion. Only shown to the member.
             ///   - friendStatus: Friendship status with the current user
             public init(
                 id: Swift.Double,
@@ -4315,6 +4366,7 @@ public enum Components {
                 createdAt: Foundation.Date? = nil,
                 termsAcceptedAt: Foundation.Date? = nil,
                 notifyComments: Swift.Bool? = nil,
+                deletionScheduledAt: Foundation.Date? = nil,
                 friendStatus: Components.Schemas.User.friendStatusPayload? = nil
             ) {
                 self.id = id
@@ -4328,6 +4380,7 @@ public enum Components {
                 self.createdAt = createdAt
                 self.termsAcceptedAt = termsAcceptedAt
                 self.notifyComments = notifyComments
+                self.deletionScheduledAt = deletionScheduledAt
                 self.friendStatus = friendStatus
             }
             public enum CodingKeys: String, CodingKey {
@@ -4342,6 +4395,7 @@ public enum Components {
                 case createdAt
                 case termsAcceptedAt
                 case notifyComments
+                case deletionScheduledAt
                 case friendStatus
             }
         }
@@ -6951,6 +7005,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Comment/createdBy/notifyComments`.
                 public var notifyComments: Swift.Bool?
+                /// When the account will be deleted, if the member requested deletion. Only shown to the member.
+                ///
+                /// - Remark: Generated from `#/components/schemas/Comment/createdBy/deletionScheduledAt`.
+                public var deletionScheduledAt: Foundation.Date?
                 /// Friendship status with the current user
                 ///
                 /// - Remark: Generated from `#/components/schemas/Comment/createdBy/friendStatus`.
@@ -6977,6 +7035,7 @@ public enum Components {
                 ///   - createdAt: Timestamp when the user account was created
                 ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                 ///   - notifyComments: Whether to notify user of comments on their content
+                ///   - deletionScheduledAt: When the account will be deleted, if the member requested deletion. Only shown to the member.
                 ///   - friendStatus: Friendship status with the current user
                 public init(
                     id: Swift.Double,
@@ -6990,6 +7049,7 @@ public enum Components {
                     createdAt: Foundation.Date? = nil,
                     termsAcceptedAt: Foundation.Date? = nil,
                     notifyComments: Swift.Bool? = nil,
+                    deletionScheduledAt: Foundation.Date? = nil,
                     friendStatus: Components.Schemas.Comment.createdByPayload.friendStatusPayload? = nil
                 ) {
                     self.id = id
@@ -7003,6 +7063,7 @@ public enum Components {
                     self.createdAt = createdAt
                     self.termsAcceptedAt = termsAcceptedAt
                     self.notifyComments = notifyComments
+                    self.deletionScheduledAt = deletionScheduledAt
                     self.friendStatus = friendStatus
                 }
                 public enum CodingKeys: String, CodingKey {
@@ -7017,6 +7078,7 @@ public enum Components {
                     case createdAt
                     case termsAcceptedAt
                     case notifyComments
+                    case deletionScheduledAt
                     case friendStatus
                 }
             }
@@ -10934,6 +10996,10 @@ public enum Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Auth/user/notifyComments`.
                 public var notifyComments: Swift.Bool?
+                /// When the account will be deleted, if the member requested deletion. Only shown to the member.
+                ///
+                /// - Remark: Generated from `#/components/schemas/Auth/user/deletionScheduledAt`.
+                public var deletionScheduledAt: Foundation.Date?
                 /// Friendship status with the current user
                 ///
                 /// - Remark: Generated from `#/components/schemas/Auth/user/friendStatus`.
@@ -10960,6 +11026,7 @@ public enum Components {
                 ///   - createdAt: Timestamp when the user account was created
                 ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                 ///   - notifyComments: Whether to notify user of comments on their content
+                ///   - deletionScheduledAt: When the account will be deleted, if the member requested deletion. Only shown to the member.
                 ///   - friendStatus: Friendship status with the current user
                 public init(
                     id: Swift.Double,
@@ -10973,6 +11040,7 @@ public enum Components {
                     createdAt: Foundation.Date? = nil,
                     termsAcceptedAt: Foundation.Date? = nil,
                     notifyComments: Swift.Bool? = nil,
+                    deletionScheduledAt: Foundation.Date? = nil,
                     friendStatus: Components.Schemas.Auth.userPayload.friendStatusPayload? = nil
                 ) {
                     self.id = id
@@ -10986,6 +11054,7 @@ public enum Components {
                     self.createdAt = createdAt
                     self.termsAcceptedAt = termsAcceptedAt
                     self.notifyComments = notifyComments
+                    self.deletionScheduledAt = deletionScheduledAt
                     self.friendStatus = friendStatus
                 }
                 public enum CodingKeys: String, CodingKey {
@@ -11000,6 +11069,7 @@ public enum Components {
                     case createdAt
                     case termsAcceptedAt
                     case notifyComments
+                    case deletionScheduledAt
                     case friendStatus
                 }
             }
@@ -146699,6 +146769,10 @@ public enum Operations {
                                 ///
                                 /// - Remark: Generated from `#/paths/friends/GET/responses/200/content/json/resultsPayload/user/notifyComments`.
                                 public var notifyComments: Swift.Bool?
+                                /// When the account will be deleted, if the member requested deletion. Only shown to the member.
+                                ///
+                                /// - Remark: Generated from `#/paths/friends/GET/responses/200/content/json/resultsPayload/user/deletionScheduledAt`.
+                                public var deletionScheduledAt: Foundation.Date?
                                 /// Friendship status with the current user
                                 ///
                                 /// - Remark: Generated from `#/paths/friends/GET/responses/200/content/json/resultsPayload/user/friendStatus`.
@@ -146725,6 +146799,7 @@ public enum Operations {
                                 ///   - createdAt: Timestamp when the user account was created
                                 ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                                 ///   - notifyComments: Whether to notify user of comments on their content
+                                ///   - deletionScheduledAt: When the account will be deleted, if the member requested deletion. Only shown to the member.
                                 ///   - friendStatus: Friendship status with the current user
                                 public init(
                                     id: Swift.Double,
@@ -146738,6 +146813,7 @@ public enum Operations {
                                     createdAt: Foundation.Date? = nil,
                                     termsAcceptedAt: Foundation.Date? = nil,
                                     notifyComments: Swift.Bool? = nil,
+                                    deletionScheduledAt: Foundation.Date? = nil,
                                     friendStatus: Operations.listFriends.Output.Ok.Body.jsonPayload.resultsPayloadPayload.userPayload.friendStatusPayload? = nil
                                 ) {
                                     self.id = id
@@ -146751,6 +146827,7 @@ public enum Operations {
                                     self.createdAt = createdAt
                                     self.termsAcceptedAt = termsAcceptedAt
                                     self.notifyComments = notifyComments
+                                    self.deletionScheduledAt = deletionScheduledAt
                                     self.friendStatus = friendStatus
                                 }
                                 public enum CodingKeys: String, CodingKey {
@@ -146765,6 +146842,7 @@ public enum Operations {
                                     case createdAt
                                     case termsAcceptedAt
                                     case notifyComments
+                                    case deletionScheduledAt
                                     case friendStatus
                                 }
                             }
@@ -212357,6 +212435,10 @@ public enum Operations {
                         ///
                         /// - Remark: Generated from `#/paths/users/{user}/GET/responses/200/content/json/notifyComments`.
                         public var notifyComments: Swift.Bool?
+                        /// When the account will be deleted, if the member requested deletion. Only shown to the member.
+                        ///
+                        /// - Remark: Generated from `#/paths/users/{user}/GET/responses/200/content/json/deletionScheduledAt`.
+                        public var deletionScheduledAt: Foundation.Date?
                         /// Friendship status with the current user
                         ///
                         /// - Remark: Generated from `#/paths/users/{user}/GET/responses/200/content/json/friendStatus`.
@@ -212455,6 +212537,7 @@ public enum Operations {
                         ///   - createdAt: Timestamp when the user account was created
                         ///   - termsAcceptedAt: Timestamp when user accepted the Terms of Service
                         ///   - notifyComments: Whether to notify user of comments on their content
+                        ///   - deletionScheduledAt: When the account will be deleted, if the member requested deletion. Only shown to the member.
                         ///   - friendStatus: Friendship status with the current user
                         ///   - stats:
                         public init(
@@ -212469,6 +212552,7 @@ public enum Operations {
                             createdAt: Foundation.Date? = nil,
                             termsAcceptedAt: Foundation.Date? = nil,
                             notifyComments: Swift.Bool? = nil,
+                            deletionScheduledAt: Foundation.Date? = nil,
                             friendStatus: Operations.getUser.Output.Ok.Body.jsonPayload.friendStatusPayload? = nil,
                             stats: Operations.getUser.Output.Ok.Body.jsonPayload.statsPayload
                         ) {
@@ -212483,6 +212567,7 @@ public enum Operations {
                             self.createdAt = createdAt
                             self.termsAcceptedAt = termsAcceptedAt
                             self.notifyComments = notifyComments
+                            self.deletionScheduledAt = deletionScheduledAt
                             self.friendStatus = friendStatus
                             self.stats = stats
                         }
@@ -212498,6 +212583,7 @@ public enum Operations {
                             case createdAt
                             case termsAcceptedAt
                             case notifyComments
+                            case deletionScheduledAt
                             case friendStatus
                             case stats
                         }
@@ -215375,6 +215461,2970 @@ public enum Operations {
             /// - Throws: An error if `self` is not `.internalServerError`.
             /// - SeeAlso: `.internalServerError`.
             public var internalServerError: Operations.updateUser.Output.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// Request account deletion
+    ///
+    /// Schedule the signed-in member's account for deletion 24 hours from now and email a confirmation. The account keeps working until then, and `DELETE /users/{user}/deletion` cancels the request. When the deletion runs, the profile, sign-in methods, comments, collections, and uploaded images are removed, tastings and reviews are hidden, and catalog contributions stay with the member's name removed. Only the signed-in member can request this, and the Terms of Service do not need to be accepted. When the account used Sign in with Apple, send a fresh `appleAuthorizationCode` so the Apple grant is revoked now, as Apple requires. Repeating the request returns the existing schedule.
+    ///
+    /// - Remark: HTTP `DELETE /users/{user}`.
+    /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)`.
+    public enum deleteUser {
+        public static let id: Swift.String = "deleteUser"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/{user}/DELETE/path`.
+            public struct Path: Sendable, Hashable {
+                /// `me`, or your own user ID or username.
+                ///
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/path/user`.
+                public struct userPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/path/user/value1`.
+                    public var value1: OpenAPIRuntime.OpenAPIValueContainer?
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/path/user/value2`.
+                    public var value2: Swift.Double?
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/path/user/value3`.
+                    public var value3: Swift.String?
+                    /// Creates a new `userPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - value1:
+                    ///   - value2:
+                    ///   - value3:
+                    public init(
+                        value1: OpenAPIRuntime.OpenAPIValueContainer? = nil,
+                        value2: Swift.Double? = nil,
+                        value3: Swift.String? = nil
+                    ) {
+                        self.value1 = value1
+                        self.value2 = value2
+                        self.value3 = value3
+                    }
+                    public init(from decoder: any Decoder) throws {
+                        var errors: [any Error] = []
+                        do {
+                            self.value1 = try .init(from: decoder)
+                        } catch {
+                            errors.append(error)
+                        }
+                        do {
+                            self.value2 = try decoder.decodeFromSingleValueContainer()
+                        } catch {
+                            errors.append(error)
+                        }
+                        do {
+                            self.value3 = try decoder.decodeFromSingleValueContainer()
+                        } catch {
+                            errors.append(error)
+                        }
+                        try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
+                            [
+                                self.value1,
+                                self.value2,
+                                self.value3
+                            ],
+                            type: Self.self,
+                            codingPath: decoder.codingPath,
+                            errors: errors
+                        )
+                    }
+                    public func encode(to encoder: any Encoder) throws {
+                        try encoder.encodeFirstNonNilValueToSingleValueContainer([
+                            self.value2,
+                            self.value3
+                        ])
+                        try self.value1?.encode(to: encoder)
+                    }
+                }
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/path/user`.
+                public var user: Operations.deleteUser.Input.Path.userPayload
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - user:
+                public init(user: Operations.deleteUser.Input.Path.userPayload) {
+                    self.user = user
+                }
+            }
+            public var path: Operations.deleteUser.Input.Path
+            /// - Remark: Generated from `#/paths/users/{user}/DELETE/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteUser.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.deleteUser.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.deleteUser.Input.Headers
+            /// - Remark: Generated from `#/paths/users/{user}/DELETE/requestBody`.
+            @frozen public enum Body: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/requestBody/json`.
+                public struct jsonPayload: Codable, Hashable, Sendable {
+                    /// Authorization code from a new Sign in with Apple prompt. It is single-use and expires after five minutes. Ignored when the account has no Apple identity.
+                    ///
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/requestBody/json/appleAuthorizationCode`.
+                    public var appleAuthorizationCode: Swift.String?
+                    /// Creates a new `jsonPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - appleAuthorizationCode: Authorization code from a new Sign in with Apple prompt. It is single-use and expires after five minutes. Ignored when the account has no Apple identity.
+                    public init(appleAuthorizationCode: Swift.String? = nil) {
+                        self.appleAuthorizationCode = appleAuthorizationCode
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case appleAuthorizationCode
+                    }
+                }
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/requestBody/content/application\/json`.
+                case json(Operations.deleteUser.Input.Body.jsonPayload)
+            }
+            public var body: Operations.deleteUser.Input.Body?
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            ///   - body:
+            public init(
+                path: Operations.deleteUser.Input.Path,
+                headers: Operations.deleteUser.Input.Headers = .init(),
+                body: Operations.deleteUser.Input.Body? = nil
+            ) {
+                self.path = path
+                self.headers = headers
+                self.body = body
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/200/content/application\/json`.
+                    case json(Components.Schemas.User)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.User {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// OK
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.deleteUser.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.deleteUser.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct BadRequest: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case1`.
+                        case case1(Operations.deleteUser.Output.BadRequest.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/json/case2`.
+                        case case2(Operations.deleteUser.Output.BadRequest.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/400/content/application\/json`.
+                    case json(Operations.deleteUser.Output.BadRequest.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.deleteUser.Output.BadRequest.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.BadRequest.Body
+                /// Creates a new `BadRequest`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.BadRequest.Body) {
+                    self.body = body
+                }
+            }
+            /// 400
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Operations.deleteUser.Output.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Operations.deleteUser.Output.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Unauthorized: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case1`.
+                        case case1(Operations.deleteUser.Output.Unauthorized.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/json/case2`.
+                        case case2(Operations.deleteUser.Output.Unauthorized.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/401/content/application\/json`.
+                    case json(Operations.deleteUser.Output.Unauthorized.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.deleteUser.Output.Unauthorized.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.Unauthorized.Body
+                /// Creates a new `Unauthorized`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.Unauthorized.Body) {
+                    self.body = body
+                }
+            }
+            /// 401
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Operations.deleteUser.Output.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Operations.deleteUser.Output.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Forbidden: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case1`.
+                        case case1(Operations.deleteUser.Output.Forbidden.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/json/case2`.
+                        case case2(Operations.deleteUser.Output.Forbidden.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/403/content/application\/json`.
+                    case json(Operations.deleteUser.Output.Forbidden.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.deleteUser.Output.Forbidden.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.Forbidden.Body
+                /// Creates a new `Forbidden`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.Forbidden.Body) {
+                    self.body = body
+                }
+            }
+            /// 403
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/403`.
+            ///
+            /// HTTP response code: `403 forbidden`.
+            case forbidden(Operations.deleteUser.Output.Forbidden)
+            /// The associated value of the enum case if `self` is `.forbidden`.
+            ///
+            /// - Throws: An error if `self` is not `.forbidden`.
+            /// - SeeAlso: `.forbidden`.
+            public var forbidden: Operations.deleteUser.Output.Forbidden {
+                get throws {
+                    switch self {
+                    case let .forbidden(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "forbidden",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct NotFound: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case1`.
+                        case case1(Operations.deleteUser.Output.NotFound.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/json/case2`.
+                        case case2(Operations.deleteUser.Output.NotFound.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/404/content/application\/json`.
+                    case json(Operations.deleteUser.Output.NotFound.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.deleteUser.Output.NotFound.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.NotFound.Body
+                /// Creates a new `NotFound`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.NotFound.Body) {
+                    self.body = body
+                }
+            }
+            /// 404
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Operations.deleteUser.Output.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Operations.deleteUser.Output.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Conflict: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case1`.
+                        case case1(Operations.deleteUser.Output.Conflict.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/json/case2`.
+                        case case2(Operations.deleteUser.Output.Conflict.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/409/content/application\/json`.
+                    case json(Operations.deleteUser.Output.Conflict.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.deleteUser.Output.Conflict.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.Conflict.Body
+                /// Creates a new `Conflict`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.Conflict.Body) {
+                    self.body = body
+                }
+            }
+            /// 409
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/409`.
+            ///
+            /// HTTP response code: `409 conflict`.
+            case conflict(Operations.deleteUser.Output.Conflict)
+            /// The associated value of the enum case if `self` is `.conflict`.
+            ///
+            /// - Throws: An error if `self` is not `.conflict`.
+            /// - SeeAlso: `.conflict`.
+            public var conflict: Operations.deleteUser.Output.Conflict {
+                get throws {
+                    switch self {
+                    case let .conflict(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "conflict",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct ContentTooLarge: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case1`.
+                        case case1(Operations.deleteUser.Output.ContentTooLarge.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/json/case2`.
+                        case case2(Operations.deleteUser.Output.ContentTooLarge.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/413/content/application\/json`.
+                    case json(Operations.deleteUser.Output.ContentTooLarge.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.deleteUser.Output.ContentTooLarge.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.ContentTooLarge.Body
+                /// Creates a new `ContentTooLarge`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.ContentTooLarge.Body) {
+                    self.body = body
+                }
+            }
+            /// 413
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/413`.
+            ///
+            /// HTTP response code: `413 contentTooLarge`.
+            case contentTooLarge(Operations.deleteUser.Output.ContentTooLarge)
+            /// The associated value of the enum case if `self` is `.contentTooLarge`.
+            ///
+            /// - Throws: An error if `self` is not `.contentTooLarge`.
+            /// - SeeAlso: `.contentTooLarge`.
+            public var contentTooLarge: Operations.deleteUser.Output.ContentTooLarge {
+                get throws {
+                    switch self {
+                    case let .contentTooLarge(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "contentTooLarge",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct InternalServerError: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case1`.
+                        case case1(Operations.deleteUser.Output.InternalServerError.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case2/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case2/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case2`.
+                        case case2(Operations.deleteUser.Output.InternalServerError.Body.jsonPayload.Case2Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case3`.
+                        public struct Case3Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case3/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case3/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case3/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case3/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case3/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case3Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case3`.
+                        case case3(Operations.deleteUser.Output.InternalServerError.Body.jsonPayload.Case3Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case4`.
+                        public struct Case4Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case4/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case4/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case4/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case4/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case4/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case4Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/json/case4`.
+                        case case4(Operations.deleteUser.Output.InternalServerError.Body.jsonPayload.Case4Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case3(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case4(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            case let .case3(value):
+                                try value.encode(to: encoder)
+                            case let .case4(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/DELETE/responses/500/content/application\/json`.
+                    case json(Operations.deleteUser.Output.InternalServerError.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.deleteUser.Output.InternalServerError.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.deleteUser.Output.InternalServerError.Body
+                /// Creates a new `InternalServerError`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.deleteUser.Output.InternalServerError.Body) {
+                    self.body = body
+                }
+            }
+            /// 500
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/delete(deleteUser)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Operations.deleteUser.Output.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Operations.deleteUser.Output.InternalServerError {
+                get throws {
+                    switch self {
+                    case let .internalServerError(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "internalServerError",
+                            response: self
+                        )
+                    }
+                }
+            }
+            /// Undocumented response.
+            ///
+            /// A response with a code that is not documented in the OpenAPI document.
+            case undocumented(statusCode: Swift.Int, OpenAPIRuntime.UndocumentedPayload)
+        }
+        @frozen public enum AcceptableContentType: AcceptableProtocol {
+            case json
+            case other(Swift.String)
+            public init?(rawValue: Swift.String) {
+                switch rawValue.lowercased() {
+                case "application/json":
+                    self = .json
+                default:
+                    self = .other(rawValue)
+                }
+            }
+            public var rawValue: Swift.String {
+                switch self {
+                case let .other(string):
+                    return string
+                case .json:
+                    return "application/json"
+                }
+            }
+            public static var allCases: [Self] {
+                [
+                    .json
+                ]
+            }
+        }
+    }
+    /// Cancel account deletion
+    ///
+    /// Cancel the signed-in member's pending account deletion. The account stays as it is. Only the signed-in member can cancel, and the Terms of Service do not need to be accepted. When no deletion is pending, the current account is returned unchanged.
+    ///
+    /// - Remark: HTTP `DELETE /users/{user}/deletion`.
+    /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)`.
+    public enum cancelUserDeletion {
+        public static let id: Swift.String = "cancelUserDeletion"
+        public struct Input: Sendable, Hashable {
+            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/path`.
+            public struct Path: Sendable, Hashable {
+                /// `me`, or your own user ID or username.
+                ///
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/path/user`.
+                public struct userPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/path/user/value1`.
+                    public var value1: OpenAPIRuntime.OpenAPIValueContainer?
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/path/user/value2`.
+                    public var value2: Swift.Double?
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/path/user/value3`.
+                    public var value3: Swift.String?
+                    /// Creates a new `userPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - value1:
+                    ///   - value2:
+                    ///   - value3:
+                    public init(
+                        value1: OpenAPIRuntime.OpenAPIValueContainer? = nil,
+                        value2: Swift.Double? = nil,
+                        value3: Swift.String? = nil
+                    ) {
+                        self.value1 = value1
+                        self.value2 = value2
+                        self.value3 = value3
+                    }
+                    public init(from decoder: any Decoder) throws {
+                        var errors: [any Error] = []
+                        do {
+                            self.value1 = try .init(from: decoder)
+                        } catch {
+                            errors.append(error)
+                        }
+                        do {
+                            self.value2 = try decoder.decodeFromSingleValueContainer()
+                        } catch {
+                            errors.append(error)
+                        }
+                        do {
+                            self.value3 = try decoder.decodeFromSingleValueContainer()
+                        } catch {
+                            errors.append(error)
+                        }
+                        try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
+                            [
+                                self.value1,
+                                self.value2,
+                                self.value3
+                            ],
+                            type: Self.self,
+                            codingPath: decoder.codingPath,
+                            errors: errors
+                        )
+                    }
+                    public func encode(to encoder: any Encoder) throws {
+                        try encoder.encodeFirstNonNilValueToSingleValueContainer([
+                            self.value2,
+                            self.value3
+                        ])
+                        try self.value1?.encode(to: encoder)
+                    }
+                }
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/path/user`.
+                public var user: Operations.cancelUserDeletion.Input.Path.userPayload
+                /// Creates a new `Path`.
+                ///
+                /// - Parameters:
+                ///   - user:
+                public init(user: Operations.cancelUserDeletion.Input.Path.userPayload) {
+                    self.user = user
+                }
+            }
+            public var path: Operations.cancelUserDeletion.Input.Path
+            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/header`.
+            public struct Headers: Sendable, Hashable {
+                public var accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.cancelUserDeletion.AcceptableContentType>]
+                /// Creates a new `Headers`.
+                ///
+                /// - Parameters:
+                ///   - accept:
+                public init(accept: [OpenAPIRuntime.AcceptHeaderContentType<Operations.cancelUserDeletion.AcceptableContentType>] = .defaultValues()) {
+                    self.accept = accept
+                }
+            }
+            public var headers: Operations.cancelUserDeletion.Input.Headers
+            /// Creates a new `Input`.
+            ///
+            /// - Parameters:
+            ///   - path:
+            ///   - headers:
+            public init(
+                path: Operations.cancelUserDeletion.Input.Path,
+                headers: Operations.cancelUserDeletion.Input.Headers = .init()
+            ) {
+                self.path = path
+                self.headers = headers
+            }
+        }
+        @frozen public enum Output: Sendable, Hashable {
+            public struct Ok: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/200/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/200/content/application\/json`.
+                    case json(Components.Schemas.User)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Components.Schemas.User {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.Ok.Body
+                /// Creates a new `Ok`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.Ok.Body) {
+                    self.body = body
+                }
+            }
+            /// OK
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/200`.
+            ///
+            /// HTTP response code: `200 ok`.
+            case ok(Operations.cancelUserDeletion.Output.Ok)
+            /// The associated value of the enum case if `self` is `.ok`.
+            ///
+            /// - Throws: An error if `self` is not `.ok`.
+            /// - SeeAlso: `.ok`.
+            public var ok: Operations.cancelUserDeletion.Output.Ok {
+                get throws {
+                    switch self {
+                    case let .ok(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "ok",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct BadRequest: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case1`.
+                        case case1(Operations.cancelUserDeletion.Output.BadRequest.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/json/case2`.
+                        case case2(Operations.cancelUserDeletion.Output.BadRequest.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/400/content/application\/json`.
+                    case json(Operations.cancelUserDeletion.Output.BadRequest.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.cancelUserDeletion.Output.BadRequest.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.BadRequest.Body
+                /// Creates a new `BadRequest`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.BadRequest.Body) {
+                    self.body = body
+                }
+            }
+            /// 400
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/400`.
+            ///
+            /// HTTP response code: `400 badRequest`.
+            case badRequest(Operations.cancelUserDeletion.Output.BadRequest)
+            /// The associated value of the enum case if `self` is `.badRequest`.
+            ///
+            /// - Throws: An error if `self` is not `.badRequest`.
+            /// - SeeAlso: `.badRequest`.
+            public var badRequest: Operations.cancelUserDeletion.Output.BadRequest {
+                get throws {
+                    switch self {
+                    case let .badRequest(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "badRequest",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Unauthorized: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case1`.
+                        case case1(Operations.cancelUserDeletion.Output.Unauthorized.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/json/case2`.
+                        case case2(Operations.cancelUserDeletion.Output.Unauthorized.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/401/content/application\/json`.
+                    case json(Operations.cancelUserDeletion.Output.Unauthorized.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.cancelUserDeletion.Output.Unauthorized.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.Unauthorized.Body
+                /// Creates a new `Unauthorized`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.Unauthorized.Body) {
+                    self.body = body
+                }
+            }
+            /// 401
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/401`.
+            ///
+            /// HTTP response code: `401 unauthorized`.
+            case unauthorized(Operations.cancelUserDeletion.Output.Unauthorized)
+            /// The associated value of the enum case if `self` is `.unauthorized`.
+            ///
+            /// - Throws: An error if `self` is not `.unauthorized`.
+            /// - SeeAlso: `.unauthorized`.
+            public var unauthorized: Operations.cancelUserDeletion.Output.Unauthorized {
+                get throws {
+                    switch self {
+                    case let .unauthorized(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "unauthorized",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Forbidden: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case1`.
+                        case case1(Operations.cancelUserDeletion.Output.Forbidden.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/json/case2`.
+                        case case2(Operations.cancelUserDeletion.Output.Forbidden.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/403/content/application\/json`.
+                    case json(Operations.cancelUserDeletion.Output.Forbidden.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.cancelUserDeletion.Output.Forbidden.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.Forbidden.Body
+                /// Creates a new `Forbidden`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.Forbidden.Body) {
+                    self.body = body
+                }
+            }
+            /// 403
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/403`.
+            ///
+            /// HTTP response code: `403 forbidden`.
+            case forbidden(Operations.cancelUserDeletion.Output.Forbidden)
+            /// The associated value of the enum case if `self` is `.forbidden`.
+            ///
+            /// - Throws: An error if `self` is not `.forbidden`.
+            /// - SeeAlso: `.forbidden`.
+            public var forbidden: Operations.cancelUserDeletion.Output.Forbidden {
+                get throws {
+                    switch self {
+                    case let .forbidden(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "forbidden",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct NotFound: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case1`.
+                        case case1(Operations.cancelUserDeletion.Output.NotFound.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/json/case2`.
+                        case case2(Operations.cancelUserDeletion.Output.NotFound.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/404/content/application\/json`.
+                    case json(Operations.cancelUserDeletion.Output.NotFound.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.cancelUserDeletion.Output.NotFound.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.NotFound.Body
+                /// Creates a new `NotFound`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.NotFound.Body) {
+                    self.body = body
+                }
+            }
+            /// 404
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/404`.
+            ///
+            /// HTTP response code: `404 notFound`.
+            case notFound(Operations.cancelUserDeletion.Output.NotFound)
+            /// The associated value of the enum case if `self` is `.notFound`.
+            ///
+            /// - Throws: An error if `self` is not `.notFound`.
+            /// - SeeAlso: `.notFound`.
+            public var notFound: Operations.cancelUserDeletion.Output.NotFound {
+                get throws {
+                    switch self {
+                    case let .notFound(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "notFound",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct Conflict: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case1`.
+                        case case1(Operations.cancelUserDeletion.Output.Conflict.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/json/case2`.
+                        case case2(Operations.cancelUserDeletion.Output.Conflict.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/409/content/application\/json`.
+                    case json(Operations.cancelUserDeletion.Output.Conflict.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.cancelUserDeletion.Output.Conflict.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.Conflict.Body
+                /// Creates a new `Conflict`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.Conflict.Body) {
+                    self.body = body
+                }
+            }
+            /// 409
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/409`.
+            ///
+            /// HTTP response code: `409 conflict`.
+            case conflict(Operations.cancelUserDeletion.Output.Conflict)
+            /// The associated value of the enum case if `self` is `.conflict`.
+            ///
+            /// - Throws: An error if `self` is not `.conflict`.
+            /// - SeeAlso: `.conflict`.
+            public var conflict: Operations.cancelUserDeletion.Output.Conflict {
+                get throws {
+                    switch self {
+                    case let .conflict(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "conflict",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct ContentTooLarge: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case1`.
+                        case case1(Operations.cancelUserDeletion.Output.ContentTooLarge.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case2/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case2/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/json/case2`.
+                        case case2(Operations.cancelUserDeletion.Output.ContentTooLarge.Body.jsonPayload.Case2Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/413/content/application\/json`.
+                    case json(Operations.cancelUserDeletion.Output.ContentTooLarge.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.cancelUserDeletion.Output.ContentTooLarge.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.ContentTooLarge.Body
+                /// Creates a new `ContentTooLarge`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.ContentTooLarge.Body) {
+                    self.body = body
+                }
+            }
+            /// 413
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/413`.
+            ///
+            /// HTTP response code: `413 contentTooLarge`.
+            case contentTooLarge(Operations.cancelUserDeletion.Output.ContentTooLarge)
+            /// The associated value of the enum case if `self` is `.contentTooLarge`.
+            ///
+            /// - Throws: An error if `self` is not `.contentTooLarge`.
+            /// - SeeAlso: `.contentTooLarge`.
+            public var contentTooLarge: Operations.cancelUserDeletion.Output.ContentTooLarge {
+                get throws {
+                    switch self {
+                    case let .contentTooLarge(response):
+                        return response
+                    default:
+                        try throwUnexpectedResponseStatus(
+                            expectedStatus: "contentTooLarge",
+                            response: self
+                        )
+                    }
+                }
+            }
+            public struct InternalServerError: Sendable, Hashable {
+                /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content`.
+                @frozen public enum Body: Sendable, Hashable {
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json`.
+                    @frozen public enum jsonPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case1`.
+                        public struct Case1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case1/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case1/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case1/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case1/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case1/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case1`.
+                        case case1(Operations.cancelUserDeletion.Output.InternalServerError.Body.jsonPayload.Case1Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case2`.
+                        public struct Case2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case2/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case2/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case2/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case2/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case2/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case2`.
+                        case case2(Operations.cancelUserDeletion.Output.InternalServerError.Body.jsonPayload.Case2Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case3`.
+                        public struct Case3Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case3/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case3/code`.
+                            public var code: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case3/status`.
+                            public var status: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case3/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case3/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case3Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: OpenAPIRuntime.OpenAPIValueContainer,
+                                status: OpenAPIRuntime.OpenAPIValueContainer,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case3`.
+                        case case3(Operations.cancelUserDeletion.Output.InternalServerError.Body.jsonPayload.Case3Payload)
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case4`.
+                        public struct Case4Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case4/defined`.
+                            public var defined: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case4/code`.
+                            public var code: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case4/status`.
+                            public var status: Swift.Double
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case4/message`.
+                            public var message: Swift.String
+                            /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case4/data`.
+                            public var data: OpenAPIRuntime.OpenAPIValueContainer?
+                            /// Creates a new `Case4Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - defined:
+                            ///   - code:
+                            ///   - status:
+                            ///   - message:
+                            ///   - data:
+                            public init(
+                                defined: OpenAPIRuntime.OpenAPIValueContainer,
+                                code: Swift.String,
+                                status: Swift.Double,
+                                message: Swift.String,
+                                data: OpenAPIRuntime.OpenAPIValueContainer? = nil
+                            ) {
+                                self.defined = defined
+                                self.code = code
+                                self.status = status
+                                self.message = message
+                                self.data = data
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case defined
+                                case code
+                                case status
+                                case message
+                                case data
+                            }
+                        }
+                        /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/json/case4`.
+                        case case4(Operations.cancelUserDeletion.Output.InternalServerError.Body.jsonPayload.Case4Payload)
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self = .case1(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case2(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case3(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self = .case4(try .init(from: decoder))
+                                return
+                            } catch {
+                                errors.append(error)
+                            }
+                            throw Swift.DecodingError.failedToDecodeOneOfSchema(
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            switch self {
+                            case let .case1(value):
+                                try value.encode(to: encoder)
+                            case let .case2(value):
+                                try value.encode(to: encoder)
+                            case let .case3(value):
+                                try value.encode(to: encoder)
+                            case let .case4(value):
+                                try value.encode(to: encoder)
+                            }
+                        }
+                    }
+                    /// - Remark: Generated from `#/paths/users/{user}/deletion/DELETE/responses/500/content/application\/json`.
+                    case json(Operations.cancelUserDeletion.Output.InternalServerError.Body.jsonPayload)
+                    /// The associated value of the enum case if `self` is `.json`.
+                    ///
+                    /// - Throws: An error if `self` is not `.json`.
+                    /// - SeeAlso: `.json`.
+                    public var json: Operations.cancelUserDeletion.Output.InternalServerError.Body.jsonPayload {
+                        get throws {
+                            switch self {
+                            case let .json(body):
+                                return body
+                            }
+                        }
+                    }
+                }
+                /// Received HTTP response body
+                public var body: Operations.cancelUserDeletion.Output.InternalServerError.Body
+                /// Creates a new `InternalServerError`.
+                ///
+                /// - Parameters:
+                ///   - body: Received HTTP response body
+                public init(body: Operations.cancelUserDeletion.Output.InternalServerError.Body) {
+                    self.body = body
+                }
+            }
+            /// 500
+            ///
+            /// - Remark: Generated from `#/paths//users/{user}/deletion/delete(cancelUserDeletion)/responses/500`.
+            ///
+            /// HTTP response code: `500 internalServerError`.
+            case internalServerError(Operations.cancelUserDeletion.Output.InternalServerError)
+            /// The associated value of the enum case if `self` is `.internalServerError`.
+            ///
+            /// - Throws: An error if `self` is not `.internalServerError`.
+            /// - SeeAlso: `.internalServerError`.
+            public var internalServerError: Operations.cancelUserDeletion.Output.InternalServerError {
                 get throws {
                     switch self {
                     case let .internalServerError(response):

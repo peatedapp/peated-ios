@@ -83,6 +83,14 @@ private actor UserRepositoryStub: UserRepositoryProtocol {
         try await getCurrentUser()
     }
 
+    func requestAccountDeletion(appleAuthorizationCode _: String?) async throws -> User {
+        try await getCurrentUser()
+    }
+
+    func cancelAccountDeletion() async throws -> User {
+        try await getCurrentUser()
+    }
+
     func followUser(id: String) async throws {
         if shouldFail {
             throw StubError.failed

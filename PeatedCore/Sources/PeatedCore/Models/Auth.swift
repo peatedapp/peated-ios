@@ -11,6 +11,9 @@ public struct User: Codable, Equatable, Sendable {
     /// Profile data
     public var pictureUrl: String?
 
+    /// When a pending account deletion runs. The API returns it only for the signed-in member.
+    public var deletionScheduledAt: Date?
+
     // Profile statistics (will be populated separately)
     public var tastingsCount: Int = 0
     public var bottlesCount: Int = 0
@@ -63,6 +66,14 @@ public struct User: Codable, Equatable, Sendable {
     public func withPicture(_ url: String?) -> User {
         var copy = self
         copy.pictureUrl = url
+        return copy
+    }
+
+    /// Takes the deletion schedule from a fresh API response while keeping the
+    /// stats and relationship data this copy loaded separately.
+    public func withDeletionSchedule(from fresh: User) -> User {
+        var copy = self
+        copy.deletionScheduledAt = fresh.deletionScheduledAt
         return copy
     }
 }

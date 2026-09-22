@@ -23,9 +23,19 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
 
     private let apiClient: APIClient
     private let keychain = KeychainService.shared
-    private let userRepository: UserRepository
+    private let userRepository: any UserRepositoryProtocol
     private let deleteStoredToken: @Sendable () throws -> Void
     private let googleSignOut: @Sendable () -> Void
+    private let defaults: UserDefaults
+    private static let signInProviderKey = "com.peated.signInProvider"
+
+    /// How the current session was created. Account deletion asks Apple accounts
+    /// for a fresh authorization so the server can revoke the Sign in with Apple grant.
+    /// This is a device record, cleared on sign out; the API does not report it.
+    public private(set) var signInProvider: SignInProvider? {
+        get { defaults.string(forKey: Self.signInProviderKey).flatMap(SignInProvider.init(rawValue:)) }
+        set { defaults.set(newValue?.rawValue, forKey: Self.signInProviderKey) }
+    }
 
     public var isAuthenticated: Bool {
         if case .authenticated = authState {
@@ -43,17 +53,20 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
 
     public init(
         apiClient: APIClient = .shared,
+        userRepository: (any UserRepositoryProtocol)? = nil,
         deleteStoredToken: @escaping @Sendable () throws -> Void = {
             try KeychainService.shared.deleteToken()
         },
         googleSignOut: @escaping @Sendable () -> Void = {
             GIDSignIn.sharedInstance.signOut()
-        }
+        },
+        defaults: UserDefaults = .standard
     ) {
         self.apiClient = apiClient
-        userRepository = UserRepository(apiClient: apiClient)
+        self.userRepository = userRepository ?? UserRepository(apiClient: apiClient)
         self.deleteStoredToken = deleteStoredToken
         self.googleSignOut = googleSignOut
+        self.defaults = defaults
     }
 
     // MARK: - Public Methods
@@ -79,6 +92,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                 let restoredUser = try await GIDSignIn.sharedInstance.restorePreviousSignIn()
                 if let idToken = restoredUser.idToken?.tokenString {
                     let user = try await exchangeGoogleIDTokenForSession(idToken: idToken)
+                    signInProvider = .google
                     authState = .authenticated(user)
                     return
                 }
@@ -100,6 +114,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
             let user = try await exchangeForSession(
                 body: .json(.init(value1: .init(email: email, password: password)))
             )
+            signInProvider = .password
             authState = .authenticated(user)
             isLoading = false
             print("AuthenticationManager: Login successful, authState updated to authenticated")
@@ -135,7 +150,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                 // Use ID token (Google's recommended iOS backend auth approach)
                 if let idToken = result.user.idToken?.tokenString {
                     let user = try await exchangeGoogleIDTokenForSession(idToken: idToken)
-                    // Update auth state
+                    signInProvider = .google
                     authState = .authenticated(user)
                     isLoading = false
                     return user
@@ -169,6 +184,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
             let user = try await exchangeForSession(
                 body: .json(.init(value4: .init(appleIdentityToken: identityToken, fullName: fullName)))
             )
+            signInProvider = .apple
             authState = .authenticated(user)
             isLoading = false
             return user
@@ -221,6 +237,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
                     Telemetry.capture(error, feature: "auth", operation: "load_user_details")
                 }
 
+                signInProvider = .password
                 authState = .authenticated(user)
                 isLoading = false
                 return user
@@ -250,6 +267,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         }
 
         googleSignOut()
+        signInProvider = nil
         needsTermsAcceptance = false
         authState = .unauthenticated
         error = logoutError
@@ -269,6 +287,26 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
             // Non-fatal
             Telemetry.capture(error, feature: "auth", operation: "refresh_after_terms")
         }
+    }
+
+    // MARK: - Account Deletion
+
+    /// Schedules the signed-in member's account for deletion 24 hours out.
+    /// The session stays valid until then; `currentUser.deletionScheduledAt` carries the date.
+    /// Apple accounts pass a fresh authorization code so the server revokes the Apple grant now.
+    public func requestAccountDeletion(appleAuthorizationCode: String? = nil) async throws {
+        let user = try await userRepository.requestAccountDeletion(appleAuthorizationCode: appleAuthorizationCode)
+        applyDeletionSchedule(from: user)
+    }
+
+    public func cancelAccountDeletion() async throws {
+        let user = try await userRepository.cancelAccountDeletion()
+        applyDeletionSchedule(from: user)
+    }
+
+    /// The deletion routes return the member without stats, so only the schedule is taken from them.
+    private func applyDeletionSchedule(from fresh: User) {
+        authState = .authenticated(currentUser?.withDeletionSchedule(from: fresh) ?? fresh)
     }
 
     // MARK: - Email Verification
@@ -333,6 +371,14 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
             nil
         }
     #endif
+}
+
+// MARK: - Sign-in Provider
+
+public enum SignInProvider: String, Sendable {
+    case password
+    case google
+    case apple
 }
 
 // MARK: - Auth Errors
