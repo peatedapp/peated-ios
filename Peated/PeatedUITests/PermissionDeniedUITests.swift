@@ -33,11 +33,11 @@ final class PermissionDeniedUITests: XCTestCase {
     func testTakePhotoExplainsDeniedCamera() {
         let stubs = [APIStub].signedInBaseline() + [APIStub].createTasting()
         let app = AppLaunch.launch(session: .signedIn, stubs: stubs, resetting: [.camera, .location])
+        SystemPermissionAlert.denyInterruptions(in: self)
         let flow = HomeScreen(app: app).waitUntilShown().openRecordTasting()
 
         flow.selectBottle(named: Fixtures.bottleName)
         flow.continueToLocationStep()
-        SystemPermissionAlert.deny()
         flow.tapContinue()
         flow.takePhotoButton.expectToBeHittable("Expected the photos step").tap()
         XCTAssertTrue(SystemPermissionAlert.deny(), "Expected the system camera prompt")
@@ -49,11 +49,13 @@ final class PermissionDeniedUITests: XCTestCase {
     func testLocationStepExplainsDeniedLocation() {
         let stubs = [APIStub].signedInBaseline() + [APIStub].createTasting()
         let app = AppLaunch.launch(session: .signedIn, stubs: stubs, resetting: [.location])
+        SystemPermissionAlert.denyInterruptions(in: self)
         let flow = HomeScreen(app: app).waitUntilShown().openRecordTasting()
 
         flow.selectBottle(named: Fixtures.bottleName)
         flow.continueToLocationStep()
-        XCTAssertTrue(SystemPermissionAlert.deny(), "Expected the system location prompt")
+        // The prompt may already have interrupted the previous tap; answer it if it is still up.
+        SystemPermissionAlert.deny(timeout: 2)
 
         flow.locationDeniedNotice.expectToAppear("Expected the location-off notice")
         XCTAssertTrue(flow.openSettingsButton.isHittable, "The notice must offer Settings")

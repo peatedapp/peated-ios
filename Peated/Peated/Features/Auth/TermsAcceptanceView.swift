@@ -70,6 +70,8 @@ struct TermsAcceptanceView: View {
                     Text("View Terms of Service")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
+                        .frame(minHeight: DesignSystem.ControlHeight.standard)
+                        .contentShape(Rectangle())
                 }
 
                 // Logout option
@@ -77,6 +79,8 @@ struct TermsAcceptanceView: View {
                     Text("Log Out")
                         .font(.subheadline)
                         .foregroundColor(.danger)
+                        .frame(minHeight: DesignSystem.ControlHeight.standard)
+                        .contentShape(Rectangle())
                 }
                 .disabled(isAccepting)
             }

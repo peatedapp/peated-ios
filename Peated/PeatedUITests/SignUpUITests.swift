@@ -22,7 +22,7 @@ final class SignUpUITests: XCTestCase {
         let app = AppLaunch.launch(session: .signedOut, stubs: stubs)
 
         let signUp = LoginScreen(app: app).waitUntilShown().openSignUp()
-        try app.performAccessibilityAudit()
+        try app.auditAccessibility()
 
         signUp.fill(username: username, email: email, password: password)
         signUp.acceptTerms()

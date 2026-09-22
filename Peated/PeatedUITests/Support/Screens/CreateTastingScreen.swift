@@ -91,8 +91,9 @@ struct CreateTastingScreen {
         selectBottle(named: name, file: file, line: line)
         ratingButton("very_good").tap()
         continueToLocationStep(file: file, line: line)
-        // The location prompt is answered so it cannot cover the step's controls.
-        SystemPermissionAlert.deny()
+        // The location prompt usually interrupts the previous tap and is denied there;
+        // answer it here if it is still up so it cannot cover the step's controls.
+        SystemPermissionAlert.deny(timeout: 2)
         atHomeButton.tap()
         tapContinue(file: file, line: line) // photos
         takePhotoButton.expectToBeHittable("Expected the photos step", file: file, line: line)

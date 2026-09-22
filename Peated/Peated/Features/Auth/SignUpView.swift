@@ -154,6 +154,9 @@ struct SignUpView: View {
             Text(title)
                 .foregroundColor(.brand)
                 .underline()
+                // Keep the inline text link at the 44-point minimum hit target.
+                .frame(minHeight: DesignSystem.ControlHeight.standard)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityIdentifier(identifier)

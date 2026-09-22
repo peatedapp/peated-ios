@@ -17,10 +17,11 @@ final class CreateTastingUITests: XCTestCase {
             ])
         ]
         let app = AppLaunch.launch(session: .signedIn, stubs: stubs, resetting: [.location])
+        SystemPermissionAlert.denyInterruptions(in: self)
 
         let home = HomeScreen(app: app).waitUntilShown()
         let flow = home.openRecordTasting()
-        try app.performAccessibilityAudit()
+        try app.auditAccessibility()
 
         flow.recordTasting(bottleNamed: Fixtures.bottleName)
 

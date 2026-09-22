@@ -17,6 +17,6 @@ final class LaunchUITests: XCTestCase {
         let app = AppLaunch.launch(session: .signedOut, stubs: [])
         LoginScreen(app: app).waitUntilShown()
 
-        try app.performAccessibilityAudit()
+        try app.auditAccessibility()
     }
 }

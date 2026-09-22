@@ -18,9 +18,10 @@ final class TermsAcceptanceUITests: XCTestCase {
             .ok("acceptTos", Fixtures.user())
         ]
         let app = AppLaunch.launch(session: .signedIn, stubs: stubs, resetting: [.location])
+        SystemPermissionAlert.denyInterruptions(in: self)
 
         let terms = TermsScreen(app: app).waitUntilShown()
-        try app.performAccessibilityAudit()
+        try app.auditAccessibility()
 
         terms.accept()
         terms.title.expectToDisappear("Accepting the terms must dismiss the gate")

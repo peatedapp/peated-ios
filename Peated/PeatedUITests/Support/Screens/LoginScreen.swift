@@ -15,7 +15,8 @@ struct LoginScreen {
 
     @discardableResult
     func waitUntilShown(file: StaticString = #filePath, line: UInt = #line) -> LoginScreen {
-        signInButton.expectToAppear("Expected the sign-in screen", file: file, line: line)
+        // The first screen waits on the session check, which is slow on a cold simulator.
+        signInButton.expectToAppear(timeout: 20, "Expected the sign-in screen", file: file, line: line)
         return self
     }
 

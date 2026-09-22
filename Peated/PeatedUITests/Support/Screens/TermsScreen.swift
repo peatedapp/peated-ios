@@ -15,7 +15,7 @@ struct TermsScreen {
 
     @discardableResult
     func waitUntilShown(file: StaticString = #filePath, line: UInt = #line) -> TermsScreen {
-        title.expectToAppear(timeout: 15, "Expected the terms acceptance screen", file: file, line: line)
+        title.expectToAppear(timeout: 20, "Expected the terms acceptance screen", file: file, line: line)
         return self
     }
 

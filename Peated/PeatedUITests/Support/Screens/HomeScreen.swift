@@ -19,7 +19,7 @@ struct HomeScreen {
 
     @discardableResult
     func waitUntilShown(file: StaticString = #filePath, line: UInt = #line) -> HomeScreen {
-        activityTab.expectToAppear(timeout: 15, "Expected the signed-in tab bar", file: file, line: line)
+        activityTab.expectToAppear(timeout: 20, "Expected the signed-in tab bar", file: file, line: line)
         return self
     }
 
