@@ -72,6 +72,7 @@ struct CreateTastingFlow: View {
                     Button("Cancel") {
                         showCancelConfirmation()
                     }
+                    .accessibilityIdentifier(AccessibilityID.CreateTasting.cancel)
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -115,6 +116,7 @@ struct CreateTastingFlow: View {
                     .font(.body)
                     .foregroundColor(.brand)
                 }
+                .accessibilityIdentifier(AccessibilityID.CreateTasting.back)
             }
 
             Spacer()
@@ -128,16 +130,20 @@ struct CreateTastingFlow: View {
                     }
                     .font(.body)
                     .fontWeight(.medium)
-                    .foregroundColor(.onBrand)
+                    // A solid muted surface keeps the disabled label readable; a
+                    // translucent brand fill does not meet the contrast minimum.
+                    .foregroundColor(canProceed ? .onBrand : .textSecondary)
                     .padding(.horizontal, 20)
                     .padding(.vertical, 10)
-                    .background(
-                        Color.brand
-                            .opacity(canProceed ? 1.0 : 0.5)
+                    .background(canProceed ? Color.brand : Color.formSurface)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(canProceed ? Color.clear : Color.formBorder, lineWidth: 1)
                     )
                     .cornerRadius(20)
                 }
                 .disabled(!canProceed)
+                .accessibilityIdentifier(AccessibilityID.CreateTasting.continueButton)
             } else {
                 Button(action: submitTasting) {
                     Group {
@@ -161,6 +167,7 @@ struct CreateTastingFlow: View {
                     .cornerRadius(25)
                 }
                 .disabled(viewModel.isSubmitting)
+                .accessibilityIdentifier(AccessibilityID.CreateTasting.submit)
             }
         }
     }

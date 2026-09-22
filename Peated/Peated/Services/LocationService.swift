@@ -27,6 +27,11 @@ class LocationService: NSObject, ObservableObject {
         authorizationStatus = locationManager.authorizationStatus
     }
 
+    /// The user or a device policy has switched location off for Peated.
+    var isAccessDenied: Bool {
+        authorizationStatus == .denied || authorizationStatus == .restricted
+    }
+
     func requestLocationPermission() {
         switch authorizationStatus {
         case .notDetermined:

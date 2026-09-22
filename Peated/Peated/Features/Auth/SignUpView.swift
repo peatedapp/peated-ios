@@ -100,7 +100,8 @@ struct SignUpView: View {
                 keyboard: .asciiCapable,
                 submitLabel: .next,
                 autocorrection: false,
-                capitalization: .never
+                capitalization: .never,
+                identifier: AccessibilityID.Auth.username
             )
 
             TextInput(
@@ -110,7 +111,8 @@ struct SignUpView: View {
                 keyboard: .emailAddress,
                 submitLabel: .next,
                 autocorrection: false,
-                capitalization: .never
+                capitalization: .never,
+                identifier: AccessibilityID.Auth.email
             )
 
             PasswordInput(
@@ -118,7 +120,8 @@ struct SignUpView: View {
                 placeholder: "Password",
                 text: $password,
                 submitLabel: .done,
-                onSubmit: { handleEmailSignUp() }
+                onSubmit: { handleEmailSignUp() },
+                identifier: AccessibilityID.Auth.password
             )
         }
     }
@@ -129,28 +132,34 @@ struct SignUpView: View {
                 .toggleStyle(.switch)
                 .tint(.brand)
                 .labelsHidden()
+                .accessibilityLabel("I agree to the Terms of Service and Privacy Policy")
+                .accessibilityIdentifier(AccessibilityID.Auth.termsToggle)
 
             HStack(spacing: 4) {
                 Text("I agree to the")
                     .foregroundColor(.textSecondary)
-                legalLink("Terms of Service", document: .terms)
+                legalLink("Terms of Service", document: .terms, identifier: AccessibilityID.Auth.termsLink)
                 Text("and")
                     .foregroundColor(.textSecondary)
-                legalLink("Privacy Policy", document: .privacy)
+                legalLink("Privacy Policy", document: .privacy, identifier: AccessibilityID.Auth.privacyLink)
             }
         }
         .font(.peatedMetadata)
     }
 
-    private func legalLink(_ title: String, document: LegalDocument) -> some View {
+    private func legalLink(_ title: String, document: LegalDocument, identifier: String) -> some View {
         Button {
             legalDocument = document
         } label: {
             Text(title)
                 .foregroundColor(.brand)
                 .underline()
+                // Keep the inline text link at the 44-point minimum hit target.
+                .frame(minHeight: DesignSystem.ControlHeight.standard)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier(identifier)
     }
 
     private var signUpButton: some View {
@@ -164,6 +173,7 @@ struct SignUpView: View {
                 .cornerRadius(12)
         }
         .disabled(!isPrimaryEnabled || isLoading)
+        .accessibilityIdentifier(AccessibilityID.Auth.createAccount)
     }
 
     private var isPrimaryEnabled: Bool {

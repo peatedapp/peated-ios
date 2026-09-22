@@ -23,6 +23,8 @@ struct TextInput: View {
     var error: String?
     var helper: String?
     var onSubmit: (() -> Void)?
+    /// Stable identifier for UI tests. See `AccessibilityID`.
+    var identifier: String?
 
     // Focus (internal; external binding optional for coordinated form navigation)
     var isFocused: FocusState<Bool>.Binding?
@@ -58,6 +60,7 @@ struct TextInput: View {
                 .textContentType(contentType)
                 .onSubmit { onSubmit?() }
                 .focused(focusBinding)
+                .accessibilityIdentifier(identifier ?? "")
 
                 if let unit, !unit.isEmpty {
                     Text(unit)

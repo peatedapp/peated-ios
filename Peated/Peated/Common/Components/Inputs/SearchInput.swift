@@ -8,6 +8,8 @@ struct SearchInput: View {
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding?
     var onSubmit: (() -> Void)?
+    /// Stable identifier for UI tests. See `AccessibilityID`.
+    var identifier: String?
     @FocusState private var internalFocused: Bool
 
     var body: some View {
@@ -19,6 +21,7 @@ struct SearchInput: View {
                 .focused(focusBinding)
                 .submitLabel(.search)
                 .onSubmit { onSubmit?() }
+                .accessibilityIdentifier(identifier ?? "")
             if !text.isEmpty {
                 Button(action: { text = "" }) {
                     Image(systemName: "xmark.circle.fill").foregroundColor(.textSecondary)

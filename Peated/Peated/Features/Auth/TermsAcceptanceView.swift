@@ -9,6 +9,18 @@ struct TermsAcceptanceView: View {
     var onAccepted: () -> Void
 
     var body: some View {
+        // The content scrolls at large Dynamic Type sizes instead of clipping.
+        GeometryReader { proxy in
+            ScrollView {
+                content
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: proxy.size.height)
+            }
+        }
+        .background(Color.background)
+    }
+
+    private var content: some View {
         VStack(spacing: 24) {
             Spacer()
 
@@ -49,7 +61,7 @@ struct TermsAcceptanceView: View {
                         ProgressView()
                             .progressViewStyle(CircularProgressViewStyle(tint: .onBrand))
                             .frame(maxWidth: .infinity)
-                            .frame(height: 50)
+                            .frame(minHeight: 50)
                             .background(Color.brand)
                             .cornerRadius(12)
                     } else {
@@ -57,18 +69,21 @@ struct TermsAcceptanceView: View {
                             .fontWeight(.semibold)
                             .foregroundColor(.onBrand)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 50)
+                            .frame(minHeight: 50)
                             .background(Color.brand)
                             .cornerRadius(12)
                     }
                 }
                 .disabled(isAccepting)
+                .accessibilityIdentifier(AccessibilityID.Terms.accept)
 
                 // View terms link
                 Link(destination: LegalDocument.terms.url) {
                     Text("View Terms of Service")
                         .font(.subheadline)
                         .foregroundColor(.textSecondary)
+                        .frame(minHeight: DesignSystem.ControlHeight.standard)
+                        .contentShape(Rectangle())
                 }
 
                 // Logout option
@@ -76,14 +91,14 @@ struct TermsAcceptanceView: View {
                     Text("Log Out")
                         .font(.subheadline)
                         .foregroundColor(.danger)
+                        .frame(minHeight: DesignSystem.ControlHeight.standard)
+                        .contentShape(Rectangle())
                 }
                 .disabled(isAccepting)
             }
             .padding(.horizontal, 32)
             .padding(.bottom, 32)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color.background)
     }
 
     private func acceptTerms() {

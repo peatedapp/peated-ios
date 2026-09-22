@@ -29,6 +29,14 @@ struct LocationStep: View {
                 .padding(.top)
 
                 VStack(spacing: 16) {
+                    if locationService.isAccessDenied {
+                        PermissionDeniedNotice(
+                            title: "Location is off",
+                            message: "Allow location access in Settings to find nearby places. " +
+                                "You can still pick At Home or search by name."
+                        )
+                    }
+
                     // At Home Option
                     HomeLocationButton(
                         isSelected: viewModel.isDrinkingAtHome,
@@ -42,6 +50,7 @@ struct LocationStep: View {
                             UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         }
                     )
+                    .accessibilityIdentifier(AccessibilityID.CreateTasting.atHome)
 
                     // Divider with "OR"
                     HStack {
