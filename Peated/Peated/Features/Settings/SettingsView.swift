@@ -84,6 +84,8 @@ struct SettingsView: View {
                         }
                     }
 
+                    AccountDeletionSection()
+
                     // Sign Out
                     FormSection(nil) {
                         Button(action: {

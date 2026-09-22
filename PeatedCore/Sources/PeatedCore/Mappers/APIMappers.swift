@@ -14,6 +14,7 @@ extension User {
             mod: apiUser.mod
         )
         pictureUrl = apiUser.pictureUrl
+        deletionScheduledAt = apiUser.deletionScheduledAt
     }
 
     init(from apiUser: Components.Schemas.Auth.userPayload) {
@@ -26,6 +27,7 @@ extension User {
             mod: apiUser.mod
         )
         pictureUrl = apiUser.pictureUrl
+        deletionScheduledAt = apiUser.deletionScheduledAt
     }
 }
 

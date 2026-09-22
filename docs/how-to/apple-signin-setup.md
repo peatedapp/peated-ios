@@ -15,6 +15,7 @@ The server verifies the token against Apple's public keys and requires the token
 - `Peated/Peated/Peated.entitlements` declares `com.apple.developer.applesignin`. The App ID in the developer portal must have the Sign in with Apple capability enabled; Xcode adds it when it manages signing.
 - No client identifiers or secrets are needed on the device. The server accepts the bundle ID by default and reads `APPLE_CLIENT_IDS` for any other audience.
 - Sign out clears the stored session token. The app does not track Apple credential revocation.
+- `AuthenticationManager.signInProvider` records on the device which method created the session. When it is Apple, account deletion runs a fresh authorization through `AppleAuthorizationRequester` and sends its `authorizationCode` with `DELETE /users/me`, so the server can revoke the Apple grant as Apple requires. Without a code the deletion still goes through and the grant stays until the member removes it in their Apple ID settings. Sessions created before this record existed have no provider and skip the Apple step.
 
 ## Testing
 

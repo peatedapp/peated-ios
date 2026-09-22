@@ -7,6 +7,9 @@ struct AppleSignInCredential: Equatable {
     let identityToken: String
     /// Apple provides the name only on the first authorization for this Apple ID.
     let fullName: String?
+    /// Single-use code that lives five minutes. Account deletion sends it so the
+    /// server can revoke the Sign in with Apple grant, as Apple requires.
+    let authorizationCode: String?
 
     enum Failure: LocalizedError {
         case unexpectedCredential
@@ -20,9 +23,10 @@ struct AppleSignInCredential: Equatable {
         }
     }
 
-    init(identityToken: String, fullName: String?) {
+    init(identityToken: String, fullName: String?, authorizationCode: String? = nil) {
         self.identityToken = identityToken
         self.fullName = fullName
+        self.authorizationCode = authorizationCode
     }
 
     init(authorization: ASAuthorization) throws {
@@ -35,7 +39,14 @@ struct AppleSignInCredential: Equatable {
         else {
             throw Failure.missingIdentityToken
         }
-        self.init(identityToken: token, fullName: Self.formattedName(credential.fullName))
+        let authorizationCode = credential.authorizationCode
+            .flatMap { String(data: $0, encoding: .utf8) }
+            .flatMap { $0.isEmpty ? nil : $0 }
+        self.init(
+            identityToken: token,
+            fullName: Self.formattedName(credential.fullName),
+            authorizationCode: authorizationCode
+        )
     }
 
     /// Joins the name components Apple sends into one display name, or nil when Apple sent none.
