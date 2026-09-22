@@ -16,6 +16,11 @@ struct ActivityEntryCard: View {
     let onUserTap: (ActivityActor) -> Void
     let onBottleTap: (_ bottleId: String) -> Void
 
+    /// Members cannot report their own content, so their cards get no report action.
+    private func reportTarget(ownerId: String, _ target: ReportTarget) -> ReportTarget? {
+        ownerId == AuthenticationManager.shared.currentUser?.id ? nil : target
+    }
+
     var body: some View {
         switch entry {
         case let .tasting(tasting):
@@ -30,7 +35,8 @@ struct ActivityEntryCard: View {
                         avatarUrl: tasting.userAvatarUrl
                     ))
                 },
-                onBottleTap: { onBottleTap(tasting.bottleId) }
+                onBottleTap: { onBottleTap(tasting.bottleId) },
+                reportTarget: reportTarget(ownerId: tasting.userId, .tasting(id: tasting.id))
             )
         case let .memberReview(review):
             MemberReviewFeedCard(
@@ -42,7 +48,8 @@ struct ActivityEntryCard: View {
                         avatarUrl: review.userAvatarUrl
                     ))
                 },
-                onBottleTap: { onBottleTap(review.bottle.id) }
+                onBottleTap: { onBottleTap(review.bottle.id) },
+                reportTarget: reportTarget(ownerId: review.userId, .memberReview(id: review.id))
             )
         case let .criticReview(review):
             CriticReviewFeedCard(

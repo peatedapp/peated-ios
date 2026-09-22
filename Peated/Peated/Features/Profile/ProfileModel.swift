@@ -10,6 +10,7 @@ class ProfileModel {
     var isLoading = false
     var error: Error?
     var isTogglingFriend = false
+    var isUpdatingBlock = false
     var isPrimed = false
     var statsPrimed = false
 
@@ -23,6 +24,7 @@ class ProfileModel {
     private let seed: User?
 
     private let authManager = AuthenticationManager.shared
+    private let blockList = BlockList.shared
     private let achievementsRepository: AchievementsRepository
     private let userRepository: UserRepository
     private let collectionRepository: CollectionRepository
@@ -234,6 +236,45 @@ class ProfileModel {
         } catch {
             Telemetry.capture(error, feature: "profile", operation: "toggle_friend")
             self.error = error
+        }
+    }
+
+    /// Whether the signed-in member has blocked the profile's owner.
+    var isBlocked: Bool {
+        guard let id = user?.id else { return false }
+        return blockList.contains(id)
+    }
+
+    /// Blocks the profile's owner. The server ends any friendship, so the local status follows.
+    func block() async {
+        guard let target = user, !isUpdatingBlock else { return }
+        isUpdatingBlock = true
+        defer { isUpdatingBlock = false }
+        do {
+            try await userRepository.blockUser(id: target.id)
+            blockList.add(target.id)
+            user?.friendStatus = User.FriendStatus.none
+            ToastManager.shared.showSuccess(
+                "You blocked @\(target.username). They can no longer comment on or toast your tastings, "
+                    + "or send you friend requests."
+            )
+        } catch {
+            Telemetry.capture(error, feature: "profile", operation: "block")
+            ToastManager.shared.showError("Couldn't block @\(target.username). Try again.")
+        }
+    }
+
+    func unblock() async {
+        guard let target = user, !isUpdatingBlock else { return }
+        isUpdatingBlock = true
+        defer { isUpdatingBlock = false }
+        do {
+            try await userRepository.unblockUser(id: target.id)
+            blockList.remove(target.id)
+            ToastManager.shared.showSuccess("You unblocked @\(target.username).")
+        } catch {
+            Telemetry.capture(error, feature: "profile", operation: "unblock")
+            ToastManager.shared.showError("Couldn't unblock @\(target.username). Try again.")
         }
     }
 

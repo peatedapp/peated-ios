@@ -24,17 +24,20 @@ final class SearchModel {
     private let repository: SearchRepository
     private let bottleRepository: BottleRepository
     private let userRepository: any UserRepositoryProtocol
+    private let blockList: BlockList
     private var task: Task<Void, Never>?
 
     init(
         repository: SearchRepository = SearchRepository(),
         bottleRepository: BottleRepository = BottleRepository(),
         userRepository: any UserRepositoryProtocol = UserRepository(),
+        blockList: BlockList = .shared,
         loadsPopularContent: Bool = true
     ) {
         self.repository = repository
         self.bottleRepository = bottleRepository
         self.userRepository = userRepository
+        self.blockList = blockList
         loadRecent()
         if loadsPopularContent {
             loadPopularContent()
@@ -53,9 +56,10 @@ final class SearchModel {
             do {
                 try await Task.sleep(nanoseconds: 300_000_000)
                 guard !Task.isCancelled else { return }
-                let results = try await self?.repository.search(query: trimmed, limit: 50) ?? []
+                guard let self else { return }
+                let results = try await repository.search(query: trimmed, limit: 50)
                 guard !Task.isCancelled else { return }
-                self?.state = .results(results)
+                state = .results(Self.hidingBlockedMembers(results, blockList: blockList))
             } catch {
                 guard !Task.isCancelled else { return }
                 Telemetry.capture(error, feature: "search", operation: "query")
@@ -123,6 +127,11 @@ final class SearchModel {
             updateFriendStatus(userId: result.id, status: previousStatus)
             friendshipErrorMessage = "Couldn't update friendship. Please try again."
         }
+    }
+
+    /// Drops member results the signed-in user has blocked. Bottles and brands always show.
+    static func hidingBlockedMembers(_ results: [SearchResult], blockList: BlockList) -> [SearchResult] {
+        results.filter { $0.type != .user || !blockList.contains($0.id) }
     }
 
     private func loadRecent() {

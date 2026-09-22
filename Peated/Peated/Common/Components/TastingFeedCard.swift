@@ -11,6 +11,8 @@ struct TastingFeedCard: View {
     let onComment: () -> Void
     let onUserTap: () -> Void
     let onBottleTap: () -> Void
+    /// What Report sends. Nil for the member's own tastings and for lists without reporting.
+    let reportTarget: ReportTarget?
 
     @State private var showingImageViewer = false
 
@@ -22,7 +24,8 @@ struct TastingFeedCard: View {
         onToast: @escaping () -> Void,
         onComment: @escaping () -> Void,
         onUserTap: @escaping () -> Void,
-        onBottleTap: @escaping () -> Void
+        onBottleTap: @escaping () -> Void,
+        reportTarget: ReportTarget? = nil
     ) {
         self.tasting = tasting
         self.showBottle = showBottle
@@ -31,6 +34,7 @@ struct TastingFeedCard: View {
         self.onComment = onComment
         self.onUserTap = onUserTap
         self.onBottleTap = onBottleTap
+        self.reportTarget = reportTarget
     }
 
     var body: some View {
@@ -149,6 +153,12 @@ struct TastingFeedCard: View {
             }
             .buttonStyle(PlainButtonStyle())
             .accessibilityLabel("Share tasting")
+
+            if let reportTarget {
+                OverflowMenu(.inline, subject: "tasting") {
+                    ReportMenuItem(target: reportTarget)
+                }
+            }
         }
     }
 

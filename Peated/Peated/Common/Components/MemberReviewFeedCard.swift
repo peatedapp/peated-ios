@@ -7,6 +7,8 @@ struct MemberReviewFeedCard: View {
     let review: MemberReviewFeedItem
     let onUserTap: () -> Void
     let onBottleTap: () -> Void
+    /// What Report sends. Nil for the member's own reviews.
+    var reportTarget: ReportTarget?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -49,6 +51,12 @@ struct MemberReviewFeedCard: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .accessibilityLabel("Share review")
+
+                if let reportTarget {
+                    OverflowMenu(.inline, subject: "review") {
+                        ReportMenuItem(target: reportTarget)
+                    }
+                }
             }
             .padding(.top, 4)
         }

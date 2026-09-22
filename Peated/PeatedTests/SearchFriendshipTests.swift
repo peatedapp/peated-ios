@@ -105,6 +105,14 @@ private actor UserRepositoryStub: UserRepositoryProtocol {
         unfollowedUserIds.append(id)
     }
 
+    func blockUser(id _: String) async throws {}
+
+    func unblockUser(id _: String) async throws {}
+
+    func listBlockedUsers(cursor _: Int, limit _: Int) async throws -> BlockedUsersPage {
+        BlockedUsersPage(users: [], nextCursor: nil)
+    }
+
     private enum StubError: Error {
         case failed
     }

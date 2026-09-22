@@ -30,6 +30,19 @@ struct SettingsView: View {
                         }
                     }
 
+                    // Privacy Section. App Store Review Guideline 1.2 requires a way to manage blocked members.
+                    FormSection("Privacy") {
+                        NavigationLink {
+                            BlockedUsersView()
+                        } label: {
+                            Label("Blocked Members", systemImage: "hand.raised")
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .contentShape(Rectangle())
+                        }
+                        .foregroundColor(.text)
+                        .accessibilityIdentifier("blockedMembersRow")
+                    }
+
                     // Developer Section (DEBUG only)
                     #if DEBUG
                         FormSection("Development") {

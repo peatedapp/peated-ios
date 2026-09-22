@@ -46,23 +46,23 @@ struct TastingDetailView: View {
         .navigationChrome()
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                if let tasting = model.tasting,
-                   tasting.userId == AuthenticationManager.shared.currentUser?.id {
-                    Menu {
+                if let tasting = model.tasting {
+                    OverflowMenu(.toolbar, subject: "tasting") {
                         ShareLink(item: PeatedWebURL.tasting(id: tasting.id)) {
                             Label("Share", systemImage: "square.and.arrow.up")
                         }
 
-                        Divider()
+                        if tasting.userId == AuthenticationManager.shared.currentUser?.id {
+                            Divider()
 
-                        Button(role: .destructive) {
-                            showingDeleteAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+                            Button(role: .destructive) {
+                                showingDeleteAlert = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        } else {
+                            ReportMenuItem(target: .tasting(id: tasting.id))
                         }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
-                            .foregroundColor(.text)
                     }
                 }
             }
@@ -203,18 +203,21 @@ struct TastingDetailView: View {
                         .foregroundColor(.textSecondary)
                         .padding(.vertical, 20)
                 } else {
-                    ForEach(comments) { comment in
+                    let currentUserId = AuthenticationManager.shared.currentUser?.id
+                    // Blocked members' comments stay hidden until the server removes them.
+                    ForEach(comments.filter { !BlockList.shared.contains($0.userId) }) { comment in
                         CommentView(
                             comment: comment,
                             isOP: comment.userId == tasting.userId,
                             onProfile: { userId in
                                 onNavigateToProfile?(userId)
                             },
-                            onDelete: comment.userId == AuthenticationManager.shared.currentUser?.id ? {
+                            onDelete: comment.userId == currentUserId ? {
                                 Task {
                                     await model.deleteComment(comment)
                                 }
-                            } : nil
+                            } : nil,
+                            reportTarget: comment.userId == currentUserId ? nil : .comment(id: comment.id)
                         )
                     }
                 }
@@ -490,6 +493,8 @@ struct CommentView: View {
     let isOP: Bool
     let onProfile: (String) -> Void
     let onDelete: (() -> Void)?
+    /// What Report sends. Nil for the member's own comments.
+    var reportTarget: ReportTarget?
     @State private var showingDeleteAlert = false
 
     var body: some View {
@@ -537,18 +542,18 @@ struct CommentView: View {
 
                 Spacer()
 
-                if onDelete != nil {
-                    Menu {
-                        Button(role: .destructive) {
-                            showingDeleteAlert = true
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+                if onDelete != nil || reportTarget != nil {
+                    OverflowMenu(.inline, subject: "comment") {
+                        if let reportTarget {
+                            ReportMenuItem(target: reportTarget)
                         }
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .font(.peatedMetadata)
-                            .foregroundColor(.textSecondary)
-                            .frame(width: 24, height: 24)
+                        if onDelete != nil {
+                            Button(role: .destructive) {
+                                showingDeleteAlert = true
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                     }
                 }
             }

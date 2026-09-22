@@ -22,7 +22,19 @@ private final class ObserverHolder: @unchecked Sendable {
 @Observable
 @MainActor
 public class FeedModel {
-    public private(set) var entries: [ActivityFeedEntry] = []
+    /// Everything loaded for the selected feed, including entries from blocked members.
+    public private(set) var allEntries: [ActivityFeedEntry] = []
+
+    /// The rows to show. Blocked members drop out here, so a block hides their
+    /// cached entries before the next fetch.
+    public var entries: [ActivityFeedEntry] {
+        guard !blockList.blockedUserIds.isEmpty else { return allEntries }
+        return allEntries.filter { entry in
+            guard let actorUserId = entry.actorUserId else { return true }
+            return !blockList.contains(actorUserId)
+        }
+    }
+
     public private(set) var isLoading = false
     public private(set) var isSwitchingFeed = false
     public var error: Error?
@@ -66,15 +78,18 @@ public class FeedModel {
 
     private let tastingRepository: TastingRepository
     private let selectionStore: any FeedSelectionStore
+    private let blockList: BlockList
 
     public init(
         feedRepository: (any FeedRepositoryProtocol)? = nil,
         tastingRepository: TastingRepository? = nil,
-        selectionStore: any FeedSelectionStore = UserDefaultsFeedSelectionStore()
+        selectionStore: any FeedSelectionStore = UserDefaultsFeedSelectionStore(),
+        blockList: BlockList = .shared
     ) {
         self.feedRepository = feedRepository ?? FeedRepository()
         self.tastingRepository = tastingRepository ?? TastingRepository()
         self.selectionStore = selectionStore
+        self.blockList = blockList
         selectedFeedType = selectionStore.loadSelection() ?? .global
 
         // Set up notification observer after initialization
@@ -149,7 +164,7 @@ public class FeedModel {
             if refresh {
                 feedPage = try await feedRepository.refreshActivity(type: feedType)
                 if updateUI {
-                    entries = feedPage.entries
+                    allEntries = feedPage.entries
                 }
             } else {
                 // For background loads, we need to get the current cursor from cache
@@ -162,7 +177,7 @@ public class FeedModel {
                 )
 
                 if updateUI {
-                    entries.append(contentsOf: feedPage.entries)
+                    allEntries.append(contentsOf: feedPage.entries)
                 }
             }
 
@@ -200,14 +215,14 @@ public class FeedModel {
 
             // Update UI state if this is for the current feed and we're updating UI
             if updateUI {
-                entries = feedCaches[feedType]?.entries ?? []
+                allEntries = feedCaches[feedType]?.entries ?? []
                 cursor = feedCaches[feedType]?.cursor
                 hasMore = feedCaches[feedType]?.hasMore ?? false
             }
 
             // If this background load was for the currently selected feed, update UI
             if !updateUI, feedType == selectedFeedType {
-                entries = feedCaches[feedType]?.entries ?? []
+                allEntries = feedCaches[feedType]?.entries ?? []
                 cursor = feedCaches[feedType]?.cursor
                 hasMore = feedCaches[feedType]?.hasMore ?? true
             }
@@ -248,7 +263,7 @@ public class FeedModel {
         // Check if we have cached data for this feed type
         if let cache = feedCaches[type], !cache.isExpired {
             // Use cached data immediately
-            entries = cache.entries
+            allEntries = cache.entries
             cursor = cache.cursor
             hasMore = cache.hasMore
             error = nil
@@ -270,7 +285,7 @@ public class FeedModel {
         } else {
             // No cache or expired, show loading state
             isSwitchingFeed = true
-            entries = []
+            allEntries = []
             cursor = nil
             hasMore = true
             error = nil
@@ -285,10 +300,10 @@ public class FeedModel {
         guard hasMore, !isLoading else { return }
 
         // Find the index of current entry
-        guard let currentIndex = entries.firstIndex(where: { $0.id == currentEntry.id }) else { return }
+        guard let currentIndex = allEntries.firstIndex(where: { $0.id == currentEntry.id }) else { return }
 
         // Trigger loading when user reaches 3rd entry from the end
-        let triggerIndex = max(0, entries.count - 3)
+        let triggerIndex = max(0, allEntries.count - 3)
 
         if currentIndex >= triggerIndex {
             await loadFeed(refresh: false)
@@ -319,7 +334,7 @@ public class FeedModel {
         }
 
         // Update UI with cached data
-        entries = cache.entries
+        allEntries = cache.entries
         cursor = cache.cursor
         hasMore = cache.hasMore
     }
@@ -395,12 +410,12 @@ public class FeedModel {
 
     /// Check if we have any data (cached or current) for the selected feed
     public var hasData: Bool {
-        !entries.isEmpty || feedCaches[selectedFeedType]?.entries.isEmpty == false
+        !allEntries.isEmpty || feedCaches[selectedFeedType]?.entries.isEmpty == false
     }
 
     /// Check if we're in an error state with no data to show
     public var isErrorWithNoData: Bool {
-        error != nil && entries.isEmpty
+        error != nil && allEntries.isEmpty
     }
 
     /// Clear the error state
@@ -413,7 +428,7 @@ public class FeedModel {
     /// Toggle toast for a tasting with optimistic UI update and offline support
     public func toggleToast(for tastingId: String) async {
         // Find the tasting in the current feed; only tasting entries can be toasted
-        guard let currentTasting = entries.lazy.compactMap(\.tasting).first(where: { $0.id == tastingId }) else {
+        guard let currentTasting = allEntries.lazy.compactMap(\.tasting).first(where: { $0.id == tastingId }) else {
             return
         }
         let newToastedState = !currentTasting.hasToasted
@@ -504,8 +519,8 @@ public class FeedModel {
     /// Replaces a tasting in the visible feed and in every cached feed that contains it.
     private func replaceTasting(with tasting: TastingFeedItem) {
         let entryId = ActivityFeedEntry.tasting(tasting).id
-        if let index = entries.firstIndex(where: { $0.id == entryId }) {
-            entries[index] = .tasting(tasting)
+        if let index = allEntries.firstIndex(where: { $0.id == entryId }) {
+            allEntries[index] = .tasting(tasting)
         }
         for feedType in feedCaches.keys {
             if let cacheIndex = feedCaches[feedType]?.entries.firstIndex(where: { $0.id == entryId }) {

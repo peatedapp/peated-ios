@@ -15,6 +15,7 @@ struct ProfileView: View {
     @State private var showingLogoutAlert = false
     @State private var selectedTab = 0
     @State private var showingSettings = false
+    @State private var showingBlockConfirmation = false
     @State private var activityTastings: [TastingFeedItem] = []
     @State private var activityCursor: String?
     @State private var activityHasMore = true
@@ -40,6 +41,20 @@ struct ProfileView: View {
         content
             .toolbar { toolbarItems }
             .sheet(isPresented: $showingSettings) { SettingsView() }
+            .confirmationDialog(
+                "Block @\(model.user?.username ?? "")?",
+                isPresented: $showingBlockConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Block", role: .destructive) {
+                    Task { await model.block() }
+                }
+            } message: {
+                Text(
+                    "They won't be able to comment on or toast your tastings, or send you friend requests, "
+                        + "and you won't see their activity. Any friendship between you ends."
+                )
+            }
             .task(id: userId) {
                 // Always default to Activity when loading a profile
                 selectedTab = 0
@@ -99,26 +114,11 @@ struct ProfileView: View {
         } else if let target = model.user, let current = AuthenticationManager.shared.currentUser,
                   target.id != current.id {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button(role: (target.friendStatus == .friends || target.friendStatus == .pending) ? .destructive :
-                        .none) {
-                            Task { await model.toggleFriendship() }
-                        } label: {
-                            if target.friendStatus == .friends {
-                                Label("Unfriend", systemImage: "person.fill.xmark")
-                            } else if target.friendStatus == .pending {
-                                Label("Remove Friend", systemImage: "person.fill.xmark")
-                            } else {
-                                Label("Add Friend", systemImage: "person.badge.plus")
-                            }
-                        }
-                } label: {
-                    if model.isTogglingFriend {
-                        ProgressView().tint(.brand)
-                    } else {
-                        Image(systemName: "ellipsis.circle").foregroundColor(.text)
-                    }
-                }
+                ProfileActionsMenu(
+                    target: target,
+                    model: model,
+                    showingBlockConfirmation: $showingBlockConfirmation
+                )
             }
         }
     }
