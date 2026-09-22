@@ -38,7 +38,7 @@ extension XCUIElement {
         file: StaticString = #filePath,
         line: UInt = #line
     ) {
-        XCTAssertTrue(waitForNonExistence(withTimeout: timeout), message(), file: file, line: line)
+        XCTAssertTrue(waitForNonExistence(timeout: timeout), message(), file: file, line: line)
     }
 
     /// Focuses the field and types, replacing nothing because the field starts empty.
