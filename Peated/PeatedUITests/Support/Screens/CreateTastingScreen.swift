@@ -59,7 +59,7 @@ struct CreateTastingScreen {
 
     @discardableResult
     func waitUntilShown(file: StaticString = #filePath, line: UInt = #line) -> CreateTastingScreen {
-        title.expectToAppear("Expected the Add Tasting sheet", file: file, line: line)
+        title.expectToAppear("Expected the Add Tasting sheet", file: file, line: line).waitUntilStill()
         return self
     }
 

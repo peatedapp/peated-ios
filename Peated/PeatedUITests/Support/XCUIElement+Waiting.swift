@@ -31,6 +31,23 @@ extension XCUIElement {
         return self
     }
 
+    /// Returns once the element's frame stops moving, so a screen presented
+    /// with an animation is fully on screen before it is audited or measured.
+    @discardableResult
+    func waitUntilStill(timeout: TimeInterval = 3) -> XCUIElement {
+        let deadline = Date().addingTimeInterval(timeout)
+        var previous = frame
+        while Date() < deadline {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.15))
+            let current = frame
+            if current == previous, !current.isEmpty {
+                return self
+            }
+            previous = current
+        }
+        return self
+    }
+
     /// Asserts the element leaves the screen within the timeout.
     func expectToDisappear(
         timeout: TimeInterval = 10,
