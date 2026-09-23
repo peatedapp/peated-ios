@@ -17,15 +17,17 @@ let package = Package(
     ],
     dependencies: [
         // Database
+        // 0.15.5 and later add package traits, which make Xcode 26.6 abort
+        // during package resolution (DependencyPackagesGroup.sortedInsert).
         .package(
             url: "https://github.com/stephencelis/SQLite.swift",
-            from: "0.14.0"
+            exact: "0.15.4"
         ),
 
         // Authentication
         .package(
             url: "https://github.com/google/GoogleSignIn-iOS",
-            from: "8.0.0"
+            from: "10.0.0"
         ),
 
         // Utilities
