@@ -769,7 +769,7 @@ public protocol APIProtocol: Sendable {
     func listRegions(_ input: Operations.listRegions.Input) async throws -> Operations.listRegions.Output
     /// Report content or a member
     ///
-    /// Report a tasting, member review, comment, or member to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
+    /// Report a tasting, member review, comment, member, bottle, entity, series, or flight to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
     ///
     /// - Remark: HTTP `POST /reports`.
     /// - Remark: Generated from `#/paths//reports/post(createReport)`.
@@ -2661,7 +2661,7 @@ extension APIProtocol {
     }
     /// Report content or a member
     ///
-    /// Report a tasting, member review, comment, or member to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
+    /// Report a tasting, member review, comment, member, bottle, entity, series, or flight to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
     ///
     /// - Remark: HTTP `POST /reports`.
     /// - Remark: Generated from `#/paths//reports/post(createReport)`.
@@ -184229,7 +184229,7 @@ public enum Operations {
     }
     /// Report content or a member
     ///
-    /// Report a tasting, member review, comment, or member to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
+    /// Report a tasting, member review, comment, member, bottle, entity, series, or flight to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
     ///
     /// - Remark: HTTP `POST /reports`.
     /// - Remark: Generated from `#/paths//reports/post(createReport)`.
@@ -184252,7 +184252,7 @@ public enum Operations {
             @frozen public enum Body: Sendable, Hashable {
                 /// - Remark: Generated from `#/paths/reports/POST/requestBody/json`.
                 public struct jsonPayload: Codable, Hashable, Sendable {
-                    /// What is being reported: a tasting, a member review, a comment, or a member.
+                    /// What is being reported: a tasting, a member review, a comment, a member, a bottle, an entity, a series, or a flight.
                     ///
                     /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/objectType`.
                     @frozen public enum objectTypePayload: String, Codable, Hashable, Sendable, CaseIterable {
@@ -184260,15 +184260,68 @@ public enum Operations {
                         case member_review = "member_review"
                         case comment = "comment"
                         case user = "user"
+                        case bottle = "bottle"
+                        case entity = "entity"
+                        case bottle_series = "bottle_series"
+                        case flight = "flight"
                     }
-                    /// What is being reported: a tasting, a member review, a comment, or a member.
+                    /// What is being reported: a tasting, a member review, a comment, a member, a bottle, an entity, a series, or a flight.
                     ///
                     /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/objectType`.
                     public var objectType: Operations.createReport.Input.Body.jsonPayload.objectTypePayload
-                    /// ID of the reported tasting, member review, comment, or member.
+                    /// ID of the reported item. Flights use their public ID; everything else uses its numeric ID.
                     ///
                     /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/objectId`.
-                    public var objectId: Swift.Int
+                    public struct objectIdPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/objectId/value1`.
+                        public var value1: Swift.Int?
+                        /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/objectId/value2`.
+                        public var value2: Swift.String?
+                        /// Creates a new `objectIdPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value1:
+                        ///   - value2:
+                        public init(
+                            value1: Swift.Int? = nil,
+                            value2: Swift.String? = nil
+                        ) {
+                            self.value1 = value1
+                            self.value2 = value2
+                        }
+                        public init(from decoder: any Decoder) throws {
+                            var errors: [any Error] = []
+                            do {
+                                self.value1 = try decoder.decodeFromSingleValueContainer()
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self.value2 = try decoder.decodeFromSingleValueContainer()
+                            } catch {
+                                errors.append(error)
+                            }
+                            try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
+                                [
+                                    self.value1,
+                                    self.value2
+                                ],
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Encoder) throws {
+                            try encoder.encodeFirstNonNilValueToSingleValueContainer([
+                                self.value1,
+                                self.value2
+                            ])
+                        }
+                    }
+                    /// ID of the reported item. Flights use their public ID; everything else uses its numeric ID.
+                    ///
+                    /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/objectId`.
+                    public var objectId: Operations.createReport.Input.Body.jsonPayload.objectIdPayload
                     /// Why the content is being reported.
                     ///
                     /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/reason`.
@@ -184278,26 +184331,27 @@ public enum Operations {
                         case hate = "hate"
                         case sexual_content = "sexual_content"
                         case violence = "violence"
+                        case inaccurate = "inaccurate"
                         case other = "other"
                     }
                     /// Why the content is being reported.
                     ///
                     /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/reason`.
                     public var reason: Operations.createReport.Input.Body.jsonPayload.reasonPayload
-                    /// Optional details for moderators.
+                    /// Details for moderators. Required when the reason is `other`.
                     ///
                     /// - Remark: Generated from `#/paths/reports/POST/requestBody/json/comment`.
                     public var comment: Swift.String?
                     /// Creates a new `jsonPayload`.
                     ///
                     /// - Parameters:
-                    ///   - objectType: What is being reported: a tasting, a member review, a comment, or a member.
-                    ///   - objectId: ID of the reported tasting, member review, comment, or member.
+                    ///   - objectType: What is being reported: a tasting, a member review, a comment, a member, a bottle, an entity, a series, or a flight.
+                    ///   - objectId: ID of the reported item. Flights use their public ID; everything else uses its numeric ID.
                     ///   - reason: Why the content is being reported.
-                    ///   - comment: Optional details for moderators.
+                    ///   - comment: Details for moderators. Required when the reason is `other`.
                     public init(
                         objectType: Operations.createReport.Input.Body.jsonPayload.objectTypePayload,
-                        objectId: Swift.Int,
+                        objectId: Operations.createReport.Input.Body.jsonPayload.objectIdPayload,
                         reason: Operations.createReport.Input.Body.jsonPayload.reasonPayload,
                         comment: Swift.String? = nil
                     ) {
@@ -184319,7 +184373,7 @@ public enum Operations {
                             forKey: .objectType
                         )
                         self.objectId = try container.decode(
-                            Swift.Int.self,
+                            Operations.createReport.Input.Body.jsonPayload.objectIdPayload.self,
                             forKey: .objectId
                         )
                         self.reason = try container.decode(
@@ -184369,6 +184423,10 @@ public enum Operations {
                             case member_review = "member_review"
                             case comment = "comment"
                             case user = "user"
+                            case bottle = "bottle"
+                            case entity = "entity"
+                            case bottle_series = "bottle_series"
+                            case flight = "flight"
                         }
                         /// - Remark: Generated from `#/paths/reports/POST/responses/200/content/json/objectType`.
                         public var objectType: Operations.createReport.Output.Ok.Body.jsonPayload.objectTypePayload
@@ -184381,6 +184439,7 @@ public enum Operations {
                             case hate = "hate"
                             case sexual_content = "sexual_content"
                             case violence = "violence"
+                            case inaccurate = "inaccurate"
                             case other = "other"
                         }
                         /// - Remark: Generated from `#/paths/reports/POST/responses/200/content/json/reason`.

@@ -75154,7 +75154,7 @@
       "post": {
         "operationId": "createReport",
         "summary": "Report content or a member",
-        "description": "Report a tasting, member review, comment, or member to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.",
+        "description": "Report a tasting, member review, comment, member, bottle, entity, series, or flight to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.",
         "tags": [
           "reports"
         ],
@@ -75170,17 +75170,30 @@
                       "tasting",
                       "member_review",
                       "comment",
-                      "user"
+                      "user",
+                      "bottle",
+                      "entity",
+                      "bottle_series",
+                      "flight"
                     ],
                     "type": "string",
-                    "description": "What is being reported: a tasting, a member review, a comment, or a member."
+                    "description": "What is being reported: a tasting, a member review, a comment, a member, a bottle, an entity, a series, or a flight."
                   },
                   "objectId": {
-                    "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991,
-                    "exclusiveMinimum": 0,
-                    "description": "ID of the reported tasting, member review, comment, or member."
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": -9007199254740991,
+                        "maximum": 9007199254740991,
+                        "exclusiveMinimum": 0
+                      },
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 64
+                      }
+                    ],
+                    "description": "ID of the reported item. Flights use their public ID; everything else uses its numeric ID."
                   },
                   "reason": {
                     "enum": [
@@ -75189,6 +75202,7 @@
                       "hate",
                       "sexual_content",
                       "violence",
+                      "inaccurate",
                       "other"
                     ],
                     "type": "string",
@@ -75197,7 +75211,7 @@
                   "comment": {
                     "type": "string",
                     "maxLength": 1000,
-                    "description": "Optional details for moderators."
+                    "description": "Details for moderators. Required when the reason is `other`."
                   }
                 },
                 "required": [
@@ -75227,7 +75241,11 @@
                         "tasting",
                         "member_review",
                         "comment",
-                        "user"
+                        "user",
+                        "bottle",
+                        "entity",
+                        "bottle_series",
+                        "flight"
                       ],
                       "type": "string"
                     },
@@ -75241,6 +75259,7 @@
                         "hate",
                         "sexual_content",
                         "violence",
+                        "inaccurate",
                         "other"
                       ],
                       "type": "string"

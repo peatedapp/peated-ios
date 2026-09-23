@@ -61,7 +61,14 @@ public actor ReportRepository: ReportRepositoryProtocol, BaseRepositoryProtocol 
         case let .user(id, _):
             objectType = .user
             rawId = id
+        case let .bottle(id):
+            objectType = .bottle
+            rawId = id
+        case let .entity(id, _):
+            objectType = .entity
+            rawId = id
         }
+        // The server only accepts a string ID for flights, which the app does not show yet.
         guard let objectId = Int(rawId), objectId > 0 else {
             throw APIError.requestFailed("Invalid report target")
         }
@@ -72,7 +79,7 @@ public actor ReportRepository: ReportRepositoryProtocol, BaseRepositoryProtocol 
         let details = comment?.trimmingCharacters(in: .whitespacesAndNewlines)
         return .init(
             objectType: objectType,
-            objectId: objectId,
+            objectId: .init(value1: objectId),
             reason: apiReason,
             comment: details.flatMap { $0.isEmpty ? nil : $0 }
         )

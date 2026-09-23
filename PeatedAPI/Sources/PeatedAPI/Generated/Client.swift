@@ -25270,7 +25270,7 @@ public struct Client: APIProtocol {
     }
     /// Report content or a member
     ///
-    /// Report a tasting, member review, comment, or member to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
+    /// Report a tasting, member review, comment, member, bottle, entity, series, or flight to moderators. Repeating a report while the earlier one is still open returns that open report. Limited to 20 reports per hour.
     ///
     /// - Remark: HTTP `POST /reports`.
     /// - Remark: Generated from `#/paths//reports/post(createReport)`.
