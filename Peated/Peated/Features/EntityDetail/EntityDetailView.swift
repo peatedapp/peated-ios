@@ -113,6 +113,19 @@ struct EntityDetailView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .navigationChrome()
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if case let .loaded(entity) = model.state {
+                    OverflowMenu(.toolbar, subject: entity.type.displayName.lowercased()) {
+                        ShareLink(item: PeatedWebURL.entity(id: entity.id)) {
+                            Label("Share", systemImage: "square.and.arrow.up")
+                        }
+
+                        ReportMenuItem(target: .entity(id: entity.id, type: entity.type))
+                    }
+                }
+            }
+        }
         .task {
             await model.loadEntity()
         }

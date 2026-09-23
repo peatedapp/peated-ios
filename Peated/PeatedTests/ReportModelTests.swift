@@ -24,9 +24,55 @@ struct ReportModelTests {
     }
 
     @Test
+    func startsWithNoReasonAndCannotSendUntilOneIsChosen() async {
+        let repository = ReportRepositoryStub()
+        let model = ReportModel(target: .bottle(id: "5"), repository: repository)
+
+        #expect(model.reason == nil)
+        #expect(!model.canSend)
+        let sentWithoutReason = await model.send()
+        let reportsWithoutReason = await repository.reports
+        #expect(!sentWithoutReason)
+        #expect(reportsWithoutReason.isEmpty)
+
+        model.reason = .inaccurate
+
+        #expect(model.canSend)
+        let sent = await model.send()
+        let reports = await repository.reports
+        #expect(sent)
+        #expect(reports.count == 1)
+    }
+
+    @Test
+    func somethingElseNeedsDetailsBeforeSending() async {
+        let repository = ReportRepositoryStub()
+        let model = ReportModel(target: .entity(id: "7", type: .distillery), repository: repository)
+        model.reason = .other
+
+        #expect(model.needsDetails)
+        #expect(!model.canSend)
+        model.details = "   "
+        #expect(!model.canSend)
+        let sentWithoutDetails = await model.send()
+        let reportsWithoutDetails = await repository.reports
+        #expect(!sentWithoutDetails)
+        #expect(reportsWithoutDetails.isEmpty)
+
+        model.details = "The founding year is wrong."
+
+        #expect(model.canSend)
+        let sent = await model.send()
+        let reports = await repository.reports
+        #expect(sent)
+        #expect(reports.first?.comment == "The founding year is wrong.")
+    }
+
+    @Test
     func keepsTheSheetOpenWithTheErrorWhenSendingFails() async {
         let repository = ReportRepositoryStub(error: APIError.requestFailed("You can't report your own content."))
         let model = ReportModel(target: .tasting(id: "1"), repository: repository)
+        model.reason = .spam
 
         let sent = await model.send()
 

@@ -37,6 +37,19 @@ struct BottleDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                if let bottle = model.bottle {
+                    OverflowMenu(.toolbar, subject: "bottle") {
+                        ShareLink(item: PeatedWebURL.bottle(id: bottle.id)) {
+                            Label("Share", systemImage: "square.and.arrow.up")
+                        }
+
+                        ReportMenuItem(target: .bottle(id: bottle.id))
+                    }
+                }
+            }
+        }
         .task {
             await model.loadBottle()
         }
