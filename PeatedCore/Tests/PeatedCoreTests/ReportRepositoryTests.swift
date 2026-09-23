@@ -9,7 +9,9 @@ struct ReportRepositoryTests {
         (.tasting(id: "12"), .tasting),
         (.memberReview(id: "12"), .member_review),
         (.comment(id: "12"), .comment),
-        (.user(id: "12", username: "sam"), .user)
+        (.user(id: "12", username: "sam"), .user),
+        (.bottle(id: "12"), .bottle),
+        (.entity(id: "12", type: .distillery), .entity)
     ]
 
     @Test(arguments: targets)
@@ -17,7 +19,8 @@ struct ReportRepositoryTests {
         let body = try ReportRepository.makeReportBody(target: target, reason: .spam, comment: nil)
 
         #expect(body.objectType == objectType)
-        #expect(body.objectId == 12)
+        #expect(body.objectId.value1 == 12)
+        #expect(body.objectId.value2 == nil)
         #expect(body.reason == .spam)
         #expect(body.comment == nil)
     }

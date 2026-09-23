@@ -9,6 +9,12 @@ enum PeatedWebURL {
             .appendingPathComponent(id)
     }
 
+    static func entity(id: String) -> URL {
+        baseURL
+            .appendingPathComponent("entities")
+            .appendingPathComponent(id)
+    }
+
     static func tasting(id: String) -> URL {
         baseURL
             .appendingPathComponent("tastings")

@@ -1,8 +1,9 @@
 import PeatedCore
 import SwiftUI
 
-/// Sheet that reports a tasting, review, comment, or member to moderators.
-/// It closes only after the server accepts the report.
+/// Sheet that reports content or a member to moderators.
+/// Send stays disabled until a reason is chosen, and "Something else"
+/// needs details. It closes only after the server accepts the report.
 struct ReportContentView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var model: ReportModel
@@ -31,9 +32,11 @@ struct ReportContentView: View {
                         }
                     }
 
-                    FormSection("Details (optional)") {
+                    FormSection(model.needsDetails ? "Details" : "Details (optional)") {
                         TextField(
-                            "Anything that helps moderators understand the problem.",
+                            model.needsDetails
+                                ? "Tell moderators what is wrong."
+                                : "Anything that helps moderators understand the problem.",
                             text: $model.details,
                             axis: .vertical
                         )
@@ -64,8 +67,9 @@ struct ReportContentView: View {
                         .frame(maxWidth: .infinity, minHeight: 50)
                         .background(Color.brand)
                         .cornerRadius(12)
+                        .opacity(model.canSend ? 1 : 0.5)
                     }
-                    .disabled(model.isSending)
+                    .disabled(model.isSending || !model.canSend)
                     .accessibilityIdentifier("sendReportButton")
                     .padding(.horizontal)
                 }
@@ -106,6 +110,7 @@ struct ReportContentView: View {
         .buttonStyle(.plain)
         .disabled(model.isSending)
         .accessibilityAddTraits(model.reason == reason ? [.isSelected] : [])
+        .accessibilityIdentifier("reportReason-\(reason.rawValue)")
     }
 
     private func send() {
