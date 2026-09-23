@@ -22,13 +22,21 @@ make bootstrap
 asc version
 ```
 
+On Linux, install the same pinned binary somewhere on your `PATH`:
+
+```bash
+./Scripts/install-asc.sh ~/.local/bin
+```
+
 Automation installs the reviewed `asc` 5.0.0 binary with `@Scripts/install-asc.sh` and verifies its SHA-256 digest before execution.
 
 ## Authenticate locally
 
 Prefer an individual App Store Connect API key for a user whose app access is limited to Peated. A team key applies to every app in the organization.
 
-Store the key in the macOS Keychain:
+An individual key can start and inspect Xcode Cloud runs but cannot touch provisioning: bundle IDs, capabilities, certificates, and profiles answer it with `Authentication credentials are missing or invalid`. Change those in the developer portal or with an Admin team key.
+
+Store the key in the macOS Keychain. On Linux the CLI falls back to `~/.asc/config.json` and refuses a key file that is not mode 600, so copy a key off `/mnt/c` before logging in:
 
 ```bash
 asc telemetry disable
@@ -80,6 +88,16 @@ The command waits up to two hours by default. Override `XCODE_CLOUD_TIMEOUT` onl
 Alternatively, open GitHub Actions, choose `Xcode Cloud`, select **Run workflow**, and enter the reviewed branch or tag. The dispatcher waits for Xcode Cloud and fails when the Apple build fails.
 
 Use a clean build only to diagnose a suspected cache problem. Routine release archives should preserve Xcode Cloud dependency caching.
+
+## Diagnose a failed run
+
+The GitHub dispatcher and `make xcode-cloud-run` only report the build run ID and `FAILED`. The logs stay in App Store Connect. Fetch them with the run ID:
+
+```bash
+asc xcode-cloud doctor --run-id '<build-run-id>' --output markdown --save-logs ./xcode-cloud-logs
+```
+
+The report lists each action and its issues. For an `ExportArchiveStep` failure, unzip the saved log bundle and read `app-store-export-archive-logs/xcodebuild-export-archive.log`, which names the signing problem. Keep `xcode-cloud-logs/` out of the repository.
 
 ## GitHub dispatcher configuration
 
