@@ -37,6 +37,8 @@ The client was regenerated a third time on 2026-09-21 against backend commit `d9
 
 The client was regenerated a fourth time on 2026-09-22 against backend commit `0d320d66de7b83bd3e44a38752a49ea6a1f7ce4f`. That refresh added member reports (`POST /reports`), blocking (`POST` and `DELETE /users/{user}/block`, `GET /users/me/blocks`), the `blocked`, `suspendedAt`, and `suspensionReason` user fields, and an `ACCOUNT_SUSPENDED` 403 body on every authenticated route. The app now offers Report on tastings, member reviews, comments, and profiles, Block and Unblock on profiles, and a Blocked Members list in Settings. The server keeps blocked members' content visible, so `BlockList` in `PeatedCore` hides it on the device.
 
+The client was regenerated a fifth time on 2026-09-22 against backend commit `23bdc1d41e10c277bd7fe524942aeea53d852d5d`. That refresh let `POST /reports` take bottles, entities, bottle series, and flights, added the `inaccurate` reason, and made `objectId` accept a string because flights are reported by public ID. The app now offers Report on bottle and entity pages, no longer preselects a reason, and requires details for "Something else". The app has no series or flight screens, so those two targets have no mobile surface yet.
+
 The first update also moved tastings and saved offline actions to the five new ratings, added the current bottle details and rating summaries, updated entity, search, and library data, and added a database update for saved tasting ratings. The old numeric rating column remains in existing databases so upgrades stay safe, but the app no longer reads or writes it.
 
 ## Design changes
