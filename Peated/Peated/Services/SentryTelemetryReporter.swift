@@ -40,8 +40,8 @@ struct SentryTelemetryReporter: TelemetryReporter {
                 $0.lifecycle = .trace
             }
 
-            // Structured logs receive the allowlisted fields from PeatedCore.Logger.
-            options.experimental.enableLogs = true
+            // Structured logs from PeatedCore.Logger go through SentrySDK.logger,
+            // which Sentry 9 no longer gates behind an option.
 
             // Screenshots, view hierarchies, and session replay can contain
             // private tasting, account, and photo data. Keep them disabled.
@@ -90,7 +90,9 @@ struct SentryTelemetryReporter: TelemetryReporter {
     func addBreadcrumb(_ breadcrumb: TelemetryBreadcrumb) {
         let crumb = Breadcrumb(level: breadcrumb.level.sentryLevel, category: breadcrumb.category)
         crumb.message = breadcrumb.message
-        crumb.data = breadcrumb.data.mapValues(\.sentryValue)
+        for (key, value) in breadcrumb.data {
+            crumb.setData(value: value.sentryValue, key: key)
+        }
         SentrySDK.addBreadcrumb(crumb)
     }
 

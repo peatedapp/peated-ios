@@ -25,7 +25,7 @@ let package = Package(
         // Authentication
         .package(
             url: "https://github.com/google/GoogleSignIn-iOS",
-            from: "8.0.0"
+            from: "10.0.0"
         ),
 
         // Utilities
