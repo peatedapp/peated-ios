@@ -5,9 +5,8 @@ set -euo pipefail
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPOSITORY_ROOT"
 
-SWIFTFORMAT_IMAGE="${SWIFTFORMAT_IMAGE:-ghcr.io/nicklockwood/swiftformat:0.63.0@sha256:cb50a33496b4f5123b99241437f24f154a68085398cfda1412ed3b6bab9c02ec}"
-SWIFTLINT_IMAGE="${SWIFTLINT_IMAGE:-ghcr.io/realm/swiftlint:0.65.1@sha256:f47e083201e47a136cda5ae847595bfe00226c444ca226fa74fa5dc648a9b057}"
-SHELLCHECK_IMAGE="${SHELLCHECK_IMAGE:-koalaman/shellcheck:v0.11.0}"
+# shellcheck source=Scripts/lint-common.sh
+. "$REPOSITORY_ROOT/Scripts/lint-common.sh"
 
 command -v docker >/dev/null 2>&1 || {
     echo 'error: docker is required for containerized linting' >&2
@@ -20,17 +19,6 @@ if [ -n "${LINT_BASE_REF:-}" ]; then
         exit 1
     fi
 fi
-
-changed_files() {
-    local pattern="$1"
-
-    if [ -n "${LINT_BASE_REF:-}" ]; then
-        git diff --name-only --diff-filter=ACMR -z "$LINT_BASE_REF...HEAD" -- "$pattern"
-    else
-        git diff --name-only --diff-filter=ACMR -z HEAD -- "$pattern"
-        git ls-files --others --exclude-standard -z -- "$pattern"
-    fi
-}
 
 swift_files=()
 while IFS= read -r -d '' file; do

@@ -13,7 +13,7 @@ Status: active
 - App Store Connect CLI: 5.0.0 in automation; Homebrew provides local updates
 - actionlint: 1.7.12, pinned by container digest in CI
 
-The Makefile and CI workflow are the executable sources of truth for these versions. `make doctor` reports the selected local Xcode and warns when it differs.
+The Makefile and CI workflow are the executable sources of truth for these versions. `Scripts/lint-common.sh` owns the SwiftFormat, SwiftLint, and ShellCheck images; the Makefile, the lint scripts, and the pre-commit hook read it. `make doctor` reports the selected local Xcode and warns when it differs.
 
 ## Command entry point
 
@@ -60,6 +60,8 @@ Lint files changed from `HEAD` without modifying them:
 make lint
 ```
 
+Homebrew installs the latest SwiftFormat and SwiftLint, which can disagree with CI. `make lint` uses the native tools only when `swiftformat --version` and `swiftlint version` match the pinned image tags. Otherwise it runs `make lint-docker`, or fails with the required versions when Docker is not running. Do not upgrade the pinned images to match Homebrew; update them deliberately in `Scripts/lint-common.sh` and fix any new findings in the same change.
+
 Set `LINT_BASE_REF` to compare with another commit or branch. CI uses the pull-request base SHA.
 
 Use `make lint-all` for repository-wide native lint and formatting checks. Use `make format` only for an intentional formatting change.
@@ -80,7 +82,9 @@ Review the baseline diff. Routine cleanup should remove entries; additions expan
 make install-hooks
 ```
 
-Before each commit, the hook runs `make lint` when `swiftlint` and `swiftformat` are installed. Otherwise it runs `make lint-docker` when Docker is running. With neither, it prints a warning and lets the commit through. The hook only checks files; it never rewrites or re-stages them. It checks every file changed from `HEAD`, plus untracked files, as they exist on disk, so unstaged edits count too.
+Before each commit, the hook runs `make lint` when native `swiftformat` and `swiftlint` match the pinned versions. Otherwise it runs `make lint-docker` when Docker is running. With neither, it prints a warning and lets the commit through. The hook only checks files; it never rewrites or re-stages them. It checks every file changed from `HEAD`, plus untracked files, as they exist on disk, so unstaged edits count too.
+
+During a merge, the hook skips files that match the merged branch. Those files already passed CI there. It still checks this branch's changes, files changed on both sides, and conflict resolutions.
 
 Skip it for one commit with `git commit --no-verify`. CI still runs the same checks.
 
