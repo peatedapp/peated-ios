@@ -18,7 +18,7 @@ SWIFTFORMAT_IMAGE ?= ghcr.io/nicklockwood/swiftformat:0.63.0@sha256:cb50a33496b4
 SWIFTLINT_IMAGE ?= ghcr.io/realm/swiftlint:0.65.1@sha256:f47e083201e47a136cda5ae847595bfe00226c444ca226fa74fa5dc648a9b057
 ACTIONLINT_IMAGE ?= rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
 
-.PHONY: help doctor bootstrap check lint lint-docker lint-all lint-swift \
+.PHONY: help doctor bootstrap install-hooks check lint lint-docker lint-all lint-swift \
 	lint-actions lint-actions-docker \
 	lint-swift-docker lint-shell update-swiftlint-baseline format format-docker \
 	format-check format-check-docker \
@@ -30,7 +30,8 @@ help:
 		'Peated development commands' \
 		'' \
 		'  make doctor        Show available toolchain capabilities' \
-		'  make bootstrap     Install macOS command-line tools with Homebrew' \
+		'  make bootstrap     Install macOS command-line tools and git hooks' \
+		'  make install-hooks Lint changed files before each commit' \
 		'  make check         Run portable repository checks' \
 		'  make lint          Lint files changed from HEAD' \
 		'  make lint-docker   Lint changed files with pinned Linux containers' \
@@ -66,6 +67,10 @@ bootstrap:
 		exit 1; \
 	}
 	brew bundle --file Brewfile
+	@$(MAKE) --no-print-directory install-hooks
+
+install-hooks:
+	git config core.hooksPath .githooks
 
 check:
 	@./Scripts/check-repository.sh
