@@ -208637,22 +208637,28 @@ public enum Operations {
                             public struct conflictsPayloadPayload: Codable, Hashable, Sendable {
                                 /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/200/content/json/imageEvidence/conflictsPayload/field`.
                                 public var field: Swift.String
+                                /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/200/content/json/imageEvidence/conflictsPayload/values`.
+                                public var values: [OpenAPIRuntime.OpenAPIValueContainer]
                                 /// - Remark: Generated from `#/paths/tastings/photo-identification/POST/responses/200/content/json/imageEvidence/conflictsPayload/reason`.
                                 public var reason: Swift.String
                                 /// Creates a new `conflictsPayloadPayload`.
                                 ///
                                 /// - Parameters:
                                 ///   - field:
+                                ///   - values:
                                 ///   - reason:
                                 public init(
                                     field: Swift.String,
+                                    values: [OpenAPIRuntime.OpenAPIValueContainer],
                                     reason: Swift.String
                                 ) {
                                     self.field = field
+                                    self.values = values
                                     self.reason = reason
                                 }
                                 public enum CodingKeys: String, CodingKey {
                                     case field
+                                    case values
                                     case reason
                                 }
                                 public init(from decoder: any Swift.Decoder) throws {
@@ -208661,12 +208667,17 @@ public enum Operations {
                                         Swift.String.self,
                                         forKey: .field
                                     )
+                                    self.values = try container.decode(
+                                        [OpenAPIRuntime.OpenAPIValueContainer].self,
+                                        forKey: .values
+                                    )
                                     self.reason = try container.decode(
                                         Swift.String.self,
                                         forKey: .reason
                                     )
                                     try decoder.ensureNoAdditionalProperties(knownKeys: [
                                         "field",
+                                        "values",
                                         "reason"
                                     ])
                                 }

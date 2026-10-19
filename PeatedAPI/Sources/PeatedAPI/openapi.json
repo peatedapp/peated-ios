@@ -90077,22 +90077,7 @@
                               "values": {
                                 "type": "array",
                                 "minItems": 2,
-                                "items": {
-                                  "anyOf": [
-                                    {
-                                      "type": "string"
-                                    },
-                                    {
-                                      "type": "number"
-                                    },
-                                    {
-                                      "type": "boolean"
-                                    },
-                                    {
-                                      "type": "null"
-                                    }
-                                  ]
-                                }
+                                "items": {}
                               },
                               "reason": {
                                 "type": "string",
