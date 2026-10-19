@@ -5,8 +5,8 @@ import XCTest
 struct LoginScreen {
     let app: XCUIApplication
 
-    var signInButton: XCUIElement {
-        app.buttons["Sign In"]
+    var continueWithEmailButton: XCUIElement {
+        app.buttons["Continue with email"]
     }
 
     var signUpLink: XCUIElement {
@@ -16,8 +16,21 @@ struct LoginScreen {
     @discardableResult
     func waitUntilShown(file: StaticString = #filePath, line: UInt = #line) -> LoginScreen {
         // The first screen waits on the session check, which is slow on a cold simulator.
-        signInButton.expectToAppear(timeout: 20, "Expected the sign-in screen", file: file, line: line)
+        continueWithEmailButton.expectToAppear(timeout: 20, "Expected the sign-in screen", file: file, line: line)
         return self
+    }
+
+    var emailSignInButton: XCUIElement {
+        app.buttons["Sign in"]
+    }
+
+    var otherWaysButton: XCUIElement {
+        app.buttons["Other ways to sign in"]
+    }
+
+    func openEmailSignIn() {
+        continueWithEmailButton.expectToAppear().tap()
+        emailSignInButton.expectToAppear("Expected the email sign-in step")
     }
 
     func openSignUp() -> SignUpScreen {

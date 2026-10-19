@@ -25,7 +25,7 @@ struct SignUpView: View {
                     headerSection
                         .padding(.top, 60)
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: 6) {
                         appleSignUpButton
                         googleSignUpButton
                     }
@@ -181,7 +181,7 @@ struct SignUpView: View {
     }
 
     private var appleSignUpButton: some View {
-        AppleSignInButton(label: .continue) { result in
+        AppleSignInButton { result in
             switch result {
             case let .success(credential):
                 handleAppleSignUp(credential)
@@ -194,25 +194,16 @@ struct SignUpView: View {
 
     private var googleSignUpButton: some View {
         Button(action: handleGoogleSignUp) {
-            HStack(spacing: 12) {
-                Image(systemName: "g.circle.fill")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.onBrand)
-                if isLoading {
-                    ProgressView().progressViewStyle(.circular)
-                        .tint(.onBrand)
-                } else {
-                    Text("Continue with Google")
-                        .font(.peatedInteractive)
-                        .foregroundColor(.onBrand)
-                }
+            Label {
+                Text("Continue with Google")
+            } icon: {
+                Image("GoogleLogo")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 17, height: 17)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(isLoading ? Color.brand.opacity(0.6) : Color.brand)
-            .cornerRadius(12)
-            .animation(.easeInOut(duration: 0.1), value: isLoading)
         }
+        .buttonStyle(.authTonal)
         .disabled(isLoading)
     }
 

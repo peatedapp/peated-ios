@@ -2,14 +2,23 @@ import GoogleSignIn
 import PeatedCore
 import SwiftUI
 
-/// Simple login view that directly updates app state
+/// The signed-out landing screen. Mirrors the peated.com sign-in panel: a list
+/// of sign-in methods first, and the email form one step in.
 struct LoginViewSimple: View {
     let onLoginSuccess: (User) -> Void
 
+    private enum Step {
+        case methods
+        case email
+    }
+
+    @State private var step = Step.methods
     @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
     @State private var error: String?
+    @FocusState private var isEmailFocused: Bool
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let authManager = AuthenticationManager.shared
 
@@ -19,177 +28,220 @@ struct LoginViewSimple: View {
                 .ignoresSafeArea()
 
             ScrollView {
-                VStack(spacing: 24) {
-                    // Logo and header
-                    headerSection
-                        .padding(.top, 60)
+                VStack(alignment: .leading, spacing: 0) {
+                    PeatedLogo(height: 32)
+                        .accessibilityLabel("Peated")
+                        .padding(.bottom, DesignSystem.Spacing.xxxLarge)
 
-                    // Federated sign-in
-                    VStack(spacing: 12) {
-                        appleSignInButton
-                        googleSignInButton
+                    switch step {
+                    case .methods:
+                        methodsPanel
+                    case .email:
+                        emailPanel
                     }
-                    .padding(.horizontal)
 
-                    // Divider
-                    HStack {
-                        Rectangle()
-                            .fill(Color.border)
-                            .frame(height: 1)
-
-                        Text("OR")
-                            .font(.peatedMetadata)
-                            .foregroundColor(.textMuted)
-                            .padding(.horizontal, 16)
-
-                        Rectangle()
-                            .fill(Color.border)
-                            .frame(height: 1)
-                    }
-                    .padding(.horizontal)
-
-                    loginForm
-                        .padding(.horizontal)
-
-                    // Login button
-                    loginButton
-                        .padding(.horizontal)
-                        .padding(.top, 8)
-
-                    // Sign up link
-                    signUpLink
-                        .padding(.top, 16)
-
-                    Spacer(minLength: 40)
+                    accountLinks
                 }
+                .padding(.horizontal, DesignSystem.Spacing.xLarge)
+                .padding(.top, DesignSystem.Spacing.xxLarge)
+                .padding(.bottom, DesignSystem.Spacing.xxxLarge)
+                .frame(maxWidth: 520, alignment: .leading)
+                .frame(maxWidth: .infinity)
             }
             .scrollDismissesKeyboard(.interactively)
         }
         .navigationBarHidden(true)
-        .alert("Sign In Failed", isPresented: Binding(get: { error != nil }, set: {
-            if !$0 {
-                error = nil
-            }
-        })) { Button("OK") { error = nil } } message: { Text(error ?? "An error occurred") }
         .overlay(loadingOverlay)
-    }
-
-    // MARK: - Header Section
-
-    private var headerSection: some View {
-        VStack(spacing: 24) {
-            PeatedLogo(height: 60)
-                .accessibilityLabel("Peated logo")
-
-            VStack(spacing: 8) {
-                Text("Welcome back")
-                    .font(.peatedPageTitleCompact)
-                    .tracking(DesignSystem.Tracking.pageTitleCompact)
-                    .fontWeight(.bold)
-                    .foregroundColor(.text)
-
-                Text("Track and share your whisky journey")
-                    .font(.peatedProse)
-                    .foregroundColor(.textSecondary)
+        .onChange(of: error) { _, message in
+            if let message {
+                AccessibilityNotification.Announcement(message).post()
             }
         }
     }
 
-    // MARK: - Apple Sign In
+    // MARK: - Panels
 
-    private var appleSignInButton: some View {
-        AppleSignInButton(label: .continue) { result in
-            switch result {
-            case let .success(credential):
-                handleAppleSignIn(credential)
-            case let .failure(error):
-                self.error = error.localizedDescription
+    private var methodsPanel: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            panelHeader(title: "Sign in", description: "Apple and Google are fastest. Email works everywhere.")
+
+            errorNotice
+
+            VStack(spacing: 6) {
+                AppleSignInButton { result in
+                    switch result {
+                    case let .success(credential):
+                        handleAppleSignIn(credential)
+                    case let .failure(error):
+                        self.error = error.localizedDescription
+                    }
+                }
+
+                Button(action: handleGoogleSignIn) {
+                    Label {
+                        Text("Continue with Google")
+                    } icon: {
+                        Image("GoogleLogo")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 17, height: 17)
+                    }
+                }
+                .buttonStyle(.authTonal)
+
+                Button {
+                    error = nil
+                    step = .email
+                } label: {
+                    Label("Continue with email", systemImage: "envelope")
+                }
+                .buttonStyle(.authTonal)
             }
+            .disabled(isLoading)
         }
-        .disabled(isLoading)
     }
 
-    // MARK: - Google Sign In
-
-    private var googleSignInButton: some View {
-        Button(action: handleGoogleSignIn) {
-            HStack(spacing: 12) {
-                Image(systemName: "g.circle.fill")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(.onBrand)
-                Text("Continue with Google")
-                    .font(.peatedInteractive)
-                    .foregroundColor(.onBrand)
+    private var emailPanel: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Button {
+                error = nil
+                step = .methods
+            } label: {
+                Text("← Other ways to sign in")
+                    .font(.peatedInteractiveSmall)
+                    .foregroundColor(.brandEmphasis)
+                    .frame(minHeight: DesignSystem.ControlHeight.standard)
+                    .contentShape(Rectangle())
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
-            .background(Color.brand)
-            .cornerRadius(12)
+            .buttonStyle(.plain)
+            .accessibilityLabel("Other ways to sign in")
+            .padding(.bottom, DesignSystem.Spacing.small)
+
+            panelHeader(title: "Sign in with email", description: "Use the email and password for your account.")
+
+            errorNotice
+
+            VStack(spacing: DesignSystem.Spacing.medium) {
+                TextInput(
+                    label: "Email",
+                    placeholder: "you@example.com",
+                    text: $email,
+                    keyboard: .emailAddress,
+                    contentType: .username,
+                    submitLabel: .next,
+                    autocorrection: false,
+                    capitalization: .never,
+                    isFocused: $isEmailFocused
+                )
+
+                PasswordInput(
+                    label: "Password",
+                    placeholder: "Password",
+                    text: $password,
+                    submitLabel: .go,
+                    onSubmit: { handleLogin() }
+                )
+            }
+            .padding(.bottom, DesignSystem.Spacing.xLarge)
+
+            // Stays enabled so it keeps full contrast. Missing fields get an inline error instead.
+            Button("Sign in", action: handleLogin)
+                .buttonStyle(.authAccent)
         }
-        .disabled(isLoading)
+        .onAppear { isEmailFocused = true }
     }
 
-    // MARK: - Login Form
+    private func panelHeader(title: String, description: String) -> some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+            Text(title)
+                .font(.peatedPageTitleCompact)
+                .tracking(DesignSystem.Tracking.pageTitleCompact)
+                .fontWeight(.bold)
+                .foregroundColor(.text)
+                .accessibilityAddTraits(.isHeader)
 
-    private var loginForm: some View {
-        VStack(spacing: 16) {
-            TextInput(
-                label: "Email",
-                placeholder: "Email",
-                text: $email,
-                keyboard: .emailAddress,
-                submitLabel: .next,
-                autocorrection: false,
-                capitalization: .never
-            )
-
-            PasswordInput(
-                label: "Password",
-                placeholder: "Password",
-                text: $password,
-                submitLabel: .go,
-                onSubmit: { handleLogin() }
-            )
-        }
-    }
-
-    // MARK: - Login Button
-
-    private var loginButton: some View {
-        Button(action: handleLogin) {
-            Text("Sign In")
-                .font(.peatedInteractive)
-                .foregroundColor(.onBrand)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(Color.brand)
-                .cornerRadius(12)
-        }
-        .disabled(email.isEmpty || password.isEmpty || isLoading)
-    }
-
-    // MARK: - Sign Up Link
-
-    private var signUpLink: some View {
-        HStack {
-            Text("Don't have an account?")
-                .font(.peatedProse)
+            Text(description)
+                .font(.peatedBody)
                 .foregroundColor(.textSecondary)
+        }
+        .padding(.bottom, DesignSystem.Spacing.xLarge)
+    }
+
+    @ViewBuilder
+    private var errorNotice: some View {
+        if let error {
+            Text(error)
+                .font(.peatedBody)
+                .fontWeight(.semibold)
+                .foregroundColor(.brandEmphasis)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(DesignSystem.Spacing.large)
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+                        .strokeBorder(Color.brandTint, lineWidth: DesignSystem.Border.thin)
+                )
+                .padding(.bottom, DesignSystem.Spacing.medium)
+        }
+    }
+
+    // MARK: - Account Links
+
+    private var accountLinks: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Rectangle()
+                .fill(Color.border)
+                .frame(height: DesignSystem.Border.thin)
+                .padding(.vertical, 26)
+
+            // One layout that changes axis keeps each link the same element as the text size changes.
+            let layout = stacksAccountLinks
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 0))
+                : AnyLayout(HStackLayout(spacing: DesignSystem.Spacing.small))
+            layout {
+                accountLinkItems(separated: !stacksAccountLinks)
+            }
+            .font(.peatedMetadata)
+            .foregroundColor(.textMuted)
+        }
+    }
+
+    /// The footer fits on one line at the default text sizes.
+    private var stacksAccountLinks: Bool {
+        dynamicTypeSize > .large
+    }
+
+    @ViewBuilder
+    private func accountLinkItems(separated: Bool) -> some View {
+        HStack(spacing: DesignSystem.Spacing.small) {
+            Text("No account yet?")
 
             NavigationLink(
                 destination: SignUpView { user in
                     onLoginSuccess(user)
                 }
             ) {
-                Text("Sign up")
-                    .font(.peatedInteractive)
-                    .foregroundColor(.brand)
-                    // Keep the bare text link at the 44-point minimum hit target.
-                    .frame(minHeight: DesignSystem.ControlHeight.standard)
-                    .contentShape(Rectangle())
+                accountLinkLabel("Create one")
             }
             .accessibilityIdentifier(AccessibilityID.Auth.signUpLink)
         }
+
+        if separated {
+            Text("·")
+                .accessibilityHidden(true)
+        }
+
+        Link(destination: PeatedWebURL.recoverAccount) {
+            accountLinkLabel("Recover your account")
+        }
+    }
+
+    private func accountLinkLabel(_ title: String) -> some View {
+        Text(title)
+            .font(.peatedInteractiveSmall)
+            .foregroundColor(.brandEmphasis)
+            // Keep the bare text link at the 44-point minimum hit target.
+            .frame(minHeight: DesignSystem.ControlHeight.standard)
+            .contentShape(Rectangle())
     }
 
     // MARK: - Loading Overlay
@@ -211,7 +263,10 @@ struct LoginViewSimple: View {
 
     private func handleLogin() {
         let trimmedEmail = email.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedEmail.isEmpty, !password.isEmpty else { return }
+        guard !trimmedEmail.isEmpty, !password.isEmpty else {
+            error = "Enter your email and password."
+            return
+        }
 
         Task {
             isLoading = true

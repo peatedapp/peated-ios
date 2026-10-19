@@ -19,4 +19,16 @@ final class LaunchUITests: XCTestCase {
 
         try app.auditAccessibility()
     }
+
+    @MainActor
+    func testEmailSignInStepShowsPasswordFormAndReturns() throws {
+        let app = AppLaunch.launch(session: .signedOut, stubs: [])
+        let login = LoginScreen(app: app).waitUntilShown()
+
+        login.openEmailSignIn()
+        try app.auditAccessibility()
+
+        login.otherWaysButton.tap()
+        login.continueWithEmailButton.expectToAppear("Expected the sign-in methods")
+    }
 }

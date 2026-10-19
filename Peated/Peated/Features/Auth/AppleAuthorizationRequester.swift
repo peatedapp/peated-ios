@@ -1,8 +1,7 @@
 import AuthenticationServices
 import UIKit
 
-/// Runs one Sign in with Apple authorization without the system button, for
-/// flows where the authorization is a confirmation step rather than a sign-in.
+/// Runs one Sign in with Apple authorization without the system button.
 ///
 /// The caller keeps the requester alive until `request()` returns, because the
 /// authorization controller only holds its delegate weakly.
@@ -12,13 +11,19 @@ final class AppleAuthorizationRequester: NSObject {
     private var continuation: CheckedContinuation<AppleSignInCredential?, Error>?
     /// Captured on the main actor in `request()`; the anchor callback is nonisolated but runs on the main thread.
     private nonisolated(unsafe) var anchor: ASPresentationAnchor?
+    private let scopes: [ASAuthorization.Scope]
+
+    /// A sign-in asks for the name and email. A confirmation passes no scopes,
+    /// because it needs only the authorization code.
+    init(scopes: [ASAuthorization.Scope] = []) {
+        self.scopes = scopes
+    }
 
     /// Presents the Apple sheet and returns the credential, or nil when the user cancels.
     func request() async throws -> AppleSignInCredential? {
         precondition(continuation == nil, "An Apple authorization is already in progress")
         let request = ASAuthorizationAppleIDProvider().createRequest()
-        // A confirmation needs only the authorization code; Apple sent the name and email at sign-up.
-        request.requestedScopes = []
+        request.requestedScopes = scopes
         let controller = ASAuthorizationController(authorizationRequests: [request])
         controller.delegate = self
         controller.presentationContextProvider = self
