@@ -39,7 +39,7 @@ let package = Package(
         // Swift Syntax for Macros
         .package(
             url: "https://github.com/swiftlang/swift-syntax",
-            from: "601.0.0"
+            from: "604.0.0"
         ),
 
         // Local PeatedAPI package
