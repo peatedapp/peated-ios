@@ -452,10 +452,10 @@
           "maturation": {
             "type": "string",
             "minLength": 1,
-            "maxLength": 1000,
+            "maxLength": 120,
             "nullable": true,
             "default": null,
-            "description": "Producer-stated cask or maturation details"
+            "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
           },
           "caskNumber": {
             "type": "string",
@@ -2129,10 +2129,10 @@
               "maturation": {
                 "type": "string",
                 "minLength": 1,
-                "maxLength": 1000,
+                "maxLength": 120,
                 "nullable": true,
                 "default": null,
-                "description": "Producer-stated cask or maturation details"
+                "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
               },
               "caskNumber": {
                 "type": "string",
@@ -2787,11 +2787,17 @@
             "readOnly": true,
             "description": "Whether the current user has toasted this tasting"
           },
+          "tastedAt": {
+            "type": "string",
+            "format": "date-time",
+            "readOnly": true,
+            "description": "When the member had the dram"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time",
             "readOnly": true,
-            "description": "Timestamp when the tasting was created"
+            "description": "When the tasting was posted. Feeds sort by this time"
           },
           "createdBy": {
             "$ref": "#/components/schemas/User",
@@ -2805,12 +2811,77 @@
           "awards",
           "comments",
           "toasts",
+          "tastedAt",
           "createdAt",
           "createdBy"
         ]
       },
       "Notification": {
         "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "description": "Unique identifier for the notification"
+              },
+              "objectId": {
+                "type": "number",
+                "description": "ID of the object this notification refers to"
+              },
+              "fromUser": {
+                "$ref": "#/components/schemas/User",
+                "nullable": true,
+                "description": "User who triggered this notification"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp when the notification was created"
+              },
+              "read": {
+                "type": "boolean",
+                "description": "Whether the notification has been read"
+              },
+              "type": {
+                "const": "auction_available"
+              },
+              "ref": {
+                "type": "object",
+                "properties": {
+                  "lotId": {
+                    "type": "number"
+                  },
+                  "bottle": {
+                    "$ref": "#/components/schemas/Bottle"
+                  },
+                  "sourceName": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string",
+                    "format": "uri"
+                  }
+                },
+                "required": [
+                  "lotId",
+                  "bottle",
+                  "sourceName",
+                  "url"
+                ],
+                "nullable": true
+              }
+            },
+            "required": [
+              "id",
+              "objectId",
+              "fromUser",
+              "createdAt",
+              "read",
+              "type",
+              "ref"
+            ]
+          },
           {
             "type": "object",
             "properties": {
@@ -3608,10 +3679,10 @@
               "maturation": {
                 "type": "string",
                 "minLength": 1,
-                "maxLength": 1000,
+                "maxLength": 120,
                 "nullable": true,
                 "default": null,
-                "description": "Producer-stated cask or maturation details"
+                "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
               },
               "caskNumber": {
                 "type": "string",
@@ -5368,10 +5439,10 @@
               "maturation": {
                 "type": "string",
                 "minLength": 1,
-                "maxLength": 1000,
+                "maxLength": 120,
                 "nullable": true,
                 "default": null,
-                "description": "Producer-stated cask or maturation details"
+                "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
               },
               "caskNumber": {
                 "type": "string",
@@ -7787,6 +7858,1871 @@
         }
       }
     },
+    "/bottles/{bottle}/auctions": {
+      "get": {
+        "operationId": "listBottleAuctions",
+        "summary": "List bottle auctions",
+        "description": "List auction availability and the latest reported result for each lot.",
+        "tags": [
+          "auctions"
+        ],
+        "parameters": [
+          {
+            "name": "bottle",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0,
+              "default": 1
+            },
+            "allowEmptyValue": true,
+            "allowReserved": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "allowEmptyValue": true,
+            "allowReserved": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "bottleId": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "auction": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "url": {
+                                "type": "string",
+                                "format": "uri"
+                              },
+                              "site": {
+                                "type": "object",
+                                "properties": {
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "type": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "name",
+                                  "type"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "url",
+                              "site"
+                            ]
+                          },
+                          "lotNumber": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "url": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "volume": {
+                            "type": "number",
+                            "nullable": true
+                          },
+                          "condition": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "state": {
+                            "enum": [
+                              "upcoming",
+                              "live",
+                              "aftersale",
+                              "closed",
+                              "withdrawn",
+                              "unknown"
+                            ],
+                            "type": "string"
+                          },
+                          "availability": {
+                            "enum": [
+                              "live",
+                              "aftersale",
+                              "upcoming",
+                              "unavailable",
+                              "unknown"
+                            ],
+                            "type": "string"
+                          },
+                          "endsAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "currentBid": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991,
+                            "exclusiveMinimum": 0,
+                            "nullable": true
+                          },
+                          "bidCurrency": {
+                            "enum": [
+                              "gbp",
+                              "usd",
+                              "eur"
+                            ],
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "lastCheckedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "result": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "number"
+                              },
+                              "outcome": {
+                                "enum": [
+                                  "sold",
+                                  "unsold",
+                                  "cancelled",
+                                  "unknown"
+                                ],
+                                "type": "string"
+                              },
+                              "amount": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991,
+                                "exclusiveMinimum": 0,
+                                "nullable": true
+                              },
+                              "currency": {
+                                "enum": [
+                                  "gbp",
+                                  "usd",
+                                  "eur"
+                                ],
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "priceKind": {
+                                "enum": [
+                                  "hammer",
+                                  "aftersale"
+                                ],
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "soldAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              },
+                              "priceNote": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "observedAt": {
+                                "type": "string",
+                                "format": "date-time"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "outcome",
+                              "amount",
+                              "currency",
+                              "priceKind",
+                              "soldAt",
+                              "priceNote",
+                              "observedAt"
+                            ],
+                            "nullable": true
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "bottleId",
+                          "auction",
+                          "lotNumber",
+                          "name",
+                          "url",
+                          "volume",
+                          "condition",
+                          "state",
+                          "availability",
+                          "endsAt",
+                          "currentBid",
+                          "bidCurrency",
+                          "lastCheckedAt",
+                          "result"
+                        ]
+                      }
+                    },
+                    "rel": {
+                      "$ref": "#/components/schemas/Cursor"
+                    }
+                  },
+                  "required": [
+                    "results",
+                    "rel"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "BAD_REQUEST"
+                        },
+                        "status": {
+                          "const": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Bad Request."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNAUTHORIZED"
+                        },
+                        "status": {
+                          "const": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "FORBIDDEN"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Forbidden."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "ACCOUNT_SUSPENDED"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Your account is suspended. You can only delete your account or cancel a pending deletion."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "NOT_FOUND"
+                        },
+                        "status": {
+                          "const": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "The resource was not found."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "CONFLICT"
+                        },
+                        "status": {
+                          "const": 409
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Conflict."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "PAYLOAD_TOO_LARGE"
+                        },
+                        "status": {
+                          "const": 413
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Payload too large."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "INTERNAL_SERVER_ERROR"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Internal server error."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "METHOD_NOT_ALLOWED"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Method not allowed."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNPROCESSABLE_ENTITY"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unprocessable entity."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bottles/{bottle}/auction-watch": {
+      "get": {
+        "operationId": "getAuctionWatch",
+        "summary": "Get your auction watch",
+        "description": "Get whether the signed-in user is watching a bottle for new auction alerts.",
+        "tags": [
+          "auctions"
+        ],
+        "parameters": [
+          {
+            "name": "bottle",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "watching": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "watching"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "BAD_REQUEST"
+                        },
+                        "status": {
+                          "const": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Bad Request."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNAUTHORIZED"
+                        },
+                        "status": {
+                          "const": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "FORBIDDEN"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Forbidden."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "ACCOUNT_SUSPENDED"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Your account is suspended. You can only delete your account or cancel a pending deletion."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "NOT_FOUND"
+                        },
+                        "status": {
+                          "const": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "The resource was not found."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "CONFLICT"
+                        },
+                        "status": {
+                          "const": 409
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Conflict."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "PAYLOAD_TOO_LARGE"
+                        },
+                        "status": {
+                          "const": 413
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Payload too large."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "INTERNAL_SERVER_ERROR"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Internal server error."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "METHOD_NOT_ALLOWED"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Method not allowed."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNPROCESSABLE_ENTITY"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unprocessable entity."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "updateAuctionWatch",
+        "summary": "Update your auction watch",
+        "description": "Start or stop watching a bottle for new auction alerts for the signed-in user.",
+        "tags": [
+          "auctions"
+        ],
+        "parameters": [
+          {
+            "name": "bottle",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": -9007199254740991,
+              "maximum": 9007199254740991,
+              "exclusiveMinimum": 0
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "watching": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "watching"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "watching": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "watching"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "BAD_REQUEST"
+                        },
+                        "status": {
+                          "const": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Bad Request."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNAUTHORIZED"
+                        },
+                        "status": {
+                          "const": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "FORBIDDEN"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Forbidden."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "ACCOUNT_SUSPENDED"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Your account is suspended. You can only delete your account or cancel a pending deletion."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "NOT_FOUND"
+                        },
+                        "status": {
+                          "const": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "The resource was not found."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "CONFLICT"
+                        },
+                        "status": {
+                          "const": 409
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Conflict."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "PAYLOAD_TOO_LARGE"
+                        },
+                        "status": {
+                          "const": 413
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Payload too large."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "INTERNAL_SERVER_ERROR"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Internal server error."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "METHOD_NOT_ALLOWED"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Method not allowed."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNPROCESSABLE_ENTITY"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unprocessable entity."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "operationId": "login",
@@ -8947,6 +10883,100 @@
                     "description": "Password for the new account. Required when not registering with a passkey."
                   },
                   "passkeyResponse": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "rawId": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "response": {
+                        "type": "object",
+                        "properties": {
+                          "clientDataJSON": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "attestationObject": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "authenticatorData": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "transports": {
+                            "type": "array",
+                            "items": {
+                              "enum": [
+                                "ble",
+                                "cable",
+                                "hybrid",
+                                "internal",
+                                "nfc",
+                                "smart-card",
+                                "usb"
+                              ],
+                              "type": "string"
+                            }
+                          },
+                          "publicKeyAlgorithm": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991,
+                            "description": "COSE algorithm identifier"
+                          },
+                          "publicKey": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          }
+                        },
+                        "required": [
+                          "clientDataJSON",
+                          "attestationObject"
+                        ]
+                      },
+                      "authenticatorAttachment": {
+                        "enum": [
+                          "cross-platform",
+                          "platform"
+                        ],
+                        "type": "string"
+                      },
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "properties": {
+                          "appid": {
+                            "type": "boolean"
+                          },
+                          "credProps": {
+                            "type": "object",
+                            "properties": {
+                              "rk": {
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          "hmacCreateSecret": {
+                            "type": "boolean"
+                          }
+                        },
+                        "description": "WebAuthn extension results from the client"
+                      },
+                      "type": {
+                        "const": "public-key"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "rawId",
+                      "response",
+                      "clientExtensionResults",
+                      "type"
+                    ],
                     "description": "WebAuthn registration response. Requires `signedChallenge`."
                   },
                   "signedChallenge": {
@@ -9518,7 +11548,198 @@
                   "type": "object",
                   "properties": {
                     "options": {
-                      "not": {}
+                      "type": "object",
+                      "properties": {
+                        "rp": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Relying party ID (domain)"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "User handle"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "displayName"
+                          ]
+                        },
+                        "challenge": {
+                          "type": "string",
+                          "description": "Base64url-encoded bytes"
+                        },
+                        "pubKeyCredParams": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "alg": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991,
+                                "description": "COSE algorithm identifier"
+                              },
+                              "type": {
+                                "const": "public-key"
+                              }
+                            },
+                            "required": [
+                              "alg",
+                              "type"
+                            ]
+                          }
+                        },
+                        "timeout": {
+                          "type": "number",
+                          "description": "Timeout in milliseconds"
+                        },
+                        "excludeCredentials": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Credential ID"
+                              },
+                              "type": {
+                                "const": "public-key"
+                              },
+                              "transports": {
+                                "type": "array",
+                                "items": {
+                                  "enum": [
+                                    "ble",
+                                    "cable",
+                                    "hybrid",
+                                    "internal",
+                                    "nfc",
+                                    "smart-card",
+                                    "usb"
+                                  ],
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type"
+                            ]
+                          }
+                        },
+                        "authenticatorSelection": {
+                          "type": "object",
+                          "properties": {
+                            "authenticatorAttachment": {
+                              "enum": [
+                                "cross-platform",
+                                "platform"
+                              ],
+                              "type": "string"
+                            },
+                            "requireResidentKey": {
+                              "type": "boolean"
+                            },
+                            "residentKey": {
+                              "enum": [
+                                "discouraged",
+                                "preferred",
+                                "required"
+                              ],
+                              "type": "string"
+                            },
+                            "userVerification": {
+                              "enum": [
+                                "discouraged",
+                                "preferred",
+                                "required"
+                              ],
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "hints": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "hybrid",
+                              "security-key",
+                              "client-device"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "attestation": {
+                          "enum": [
+                            "direct",
+                            "enterprise",
+                            "indirect",
+                            "none"
+                          ],
+                          "type": "string"
+                        },
+                        "attestationFormats": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "fido-u2f",
+                              "packed",
+                              "android-safetynet",
+                              "android-key",
+                              "tpm",
+                              "apple",
+                              "none"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "extensions": {
+                          "type": "object",
+                          "properties": {
+                            "appid": {
+                              "type": "string"
+                            },
+                            "credProps": {
+                              "type": "boolean"
+                            },
+                            "hmacCreateSecret": {
+                              "type": "boolean"
+                            },
+                            "minPinLength": {
+                              "type": "boolean"
+                            }
+                          },
+                          "description": "WebAuthn extensions to request"
+                        }
+                      },
+                      "required": [
+                        "rp",
+                        "user",
+                        "challenge",
+                        "pubKeyCredParams"
+                      ],
+                      "description": "WebAuthn options for creating a passkey"
                     },
                     "signedChallenge": {
                       "type": "string"
@@ -11663,7 +13884,198 @@
                   "type": "object",
                   "properties": {
                     "options": {
-                      "not": {}
+                      "type": "object",
+                      "properties": {
+                        "rp": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Relying party ID (domain)"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "User handle"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "displayName"
+                          ]
+                        },
+                        "challenge": {
+                          "type": "string",
+                          "description": "Base64url-encoded bytes"
+                        },
+                        "pubKeyCredParams": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "alg": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991,
+                                "description": "COSE algorithm identifier"
+                              },
+                              "type": {
+                                "const": "public-key"
+                              }
+                            },
+                            "required": [
+                              "alg",
+                              "type"
+                            ]
+                          }
+                        },
+                        "timeout": {
+                          "type": "number",
+                          "description": "Timeout in milliseconds"
+                        },
+                        "excludeCredentials": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Credential ID"
+                              },
+                              "type": {
+                                "const": "public-key"
+                              },
+                              "transports": {
+                                "type": "array",
+                                "items": {
+                                  "enum": [
+                                    "ble",
+                                    "cable",
+                                    "hybrid",
+                                    "internal",
+                                    "nfc",
+                                    "smart-card",
+                                    "usb"
+                                  ],
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type"
+                            ]
+                          }
+                        },
+                        "authenticatorSelection": {
+                          "type": "object",
+                          "properties": {
+                            "authenticatorAttachment": {
+                              "enum": [
+                                "cross-platform",
+                                "platform"
+                              ],
+                              "type": "string"
+                            },
+                            "requireResidentKey": {
+                              "type": "boolean"
+                            },
+                            "residentKey": {
+                              "enum": [
+                                "discouraged",
+                                "preferred",
+                                "required"
+                              ],
+                              "type": "string"
+                            },
+                            "userVerification": {
+                              "enum": [
+                                "discouraged",
+                                "preferred",
+                                "required"
+                              ],
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "hints": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "hybrid",
+                              "security-key",
+                              "client-device"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "attestation": {
+                          "enum": [
+                            "direct",
+                            "enterprise",
+                            "indirect",
+                            "none"
+                          ],
+                          "type": "string"
+                        },
+                        "attestationFormats": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "fido-u2f",
+                              "packed",
+                              "android-safetynet",
+                              "android-key",
+                              "tpm",
+                              "apple",
+                              "none"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "extensions": {
+                          "type": "object",
+                          "properties": {
+                            "appid": {
+                              "type": "string"
+                            },
+                            "credProps": {
+                              "type": "boolean"
+                            },
+                            "hmacCreateSecret": {
+                              "type": "boolean"
+                            },
+                            "minPinLength": {
+                              "type": "boolean"
+                            }
+                          },
+                          "description": "WebAuthn extensions to request"
+                        }
+                      },
+                      "required": [
+                        "rp",
+                        "user",
+                        "challenge",
+                        "pubKeyCredParams"
+                      ],
+                      "description": "WebAuthn options for creating a passkey"
                     },
                     "signedChallenge": {
                       "type": "string"
@@ -12734,8 +15146,101 @@
                     "type": "string"
                   },
                   "passkeyResponse": {
-                    "not": {},
-                    "description": "WebAuthn registration response"
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "rawId": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "response": {
+                        "type": "object",
+                        "properties": {
+                          "clientDataJSON": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "attestationObject": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "authenticatorData": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "transports": {
+                            "type": "array",
+                            "items": {
+                              "enum": [
+                                "ble",
+                                "cable",
+                                "hybrid",
+                                "internal",
+                                "nfc",
+                                "smart-card",
+                                "usb"
+                              ],
+                              "type": "string"
+                            }
+                          },
+                          "publicKeyAlgorithm": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991,
+                            "description": "COSE algorithm identifier"
+                          },
+                          "publicKey": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          }
+                        },
+                        "required": [
+                          "clientDataJSON",
+                          "attestationObject"
+                        ]
+                      },
+                      "authenticatorAttachment": {
+                        "enum": [
+                          "cross-platform",
+                          "platform"
+                        ],
+                        "type": "string"
+                      },
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "properties": {
+                          "appid": {
+                            "type": "boolean"
+                          },
+                          "credProps": {
+                            "type": "object",
+                            "properties": {
+                              "rk": {
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          "hmacCreateSecret": {
+                            "type": "boolean"
+                          }
+                        },
+                        "description": "WebAuthn extension results from the client"
+                      },
+                      "type": {
+                        "const": "public-key"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "rawId",
+                      "response",
+                      "clientExtensionResults",
+                      "type"
+                    ],
+                    "description": "WebAuthn registration response from the authenticator"
                   },
                   "signedChallenge": {
                     "type": "string",
@@ -13828,7 +16333,96 @@
                   "type": "object",
                   "properties": {
                     "options": {
-                      "not": {}
+                      "type": "object",
+                      "properties": {
+                        "challenge": {
+                          "type": "string",
+                          "description": "Base64url-encoded bytes"
+                        },
+                        "timeout": {
+                          "type": "number",
+                          "description": "Timeout in milliseconds"
+                        },
+                        "rpId": {
+                          "type": "string",
+                          "description": "Relying party ID (domain)"
+                        },
+                        "allowCredentials": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Credential ID"
+                              },
+                              "type": {
+                                "const": "public-key"
+                              },
+                              "transports": {
+                                "type": "array",
+                                "items": {
+                                  "enum": [
+                                    "ble",
+                                    "cable",
+                                    "hybrid",
+                                    "internal",
+                                    "nfc",
+                                    "smart-card",
+                                    "usb"
+                                  ],
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type"
+                            ]
+                          }
+                        },
+                        "userVerification": {
+                          "enum": [
+                            "discouraged",
+                            "preferred",
+                            "required"
+                          ],
+                          "type": "string"
+                        },
+                        "hints": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "hybrid",
+                              "security-key",
+                              "client-device"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "extensions": {
+                          "type": "object",
+                          "properties": {
+                            "appid": {
+                              "type": "string"
+                            },
+                            "credProps": {
+                              "type": "boolean"
+                            },
+                            "hmacCreateSecret": {
+                              "type": "boolean"
+                            },
+                            "minPinLength": {
+                              "type": "boolean"
+                            }
+                          },
+                          "description": "WebAuthn extensions to request"
+                        }
+                      },
+                      "required": [
+                        "challenge"
+                      ],
+                      "description": "WebAuthn options for signing in with a passkey"
                     },
                     "signedChallenge": {
                       "type": "string"
@@ -14356,8 +16950,81 @@
                 "type": "object",
                 "properties": {
                   "response": {
-                    "not": {},
-                    "description": "WebAuthn authentication response"
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "rawId": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "response": {
+                        "type": "object",
+                        "properties": {
+                          "clientDataJSON": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "authenticatorData": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "signature": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "userHandle": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          }
+                        },
+                        "required": [
+                          "clientDataJSON",
+                          "authenticatorData",
+                          "signature"
+                        ]
+                      },
+                      "authenticatorAttachment": {
+                        "enum": [
+                          "cross-platform",
+                          "platform"
+                        ],
+                        "type": "string"
+                      },
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "properties": {
+                          "appid": {
+                            "type": "boolean"
+                          },
+                          "credProps": {
+                            "type": "object",
+                            "properties": {
+                              "rk": {
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          "hmacCreateSecret": {
+                            "type": "boolean"
+                          }
+                        },
+                        "description": "WebAuthn extension results from the client"
+                      },
+                      "type": {
+                        "const": "public-key"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "rawId",
+                      "response",
+                      "clientExtensionResults",
+                      "type"
+                    ],
+                    "description": "WebAuthn authentication response from the authenticator"
                   },
                   "signedChallenge": {
                     "type": "string",
@@ -16576,7 +19243,198 @@
                   "type": "object",
                   "properties": {
                     "options": {
-                      "not": {}
+                      "type": "object",
+                      "properties": {
+                        "rp": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "Relying party ID (domain)"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name"
+                          ]
+                        },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "string",
+                              "description": "User handle"
+                            },
+                            "name": {
+                              "type": "string"
+                            },
+                            "displayName": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "displayName"
+                          ]
+                        },
+                        "challenge": {
+                          "type": "string",
+                          "description": "Base64url-encoded bytes"
+                        },
+                        "pubKeyCredParams": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "alg": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991,
+                                "description": "COSE algorithm identifier"
+                              },
+                              "type": {
+                                "const": "public-key"
+                              }
+                            },
+                            "required": [
+                              "alg",
+                              "type"
+                            ]
+                          }
+                        },
+                        "timeout": {
+                          "type": "number",
+                          "description": "Timeout in milliseconds"
+                        },
+                        "excludeCredentials": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Credential ID"
+                              },
+                              "type": {
+                                "const": "public-key"
+                              },
+                              "transports": {
+                                "type": "array",
+                                "items": {
+                                  "enum": [
+                                    "ble",
+                                    "cable",
+                                    "hybrid",
+                                    "internal",
+                                    "nfc",
+                                    "smart-card",
+                                    "usb"
+                                  ],
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type"
+                            ]
+                          }
+                        },
+                        "authenticatorSelection": {
+                          "type": "object",
+                          "properties": {
+                            "authenticatorAttachment": {
+                              "enum": [
+                                "cross-platform",
+                                "platform"
+                              ],
+                              "type": "string"
+                            },
+                            "requireResidentKey": {
+                              "type": "boolean"
+                            },
+                            "residentKey": {
+                              "enum": [
+                                "discouraged",
+                                "preferred",
+                                "required"
+                              ],
+                              "type": "string"
+                            },
+                            "userVerification": {
+                              "enum": [
+                                "discouraged",
+                                "preferred",
+                                "required"
+                              ],
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "hints": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "hybrid",
+                              "security-key",
+                              "client-device"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "attestation": {
+                          "enum": [
+                            "direct",
+                            "enterprise",
+                            "indirect",
+                            "none"
+                          ],
+                          "type": "string"
+                        },
+                        "attestationFormats": {
+                          "type": "array",
+                          "items": {
+                            "enum": [
+                              "fido-u2f",
+                              "packed",
+                              "android-safetynet",
+                              "android-key",
+                              "tpm",
+                              "apple",
+                              "none"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "extensions": {
+                          "type": "object",
+                          "properties": {
+                            "appid": {
+                              "type": "string"
+                            },
+                            "credProps": {
+                              "type": "boolean"
+                            },
+                            "hmacCreateSecret": {
+                              "type": "boolean"
+                            },
+                            "minPinLength": {
+                              "type": "boolean"
+                            }
+                          },
+                          "description": "WebAuthn extensions to request"
+                        }
+                      },
+                      "required": [
+                        "rp",
+                        "user",
+                        "challenge",
+                        "pubKeyCredParams"
+                      ],
+                      "description": "WebAuthn options for creating a passkey"
                     },
                     "signedChallenge": {
                       "type": "string"
@@ -17109,8 +19967,101 @@
                 "type": "object",
                 "properties": {
                   "response": {
-                    "not": {},
-                    "description": "WebAuthn registration response"
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "rawId": {
+                        "type": "string",
+                        "description": "Credential ID"
+                      },
+                      "response": {
+                        "type": "object",
+                        "properties": {
+                          "clientDataJSON": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "attestationObject": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "authenticatorData": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          },
+                          "transports": {
+                            "type": "array",
+                            "items": {
+                              "enum": [
+                                "ble",
+                                "cable",
+                                "hybrid",
+                                "internal",
+                                "nfc",
+                                "smart-card",
+                                "usb"
+                              ],
+                              "type": "string"
+                            }
+                          },
+                          "publicKeyAlgorithm": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991,
+                            "description": "COSE algorithm identifier"
+                          },
+                          "publicKey": {
+                            "type": "string",
+                            "description": "Base64url-encoded bytes"
+                          }
+                        },
+                        "required": [
+                          "clientDataJSON",
+                          "attestationObject"
+                        ]
+                      },
+                      "authenticatorAttachment": {
+                        "enum": [
+                          "cross-platform",
+                          "platform"
+                        ],
+                        "type": "string"
+                      },
+                      "clientExtensionResults": {
+                        "type": "object",
+                        "properties": {
+                          "appid": {
+                            "type": "boolean"
+                          },
+                          "credProps": {
+                            "type": "object",
+                            "properties": {
+                              "rk": {
+                                "type": "boolean"
+                              }
+                            }
+                          },
+                          "hmacCreateSecret": {
+                            "type": "boolean"
+                          }
+                        },
+                        "description": "WebAuthn extension results from the client"
+                      },
+                      "type": {
+                        "const": "public-key"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "rawId",
+                      "response",
+                      "clientExtensionResults",
+                      "type"
+                    ],
+                    "description": "WebAuthn registration response from the authenticator"
                   },
                   "signedChallenge": {
                     "type": "string",
@@ -19426,8 +22377,92 @@
                           "type": "number"
                         },
                         "lastPrice": {
-                          "$ref": "#/components/schemas/StorePrice",
-                          "nullable": true
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "number",
+                              "description": "Unique identifier for the store price"
+                            },
+                            "name": {
+                              "type": "string",
+                              "description": "Name of the product as listed by the store"
+                            },
+                            "externalProductId": {
+                              "type": "string",
+                              "nullable": true,
+                              "readOnly": true,
+                              "description": "Stable product or variant identifier assigned by the store"
+                            },
+                            "barcode": {
+                              "type": "string",
+                              "nullable": true,
+                              "readOnly": true,
+                              "description": "GTIN barcode claimed by the store"
+                            },
+                            "price": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "exclusiveMinimum": 0,
+                              "description": "Current listing price in the currency's smallest unit (for example, cents)"
+                            },
+                            "currency": {
+                              "enum": [
+                                "usd",
+                                "gbp",
+                                "eur"
+                              ],
+                              "type": "string",
+                              "description": "Currency of the price"
+                            },
+                            "url": {
+                              "type": "string",
+                              "description": "URL to the product page"
+                            },
+                            "volume": {
+                              "type": "integer",
+                              "minimum": -9007199254740991,
+                              "maximum": 9007199254740991,
+                              "exclusiveMinimum": 0,
+                              "description": "Listed volume in milliliters"
+                            },
+                            "site": {
+                              "$ref": "#/components/schemas/ExternalSite",
+                              "description": "External site where this price is listed"
+                            },
+                            "updatedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Timestamp when the price was last updated"
+                            },
+                            "imageUrl": {
+                              "type": "string",
+                              "format": "uri",
+                              "nullable": true,
+                              "default": null,
+                              "readOnly": true,
+                              "description": "URL to the product image"
+                            },
+                            "isValid": {
+                              "type": "boolean",
+                              "readOnly": true,
+                              "description": "Whether this price listing is still valid"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name",
+                            "externalProductId",
+                            "barcode",
+                            "price",
+                            "currency",
+                            "url",
+                            "volume",
+                            "updatedAt",
+                            "isValid"
+                          ],
+                          "nullable": true,
+                          "description": "Most recent visible store listing for this Bottle"
                         }
                       },
                       "required": [
@@ -21967,10 +25002,10 @@
                   "maturation": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1000,
+                    "maxLength": 120,
                     "nullable": true,
                     "default": null,
-                    "description": "Producer-stated cask or maturation details"
+                    "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
                   },
                   "caskNumber": {
                     "type": "string",
@@ -22931,10 +25966,10 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 1000,
+              "maxLength": 120,
               "nullable": true,
               "default": null,
-              "description": "Producer-stated cask or maturation details"
+              "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
             },
             "allowEmptyValue": true,
             "allowReserved": true
@@ -23512,10 +26547,10 @@
                           "maturation": {
                             "type": "string",
                             "minLength": 1,
-                            "maxLength": 1000,
+                            "maxLength": 120,
                             "nullable": true,
                             "default": null,
-                            "description": "Producer-stated cask or maturation details"
+                            "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
                           },
                           "caskNumber": {
                             "type": "string",
@@ -24762,10 +27797,10 @@
                   "maturation": {
                     "type": "string",
                     "minLength": 1,
-                    "maxLength": 1000,
+                    "maxLength": 120,
                     "nullable": true,
                     "default": null,
-                    "description": "Producer-stated cask or maturation details"
+                    "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
                   },
                   "caskNumber": {
                     "type": "string",
@@ -39455,6 +42490,17 @@
             "schema": {
               "type": "number",
               "nullable": true
+            },
+            "allowEmptyValue": true,
+            "allowReserved": true
+          },
+          {
+            "name": "entity",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "nullable": true,
+              "description": "Filter by an Entity ID that is the brand, a distiller, or the bottler. Library only."
             },
             "allowEmptyValue": true,
             "allowReserved": true
@@ -58252,10 +61298,10 @@
                               "maturation": {
                                 "type": "string",
                                 "minLength": 1,
-                                "maxLength": 1000,
+                                "maxLength": 120,
                                 "nullable": true,
                                 "default": null,
-                                "description": "Producer-stated cask or maturation details"
+                                "description": "Producer-stated casks in order of use, as one short phrase of at most 120 characters"
                               },
                               "caskNumber": {
                                 "type": "string",
@@ -84600,7 +87646,7 @@
       "post": {
         "operationId": "createTasting",
         "summary": "Create tasting",
-        "description": "Create a new tasting entry for a bottle with notes, an optional rating band, and tasting details.",
+        "description": "Create a new tasting entry for a bottle with notes, an optional rating band, and tasting details. When `idempotencyKey` matches an earlier tasting by the same member, return that tasting with no awards instead of creating another.",
         "tags": [
           "tastings"
         ],
@@ -84672,16 +87718,22 @@
                     "default": [],
                     "description": "Array of friend user IDs who were present"
                   },
-                  "createdAt": {
+                  "tastedAt": {
                     "type": "string",
                     "format": "date-time",
                     "nullable": true,
-                    "description": "Custom creation timestamp for the tasting"
+                    "description": "When the member had the dram. Defaults to the time of posting"
                   },
                   "flight": {
                     "type": "string",
                     "nullable": true,
                     "description": "Flight ID if this tasting is part of a flight"
+                  },
+                  "idempotencyKey": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "description": "Key chosen by the client for this post. Sending the same key again returns the tasting it created instead of a new one"
                   },
                   "image": {
                     "type": "null",
@@ -96008,6 +99060,600 @@
                     "results",
                     "totalTopBandCount",
                     "totalCount"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "BAD_REQUEST"
+                        },
+                        "status": {
+                          "const": 400
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Bad Request."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "401",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNAUTHORIZED"
+                        },
+                        "status": {
+                          "const": 401
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unauthorized."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "403",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "FORBIDDEN"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Forbidden."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "ACCOUNT_SUSPENDED"
+                        },
+                        "status": {
+                          "const": 403
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Your account is suspended. You can only delete your account or cancel a pending deletion."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "NOT_FOUND"
+                        },
+                        "status": {
+                          "const": 404
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "The resource was not found."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "409",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "CONFLICT"
+                        },
+                        "status": {
+                          "const": 409
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Conflict."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "413",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "PAYLOAD_TOO_LARGE"
+                        },
+                        "status": {
+                          "const": 413
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Payload too large."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "INTERNAL_SERVER_ERROR"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Internal server error."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "METHOD_NOT_ALLOWED"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Method not allowed."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": true
+                        },
+                        "code": {
+                          "const": "UNPROCESSABLE_ENTITY"
+                        },
+                        "status": {
+                          "const": 500
+                        },
+                        "message": {
+                          "type": "string",
+                          "default": "Unprocessable entity."
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "defined": {
+                          "const": false
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "number"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "data": {}
+                      },
+                      "required": [
+                        "defined",
+                        "code",
+                        "status",
+                        "message"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user}/library/search": {
+      "get": {
+        "operationId": "searchUserLibrary",
+        "summary": "Search a user's Library",
+        "description": "Find Entities and Bottles in a user's Library while the user types. Matches whole words and the start of words.",
+        "tags": [
+          "users"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                {
+                  "const": "me"
+                },
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "description": "Search text only. Search operators are not supported. Empty text returns no results."
+            },
+            "allowEmptyValue": true,
+            "allowReserved": true
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 5,
+              "description": "Maximum results to return in each list"
+            },
+            "allowEmptyValue": true,
+            "allowReserved": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "entities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "entity": {
+                            "$ref": "#/components/schemas/Entity"
+                          },
+                          "count": {
+                            "type": "number",
+                            "description": "Library Bottles that list this Entity as the brand, a distiller, or the bottler"
+                          }
+                        },
+                        "required": [
+                          "entity",
+                          "count"
+                        ]
+                      },
+                      "description": "Entities in this Library, best name match first, then by `count`"
+                    },
+                    "bottles": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Bottle"
+                      },
+                      "description": "Bottles in this Library, best name match first"
+                    }
+                  },
+                  "required": [
+                    "entities",
+                    "bottles"
                   ]
                 }
               }
