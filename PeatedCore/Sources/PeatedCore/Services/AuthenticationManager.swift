@@ -197,6 +197,44 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
         }
     }
 
+    /// Signs in with a passkey. `authorize` presents the system passkey sheet for
+    /// the server's challenge and returns nil when the user cancels, which makes
+    /// this return nil too.
+    public func loginWithPasskey(
+        authorize: (PasskeySignInChallenge) async throws -> PasskeyAssertion?
+    ) async throws -> User? {
+        isLoading = true
+        error = nil
+        defer { isLoading = false }
+
+        do {
+            let challenge = try await passkeySignInChallenge()
+            guard let assertion = try await authorize(challenge) else {
+                return nil
+            }
+
+            let client = await apiClient.generatedClient
+            let response = try await client.passkeyAuthenticateVerify(
+                body: .json(.init(response: .init(assertion), signedChallenge: challenge.signedChallenge))
+            )
+            guard case let .ok(okResponse) = response,
+                  case let .json(auth) = okResponse.body
+            else {
+                throw AuthError.invalidResponse
+            }
+
+            let user = try await startSession(with: auth)
+            signInProvider = .passkey
+            authState = .authenticated(user)
+            return user
+        } catch {
+            captureAuthFailure(error, operation: "passkey_sign_in")
+            self.error = error
+            authState = .unauthenticated
+            throw error
+        }
+    }
+
     public func register(username: String, email: String, password: String,
                          tosAccepted: Bool = true) async throws -> User {
         isLoading = true
@@ -380,6 +418,7 @@ public enum SignInProvider: String, Sendable {
     case password
     case google
     case apple
+    case passkey
 }
 
 // MARK: - Auth Errors
@@ -466,6 +505,31 @@ extension AuthenticationManager {
         try await exchangeForSession(body: .json(.init(value3: .init(idToken: idToken))))
     }
 
+    /// Asks the server for a passkey challenge and decodes its base64url fields.
+    private func passkeySignInChallenge() async throws -> PasskeySignInChallenge {
+        let client = await apiClient.generatedClient
+        let response = try await client.passkeyAuthenticateChallenge(body: .json(.init()))
+        guard case let .ok(okResponse) = response,
+              case let .json(payload) = okResponse.body,
+              let challenge = Data(base64URLEncoded: payload.options.challenge),
+              let relyingPartyID = payload.options.rpId
+        else {
+            throw AuthError.invalidResponse
+        }
+
+        let allowedCredentialIDs = try (payload.options.allowCredentials ?? []).map { credential in
+            guard let id = Data(base64URLEncoded: credential.id) else { throw AuthError.invalidResponse }
+            return id
+        }
+        return PasskeySignInChallenge(
+            challenge: challenge,
+            relyingPartyID: relyingPartyID,
+            allowedCredentialIDs: allowedCredentialIDs,
+            userVerification: payload.options.userVerification?.rawValue,
+            signedChallenge: payload.signedChallenge
+        )
+    }
+
     /// Sends one `/auth/login` request, stores the returned access token, and
     /// returns the signed-in user with their stats. Callers own `authState`.
     private func exchangeForSession(body: Operations.login.Input.Body) async throws -> User {
@@ -473,16 +537,22 @@ extension AuthenticationManager {
         let response = try await client.login(body: body)
 
         guard case let .ok(okResponse) = response,
-              case let .json(jsonPayload) = okResponse.body
+              case let .json(auth) = okResponse.body
         else {
             throw AuthError.invalidResponse
         }
+        return try await startSession(with: auth)
+    }
 
-        if let accessToken = jsonPayload.accessToken {
+    /// Stores the access token from a successful sign-in and returns the user
+    /// with their stats. Callers own `authState`.
+    private func startSession(with auth: Components.Schemas.Auth) async throws -> User {
+        let client = await apiClient.generatedClient
+        if let accessToken = auth.accessToken {
             try keychain.saveToken(accessToken)
         }
 
-        let apiUser = jsonPayload.user
+        let apiUser = auth.user
         var user = User(from: apiUser)
 
         // Fetch additional user details including stats
@@ -502,5 +572,25 @@ extension AuthenticationManager {
             Telemetry.capture(error, feature: "auth", operation: "load_user_details")
         }
         return user
+    }
+}
+
+private extension Operations.passkeyAuthenticateVerify.Input.Body.jsonPayload.responsePayload {
+    /// The WebAuthn JSON form of an assertion from the platform authenticator.
+    init(_ assertion: PasskeyAssertion) {
+        let credentialID = assertion.credentialID.base64URLEncodedString()
+        self.init(
+            id: credentialID,
+            rawId: credentialID,
+            response: .init(
+                clientDataJSON: assertion.clientDataJSON.base64URLEncodedString(),
+                authenticatorData: assertion.authenticatorData.base64URLEncodedString(),
+                signature: assertion.signature.base64URLEncodedString(),
+                userHandle: assertion.userHandle?.base64URLEncodedString()
+            ),
+            authenticatorAttachment: .platform,
+            clientExtensionResults: .init(),
+            _type: "public-key"
+        )
     }
 }
