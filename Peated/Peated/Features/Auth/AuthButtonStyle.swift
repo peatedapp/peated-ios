@@ -20,7 +20,7 @@ struct AuthButtonStyle: ButtonStyle {
         configuration.label
             .labelStyle(IconSlotLabelStyle())
             .font(.peatedInteractive)
-            .foregroundColor(variant == .accent ? .onBrand : .text)
+            .foregroundColor(foreground)
             .frame(maxWidth: .infinity, minHeight: DesignSystem.ControlHeight.large, alignment: .leading)
             .padding(.horizontal, 20)
             .background(background(isPressed: configuration.isPressed), in: shape)
@@ -30,13 +30,20 @@ struct AuthButtonStyle: ButtonStyle {
                 }
             }
             .contentShape(shape)
-            .opacity(isEnabled ? 1 : 0.45)
+    }
+
+    // Disabled buttons use muted colors instead of fading, so their text keeps readable contrast.
+    private var foreground: Color {
+        guard isEnabled else { return .textMuted }
+        return variant == .accent ? .onBrand : .text
     }
 
     private func background(isPressed: Bool) -> Color {
         switch variant {
         case .tonal:
             isPressed ? .surface : .clear
+        case .accent where !isEnabled:
+            .surfaceSubtle
         case .accent:
             isPressed ? .brandEmphasis : .brand
         }

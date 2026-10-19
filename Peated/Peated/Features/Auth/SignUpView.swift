@@ -163,17 +163,10 @@ struct SignUpView: View {
     }
 
     private var signUpButton: some View {
-        Button(action: handleEmailSignUp) {
-            Text("Create Account")
-                .font(.peatedInteractive)
-                .foregroundColor(.onBrand)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(isPrimaryEnabled ? Color.brand : Color.brand.opacity(0.5))
-                .cornerRadius(12)
-        }
-        .disabled(!isPrimaryEnabled || isLoading)
-        .accessibilityIdentifier(AccessibilityID.Auth.createAccount)
+        Button("Create Account", action: handleEmailSignUp)
+            .buttonStyle(.authAccent)
+            .disabled(!isPrimaryEnabled || isLoading)
+            .accessibilityIdentifier(AccessibilityID.Auth.createAccount)
     }
 
     private var isPrimaryEnabled: Bool {
