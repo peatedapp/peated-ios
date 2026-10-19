@@ -11,7 +11,7 @@ import SwiftUI
 struct AccountDeletionConfirmationView: View {
     @Environment(\.dismiss) private var dismiss
     @ObservedObject private var authManager = AuthenticationManager.shared
-    @State private var appleRequester = AppleAuthorizationRequester()
+    @State private var appleRequester = AuthorizationRequester<AppleSignInCredential>()
     @State private var isDeleting = false
     @State private var error: String?
 
@@ -107,7 +107,7 @@ struct AccountDeletionConfirmationView: View {
             do {
                 var appleAuthorizationCode: String?
                 if confirmsWithApple {
-                    guard let credential = try await appleRequester.request() else { return }
+                    guard let credential = try await appleRequester.requestAppleID() else { return }
                     appleAuthorizationCode = credential.authorizationCode
                 }
                 try await authManager.requestAccountDeletion(appleAuthorizationCode: appleAuthorizationCode)

@@ -141,7 +141,8 @@ struct ActivityFeedMappingTests {
     private func tastingSession(tastingId: Int, ratingBand: String?) -> String {
         let band = ratingBand.map { "\"\($0)\"" } ?? "null"
         return #"""
-        {"id":"session:1","type":"tasting_session","priority":"primary","startedAt":"\#(date)","lastActivityAt":"\#(date)",
+        {"id":"session:1","type":"tasting_session","priority":"primary",
+        "startedAt":"\#(date)","lastActivityAt":"\#(date)",
         "createdBy":\#(user),"tastings":[{"id":\#(tastingId),"bottle":\#(bottle),"ratingBand":\#(band),"notes":"Peaty",
         "tags":["smoke"],"awards":[],"comments":0,"toasts":2,"createdAt":"\#(date)","tastedAt":"\#(tastedAt)",
         "createdBy":\#(user)}]}

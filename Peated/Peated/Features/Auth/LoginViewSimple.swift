@@ -18,6 +18,7 @@ struct LoginViewSimple: View {
     @State private var isLoading = false
     @State private var error: String?
     @FocusState private var isEmailFocused: Bool
+    @State private var passkeyRequester = AuthorizationRequester<PasskeyAssertion>()
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     let authManager = AuthenticationManager.shared
@@ -63,11 +64,16 @@ struct LoginViewSimple: View {
 
     private var methodsPanel: some View {
         VStack(alignment: .leading, spacing: 0) {
-            panelHeader(title: "Sign in", description: "Apple and Google are fastest. Email works everywhere.")
+            panelHeader(title: "Sign in", description: "A passkey is fastest. Email works everywhere.")
 
             errorNotice
 
             VStack(spacing: 6) {
+                Button(action: handlePasskeySignIn) {
+                    Label("Continue with a passkey", systemImage: "key")
+                }
+                .buttonStyle(.authTonal)
+
                 AppleSignInButton { result in
                     switch result {
                     case let .success(credential):
@@ -282,6 +288,25 @@ struct LoginViewSimple: View {
                     self.error = error.localizedDescription
                     isLoading = false
                 }
+            }
+        }
+    }
+
+    private func handlePasskeySignIn() {
+        Task {
+            isLoading = true
+            error = nil
+            do {
+                let user = try await authManager.loginWithPasskey { challenge in
+                    try await passkeyRequester.requestPasskey(for: challenge)
+                }
+                isLoading = false
+                if let user {
+                    onLoginSuccess(user)
+                }
+            } catch {
+                self.error = error.localizedDescription
+                isLoading = false
             }
         }
     }

@@ -12,7 +12,7 @@ import SwiftUI
 struct AppleSignInButton: View {
     let onCompletion: (Result<AppleSignInCredential, Error>) -> Void
 
-    @State private var requester = AppleAuthorizationRequester(scopes: [.fullName, .email])
+    @State private var requester = AuthorizationRequester<AppleSignInCredential>()
     @State private var isRequesting = false
 
     var body: some View {
@@ -34,7 +34,7 @@ struct AppleSignInButton: View {
         Task {
             defer { isRequesting = false }
             do {
-                if let credential = try await requester.request() {
+                if let credential = try await requester.requestAppleID(scopes: [.fullName, .email]) {
                     onCompletion(.success(credential))
                 }
             } catch {
