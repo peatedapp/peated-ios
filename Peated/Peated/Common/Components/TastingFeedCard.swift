@@ -44,7 +44,7 @@ struct TastingFeedCard: View {
                     avatarUrl: tasting.userAvatarUrl,
                     actor: tasting.username,
                     action: "tasted",
-                    timeAgo: tasting.createdAt.timeAgo,
+                    timeAgo: tasting.tastedDate.timeAgo,
                     onTap: onUserTap
                 )
             }

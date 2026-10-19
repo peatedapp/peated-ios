@@ -209,13 +209,16 @@ public class OfflineQueueManager {
         switch operation.type {
         case .createTasting:
             let payload = try JSONDecoder().decode(CreateTastingPayload.self, from: operation.payload)
+            // The operation ID keeps retries of this queued post to one tasting.
             let input = CreateTastingInput(
                 bottleId: payload.bottleId,
+                idempotencyKey: operation.id,
                 ratingBand: payload.ratingBand,
                 notes: payload.notes,
                 servingStyle: payload.servingStyle,
                 tags: payload.tags,
-                location: payload.location?.name
+                location: payload.location?.name,
+                tastedAt: operation.createdAt
             )
             _ = try await tastingRepository.createTasting(input)
 

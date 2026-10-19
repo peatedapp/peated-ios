@@ -29,6 +29,7 @@ struct ActivityFeedMappingTests {
         }
         #expect(tasting.ratingBand == .veryGood)
         #expect(tasting.bottleName == "Ardbeg 10")
+        #expect(tasting.tastedAt == ISO8601DateFormatter().date(from: tastedAt))
 
         guard case let .memberReview(review) = entries[1] else {
             Issue.record("Expected a member review")
@@ -117,6 +118,8 @@ struct ActivityFeedMappingTests {
     }
 
     private let date = "2026-09-18T10:00:00Z"
+    /// Days before `date`, as for a dram posted after the fact.
+    private let tastedAt = "2026-09-14T21:00:00Z"
     private let user = #"{"id":42,"username":"ava","pictureUrl":null}"#
 
     private var bottle: String {
@@ -138,9 +141,11 @@ struct ActivityFeedMappingTests {
     private func tastingSession(tastingId: Int, ratingBand: String?) -> String {
         let band = ratingBand.map { "\"\($0)\"" } ?? "null"
         return #"""
-        {"id":"session:1","type":"tasting_session","priority":"primary","startedAt":"\#(date)","lastActivityAt":"\#(date)",
+        {"id":"session:1","type":"tasting_session","priority":"primary",
+        "startedAt":"\#(date)","lastActivityAt":"\#(date)",
         "createdBy":\#(user),"tastings":[{"id":\#(tastingId),"bottle":\#(bottle),"ratingBand":\#(band),"notes":"Peaty",
-        "tags":["smoke"],"awards":[],"comments":0,"toasts":2,"createdAt":"\#(date)","createdBy":\#(user)}]}
+        "tags":["smoke"],"awards":[],"comments":0,"toasts":2,"createdAt":"\#(date)","tastedAt":"\#(tastedAt)",
+        "createdBy":\#(user)}]}
         """#
     }
 

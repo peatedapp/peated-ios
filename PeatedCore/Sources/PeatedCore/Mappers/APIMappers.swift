@@ -45,6 +45,7 @@ extension TastingFeedItem {
         let servingStyle = apiTasting.servingStyle?.rawValue
         let imageUrl: String? = apiTasting.imageUrl
         let createdAt = apiTasting.createdAt
+        let tastedAt = apiTasting.tastedAt
         let userId = String(Int(apiUser.id))
         let username = apiUser.username
         let userDisplayName: String? = nil
@@ -69,6 +70,7 @@ extension TastingFeedItem {
             servingStyle: servingStyle,
             imageUrl: imageUrl,
             createdAt: createdAt,
+            tastedAt: tastedAt,
             userId: userId,
             username: username,
             userDisplayName: userDisplayName,

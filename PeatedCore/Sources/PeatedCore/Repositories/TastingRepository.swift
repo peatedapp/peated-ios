@@ -20,16 +20,23 @@ public struct CreateTastingInput: Sendable {
     public let location: String?
     public let color: Int?
     public let pendingImageId: String?
+    /// When the dram was had. Nil lets the server use the time of posting.
+    public let tastedAt: Date?
+    /// Identifies this one post. Sending the same key again returns the
+    /// tasting it created, so a retry after a lost response cannot post twice.
+    public let idempotencyKey: String
 
     public init(
         bottleId: String,
+        idempotencyKey: String,
         ratingBand: TastingRatingBand? = nil,
         notes: String? = nil,
         servingStyle: String? = nil,
         tags: [String] = [],
         location: String? = nil,
         color: Int? = nil,
-        pendingImageId: String? = nil
+        pendingImageId: String? = nil,
+        tastedAt: Date? = nil
     ) {
         self.bottleId = bottleId
         self.ratingBand = ratingBand
@@ -39,6 +46,8 @@ public struct CreateTastingInput: Sendable {
         self.location = location
         self.color = color
         self.pendingImageId = pendingImageId
+        self.tastedAt = tastedAt
+        self.idempotencyKey = idempotencyKey
     }
 }
 
@@ -80,35 +89,8 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
 
     public func createTasting(_ input: CreateTastingInput) async throws -> TastingFeedItem {
         let client = await client
-
-        guard let bottleId = Int(input.bottleId) else {
-            throw APIError.requestFailed("Invalid bottle ID")
-        }
-
-        let servingStyle: Operations.createTasting.Input.Body.jsonPayload.servingStylePayload? =
-            input.servingStyle.flatMap { style in
-                switch style {
-                case "neat": .neat
-                case "rocks": .rocks
-                case "water", "splash": .splash
-                default: nil
-                }
-            }
-
-        // Build the request body
-        let body = Operations.createTasting.Input.Body.json(
-            .init(
-                notes: input.notes,
-                ratingBand: input.ratingBand?.createPayload,
-                tags: input.tags.isEmpty ? nil : input.tags,
-                color: input.color.flatMap { Double($0) },
-                servingStyle: servingStyle,
-                pendingImageId: input.pendingImageId,
-                bottle: bottleId
-            )
-        )
-
-        let response = try await client.createTasting(body: body)
+        let body = try Self.makeCreateBody(input)
+        let response = try await client.createTasting(body: .json(body))
 
         switch response {
         case let .ok(createdResponse):
@@ -125,6 +107,36 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         default:
             throw APIError.invalidResponse
         }
+    }
+
+    static func makeCreateBody(
+        _ input: CreateTastingInput
+    ) throws -> Operations.createTasting.Input.Body.jsonPayload {
+        guard let bottleId = Int(input.bottleId) else {
+            throw APIError.requestFailed("Invalid bottle ID")
+        }
+
+        let servingStyle: Operations.createTasting.Input.Body.jsonPayload.servingStylePayload? =
+            input.servingStyle.flatMap { style in
+                switch style {
+                case "neat": .neat
+                case "rocks": .rocks
+                case "water", "splash": .splash
+                default: nil
+                }
+            }
+
+        return .init(
+            notes: input.notes,
+            ratingBand: input.ratingBand?.createPayload,
+            tags: input.tags.isEmpty ? nil : input.tags,
+            color: input.color.flatMap { Double($0) },
+            servingStyle: servingStyle,
+            tastedAt: input.tastedAt,
+            idempotencyKey: input.idempotencyKey,
+            pendingImageId: input.pendingImageId,
+            bottle: bottleId
+        )
     }
 
     public func listComments(tastingId: String) async throws -> [Comment] {
