@@ -3,6 +3,8 @@ import Foundation
 enum PeatedWebURL {
     private static let baseURL = URL(string: "https://peated.com")!
 
+    static let recoverAccount = baseURL.appendingPathComponent("recover-account")
+
     static func bottle(id: String) -> URL {
         baseURL
             .appendingPathComponent("bottles")
