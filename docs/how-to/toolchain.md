@@ -72,6 +72,18 @@ make update-swiftlint-baseline
 
 Review the baseline diff. Routine cleanup should remove entries; additions expand accepted debt and need explicit review.
 
+## Pre-commit hook
+
+`make bootstrap` points git at the checked-in `.githooks` directory. Without bootstrap, install the hook with:
+
+```bash
+make install-hooks
+```
+
+Before each commit, the hook runs `make lint` when `swiftlint` and `swiftformat` are installed. Otherwise it runs `make lint-docker` when Docker is running. With neither, it prints a warning and lets the commit through. The hook only checks files; it never rewrites or re-stages them. It checks every file changed from `HEAD`, plus untracked files, as they exist on disk, so unstaged edits count too.
+
+Skip it for one commit with `git commit --no-verify`. CI still runs the same checks.
+
 ## Swift packages
 
 Run package tests on an Apple host:

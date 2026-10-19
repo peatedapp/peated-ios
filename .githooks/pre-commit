@@ -1,0 +1,18 @@
+#!/bin/bash
+# Lints changed files before each commit. Install with `make install-hooks`.
+# The hook only checks files; it never rewrites or re-stages them.
+# CI is the real gate, so a missing toolchain warns instead of blocking.
+
+set -euo pipefail
+
+REPOSITORY_ROOT="$(git rev-parse --show-toplevel)"
+
+if command -v swiftlint >/dev/null 2>&1 && command -v swiftformat >/dev/null 2>&1; then
+    exec "$REPOSITORY_ROOT/Scripts/lint-changed.sh"
+fi
+
+if command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+    exec "$REPOSITORY_ROOT/Scripts/lint-changed-docker.sh"
+fi
+
+echo 'warning: pre-commit lint skipped; install swiftlint and swiftformat, or start Docker' >&2
