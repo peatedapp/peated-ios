@@ -5,6 +5,7 @@ import Testing
 /// Sign-up must show the server's reason for refusing an account, not a generic
 /// decoding failure. The generated contract omits the 409 conflict the server
 /// uses for a taken username, so both documented and undocumented failures are covered.
+@MainActor
 struct AuthenticationManagerRegisterTests {
     @Test
     func takenUsernameSurfacesServerMessage() async throws {

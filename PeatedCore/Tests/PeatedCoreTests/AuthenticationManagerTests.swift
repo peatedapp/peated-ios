@@ -1,7 +1,9 @@
+import Combine
 import Foundation
 @testable import PeatedCore
 import Testing
 
+@MainActor
 struct AuthenticationManagerTests {
     @Test
     func logoutSignsOutGoogleAndClearsLocalState() async throws {
@@ -114,6 +116,28 @@ struct AuthenticationManagerTests {
         #expect(manager.authState == .unknown)
     }
 
+    /// SwiftUI observes the manager directly, so every published change must
+    /// land on the main thread, including ones applied after a network await.
+    @Test
+    func publishesSessionChangesOnTheMainThread() async throws {
+        let manager = try makeManager(repository: UserRepositoryStub(user: User(
+            id: "1",
+            email: "jane@example.com",
+            username: "jane"
+        )))
+        let publishes = PublishThreads()
+        // Not main-actor isolated, so a wrong thread fails the expectation instead of trapping.
+        let subscription = manager.$authState.dropFirst().sink { @Sendable _ in
+            publishes.onMainThread.append(Thread.isMainThread)
+        }
+        defer { subscription.cancel() }
+
+        try await manager.cancelAccountDeletion()
+        await manager.logout()
+
+        #expect(publishes.onMainThread == [true, true])
+    }
+
     private func makeManager(
         repository: UserRepositoryStub,
         defaults: UserDefaults = .standard
@@ -130,6 +154,10 @@ struct AuthenticationManagerTests {
 
 private final class SignOutSpy: @unchecked Sendable {
     var callCount = 0
+}
+
+private final class PublishThreads: @unchecked Sendable {
+    var onMainThread: [Bool] = []
 }
 
 private struct LogoutFailure: Error {}

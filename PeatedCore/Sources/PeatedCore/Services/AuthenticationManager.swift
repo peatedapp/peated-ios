@@ -7,7 +7,14 @@ import SwiftUI
     import UIKit
 #endif
 
-public final class AuthenticationManager: ObservableObject, @unchecked Sendable {
+/// Owns the member's session and publishes it to SwiftUI.
+///
+/// Main-actor isolated because SwiftUI views observe the `@Published`
+/// properties directly and must only see them change on the main thread.
+/// Network work still runs off the main thread; each `await` on the API
+/// client suspends and the method resumes here to apply the result.
+@MainActor
+public final class AuthenticationManager: ObservableObject {
     public static let shared = AuthenticationManager()
 
     @Published public private(set) var authState: AuthState = .unknown {
@@ -130,11 +137,7 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
 
     public func loginWithGoogle() async throws -> User {
         #if canImport(UIKit)
-            let presentingViewController = await MainActor.run {
-                getRootViewController()
-            }
-
-            guard let viewController = presentingViewController else {
+            guard let viewController = getRootViewController() else {
                 error = AuthError.noPresentingViewController
                 throw AuthError.noPresentingViewController
             }
@@ -395,7 +398,6 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
     }
 
     #if canImport(UIKit)
-        @MainActor
         private func getRootViewController() -> UIViewController? {
             guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                   let window = windowScene.windows.first
@@ -405,7 +407,6 @@ public final class AuthenticationManager: ObservableObject, @unchecked Sendable 
             return window.rootViewController
         }
     #else
-        @MainActor
         private func getRootViewController() -> Any? {
             nil
         }

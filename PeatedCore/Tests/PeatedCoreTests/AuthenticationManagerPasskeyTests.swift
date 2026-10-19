@@ -4,6 +4,7 @@ import Testing
 
 /// Passkey sign-in turns the server's base64url challenge into bytes for the
 /// system sheet, then trades the signed assertion for a session.
+@MainActor
 struct AuthenticationManagerPasskeyTests {
     /// `-_8B` is base64url for bytes that need the URL-safe alphabet and no padding.
     private static let challengeJSON = #"""
