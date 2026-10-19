@@ -3,6 +3,13 @@ import Observation
 import PeatedCore
 import SwiftUI
 
+/// Root auth state for `AppView`.
+///
+/// `AuthenticationManager` publishes from whichever thread its async work
+/// finishes on. SwiftUI must only see this model change on the main actor:
+/// a write from another thread can land while `AppView.body` is being
+/// tracked, and SwiftUI then never re-renders, leaving the launch splash up.
+@MainActor
 @Observable
 class AppModel {
     var authState: AuthState = .unknown
@@ -24,6 +31,7 @@ class AppModel {
     init() {
         // Observe auth state changes
         authManager.$authState
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] peatedAuthState in
                 guard let self else { return }
                 authState = peatedAuthState
@@ -32,6 +40,7 @@ class AppModel {
 
         // Observe terms acceptance requirement
         authManager.$needsTermsAcceptance
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] needsAcceptance in
                 guard let self else { return }
                 needsTermsAcceptance = needsAcceptance
@@ -40,8 +49,9 @@ class AppModel {
     }
 
     func checkAuthStatus() async {
-        // Wait for auth check to complete
         await authManager.checkAuthStatus()
+        // The sink delivers asynchronously; callers read the result right away.
+        authState = authManager.authState
     }
 
     func handleAuthStateChanged(_ newState: AuthState) {
