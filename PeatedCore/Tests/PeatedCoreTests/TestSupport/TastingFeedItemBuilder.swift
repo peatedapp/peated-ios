@@ -9,6 +9,7 @@ public class TastingFeedItemBuilder {
     private var servingStyle: String? = "neat"
     private var imageUrl: String?
     private var createdAt = Date()
+    private var tastedAt: Date?
     private var userId = "user1"
     private var username = "testuser"
     private var userDisplayName: String?
@@ -29,6 +30,11 @@ public class TastingFeedItemBuilder {
 
     public func withId(_ id: String) -> TastingFeedItemBuilder {
         self.id = id
+        return self
+    }
+
+    public func withTastedAt(_ tastedAt: Date?) -> TastingFeedItemBuilder {
+        self.tastedAt = tastedAt
         return self
     }
 
@@ -95,6 +101,7 @@ public class TastingFeedItemBuilder {
             servingStyle: servingStyle,
             imageUrl: imageUrl,
             createdAt: createdAt,
+            tastedAt: tastedAt,
             userId: userId,
             username: username,
             userDisplayName: userDisplayName,
