@@ -21,7 +21,7 @@ let package = Package(
         // during package resolution (DependencyPackagesGroup.sortedInsert).
         .package(
             url: "https://github.com/stephencelis/SQLite.swift",
-            exact: "0.15.4"
+            exact: "0.16.0"
         ),
 
         // Authentication
