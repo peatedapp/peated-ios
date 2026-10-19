@@ -538,6 +538,7 @@ public class FeedModel {
             servingStyle: tasting.servingStyle,
             imageUrl: tasting.imageUrl,
             createdAt: tasting.createdAt,
+            tastedAt: tasting.tastedAt,
             userId: tasting.userId,
             username: tasting.username,
             userDisplayName: tasting.userDisplayName,
