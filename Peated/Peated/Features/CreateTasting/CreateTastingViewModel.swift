@@ -53,12 +53,19 @@ class CreateTastingViewModel: ObservableObject {
     private let tastingRepository: TastingRepository
     private let bottleRepository: any BottleRepositoryProtocol
     private let imageUploadService: ImageUploadService
+    /// When this tasting was started, sent as the time the dram was had.
+    private let tastedAt: Date
+    /// One key per tasting, so submitting again after a lost response returns
+    /// the tasting already posted instead of a duplicate.
+    private let idempotencyKey = UUID().uuidString
 
     init(
         tastingRepository: TastingRepository? = nil,
         bottleRepository: (any BottleRepositoryProtocol)? = nil,
-        imageUploadService: ImageUploadService? = nil
+        imageUploadService: ImageUploadService? = nil,
+        tastedAt: Date = Date()
     ) {
+        self.tastedAt = tastedAt
         // Use shared API client to ensure proper request handling
         let apiClient = APIClient.shared
         self.tastingRepository = tastingRepository ?? TastingRepository(apiClient: apiClient)
@@ -74,13 +81,15 @@ class CreateTastingViewModel: ObservableObject {
             // Create tasting first
             let input = CreateTastingInput(
                 bottleId: selectedBottle!.id,
+                idempotencyKey: idempotencyKey,
                 ratingBand: ratingBand,
                 notes: notes.isEmpty ? nil : notes,
                 servingStyle: servingStyle?.rawValue,
                 tags: selectedTags.sorted(),
                 location: selectedLocation?.name,
                 color: color,
-                pendingImageId: pendingBottlePhotoId
+                pendingImageId: pendingBottlePhotoId,
+                tastedAt: tastedAt
             )
 
             let tasting = try await tastingRepository.createTasting(input)

@@ -9,6 +9,8 @@ public struct TastingDetail: Identifiable, Equatable {
     public let servingStyle: String?
     public let imageUrl: String?
     public let createdAt: Date
+    /// When the dram was had. The tasting page shows this, not the post time.
+    public let tastedAt: Date
 
     // User info
     public let userId: String
@@ -53,7 +55,7 @@ public struct TastingDetail: Identifiable, Equatable {
     public var timeAgo: String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: createdAt, relativeTo: Date())
+        return formatter.localizedString(for: tastedAt, relativeTo: Date())
     }
 
     /// Display name for the tasting author
@@ -73,6 +75,7 @@ public extension TastingDetail {
         servingStyle = feedItem.servingStyle
         imageUrl = feedItem.imageUrl
         createdAt = feedItem.createdAt
+        tastedAt = feedItem.tastedDate
         userId = feedItem.userId
         username = feedItem.username
         userDisplayName = feedItem.userDisplayName
@@ -102,6 +105,7 @@ public extension TastingDetail {
             servingStyle: servingStyle,
             imageUrl: imageUrl,
             createdAt: createdAt,
+            tastedAt: tastedAt,
             userId: userId,
             username: username,
             userDisplayName: userDisplayName,

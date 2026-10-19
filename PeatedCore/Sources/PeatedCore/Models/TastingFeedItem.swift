@@ -6,7 +6,11 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
     public let notes: String?
     public let servingStyle: String?
     public let imageUrl: String?
+    /// When the tasting was posted. Feeds order tastings by this time.
     public let createdAt: Date
+    /// When the dram was had. Nil only for tastings cached before the server
+    /// sent it; read `tastedDate` instead.
+    public let tastedAt: Date?
 
     // User info (denormalized)
     public let userId: String
@@ -41,6 +45,7 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
         servingStyle: String?,
         imageUrl: String?,
         createdAt: Date,
+        tastedAt: Date?,
         userId: String,
         username: String,
         userDisplayName: String?,
@@ -64,6 +69,7 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
         self.servingStyle = servingStyle
         self.imageUrl = imageUrl
         self.createdAt = createdAt
+        self.tastedAt = tastedAt
         self.userId = userId
         self.username = username
         self.userDisplayName = userDisplayName
@@ -102,6 +108,7 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
             servingStyle: servingStyle,
             imageUrl: imageUrl,
             createdAt: createdAt,
+            tastedAt: tastedAt,
             userId: userId,
             username: username,
             userDisplayName: userDisplayName,
@@ -135,9 +142,16 @@ public struct TastingFeedItem: Identifiable, Equatable, Hashable, Sendable, Coda
         )
     }
 
+    /// When the dram was had, which is what tasting rows show. Tastings cached
+    /// before the server sent `tastedAt` fall back to the post time, which held
+    /// the tasted time until then.
+    public var tastedDate: Date {
+        tastedAt ?? createdAt
+    }
+
     public var timeAgo: String {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: createdAt, relativeTo: Date())
+        return formatter.localizedString(for: tastedDate, relativeTo: Date())
     }
 }

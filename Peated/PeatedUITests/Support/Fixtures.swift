@@ -65,7 +65,8 @@ enum Fixtures {
         #"""
         {"id":\#(id),"bottle":\#(bottle),"ratingBand":"\#(ratingBand)","tags":[],
          "awards":[],"comments":0,"toasts":0,"hasToasted":false,
-         "createdAt":"\#(timestamp)","createdBy":\#(user)}
+         "createdAt":"\#(timestamp)","tastedAt":"\#(timestamp)",
+         "createdBy":\#(user)}
         """#
     }
 
