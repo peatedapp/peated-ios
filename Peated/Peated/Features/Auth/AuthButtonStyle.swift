@@ -32,7 +32,7 @@ struct AuthButtonStyle: ButtonStyle {
             .contentShape(shape)
     }
 
-    // Disabled buttons use muted colors instead of fading, so their text keeps readable contrast.
+    /// Disabled buttons use muted colors instead of fading, so their text keeps readable contrast.
     private var foreground: Color {
         guard isEnabled else { return .textMuted }
         return variant == .accent ? .onBrand : .text
