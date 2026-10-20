@@ -33,6 +33,13 @@ struct LoginScreen {
         emailSignInButton.expectToAppear("Expected the email sign-in step")
     }
 
+    /// The email step focuses the email field. Return ends editing and closes
+    /// the keyboard, which would otherwise cover the form during an audit.
+    func dismissKeyboard() {
+        app.textFields.firstMatch.typeText("\n")
+        app.keyboards.firstMatch.expectToDisappear()
+    }
+
     func openSignUp() -> SignUpScreen {
         signUpLink.expectToAppear().tap()
         return SignUpScreen(app: app).waitUntilShown()
