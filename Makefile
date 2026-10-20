@@ -14,8 +14,9 @@ XCODE_CLOUD_TIMEOUT ?= 2h
 
 .DEFAULT_GOAL := help
 
-SWIFTFORMAT_IMAGE ?= ghcr.io/nicklockwood/swiftformat:0.63.0@sha256:cb50a33496b4f5123b99241437f24f154a68085398cfda1412ed3b6bab9c02ec
-SWIFTLINT_IMAGE ?= ghcr.io/realm/swiftlint:0.65.1@sha256:f47e083201e47a136cda5ae847595bfe00226c444ca226fa74fa5dc648a9b057
+# Scripts/lint-common.sh owns the pinned SwiftFormat and SwiftLint images.
+SWIFTFORMAT_IMAGE ?= $(shell . ./Scripts/lint-common.sh && printf '%s' "$$SWIFTFORMAT_IMAGE")
+SWIFTLINT_IMAGE ?= $(shell . ./Scripts/lint-common.sh && printf '%s' "$$SWIFTLINT_IMAGE")
 ACTIONLINT_IMAGE ?= rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667
 
 .PHONY: help doctor bootstrap install-hooks check lint lint-docker lint-all lint-swift \
