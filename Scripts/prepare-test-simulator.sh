@@ -1,5 +1,6 @@
 #!/bin/bash
-# Boots the named iPhone simulator for UI tests and prints its UDID.
+# Turns off the Apple Intelligence banner on the named iPhone simulator and
+# prints its UDID for xcodebuild.
 #
 # Usage: Scripts/prepare-test-simulator.sh 'iPhone 17 Pro'
 #
@@ -29,16 +30,21 @@ udid="${device%% *}"
 state="${device#* }"
 
 if [ "$state" != "Booted" ]; then
-    echo "Booting $name ($udid)" >&2
     xcrun simctl boot "$udid"
 fi
 
 # On Apple Intelligence-capable hosts, iOS 26 posts a "Ready for Apple
-# Intelligence" banner about four minutes after first boot. The banner lands
-# mid-run and stalls XCUIApplication.terminate() until it times out. Recording
-# that the banner was already sent stops generativeexperiencesd from posting it.
-# This must run before that first check, so it runs right after boot.
+# Intelligence" banner about four minutes after boot. The banner lands mid-run
+# and stalls XCUIApplication.terminate() until it times out. Recording that the
+# banner was already sent stops generativeexperiencesd from posting it. The
+# value is a simulator user default, so it survives a shutdown.
 xcrun simctl spawn "$udid" defaults write com.apple.generativeexperiences.corefollowup \
     DateOfLastAppleIntelligenceReadinessCFU -date "$(date -u '+%Y-%m-%d %H:%M:%S +0000')"
+
+# xcodebuild attaches the simulator's system log to the result bundle only when
+# it boots the device itself, so hand back a device in the state it was found.
+if [ "$state" != "Booted" ]; then
+    xcrun simctl shutdown "$udid"
+fi
 
 printf '%s\n' "$udid"
