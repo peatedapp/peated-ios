@@ -20,13 +20,25 @@ final class LaunchUITests: XCTestCase {
         try app.auditAccessibility()
     }
 
+    /// The audit is the last step. On a loaded CI runner, the first tap after
+    /// this audit has been lost inside the simulator: backboardd registered
+    /// XCTest's virtual touch digitizer twice, dropped the touch-up, and the
+    /// app saw the touch cancelled. No tap follows the audit here.
     @MainActor
-    func testEmailSignInStepShowsPasswordFormAndReturns() throws {
+    func testEmailSignInStepPassesAccessibilityAudit() throws {
         let app = AppLaunch.launch(session: .signedOut, stubs: [])
         let login = LoginScreen(app: app).waitUntilShown()
 
         login.openEmailSignIn()
         try app.auditAccessibility()
+    }
+
+    @MainActor
+    func testEmailSignInStepShowsPasswordFormAndReturns() {
+        let app = AppLaunch.launch(session: .signedOut, stubs: [])
+        let login = LoginScreen(app: app).waitUntilShown()
+
+        login.openEmailSignIn()
 
         login.otherWaysButton.tap()
         login.continueWithEmailButton.expectToAppear("Expected the sign-in methods")
