@@ -26,6 +26,14 @@
             APIClient.launchTransport = StubAPITransport(decodeStubs(environment[stubsKey]))
         }
 
+        /// Stands in for the system passkey sheet, which UI tests cannot drive.
+        /// The stubbed API accepts any bytes.
+        static let passkeyRegistration = PasskeyRegistration(
+            credentialID: Data([1, 2, 3]),
+            clientDataJSON: Data("{}".utf8),
+            attestationObject: Data([4, 5, 6])
+        )
+
         /// Every UI test starts from a known session. Signed-in tests get a
         /// placeholder token; the stub transport never checks it.
         private static func resetSession(signedIn: Bool) {

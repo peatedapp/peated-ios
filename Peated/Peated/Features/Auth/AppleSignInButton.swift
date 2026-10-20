@@ -10,6 +10,8 @@ import SwiftUI
 ///
 /// User cancellation is a normal outcome and never reaches `onCompletion`.
 struct AppleSignInButton: View {
+    /// One of Apple's approved titles: "Continue with Apple", "Sign in with Apple", or "Sign up with Apple".
+    var title = "Continue with Apple"
     let onCompletion: (Result<AppleSignInCredential, Error>) -> Void
 
     @State private var requester = AuthorizationRequester<AppleSignInCredential>()
@@ -18,7 +20,7 @@ struct AppleSignInButton: View {
     var body: some View {
         Button(action: requestAuthorization) {
             Label {
-                Text("Continue with Apple")
+                Text(title)
             } icon: {
                 Image(systemName: "apple.logo")
             }

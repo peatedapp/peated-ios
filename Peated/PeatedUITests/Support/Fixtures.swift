@@ -18,6 +18,22 @@ enum Fixtures {
         #"{"user":\#(user),"accessToken":"ui-test-access-token"}"#
     }
 
+    /// The `registerChallenge` response: WebAuthn options for the new account's passkey.
+    /// The app's UI-test passkey stands in for the system sheet, so only the shape matters.
+    static func registrationChallenge(username: String = Fixtures.username) -> String {
+        #"""
+        {"signedChallenge":"ui-test-signed-challenge","options":{"challenge":"AQID",
+         "rp":{"id":"peated.com","name":"Peated"},
+         "user":{"id":"AQID","name":"\#(username)","displayName":"\#(username)"},
+         "pubKeyCredParams":[{"alg":-7,"type":"public-key"}]}}
+        """#
+    }
+
+    /// A 409 naming the field another account already uses.
+    static func registrationConflict(field: String, message: String) -> String {
+        #"{"defined":true,"code":"CONFLICT","status":409,"message":"\#(message)","data":{"field":"\#(field)"}}"#
+    }
+
     /// The `getUser` response: the member plus their counters.
     static func userProfile(id: Int = 1, username: String = Fixtures.username) -> String {
         #"""

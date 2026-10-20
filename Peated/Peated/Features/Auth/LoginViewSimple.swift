@@ -53,20 +53,15 @@ struct LoginViewSimple: View {
         }
         .navigationBarHidden(true)
         .overlay(loadingOverlay)
-        .onChange(of: error) { _, message in
-            if let message {
-                AccessibilityNotification.Announcement(message).post()
-            }
-        }
     }
 
     // MARK: - Panels
 
     private var methodsPanel: some View {
         VStack(alignment: .leading, spacing: 0) {
-            panelHeader(title: "Sign in", description: "A passkey is fastest. Email works everywhere.")
+            AuthPanelHeader(title: "Sign in", description: "A passkey is fastest. Email works everywhere.")
 
-            errorNotice
+            AuthNotice(message: error)
 
             VStack(spacing: 6) {
                 Button(action: handlePasskeySignIn) {
@@ -123,9 +118,9 @@ struct LoginViewSimple: View {
             .accessibilityLabel("Other ways to sign in")
             .padding(.bottom, DesignSystem.Spacing.small)
 
-            panelHeader(title: "Sign in with email", description: "Use the email and password for your account.")
+            AuthPanelHeader(title: "Sign in with email", description: "Use the email and password for your account.")
 
-            errorNotice
+            AuthNotice(message: error)
 
             VStack(spacing: DesignSystem.Spacing.medium) {
                 TextInput(
@@ -157,46 +152,11 @@ struct LoginViewSimple: View {
         .onAppear { isEmailFocused = true }
     }
 
-    private func panelHeader(title: String, description: String) -> some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-            Text(title)
-                .font(.peatedPageTitleCompact)
-                .tracking(DesignSystem.Tracking.pageTitleCompact)
-                .fontWeight(.bold)
-                .foregroundColor(.text)
-                .accessibilityAddTraits(.isHeader)
-
-            Text(description)
-                .font(.peatedBody)
-                .foregroundColor(.textSecondary)
-        }
-        .padding(.bottom, DesignSystem.Spacing.xLarge)
-    }
-
-    @ViewBuilder
-    private var errorNotice: some View {
-        if let error {
-            Text(error)
-                .font(.peatedBody)
-                .fontWeight(.semibold)
-                .foregroundColor(.brandEmphasis)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(DesignSystem.Spacing.large)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
-                        .strokeBorder(Color.brandTint, lineWidth: DesignSystem.Border.thin)
-                )
-                .padding(.bottom, DesignSystem.Spacing.medium)
-        }
-    }
-
     // MARK: - Account Links
 
     private var accountLinks: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Rectangle()
-                .fill(Color.border)
-                .frame(height: DesignSystem.Border.thin)
+            AuthDivider()
                 .padding(.vertical, 26)
 
             // One layout that changes axis keeps each link the same element as the text size changes.
@@ -226,7 +186,7 @@ struct LoginViewSimple: View {
                     onLoginSuccess(user)
                 }
             ) {
-                accountLinkLabel("Create one")
+                AuthLinkLabel(title: "Create one")
             }
             .accessibilityIdentifier(AccessibilityID.Auth.signUpLink)
         }
@@ -237,17 +197,8 @@ struct LoginViewSimple: View {
         }
 
         Link(destination: PeatedWebURL.recoverAccount) {
-            accountLinkLabel("Recover your account")
+            AuthLinkLabel(title: "Recover your account")
         }
-    }
-
-    private func accountLinkLabel(_ title: String) -> some View {
-        Text(title)
-            .font(.peatedInteractiveSmall)
-            .foregroundColor(.brandEmphasis)
-            // Keep the bare text link at the 44-point minimum hit target.
-            .frame(minHeight: DesignSystem.ControlHeight.standard)
-            .contentShape(Rectangle())
     }
 
     // MARK: - Loading Overlay
