@@ -186,11 +186,12 @@ test-ios:
 	@./Scripts/require-apple-toolchain.sh xcodebuild
 	@mkdir -p "$(dir $(RESULT_BUNDLE))"
 	@rm -rf "$(RESULT_BUNDLE)"
+	udid="$$(./Scripts/prepare-test-simulator.sh '$(SIMULATOR)')" && \
 	xcodebuild -project "$(PROJECT)" -scheme "$(SCHEME)" \
 		-derivedDataPath "$(DERIVED_DATA)" \
 		-resultBundlePath "$(RESULT_BUNDLE)" \
 		-disableAutomaticPackageResolution \
-		-destination '$(DESTINATION)' \
+		-destination "platform=iOS Simulator,id=$$udid" \
 		-parallel-testing-enabled NO test
 
 xcode-cloud-list:
