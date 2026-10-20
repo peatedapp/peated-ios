@@ -26,6 +26,11 @@ jq '
       (.anyOf | map(select(.type? != "null"))[0]) + 
       { nullable: true } +
       (. | del(.anyOf) | to_entries | map(select(.key != "anyOf")) | from_entries)
+    elif type == "object" and has("anyOf") and (.anyOf | length) > 2 and
+       ((.anyOf | map(.type? == "null") | any)) then
+      # The generator drops a nullable union of several types, yet strict
+      # parents still reject the missing key. Keep it as a free-form value.
+      del(.anyOf)
     else
       .
     end
@@ -37,3 +42,4 @@ mv "$TEMP_FILE" "$OUTPUT_FILE"
 
 echo "✅ Fixed nullable fields in $OUTPUT_FILE"
 echo "   Converted anyOf[type, null] patterns to type with nullable: true"
+echo "   Converted wider nullable anyOf unions to free-form values"

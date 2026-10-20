@@ -158,32 +158,31 @@ extension BottlePhotoIdentificationRepository {
         let fields = payload.imageEvidence.fieldCandidates
         let brandName = fields?.brand?.value.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let bottleName = fields?.expression?.value.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-        let proposed = payload.classification.value2?.decision.value2?.proposedBottle
+        let decision = payload.classification.value2?.decision
+        // The no_match variant (`value3`) only requires `action`, so it decodes
+        // alongside every other variant. The action string picks the variant.
+        let action = decision?.value3?.action.value as? String
+        let matched = action == "match" ? decision?.value1?.matchedBottle : nil
+        let proposed = action == "create_bottle" ? decision?.value2?.proposedBottle : nil
         let proposedBrandName = proposed?.brand.name.trimmingCharacters(in: .whitespacesAndNewlines)
         let proposedBottleName = proposed?.name.trimmingCharacters(in: .whitespacesAndNewlines)
-        let manualBrandName = proposedBrandName ?? brandName
-        let manualBottleName = proposedBottleName ?? bottleName
-        let manualCategory = proposed?.category.flatMap { BottleCategory(rawValue: $0.rawValue) }
-            ?? fields?.category.flatMap { BottleCategory(rawValue: $0.value.rawValue) }
-        let manualInput = manualBrandName.isEmpty || manualBottleName.isEmpty
-            ? nil
-            : CreateBottleInput(
-                name: manualBottleName,
-                brandName: manualBrandName,
-                category: manualCategory,
-                statedAge: proposed?.statedAge.map { Int($0) } ?? fields?.statedAge.map(\.value),
-                abv: proposed?.abv ?? fields?.abv?.value
-            )
+        let manualInput = CreateBottleInput(
+            name: proposedBottleName ?? bottleName,
+            brandName: proposedBrandName ?? brandName,
+            category: proposed?.category.flatMap { BottleCategory(rawValue: $0.rawValue) }
+                ?? fields?.category.flatMap { BottleCategory(rawValue: $0.value.rawValue) },
+            statedAge: proposed?.statedAge.map { Int($0) } ?? fields?.statedAge.map(\.value),
+            abv: proposed?.abv ?? fields?.abv?.value
+        )
 
-        let outcome: BottlePhotoIdentification.Outcome = switch payload.suggestedNextStep {
-        case .confirm_match:
-            if let matched = payload.classification.value2?.decision.value1?.matchedBottle {
+        // Matches the web resolver: a match the server downgraded to manual
+        // search still shows the matched bottle for the user to confirm.
+        let outcome: BottlePhotoIdentification.Outcome =
+            if let matched {
                 .matched(Bottle(from: matched))
-            } else {
-                .manual
-            }
-        case .confirm_create:
-            if let proposed, let createToken = payload.createToken {
+            } else if let proposed,
+                      payload.suggestedNextStep == .confirm_create,
+                      let createToken = payload.createToken {
                 .proposed(
                     BottlePhotoProposal(
                         name: proposed.name,
@@ -196,12 +195,11 @@ extension BottlePhotoIdentificationRepository {
                     ),
                     createToken: createToken
                 )
+            } else if proposed != nil || (action == "no_match" && hasLabelDetails(fields)) {
+                .notFound
             } else {
-                .manual
+                .unidentified
             }
-        case .manual_search:
-            .manual
-        }
 
         return BottlePhotoIdentification(
             pendingImageId: payload.pendingImage.id,
@@ -210,10 +208,26 @@ extension BottlePhotoIdentificationRepository {
             searchQuery: [brandName, bottleName]
                 .filter { !$0.isEmpty }
                 .joined(separator: " "),
-            manualBottleInput: manualInput,
-            photoSuitabilityReason: payload.imageEvidence.photoSuitability.reason,
+            manualBottleInput: manualInput == CreateBottleInput(name: "", brandName: "") ? nil : manualInput,
             outcome: outcome
         )
+    }
+
+    /// Label details that identify a specific bottle, as opposed to its type.
+    static func hasLabelDetails(_ fields: Payload.imageEvidencePayload.fieldCandidatesPayload?) -> Bool {
+        guard let fields else { return false }
+
+        let text = [fields.brand?.value, fields.expression?.value, fields.edition?.value, fields.caskNumber?.value]
+        let hasText = text.contains { value in
+            !(value?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ?? true)
+        }
+        return hasText || [
+            fields.statedAge != nil,
+            fields.abv != nil,
+            fields.vintageYear != nil,
+            fields.bottlingYear != nil,
+            fields.releaseYear != nil
+        ].contains(true)
     }
 
     static func makeFacts(_ fields: Payload.imageEvidencePayload.fieldCandidatesPayload?) -> [BottlePhotoFact] {

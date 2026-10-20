@@ -149,7 +149,6 @@ private extension BottlePhotoIdentification {
         facts: [BottlePhotoFact(label: "Brand", value: "Ardbeg")],
         searchQuery: "Ardbeg Uigeadail",
         manualBottleInput: CreateBottleInput(name: "Uigeadail", brandName: "Ardbeg"),
-        photoSuitabilityReason: nil,
         outcome: .matched(.stub)
     )
 }

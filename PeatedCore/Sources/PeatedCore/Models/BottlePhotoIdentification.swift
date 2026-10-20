@@ -56,7 +56,10 @@ public struct BottlePhotoIdentification: Equatable, Sendable {
     public enum Outcome: Equatable, Sendable {
         case matched(Bottle)
         case proposed(BottlePhotoProposal, createToken: String)
-        case manual
+        /// The label has bottle details, but no existing bottle matched it.
+        case notFound
+        /// The label did not yield enough details to suggest a bottle.
+        case unidentified
     }
 
     public let pendingImageId: String
@@ -64,7 +67,6 @@ public struct BottlePhotoIdentification: Equatable, Sendable {
     public let facts: [BottlePhotoFact]
     public let searchQuery: String
     public let manualBottleInput: CreateBottleInput?
-    public let photoSuitabilityReason: String?
     public let outcome: Outcome
 
     public init(
@@ -73,7 +75,6 @@ public struct BottlePhotoIdentification: Equatable, Sendable {
         facts: [BottlePhotoFact],
         searchQuery: String,
         manualBottleInput: CreateBottleInput?,
-        photoSuitabilityReason: String?,
         outcome: Outcome
     ) {
         self.pendingImageId = pendingImageId
@@ -81,7 +82,6 @@ public struct BottlePhotoIdentification: Equatable, Sendable {
         self.facts = facts
         self.searchQuery = searchQuery
         self.manualBottleInput = manualBottleInput
-        self.photoSuitabilityReason = photoSuitabilityReason
         self.outcome = outcome
     }
 }
