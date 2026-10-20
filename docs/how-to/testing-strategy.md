@@ -108,6 +108,8 @@ make build-ios
 make test-ios
 ```
 
+`make test-ios` runs `Scripts/prepare-test-simulator.sh` first. The script boots the named simulator on the newest iOS runtime and turns off the iOS 26 "Ready for Apple Intelligence" banner. That banner appears about four minutes after first boot on capable hosts, and it stalls `XCUIApplication.terminate()` until XCTest times out after 60 seconds.
+
 For visible UI changes, manually verify the changed workflow and inspect loading, empty, offline, error, and success states. Also check the smallest supported iPhone, iPad layout, VoiceOver, and large Dynamic Type when the layout can be affected.
 
 ## Diagnostic runs
