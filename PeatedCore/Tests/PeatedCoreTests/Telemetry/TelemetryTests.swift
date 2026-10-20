@@ -7,7 +7,11 @@ import Testing
 /// These tests swap the process-wide reporter, so they run one at a time.
 @Suite(.serialized)
 struct TelemetryTests {
-    private func withRecorder(_ body: (RecordingTelemetryReporter) async throws -> Void) async rethrows {
+    /// Runs `body` on the caller's actor, so main-actor tests can use main-actor types.
+    private func withRecorder(
+        isolation _: isolated (any Actor)? = #isolation,
+        _ body: (RecordingTelemetryReporter) async throws -> Void
+    ) async rethrows {
         let recorder = RecordingTelemetryReporter()
         Telemetry.install(recorder)
         defer { Telemetry.install(NoopTelemetryReporter()) }
@@ -103,7 +107,7 @@ struct TelemetryTests {
         }
     }
 
-    @Test
+    @Test @MainActor
     func signOutClearsTheReportedUser() async throws {
         try await withRecorder { recorder in
             let manager = try AuthenticationManager(

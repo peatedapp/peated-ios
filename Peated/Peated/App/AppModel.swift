@@ -5,8 +5,7 @@ import SwiftUI
 
 /// Root auth state for `AppView`.
 ///
-/// `AuthenticationManager` publishes from whichever thread its async work
-/// finishes on. SwiftUI must only see this model change on the main actor:
+/// SwiftUI must only see this model change on the main actor:
 /// a write from another thread can land while `AppView.body` is being
 /// tracked, and SwiftUI then never re-renders, leaving the launch splash up.
 @MainActor
