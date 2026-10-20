@@ -34,6 +34,7 @@ struct BottlePhotoResolutionView: View {
                         .frame(maxWidth: .infinity)
                         .clipped()
                         .cornerRadius(12)
+                        .accessibilityLabel("Your bottle photo")
 
                     content
                 }
@@ -116,6 +117,9 @@ struct BottlePhotoResolutionView: View {
             actionButton(title: "Use This Bottle", systemImage: "checkmark") {
                 resolve(bottle, pendingImageId: identification.pendingImageId)
             }
+            searchButton(identification)
+            addBottleButton()
+            startOverButton()
 
         case let .proposed(proposal, createToken):
             resultHeader(
@@ -136,20 +140,58 @@ struct BottlePhotoResolutionView: View {
                 }
             }
             .disabled(viewModel.isCreating)
+            searchButton(identification)
+            startOverButton()
 
-        case .manual:
+        case .notFound:
             resultHeader(
-                title: "We couldn't confirm this bottle",
-                description: identification.photoSuitabilityReason ??
-                    "Review the details we found, then search or add it manually."
+                title: "We couldn't find this bottle",
+                description: "We found label details, but not enough to choose an existing bottle. " +
+                    "Review them before adding it to Peated."
+            )
+            factsSection(identification.facts)
+            actionButton(title: "Add a New Bottle", systemImage: "plus") {
+                showingManualEntry = true
+            }
+            searchButton(identification)
+            startOverButton()
+
+        case .unidentified:
+            resultHeader(
+                title: "We couldn't identify the bottle",
+                description: "Search can still find it, or you can start over with another photo."
             )
             factsSection(identification.facts)
             actionButton(title: "Search Bottles", systemImage: "magnifyingglass") {
                 search(with: identification.searchQuery)
             }
-            secondaryButton(title: "Review and Add Bottle", systemImage: "plus") {
-                showingManualEntry = true
-            }
+            addBottleButton()
+            startOverButton()
+        }
+    }
+
+    private func searchButton(_ identification: BottlePhotoIdentification) -> some View {
+        secondaryButton(title: "Search Bottles", systemImage: "magnifyingglass") {
+            search(with: identification.searchQuery)
+        }
+    }
+
+    private func addBottleButton() -> some View {
+        secondaryButton(title: "Add a New Bottle", systemImage: "plus") {
+            showingManualEntry = true
+        }
+    }
+
+    /// Returns to bottle selection, where the user can choose another photo.
+    private func startOverButton() -> some View {
+        Button {
+            dismiss()
+        } label: {
+            Label("Start Over", systemImage: "arrow.counterclockwise")
+                .fontWeight(.medium)
+                .foregroundColor(.brand)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
         }
     }
 
@@ -261,7 +303,8 @@ struct BottlePhotoResolutionView: View {
         Button(action: action) {
             Label(title, systemImage: systemImage)
                 .fontWeight(.medium)
-                .foregroundColor(.brand)
+                // Ink text keeps the label readable on the brand tint; brand-on-tint is below 4.5:1.
+                .foregroundColor(.text)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 12)
                 .background(Color.brand.opacity(0.1))
