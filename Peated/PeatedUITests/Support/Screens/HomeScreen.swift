@@ -23,9 +23,16 @@ struct HomeScreen {
         return self
     }
 
-    func openRecordTasting() -> CreateTastingScreen {
-        recordTab.expectToAppear().tap()
-        return CreateTastingScreen(app: app).waitUntilShown()
+    func openRecordTasting(file: StaticString = #filePath, line: UInt = #line) -> CreateTastingScreen {
+        let sheet = CreateTastingScreen(app: app)
+        recordTab.expectToAppear(file: file, line: line).tap()
+        // The CI simulator sometimes stalls for seconds right after a relaunch,
+        // and the tap synthesized during the stall is lost. One more tap keeps
+        // the journey deterministic; a real regression fails both.
+        if !sheet.title.waitForExistence(timeout: 10), recordTab.isHittable {
+            recordTab.tap()
+        }
+        return sheet.waitUntilShown(file: file, line: line)
     }
 
     /// Any feed text mentioning the bottle, such as its name in a tasting card.
