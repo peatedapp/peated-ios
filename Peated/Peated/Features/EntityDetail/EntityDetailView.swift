@@ -283,7 +283,7 @@ struct EntityDetailView: View {
 
     private func activitySection() -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            if model.isLoadingTastings, model.recentTastings.isEmpty {
+            if !model.tastings.hasLoaded, model.tastings.error == nil {
                 // Loading state
                 VStack(spacing: 0) {
                     ForEach(0 ..< 3) { index in
@@ -297,17 +297,20 @@ struct EntityDetailView: View {
                         }
                     }
                 }
-            } else if model.recentTastings.isEmpty {
+            } else if model.tastings.items.isEmpty {
                 // Empty state
-                Text("No recent activity")
+                Text(model.tastings.error == nil ? "No recent activity" : "Couldn't load activity")
                     .foregroundColor(.secondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 40)
             } else {
                 // Show tastings using unified feed card design
                 ActivityList(
-                    tastings: model.recentTastings,
+                    tastings: model.tastings.items,
                     showBottle: true,
+                    onAppear: { tasting in
+                        Task { await model.tastings.loadMoreIfNeeded(after: tasting) }
+                    },
                     onToast: { tasting in
                         Task {
                             await model.toggleToast(for: tasting.id)
@@ -327,6 +330,8 @@ struct EntityDetailView: View {
                         navigate(to: .bottle(id: tasting.bottleId))
                     }
                 )
+
+                PagedListFooter(list: model.tastings)
             }
         }
     }
@@ -335,7 +340,7 @@ struct EntityDetailView: View {
 
     @ViewBuilder
     private func bottlesSection() -> some View {
-        if model.isLoadingBottles, model.bottles.isEmpty {
+        if !model.bottles.hasLoaded, model.bottles.error == nil {
             // Loading state
             VStack(spacing: 12) {
                 ForEach(0 ..< 3) { _ in
@@ -359,16 +364,16 @@ struct EntityDetailView: View {
                 }
             }
             .padding(.vertical)
-        } else if model.bottles.isEmpty {
+        } else if model.bottles.items.isEmpty {
             // Empty state
-            Text("No bottles found")
+            Text(model.bottles.error == nil ? "No bottles found" : "Couldn't load bottles")
                 .foregroundColor(.secondary)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 40)
         } else {
             // Bottles grid
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                ForEach(model.bottles) { bottle in
+                ForEach(model.bottles.items) { bottle in
                     NavigationLink(destination: BottleDetailView(
                         bottleId: bottle.id,
                         navigationPath: navigationPath
@@ -376,9 +381,12 @@ struct EntityDetailView: View {
                         bottleCard(bottle)
                     }
                     .buttonStyle(PlainButtonStyle())
+                    .loadsMore(of: model.bottles, after: bottle)
                 }
             }
             .padding(.vertical)
+
+            PagedListFooter(list: model.bottles)
         }
     }
 

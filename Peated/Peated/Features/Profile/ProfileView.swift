@@ -16,11 +16,6 @@ struct ProfileView: View {
     @State private var selectedTab = 0
     @State private var showingSettings = false
     @State private var showingBlockConfirmation = false
-    @State private var activityTastings: [TastingFeedItem] = []
-    @State private var activityCursor: String?
-    @State private var activityHasMore = true
-    @State private var isLoadingActivity = false
-    @State private var activityError: Error?
 
     init(
         userId: String? = nil,
@@ -68,14 +63,14 @@ struct ProfileView: View {
                     }
 
                     // Load activity for this specific user
-                    await loadActivity(userId: user.id, refresh: true)
+                    await model.loadActivity(userId: user.id)
 
                     // Preload the Library for this profile.
                     await model.loadLibrary()
 
                     // Prefetch avatars and bottle images for profile feed
                     var urls: [URL] = []
-                    for item in activityTastings.prefix(40) {
+                    for item in model.activity.items.prefix(40) {
                         if let s = item.userAvatarUrl, let u = URL(string: s) {
                             urls.append(u)
                         }
@@ -430,8 +425,7 @@ struct ProfileView: View {
 
     private var activitySection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // Reuse the feed content from FeedView
-            if isLoadingActivity, activityTastings.isEmpty {
+            if !model.activity.hasLoaded, model.activity.error == nil {
                 // Loading state
                 VStack(spacing: 0) {
                     ForEach(0 ..< 3) { index in
@@ -446,14 +440,14 @@ struct ProfileView: View {
                     }
                 }
                 .padding(.horizontal)
-            } else if activityError != nil, activityTastings.isEmpty {
+            } else if model.activity.error != nil, model.activity.items.isEmpty {
                 // Error state with no data
                 Text("Unable to load activity")
                     .foregroundColor(.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .center)
                     .padding(.vertical, 40)
                     .padding(.horizontal)
-            } else if activityTastings.isEmpty {
+            } else if model.activity.items.isEmpty {
                 // Empty state
                 Text("No tastings yet")
                     .foregroundColor(.textSecondary)
@@ -464,10 +458,12 @@ struct ProfileView: View {
                 // Show tastings using unified feed card design
                 VStack(spacing: 0) {
                     ActivityList(
-                        tastings: activityTastings,
+                        tastings: model.activity.items,
                         showBottle: true,
                         showUserHeader: false,
-                        limit: 5,
+                        onAppear: { tasting in
+                            Task { await model.activity.loadMoreIfNeeded(after: tasting) }
+                        },
                         onToast: { tasting in
                             Task { await toggleActivityToast(for: tasting.id) }
                         },
@@ -485,19 +481,7 @@ struct ProfileView: View {
                         }
                     )
 
-                    // Show more button if there are more than 5 tastings
-                    if activityTastings.count > 5 {
-                        Button(action: {
-                            // TODO: Navigate to full activity view
-                        }) {
-                            Text("View All Activity")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(.brand)
-                                .padding(.vertical, 12)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
+                    PagedListFooter(list: model.activity)
                 }
             }
         }
@@ -506,9 +490,9 @@ struct ProfileView: View {
     private var librarySection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Group {
-                if model.isLoadingLibrary {
+                if model.library.isLoading, model.library.items.isEmpty {
                     ProgressView().tint(.brand)
-                } else if let err = model.libraryError {
+                } else if let err = model.library.error, model.library.items.isEmpty {
                     VStack(spacing: 8) {
                         Text("Couldn't load library")
                             .font(.subheadline)
@@ -519,7 +503,7 @@ struct ProfileView: View {
                             .buttonStyle(.borderedProminent)
                     }
                     .frame(maxWidth: .infinity)
-                } else if model.libraryEntries.isEmpty {
+                } else if model.library.items.isEmpty {
                     VStack(spacing: 8) {
                         Text("No library bottles yet")
                             .foregroundColor(.textSecondary)
@@ -530,144 +514,41 @@ struct ProfileView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 24)
                 } else {
-                    ScrollView {
-                        LazyVStack(spacing: 12) {
-                            ForEach(model.libraryEntries) { entry in
-                                BottleRow(bottle: entry.bottle) {
-                                    onNavigateToBottle?(entry.bottle.id)
-                                }
+                    // The profile already scrolls, so the rows join its scroll view.
+                    LazyVStack(spacing: 12) {
+                        ForEach(model.library.items) { entry in
+                            BottleRow(bottle: entry.bottle) {
+                                onNavigateToBottle?(entry.bottle.id)
                             }
+                            .loadsMore(of: model.library, after: entry)
                         }
-                        .padding(.top, 8)
+
+                        PagedListFooter(list: model.library)
                     }
-                    .refreshable { await model.loadLibrary() }
+                    .padding(.top, 8)
                 }
             }
         }
     }
 
-    // MARK: - Activity Loading
-
-    private func loadActivity(userId: String, refresh: Bool = false) async {
-        guard !isLoadingActivity else { return }
-
-        isLoadingActivity = true
-        activityError = nil
-
-        if refresh {
-            activityCursor = nil
-            activityHasMore = true
-        }
-
-        do {
-            let feedRepository = FeedRepository()
-            let feedPage = try await feedRepository.getUserTastings(
-                userId: userId,
-                cursor: activityCursor,
-                limit: 20
-            )
-
-            if refresh {
-                activityTastings = feedPage.tastings
-            } else {
-                activityTastings.append(contentsOf: feedPage.tastings)
-            }
-
-            activityCursor = feedPage.cursor
-            activityHasMore = feedPage.hasMore
-        } catch {
-            Telemetry.capture(error, feature: "profile", operation: "load_activity")
-            activityError = error
-        }
-
-        isLoadingActivity = false
-    }
-
     private func toggleActivityToast(for tastingId: String) async {
-        // Find the tasting in activity list
-        guard let tastingIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) else {
+        guard let original = model.activity.items.first(where: { $0.id == tastingId }) else {
             return
         }
 
-        let currentTasting = activityTastings[tastingIndex]
-        let newToastedState = !currentTasting.hasToasted
-        let newToastCount = newToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1)
-
-        // Create updated tasting for optimistic update
-        let updatedTasting = TastingFeedItem(
-            id: currentTasting.id,
-            ratingBand: currentTasting.ratingBand,
-            notes: currentTasting.notes,
-            servingStyle: currentTasting.servingStyle,
-            imageUrl: currentTasting.imageUrl,
-            createdAt: currentTasting.createdAt,
-            tastedAt: currentTasting.tastedAt,
-            userId: currentTasting.userId,
-            username: currentTasting.username,
-            userDisplayName: currentTasting.userDisplayName,
-            userAvatarUrl: currentTasting.userAvatarUrl,
-            bottleId: currentTasting.bottleId,
-            bottleName: currentTasting.bottleName,
-            bottleBrandName: currentTasting.bottleBrandName,
-            bottleCategory: currentTasting.bottleCategory,
-            bottleImageUrl: currentTasting.bottleImageUrl,
-            toastCount: newToastCount,
-            commentCount: currentTasting.commentCount,
-            hasToasted: newToastedState,
-            tags: currentTasting.tags,
-            location: currentTasting.location,
-            friendUsernames: currentTasting.friendUsernames,
-            bottleIdentity: currentTasting.bottleIdentity
-        )
-
         // Optimistic update
-        activityTastings[tastingIndex] = updatedTasting
+        model.activity.update(id: tastingId) { $0.updatingToast(to: !original.hasToasted) }
 
-        // Perform actual API call
-        let tastingRepository = TastingRepository()
         do {
-            let actualToastedState = try await tastingRepository.toggleToast(tastingId: tastingId)
+            let hasToasted = try await TastingRepository().toggleToast(tastingId: tastingId)
+            model.activity.update(id: tastingId) { _ in original.updatingToast(to: hasToasted) }
 
-            if actualToastedState {
+            if hasToasted {
                 ToastManager.shared.showSuccess("Cheers! 🥃")
-            }
-
-            // Update with correct state from API
-            let correctTasting = TastingFeedItem(
-                id: currentTasting.id,
-                ratingBand: currentTasting.ratingBand,
-                notes: currentTasting.notes,
-                servingStyle: currentTasting.servingStyle,
-                imageUrl: currentTasting.imageUrl,
-                createdAt: currentTasting.createdAt,
-                tastedAt: currentTasting.tastedAt,
-                userId: currentTasting.userId,
-                username: currentTasting.username,
-                userDisplayName: currentTasting.userDisplayName,
-                userAvatarUrl: currentTasting.userAvatarUrl,
-                bottleId: currentTasting.bottleId,
-                bottleName: currentTasting.bottleName,
-                bottleBrandName: currentTasting.bottleBrandName,
-                bottleCategory: currentTasting.bottleCategory,
-                bottleImageUrl: currentTasting.bottleImageUrl,
-                toastCount: actualToastedState ? currentTasting.toastCount + 1 : max(0, currentTasting.toastCount - 1),
-                commentCount: currentTasting.commentCount,
-                hasToasted: actualToastedState,
-                tags: currentTasting.tags,
-                location: currentTasting.location,
-                friendUsernames: currentTasting.friendUsernames,
-                bottleIdentity: currentTasting.bottleIdentity
-            )
-
-            if let currentIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) {
-                activityTastings[currentIndex] = correctTasting
             }
         } catch {
             Telemetry.capture(error, feature: "profile", operation: "toggle_toast")
-            // Revert on error
-            if let revertIndex = activityTastings.firstIndex(where: { $0.id == tastingId }) {
-                activityTastings[revertIndex] = currentTasting
-            }
+            model.activity.update(id: tastingId) { _ in original }
 
             if let apiError = error as? APIError,
                case let .requestFailed(message) = apiError,

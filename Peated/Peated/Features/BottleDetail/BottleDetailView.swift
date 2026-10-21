@@ -497,6 +497,14 @@ extension BottleDetailView {
                     .font(.headline)
 
                 Spacer()
+
+                if navigationPath != nil {
+                    Button("See all") {
+                        navigate(to: .bottleTastings(bottleId: bottleId, bottleName: model.bottle?.fullName))
+                    }
+                    .font(.subheadline.weight(.medium))
+                    .foregroundColor(.brand)
+                }
             }
             .padding(.horizontal)
 

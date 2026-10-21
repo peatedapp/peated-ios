@@ -6,8 +6,9 @@ public protocol CollectionRepositoryProtocol: Sendable {
         user: String,
         query: String?,
         status: LibraryBottleStatus?,
+        cursor: Int,
         limit: Int
-    ) async throws -> [LibraryEntry]
+    ) async throws -> ListPage<LibraryEntry>
 
     func addBottleToLibrary(bottleId: String, user: String) async throws
     func removeBottleFromLibrary(bottleId: String, user: String) async throws
@@ -24,8 +25,9 @@ public actor CollectionRepository: BaseRepositoryProtocol, CollectionRepositoryP
         user: String = "me",
         query: String? = nil,
         status: LibraryBottleStatus? = nil,
-        limit: Int = 100
-    ) async throws -> [LibraryEntry] {
+        cursor: Int,
+        limit: Int = 50
+    ) async throws -> ListPage<LibraryEntry> {
         let client = await client
         let response = try await client.listCollectionBottles(
             path: .init(
@@ -35,6 +37,7 @@ public actor CollectionRepository: BaseRepositoryProtocol, CollectionRepositoryP
             query: .init(
                 query: query,
                 status: status.map(Self.listStatusPayload),
+                cursor: Double(cursor),
                 limit: Double(limit)
             )
         )
@@ -43,7 +46,10 @@ public actor CollectionRepository: BaseRepositoryProtocol, CollectionRepositoryP
         case let .ok(ok):
             switch ok.body {
             case let .json(payload):
-                return payload.results.map(Self.mapLibraryEntry)
+                return ListPage(
+                    items: payload.results.map(Self.mapLibraryEntry),
+                    nextCursor: payload.rel.nextCursor.map { Int($0) }
+                )
             }
         case .badRequest:
             throw APIError.requestFailed("Invalid library request")

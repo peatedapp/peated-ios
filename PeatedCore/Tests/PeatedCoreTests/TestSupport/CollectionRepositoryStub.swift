@@ -17,9 +17,10 @@ actor CollectionRepositoryStub: CollectionRepositoryProtocol {
         user _: String,
         query _: String?,
         status _: LibraryBottleStatus?,
+        cursor _: Int,
         limit _: Int
-    ) async throws -> [LibraryEntry] {
-        []
+    ) async throws -> ListPage<LibraryEntry> {
+        ListPage(items: [], nextCursor: nil)
     }
 
     func addBottleToLibrary(bottleId: String, user _: String) async throws {

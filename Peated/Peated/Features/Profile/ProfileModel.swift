@@ -14,10 +14,9 @@ class ProfileModel {
     var isPrimed = false
     var statsPrimed = false
 
-    // Library (for profile)
-    var libraryEntries: [LibraryEntry] = []
-    var isLoadingLibrary = false
-    var libraryError: Error?
+    /// `loadActivity` and `loadLibrary` set these page sources once the profile's user is known.
+    let activity = PagedList<TastingFeedItem>(feature: "profile")
+    let library = PagedList<LibraryEntry>(feature: "profile")
 
     // Optional userId - if nil, shows current user
     let userId: String?
@@ -279,11 +278,15 @@ class ProfileModel {
     }
 
     @MainActor
-    func loadLibrary() async {
-        isLoadingLibrary = true
-        libraryError = nil
-        defer { isLoadingLibrary = false }
+    func loadActivity(userId: String) async {
+        let feedRepository = FeedRepository()
+        await activity.reload { cursor in
+            try await feedRepository.getUserTastings(userId: userId, cursor: cursor)
+        }
+    }
 
+    @MainActor
+    func loadLibrary() async {
         // Determine which user's Library to load.
         let userKey: String = if let username = user?.username, !username.isEmpty {
             username
@@ -293,16 +296,9 @@ class ProfileModel {
             "me"
         }
 
-        do {
-            libraryEntries = try await collectionRepository.listLibraryEntries(
-                user: userKey,
-                query: nil,
-                status: nil,
-                limit: 100
-            )
-        } catch {
-            Telemetry.capture(error, feature: "profile", operation: "load_library")
-            libraryError = error
+        let repository = collectionRepository
+        await library.reload { cursor in
+            try await repository.listLibraryEntries(user: userKey, query: nil, status: nil, cursor: cursor)
         }
     }
 }

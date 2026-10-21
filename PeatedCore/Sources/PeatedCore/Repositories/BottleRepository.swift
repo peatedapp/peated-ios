@@ -8,7 +8,7 @@ public protocol BottleRepositoryProtocol: Sendable {
     func getBottle(id: String) async throws -> Bottle
     func getPopularBottles(limit: Int) async throws -> [Bottle]
     func getTopRatedBottles(limit: Int) async throws -> [Bottle]
-    func getEntityBottles(entityId: String) async throws -> [Bottle]
+    func getEntityBottles(entityId: String, cursor: Int) async throws -> ListPage<Bottle>
     func getSuggestedTags(bottleId: String) async throws -> [TastingTag]
     // TODO: Add when API endpoint is available
     // func getBottleSuggestions(prefix: String) async throws -> [Bottle]
@@ -248,7 +248,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         }
     }
 
-    public func getEntityBottles(entityId: String) async throws -> [Bottle] {
+    public func getEntityBottles(entityId: String, cursor: Int) async throws -> ListPage<Bottle> {
         let client = await client
 
         guard let entityIdDouble = Double(entityId) else {
@@ -259,6 +259,7 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         let response = try await client.listBottles(
             query: .init(
                 entity: entityIdDouble,
+                cursor: Double(cursor),
                 limit: 50
             )
         )
@@ -267,11 +268,12 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
         case let .ok(okResponse):
             switch okResponse.body {
             case let .json(payload):
-                return payload.results.map { apiBottle in
+                let bottles = payload.results.map { apiBottle in
                     let bottle = Bottle(from: apiBottle)
                     Task { await NormalizedStore.shared.upsert(.bottle(bottle.id), value: bottle) }
                     return bottle
                 }
+                return ListPage(items: bottles, nextCursor: payload.rel.nextCursor.map { Int($0) })
             }
         case .badRequest:
             throw APIError.requestFailed("Failed to fetch entity bottles")

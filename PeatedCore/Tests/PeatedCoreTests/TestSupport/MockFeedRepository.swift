@@ -67,17 +67,17 @@ public class MockFeedRepository: FeedRepositoryProtocol {
 
     public func getBottleTastings(
         bottleId _: String,
-        cursor: String?,
+        cursor: Int,
         limit: Int
-    ) async throws -> FeedPage {
+    ) async throws -> ListPage<TastingFeedItem> {
         try await tastingPage(type: .global, cursor: cursor, limit: limit)
     }
 
     public func getUserTastings(
         userId _: String,
-        cursor: String?,
+        cursor: Int,
         limit: Int
-    ) async throws -> FeedPage {
+    ) async throws -> ListPage<TastingFeedItem> {
         try await tastingPage(type: .friends, cursor: cursor, limit: limit)
     }
 
@@ -108,9 +108,9 @@ public class MockFeedRepository: FeedRepositoryProtocol {
         getFeedCallCount + refreshFeedCallCount
     }
 
-    private func tastingPage(type: FeedType, cursor: String?, limit: Int) async throws -> FeedPage {
-        let page = try await getActivity(type: type, cursor: cursor, limit: limit)
-        return FeedPage(tastings: page.entries.compactMap(\.tasting), cursor: page.cursor, hasMore: page.hasMore)
+    private func tastingPage(type: FeedType, cursor: Int, limit: Int) async throws -> ListPage<TastingFeedItem> {
+        let page = try await getActivity(type: type, cursor: String(cursor), limit: limit)
+        return ListPage(items: page.entries.compactMap(\.tasting), nextCursor: page.cursor.flatMap { Int($0) })
     }
 
     private func response() async throws -> ActivityPage {

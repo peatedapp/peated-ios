@@ -5,6 +5,7 @@ enum TastingActivityNavigationDestination: Hashable {
     case tasting(id: String, seed: TastingFeedItem?)
     case profile(id: String, username: String, pictureUrl: String?)
     case bottle(id: String)
+    case bottleTastings(bottleId: String, bottleName: String?)
 }
 
 private struct TastingActivityNavigationDestinations: ViewModifier {
@@ -52,6 +53,8 @@ private struct TastingActivityNavigationDestinations: ViewModifier {
                     bottleName: nil,
                     navigationPath: $path
                 )
+            case let .bottleTastings(bottleId, bottleName):
+                BottleTastingsView(bottleId: bottleId, bottleName: bottleName, path: $path)
             }
         }
     }

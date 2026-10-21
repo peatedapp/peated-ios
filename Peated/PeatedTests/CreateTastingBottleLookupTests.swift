@@ -91,8 +91,8 @@ private actor BottleRepositoryStub: BottleRepositoryProtocol {
         []
     }
 
-    func getEntityBottles(entityId _: String) async throws -> [Bottle] {
-        []
+    func getEntityBottles(entityId _: String, cursor _: Int) async throws -> ListPage<Bottle> {
+        ListPage(items: [], nextCursor: nil)
     }
 
     func getSuggestedTags(bottleId _: String) async throws -> [TastingTag] {
