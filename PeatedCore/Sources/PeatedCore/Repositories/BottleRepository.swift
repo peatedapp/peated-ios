@@ -166,12 +166,29 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             value1: .init(name: input.brandName, kind: .brand)
         )
 
+        let distillers = input.distillers.map { distiller in
+            switch distiller {
+            case let .existing(id, _):
+                Payload.distillersPayloadPayload(value2: Double(id))
+            case let .new(name):
+                Payload.distillersPayloadPayload(value1: .init(name: name, kind: .distillery))
+            }
+        }
+
         return Payload(
             name: input.name,
-            statedAge: input.statedAge,
+            // A confirmed "no age statement" wins over any age left in the input.
+            statedAge: input.noAgeStatement ? nil : input.statedAge,
             category: category,
             brand: brand,
-            abv: input.abv
+            distillers: distillers.isEmpty ? nil : distillers,
+            edition: input.edition,
+            noAgeStatement: input.noAgeStatement ? true : nil,
+            abv: input.abv,
+            singleCask: input.singleCask ? true : nil,
+            caskStrength: input.caskStrength ? true : nil,
+            vintageYear: input.vintageYear,
+            releaseYear: input.releaseYear
         )
     }
 

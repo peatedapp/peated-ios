@@ -3,6 +3,7 @@ import PeatedAPI
 
 public protocol EntityRepositoryProtocol: Sendable {
     func getEntity(id: String) async throws -> Entity
+    func searchEntities(query: String, limit: Int) async throws -> [Entity]
 }
 
 public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol {
@@ -56,6 +57,38 @@ public actor EntityRepository: EntityRepositoryProtocol, BaseRepositoryProtocol 
             throw APIError.requestFailed("Access forbidden")
         case .notFound:
             throw APIError.notFound
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        default:
+            throw APIError.invalidResponse
+        }
+    }
+
+    public func searchEntities(query: String, limit: Int = 25) async throws -> [Entity] {
+        let client = await client
+        let response = try await client.listEntities(
+            query: .init(query: query, limit: Double(limit))
+        )
+
+        switch response {
+        case let .ok(output):
+            switch output.body {
+            case let .json(payload):
+                return payload.results.map { result in
+                    Entity(
+                        id: String(Int(result.id)),
+                        name: result.name,
+                        type: mapEntityType(result.kind.rawValue),
+                        description: result.description,
+                        country: result.country?.name,
+                        region: result.region?.name,
+                        totalBottles: Int(result.totalBottles),
+                        totalTastings: Int(result.totalTastings)
+                    )
+                }
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Invalid entity search")
         case let .undocumented(statusCode, _):
             throw APIError.unexpectedResponse(statusCode)
         default:
