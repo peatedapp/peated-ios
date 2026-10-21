@@ -238,59 +238,63 @@ public final class AuthenticationManager: ObservableObject {
         }
     }
 
-    public func register(username: String, email: String, password: String,
-                         tosAccepted: Bool = true) async throws -> User {
+    /// Creates an account whose only sign-in is a new passkey. `authorize`
+    /// presents the system sheet that creates the passkey and returns nil when
+    /// the user cancels, which makes this return nil too.
+    ///
+    /// A taken email or username throws `AuthError.registrationConflict`, and
+    /// any other refusal throws `AuthError.registrationRejected` with the
+    /// server's reason.
+    public func registerWithPasskey(
+        username: String,
+        email: String,
+        tosAccepted: Bool,
+        authorize: (PasskeyRegistrationChallenge) async throws -> PasskeyRegistration?
+    ) async throws -> User? {
         isLoading = true
         error = nil
+        defer { isLoading = false }
 
         do {
             let client = await apiClient.generatedClient
-
-            let body = Operations.register.Input.Body.json(
-                .init(username: username, email: email, password: password, tosAccepted: tosAccepted)
+            let challengeResponse = try await client.registerChallenge(
+                body: .json(.init(username: username, email: email))
             )
+            guard case let .ok(challengeOk) = challengeResponse else {
+                throw await Self.registrationFailure(challengeResponse)
+            }
+            let challenge = try Self.registrationChallenge(from: challengeOk.body.json)
 
-            let response = try await client.register(body: body)
+            guard let registration = try await authorize(challenge) else {
+                return nil
+            }
 
+            let response = try await client.register(
+                body: .json(.init(
+                    username: username,
+                    email: email,
+                    passkeyResponse: .init(registration),
+                    signedChallenge: challenge.signedChallenge,
+                    tosAccepted: tosAccepted
+                ))
+            )
             guard case let .ok(okResponse) = response else {
                 throw await Self.registrationFailure(response)
             }
-            guard case let .json(jsonPayload) = okResponse.body else {
+            guard case let .json(auth) = okResponse.body else {
                 throw AuthError.invalidResponse
             }
-            if let accessToken = jsonPayload.accessToken {
-                try keychain.saveToken(accessToken)
-            }
 
-            let apiUser = jsonPayload.user
-            var user = User(from: apiUser)
-
-            // Enrich with stats similar to login flow
-            do {
-                let detailsResponse = try await client.getUser(
-                    path: .init(user: .init(value1: apiUser.id))
-                )
-                if case let .ok(detailsOk) = detailsResponse,
-                   case let .json(detailsJson) = detailsOk.body {
-                    user.tastingsCount = Int(detailsJson.stats.tastings)
-                    user.bottlesCount = Int(detailsJson.stats.bottles)
-                    user.collectedCount = Int(detailsJson.stats.collected)
-                    user.contributionsCount = Int(detailsJson.stats.contributions)
-                }
-            } catch {
-                // Non-fatal
-                Telemetry.capture(error, feature: "auth", operation: "load_user_details")
-            }
-
-            signInProvider = .password
+            let user = try await startSession(with: auth)
+            signInProvider = .passkey
             authState = .authenticated(user)
-            isLoading = false
             return user
         } catch {
-            captureAuthFailure(error, operation: "sign_in")
+            if !(error is AuthError) {
+                captureAuthFailure(error, operation: "passkey_sign_up")
+            }
             self.error = error
             authState = .unauthenticated
-            isLoading = false
             throw error
         }
     }
@@ -428,9 +432,15 @@ public enum AuthError: LocalizedError, Equatable {
     case noPresentingViewController
     case noIDToken
     case invalidResponse
-    /// The server refused to create the account and said why, for example a
-    /// taken username or a password that fails its rules.
+    /// The server refused to create the account and said why.
     case registrationRejected(String)
+    /// Another account already uses this email or username.
+    case registrationConflict(field: ConflictField, message: String)
+
+    public enum ConflictField: String, Sendable {
+        case email
+        case username
+    }
 
     public var errorDescription: String? {
         switch self {
@@ -440,7 +450,7 @@ public enum AuthError: LocalizedError, Equatable {
             "Failed to get ID token from Google"
         case .invalidResponse:
             "Invalid response from server"
-        case let .registrationRejected(message):
+        case let .registrationRejected(message), let .registrationConflict(_, message):
             message
         }
     }
@@ -470,7 +480,23 @@ extension AuthenticationManager {
         case let .conflict(failure): rejected(try? failure.body.json)
         case let .contentTooLarge(failure): rejected(try? failure.body.json)
         case let .internalServerError(failure): rejected(try? failure.body.json)
-        case let .undocumented(_, payload): await rejection(message: serverMessage(from: payload.body))
+        case let .undocumented(_, payload): await rejection(from: payload.body)
+        }
+    }
+
+    /// Turns a refused `registerChallenge` call into the reason the server gave.
+    /// The server checks for a taken email or username here, before the passkey exists.
+    private static func registrationFailure(_ response: Operations.registerChallenge.Output) async -> AuthError {
+        switch response {
+        case .ok: .invalidResponse
+        case let .badRequest(failure): rejected(try? failure.body.json)
+        case let .unauthorized(failure): rejected(try? failure.body.json)
+        case let .forbidden(failure): rejected(try? failure.body.json)
+        case let .notFound(failure): rejected(try? failure.body.json)
+        case let .conflict(failure): rejected(try? failure.body.json)
+        case let .contentTooLarge(failure): rejected(try? failure.body.json)
+        case let .internalServerError(failure): rejected(try? failure.body.json)
+        case let .undocumented(_, payload): await rejection(from: payload.body)
         }
     }
 
@@ -481,25 +507,48 @@ extension AuthenticationManager {
         guard let payload, let data = try? JSONEncoder().encode(payload) else {
             return .invalidResponse
         }
-        return rejection(message: serverMessage(in: data))
+        return rejection(in: data)
     }
 
-    private static func rejection(message: String?) -> AuthError {
-        .registrationRejected(message ?? AuthError.invalidResponse.localizedDescription)
+    private static func rejection(from body: HTTPBody?) async -> AuthError {
+        guard let body, let data = try? await Data(collecting: body, upTo: 10000) else {
+            return rejection(in: Data())
+        }
+        return rejection(in: data)
     }
 
-    /// Reads the `message` field of a standard server error body.
-    private static func serverMessage(from body: HTTPBody?) async -> String? {
-        guard let body, let data = try? await Data(collecting: body, upTo: 10000) else { return nil }
-        return serverMessage(in: data)
+    /// Reads a standard server error body. A `CONFLICT` names the taken field
+    /// in `data.field`; anything else becomes the server's `message`.
+    private static func rejection(in data: Data) -> AuthError {
+        let object = (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+        let message = (object?["message"] as? String).flatMap { $0.isEmpty ? nil : $0 }
+            ?? AuthError.invalidResponse.localizedDescription
+        if object?["code"] as? String == "CONFLICT",
+           let field = (object?["data"] as? [String: Any])?["field"] as? String,
+           let conflictField = AuthError.ConflictField(rawValue: field) {
+            return .registrationConflict(field: conflictField, message: message)
+        }
+        return .registrationRejected(message)
     }
 
-    private static func serverMessage(in data: Data) -> String? {
-        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let message = object["message"] as? String,
-              !message.isEmpty
-        else { return nil }
-        return message
+    /// Decodes the base64url fields of a new-account passkey challenge.
+    private static func registrationChallenge(
+        from payload: Operations.registerChallenge.Output.Ok.Body.jsonPayload
+    ) throws -> PasskeyRegistrationChallenge {
+        guard let challenge = Data(base64URLEncoded: payload.options.challenge),
+              let relyingPartyID = payload.options.rp.id,
+              let userID = Data(base64URLEncoded: payload.options.user.id)
+        else {
+            throw AuthError.invalidResponse
+        }
+        return PasskeyRegistrationChallenge(
+            challenge: challenge,
+            relyingPartyID: relyingPartyID,
+            userID: userID,
+            userName: payload.options.user.name,
+            userVerification: payload.options.authenticatorSelection?.userVerification?.rawValue,
+            signedChallenge: payload.signedChallenge
+        )
     }
 
     private func exchangeGoogleIDTokenForSession(idToken: String) async throws -> User {
@@ -588,6 +637,24 @@ private extension Operations.passkeyAuthenticateVerify.Input.Body.jsonPayload.re
                 authenticatorData: assertion.authenticatorData.base64URLEncodedString(),
                 signature: assertion.signature.base64URLEncodedString(),
                 userHandle: assertion.userHandle?.base64URLEncodedString()
+            ),
+            authenticatorAttachment: .platform,
+            clientExtensionResults: .init(),
+            _type: "public-key"
+        )
+    }
+}
+
+private extension Operations.register.Input.Body.jsonPayload.passkeyResponsePayload {
+    /// The WebAuthn JSON form of a passkey the platform authenticator just created.
+    init(_ registration: PasskeyRegistration) {
+        let credentialID = registration.credentialID.base64URLEncodedString()
+        self.init(
+            id: credentialID,
+            rawId: credentialID,
+            response: .init(
+                clientDataJSON: registration.clientDataJSON.base64URLEncodedString(),
+                attestationObject: registration.attestationObject.base64URLEncodedString()
             ),
             authenticatorAttachment: .platform,
             clientExtensionResults: .init(),

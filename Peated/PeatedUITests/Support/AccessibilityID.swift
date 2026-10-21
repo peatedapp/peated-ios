@@ -9,8 +9,6 @@ enum AccessibilityID {
         static let email = "auth.signUp.email"
         static let password = "auth.signUp.password"
         static let termsToggle = "auth.signUp.termsToggle"
-        static let termsLink = "auth.signUp.termsLink"
-        static let privacyLink = "auth.signUp.privacyLink"
         static let createAccount = "auth.signUp.createAccount"
     }
 

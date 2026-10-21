@@ -30,6 +30,7 @@ final class LaunchUITests: XCTestCase {
         let login = LoginScreen(app: app).waitUntilShown()
 
         login.openEmailSignIn()
+        login.dismissKeyboard()
         try app.auditAccessibility()
     }
 

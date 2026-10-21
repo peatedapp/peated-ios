@@ -1,78 +1,68 @@
 import XCTest
 
-/// The Create account form.
+/// The Create an account form.
 @MainActor
 struct SignUpScreen {
     let app: XCUIApplication
 
     var title: XCUIElement {
-        app.navigationBars["Create account"]
-    }
-
-    var usernameField: XCUIElement {
-        app.textFields[AccessibilityID.Auth.username]
+        app.staticTexts["Create an account"]
     }
 
     var emailField: XCUIElement {
         app.textFields[AccessibilityID.Auth.email]
     }
 
-    var passwordField: XCUIElement {
-        app.secureTextFields[AccessibilityID.Auth.password]
+    var usernameField: XCUIElement {
+        app.textFields[AccessibilityID.Auth.username]
     }
 
-    var termsToggle: XCUIElement {
-        app.switches[AccessibilityID.Auth.termsToggle]
+    /// A checkbox drawn as a button with the toggle trait, so match any element type.
+    var termsCheckbox: XCUIElement {
+        app.descendants(matching: .any)[AccessibilityID.Auth.termsToggle]
     }
 
+    /// An inline link inside the consent sentence.
     var termsLink: XCUIElement {
-        app.buttons[AccessibilityID.Auth.termsLink]
+        app.links["Terms of Service"]
     }
 
     var privacyLink: XCUIElement {
-        app.buttons[AccessibilityID.Auth.privacyLink]
+        app.links["Privacy Policy"]
     }
 
     var createAccountButton: XCUIElement {
         app.buttons[AccessibilityID.Auth.createAccount]
     }
 
-    var failureAlert: XCUIElement {
-        app.alerts["Sign Up Failed"]
+    var takenEmailTitle: XCUIElement {
+        app.staticTexts["That email already has an account"]
     }
 
     @discardableResult
     func waitUntilShown(file: StaticString = #filePath, line: UInt = #line) -> SignUpScreen {
-        title.expectToAppear("Expected the Create account screen", file: file, line: line)
+        title.expectToAppear("Expected the Create an account screen", file: file, line: line)
         return self
     }
 
-    func fill(username: String, email: String, password: String) {
-        usernameField.expectToAppear().enter(username)
-        emailField.enter(email)
-        passwordField.enter(password)
+    func fill(email: String, username: String) {
+        emailField.expectToAppear().enter(email)
+        usernameField.enter(username)
         // Return ends editing and closes the keyboard so the consent row is reachable.
-        passwordField.typeText("\n")
+        usernameField.typeText("\n")
     }
 
     func acceptTerms() {
-        termsToggle.expectToAppear().tap()
+        termsCheckbox.expectToAppear().tap()
     }
 
+    /// Creating the account uses the app's UI-test passkey in place of the system sheet.
     func submit() {
         createAccountButton.expectToAppear().tap()
     }
 
-    /// Asserts the failure alert shows the server's exact explanation.
+    /// Asserts the inline notice shows the server's exact explanation.
     func expectFailure(message: String, file: StaticString = #filePath, line: UInt = #line) {
-        failureAlert.expectToAppear("Expected the sign-up failure alert", file: file, line: line)
-        failureAlert.staticTexts[message].expectToAppear(
-            timeout: 2, "Expected the alert to say: \(message)", file: file, line: line
-        )
-    }
-
-    func dismissFailure() {
-        failureAlert.buttons["OK"].tap()
-        failureAlert.expectToDisappear()
+        app.staticTexts[message].expectToAppear("Expected the notice to say: \(message)", file: file, line: line)
     }
 }

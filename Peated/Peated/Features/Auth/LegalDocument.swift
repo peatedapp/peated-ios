@@ -1,7 +1,7 @@
 import Foundation
 
 /// Public legal pages on peated.com that the app must link to for App Review.
-enum LegalDocument: String, Identifiable {
+enum LegalDocument: String, CaseIterable, Identifiable {
     case terms
     case privacy
 
