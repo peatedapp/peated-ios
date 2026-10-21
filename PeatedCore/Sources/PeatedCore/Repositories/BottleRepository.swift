@@ -4,6 +4,8 @@ import PeatedAPI
 public protocol BottleRepositoryProtocol: Sendable {
     func searchBottles(query: String, limit: Int) async throws -> [Bottle]
     func createBottle(_ input: CreateBottleInput) async throws -> Bottle
+    /// Existing bottles that may be the same as the draft. The check is advisory and never blocks creation.
+    func findCreateCandidates(_ input: CreateBottleInput) async throws -> [Bottle]
     func getBottle(barcode: String) async throws -> Bottle
     func getBottle(id: String) async throws -> Bottle
     func getPopularBottles(limit: Int) async throws -> [Bottle]
@@ -82,6 +84,29 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             throw APIError.serverError(500, nil)
         case let .undocumented(statusCode, _):
             throw APIError.unexpectedResponse(statusCode)
+        }
+    }
+
+    public func findCreateCandidates(_ input: CreateBottleInput) async throws -> [Bottle] {
+        let client = await client
+        let response = try await client.getBottleCreateCandidates(
+            query: Self.makeCreateCandidatesQuery(input)
+        )
+
+        switch response {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                return payload.results.map { Bottle(from: $0) }
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Check the bottle details and try again.")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        default:
+            throw APIError.invalidResponse
         }
     }
 
@@ -189,6 +214,31 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             caskStrength: input.caskStrength ? true : nil,
             vintageYear: input.vintageYear,
             releaseYear: input.releaseYear
+        )
+    }
+
+    /// Mirrors the web create form's candidate query. False flags mean "not stated", so they are left unset.
+    ///
+    /// Distillers are left out. The generated client sends them as a deepObject array of objects,
+    /// and swift-openapi-runtime throws "Nested containers are not supported" before the request leaves.
+    static func makeCreateCandidatesQuery(
+        _ input: CreateBottleInput
+    ) -> Operations.getBottleCreateCandidates.Input.Query {
+        typealias Query = Operations.getBottleCreateCandidates.Input.Query
+
+        return Query(
+            name: input.name,
+            brand: .init(name: input.brandName),
+            category: input.category.flatMap { Query.categoryPayload(rawValue: $0.rawValue) },
+            edition: input.edition,
+            statedAge: input.noAgeStatement ? nil : input.statedAge.map(Double.init),
+            noAgeStatement: input.noAgeStatement ? true : nil,
+            caskStrength: input.caskStrength ? true : nil,
+            singleCask: input.singleCask ? true : nil,
+            abv: input.abv,
+            vintageYear: input.vintageYear.map(Double.init),
+            releaseYear: input.releaseYear.map(Double.init),
+            limit: 3
         )
     }
 

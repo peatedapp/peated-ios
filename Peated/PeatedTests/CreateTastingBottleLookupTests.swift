@@ -72,6 +72,10 @@ private actor BottleRepositoryStub: BottleRepositoryProtocol {
         Bottle.stub
     }
 
+    func findCreateCandidates(_: CreateBottleInput) async throws -> [Bottle] {
+        []
+    }
+
     func getBottle(barcode _: String) async throws -> Bottle {
         switch barcodeResult {
         case let .bottle(bottle): bottle

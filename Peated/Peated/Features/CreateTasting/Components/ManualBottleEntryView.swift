@@ -22,6 +22,14 @@ struct ManualBottleEntryView: View {
     @State private var isCreating = false
     @State private var showingError = false
     @State private var errorMessage = ""
+    /// The latest existing bottles that may match the draft. Kept while a newer check runs, like the web.
+    @State private var candidates: [Bottle] = []
+    @State private var isCheckingCandidates = false
+    @State private var reviewedCandidateIds: Set<String> = []
+    /// The candidates under review. Empty means the form is showing.
+    @State private var reviewResults: [Bottle] = []
+    /// True when the review opened from "Add", so finishing it creates the bottle.
+    @State private var addAfterReview = false
 
     // Local focus bindings for inputs
     @FocusState private var focusName: Bool
@@ -55,34 +63,67 @@ struct ManualBottleEntryView: View {
         _releaseYear = State(initialValue: initialInput?.releaseYear.map { String($0) } ?? "")
     }
 
+    private static let scrollTopId = "top"
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 16) {
-                    basicInfoSection
-                    madeBySection
-                    detailsSection
-                    datesSection
-                    productionSection
+            ScrollViewReader { proxy in
+                ScrollView {
+                    VStack(spacing: 16) {
+                        if isReviewingCandidates {
+                            candidateReviewSection
+                        } else {
+                            if candidateInput != nil, !unreviewedCandidates.isEmpty {
+                                BottleCreateCandidateSummary(
+                                    count: unreviewedCandidates.count,
+                                    loading: isCheckingCandidates,
+                                    newSinceReview: !reviewedCandidateIds.isEmpty,
+                                    onReview: { openCandidateReview(addAfterReview: false) }
+                                )
+                                .padding(.horizontal)
+                            }
+                            basicInfoSection
+                            madeBySection
+                            detailsSection
+                            datesSection
+                            productionSection
+                        }
+                    }
+                    .padding(.vertical)
+                    .id(Self.scrollTopId)
                 }
-                .padding(.vertical)
+                .onChange(of: isReviewingCandidates) {
+                    proxy.scrollTo(Self.scrollTopId, anchor: .top)
+                }
             }
-            .navigationTitle("Add Bottle")
+            .navigationTitle(isReviewingCandidates ? "Is it already on Peated?" : "Add Bottle")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                    if isReviewingCandidates {
+                        Button("Back") {
+                            closeCandidateReview()
+                        }
+                    } else {
+                        Button("Cancel") {
+                            dismiss()
+                        }
                     }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Add") {
-                        createBottle()
+                    if !isReviewingCandidates {
+                        Button(addButtonTitle) {
+                            addBottle()
+                        }
+                        .fontWeight(.medium)
+                        .disabled(!isValid || isCreating || isCheckingCandidates)
+                        .accessibilityHint(isCheckingCandidates ? "Checking existing bottles…" : "")
                     }
-                    .fontWeight(.medium)
-                    .disabled(!isValid || isCreating)
                 }
+            }
+            .task(id: candidateInput) {
+                await checkCandidates(candidateInput)
             }
             .overlay {
                 if isCreating {
@@ -348,6 +389,30 @@ struct ManualBottleEntryView: View {
         }
     }
 
+    private func createBottle() {
+        guard isValid else { return }
+
+        isCreating = true
+        let input = draftInput
+
+        Task {
+            do {
+                let newBottle = try await bottleRepository.createBottle(input)
+                onBottleCreated(newBottle)
+                dismiss()
+            } catch {
+                Telemetry.capture(error, feature: "create_bottle", operation: "submit")
+                errorMessage = error.localizedDescription
+                showingError = true
+            }
+            isCreating = false
+        }
+    }
+}
+
+// MARK: - Draft and validation
+
+extension ManualBottleEntryView {
     private var isValid: Bool {
         !bottleName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
             !brandName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
@@ -404,38 +469,146 @@ struct ManualBottleEntryView: View {
         return nil
     }
 
-    private func createBottle() {
-        guard isValid else { return }
-
-        isCreating = true
-        let trimmedName = bottleName.trimmingCharacters(in: .whitespacesAndNewlines)
-        let trimmedBrand = brandName.trimmingCharacters(in: .whitespacesAndNewlines)
+    private var draftInput: CreateBottleInput {
         let trimmedEdition = edition.trimmingCharacters(in: .whitespacesAndNewlines)
+        return CreateBottleInput(
+            name: bottleName.trimmingCharacters(in: .whitespacesAndNewlines),
+            brandName: brandName.trimmingCharacters(in: .whitespacesAndNewlines),
+            category: category,
+            statedAge: noAgeStatement ? nil : ageValue,
+            noAgeStatement: noAgeStatement,
+            abv: abvValue,
+            edition: trimmedEdition.isEmpty ? nil : trimmedEdition,
+            distillers: distillers,
+            singleCask: singleCask,
+            caskStrength: caskStrength,
+            vintageYear: yearValue(vintageYear),
+            releaseYear: yearValue(releaseYear)
+        )
+    }
+}
 
-        Task {
-            do {
-                let newBottle = try await bottleRepository.createBottle(CreateBottleInput(
-                    name: trimmedName,
-                    brandName: trimmedBrand,
-                    category: category,
-                    statedAge: noAgeStatement ? nil : ageValue,
-                    noAgeStatement: noAgeStatement,
-                    abv: abvValue,
-                    edition: trimmedEdition.isEmpty ? nil : trimmedEdition,
-                    distillers: distillers,
-                    singleCask: singleCask,
-                    caskStrength: caskStrength,
-                    vintageYear: yearValue(vintageYear),
-                    releaseYear: yearValue(releaseYear)
-                ))
-                onBottleCreated(newBottle)
-                dismiss()
-            } catch {
-                Telemetry.capture(error, feature: "create_bottle", operation: "submit")
-                errorMessage = error.localizedDescription
-                showingError = true
+// MARK: - Existing bottle check
+
+/// Mirrors the web create form: check the catalog for the draft, then review matches before adding.
+extension ManualBottleEntryView {
+    private var candidateReviewSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            BottleCreateCandidateReview(
+                draft: draftBottle,
+                results: reviewResults,
+                onUse: useExistingBottle
+            )
+
+            Button {
+                continueAfterCandidateReview()
+            } label: {
+                Text(addAfterReview ? "Add as a new bottle" : "None of these")
+                    .frame(maxWidth: .infinity)
             }
-            isCreating = false
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .tint(.brand)
+        }
+        .padding(.horizontal)
+    }
+
+    /// The draft to check against the catalog, once it has a brand and a name.
+    private var candidateInput: CreateBottleInput? {
+        let input = draftInput
+        return input.name.isEmpty || input.brandName.isEmpty ? nil : input
+    }
+
+    private var unreviewedCandidates: [Bottle] {
+        candidates.filter { !reviewedCandidateIds.contains($0.id) }
+    }
+
+    private var isReviewingCandidates: Bool {
+        !reviewResults.isEmpty
+    }
+
+    private var addButtonTitle: String {
+        let count = unreviewedCandidates.count
+        guard count > 0 else { return "Add" }
+        return "Review \(count) \(count == 1 ? "bottle" : "bottles")"
+    }
+
+    /// The draft as a bottle, so the review shows it with the same identity lines as the matches.
+    private var draftBottle: Bottle {
+        let input = draftInput
+        return Bottle(
+            id: "draft",
+            name: input.name,
+            fullName: "\(input.brandName) \(input.name)",
+            brand: Brand(id: "draft-brand", name: input.brandName),
+            category: input.category?.rawValue,
+            edition: input.edition,
+            statedAge: input.statedAge,
+            releaseYear: input.releaseYear,
+            noAgeStatement: input.noAgeStatement,
+            abv: input.abv
+        )
+    }
+
+    private func checkCandidates(_ input: CreateBottleInput?) async {
+        guard let input else {
+            candidates = []
+            isCheckingCandidates = false
+            return
+        }
+
+        isCheckingCandidates = true
+        do {
+            // `.task(id:)` cancels this sleep when the draft changes, which debounces typing.
+            try await Task.sleep(for: .milliseconds(300))
+            candidates = try await bottleRepository.findCreateCandidates(input)
+        } catch {
+            // A newer check owns the state now.
+            if Task.isCancelled {
+                return
+            }
+            // The check is advisory. On failure the person can still add the bottle.
+            Telemetry.capture(error, feature: "create_bottle", operation: "check_candidates")
+            candidates = []
+        }
+        isCheckingCandidates = false
+    }
+
+    private func openCandidateReview(addAfterReview: Bool) {
+        guard !unreviewedCandidates.isEmpty else { return }
+        self.addAfterReview = addAfterReview
+        reviewResults = unreviewedCandidates
+    }
+
+    private func closeCandidateReview() {
+        reviewResults = []
+        addAfterReview = false
+    }
+
+    private func markCandidateReviewComplete() {
+        reviewedCandidateIds.formUnion(reviewResults.map(\.id))
+    }
+
+    private func continueAfterCandidateReview() {
+        markCandidateReviewComplete()
+        let shouldAdd = addAfterReview
+        closeCandidateReview()
+        if shouldAdd {
+            createBottle()
+        }
+    }
+
+    private func useExistingBottle(_ bottle: Bottle) {
+        markCandidateReviewComplete()
+        onBottleCreated(bottle)
+        dismiss()
+    }
+
+    private func addBottle() {
+        if unreviewedCandidates.isEmpty {
+            createBottle()
+        } else {
+            openCandidateReview(addAfterReview: true)
         }
     }
 }
