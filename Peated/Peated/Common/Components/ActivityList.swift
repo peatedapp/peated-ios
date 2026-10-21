@@ -2,28 +2,24 @@ import PeatedCore
 import SwiftUI
 
 /// A thin wrapper that renders a list of tastings using the unified feed design
-/// from `TastingFeedCard`, with optional bottle suppression and item limiting.
+/// from `TastingFeedCard`, with optional bottle suppression.
+///
+/// Rows are lazy so a paginated list only builds what is on screen. Pass
+/// `onAppear` to start the next page as rows scroll in.
 struct ActivityList: View {
     let tastings: [TastingFeedItem]
     var showBottle: Bool = true
     var showUserHeader: Bool = true
-    var limit: Int?
+    var onAppear: ((TastingFeedItem) -> Void)?
 
     let onToast: (TastingFeedItem) -> Void
     let onComment: (TastingFeedItem) -> Void
     let onUserTap: (TastingFeedItem) -> Void
     let onBottleTap: (TastingFeedItem) -> Void
 
-    private var items: [TastingFeedItem] {
-        if let limit {
-            return Array(tastings.prefix(limit))
-        }
-        return tastings
-    }
-
     var body: some View {
-        VStack(spacing: 0) {
-            ForEach(items) { tasting in
+        LazyVStack(spacing: 0) {
+            ForEach(tastings) { tasting in
                 TastingFeedCard(
                     tasting: tasting,
                     showBottle: showBottle,
@@ -40,6 +36,7 @@ struct ActivityList: View {
                         .padding(.horizontal, 20),
                     alignment: .bottom
                 )
+                .onAppear { onAppear?(tasting) }
             }
         }
     }

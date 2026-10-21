@@ -139,15 +139,29 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
         )
     }
 
+    /// Loads every comment on a tasting, following the cursor to the last page.
+    ///
+    /// The thread shows comments oldest first, appends new ones at the end, and
+    /// counts what it loaded, so it needs the whole list rather than one page.
     public func listComments(tastingId: String) async throws -> [Comment] {
-        let client = await client
-
         guard let id = Double(tastingId) else {
             throw APIError.requestFailed("Invalid tasting ID")
         }
 
+        var comments: [Comment] = []
+        var cursor: Int? = ListPage<Comment>.firstCursor
+        while let page = cursor {
+            let result = try await listComments(tasting: id, tastingId: tastingId, cursor: page)
+            comments.append(contentsOf: result.items)
+            cursor = result.nextCursor
+        }
+        return comments
+    }
+
+    private func listComments(tasting id: Double, tastingId: String, cursor: Int) async throws -> ListPage<Comment> {
+        let client = await client
         let response = try await client.listComments(
-            query: .init(tasting: id, limit: 100)
+            query: .init(tasting: id, cursor: Double(cursor), limit: 100)
         )
 
         guard case let .ok(okResponse) = response else {
@@ -165,7 +179,10 @@ public actor TastingRepository: TastingRepositoryProtocol, BaseRepositoryProtoco
 
         switch okResponse.body {
         case let .json(payload):
-            return payload.results.map { Comment(from: $0, tastingId: tastingId) }
+            return ListPage(
+                items: payload.results.map { Comment(from: $0, tastingId: tastingId) },
+                nextCursor: payload.rel.nextCursor.map { Int($0) }
+            )
         }
     }
 

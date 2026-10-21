@@ -55,14 +55,14 @@ struct TastingActivityToastTests {
         let repository = ActivityTastingRepositoryStub(toggleResult: false)
         let model = EntityDetailModel(
             entityId: "12",
-            recentTastings: [tasting],
+            tastings: [tasting],
             tastingRepository: repository
         )
 
         await model.toggleToast(for: tasting.id)
 
-        #expect(model.recentTastings.first?.hasToasted == false)
-        #expect(model.recentTastings.first?.toastCount == 2)
+        #expect(model.tastings.items.first?.hasToasted == false)
+        #expect(model.tastings.items.first?.toastCount == 2)
         let toggledIds = await repository.toggledTastingIds
         #expect(toggledIds == [tasting.id])
     }
@@ -80,12 +80,12 @@ struct TastingActivityToastTests {
         )
         let model = EntityDetailModel(
             entityId: "12",
-            recentTastings: [tasting],
+            tastings: [tasting],
             tastingRepository: repository
         )
 
         await model.toggleToast(for: tasting.id)
 
-        #expect(model.recentTastings == [tasting])
+        #expect(model.tastings.items == [tasting])
     }
 }

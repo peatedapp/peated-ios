@@ -110,10 +110,10 @@ public final class BottleDetailModel {
             // Load tastings specifically for this bottle
             let feedPage = try await feedRepository.getBottleTastings(
                 bottleId: bottleId,
-                cursor: nil,
+                cursor: ListPage<TastingFeedItem>.firstCursor,
                 limit: 10
             )
-            recentTastings = Array(feedPage.tastings.prefix(5))
+            recentTastings = Array(feedPage.items.prefix(5))
         } catch {
             // Optional content; report but do not fail the screen
             Telemetry.capture(error, feature: "bottle", operation: "load_recent_tastings")

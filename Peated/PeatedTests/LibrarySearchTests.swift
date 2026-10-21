@@ -60,11 +60,27 @@ struct LibrarySearchTests {
         await search.value
     }
 
-    private func libraryEntry() -> LibraryEntry {
+    @Test
+    func nextPageKeepsTheSearchAndStatus() async {
+        let first = libraryEntry(id: "1")
+        let second = libraryEntry(id: "2")
+        let repository = CollectionRepositoryStub(pages: [[first], [second]])
+        let model = LibraryViewModel(repository: repository)
+        await model.load(status: .open, query: "ardbeg")
+
+        await model.list.loadMore()
+
+        let request = await repository.latestRequest()
+        #expect(request == .init(query: "ardbeg", status: .open, cursor: 2))
+        #expect(model.entries == [first, second])
+        #expect(!model.list.hasMore)
+    }
+
+    private func libraryEntry(id: String = "1") -> LibraryEntry {
         LibraryEntry(
-            id: "1",
+            id: id,
             bottle: Bottle(
-                id: "42",
+                id: "4\(id)",
                 name: "Ten",
                 fullName: "Ardbeg Ten",
                 brand: Brand(id: "7", name: "Ardbeg"),
@@ -79,15 +95,20 @@ private actor CollectionRepositoryStub: CollectionRepositoryProtocol {
     struct Request: Equatable, Sendable {
         let query: String?
         let status: LibraryBottleStatus?
+        var cursor = 1
     }
 
     private var requests: [Request] = []
-    private let entries: [LibraryEntry]
+    private let pages: [[LibraryEntry]]
     private let throwsCancellation: Bool
     private var delayNanoseconds: UInt64 = 0
 
     init(entries: [LibraryEntry] = [], throwsCancellation: Bool = false) {
-        self.entries = entries
+        self.init(pages: [entries], throwsCancellation: throwsCancellation)
+    }
+
+    init(pages: [[LibraryEntry]], throwsCancellation: Bool = false) {
+        self.pages = pages
         self.throwsCancellation = throwsCancellation
     }
 
@@ -95,16 +116,21 @@ private actor CollectionRepositoryStub: CollectionRepositoryProtocol {
         user _: String,
         query: String?,
         status: LibraryBottleStatus?,
+        cursor: Int,
         limit _: Int
-    ) async throws -> [LibraryEntry] {
-        requests.append(Request(query: query, status: status))
+    ) async throws -> ListPage<LibraryEntry> {
+        requests.append(Request(query: query, status: status, cursor: cursor))
         if throwsCancellation {
             throw CancellationError()
         }
         if delayNanoseconds > 0 {
             try await Task.sleep(nanoseconds: delayNanoseconds)
         }
-        return entries
+        let index = cursor - 1
+        return ListPage(
+            items: pages.indices.contains(index) ? pages[index] : [],
+            nextCursor: cursor < pages.count ? cursor + 1 : nil
+        )
     }
 
     func addBottleToLibrary(bottleId _: String, user _: String) async throws {}

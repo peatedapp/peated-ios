@@ -32,63 +32,60 @@ private struct LibraryLoadRequest: Hashable {
     let query: String?
 }
 
+@Observable
 @MainActor
-final class LibraryViewModel: ObservableObject {
-    @Published private(set) var isLoading = false
-    @Published private(set) var error: String?
-    @Published private(set) var entries: [LibraryEntry] = []
-    @Published private(set) var hasLoadedSuccessfully = false
+final class LibraryViewModel {
+    /// `load` sets the page source, because the source depends on the filter and search.
+    let list = PagedList<LibraryEntry>(feature: "library")
+
+    var entries: [LibraryEntry] {
+        list.items
+    }
+
+    var isLoading: Bool {
+        list.isLoading
+    }
+
+    var error: (any Error)? {
+        list.error
+    }
+
+    var hasLoadedSuccessfully: Bool {
+        list.hasLoaded
+    }
 
     var isInitialLoading: Bool {
         isLoading && !hasLoadedSuccessfully
     }
 
     private let repository: any CollectionRepositoryProtocol
-    private var loadGeneration = 0
 
     init(repository: (any CollectionRepositoryProtocol)? = nil) {
         self.repository = repository ?? CollectionRepository()
     }
 
     func load(status: LibraryBottleStatus? = nil, query: String? = nil) async {
-        loadGeneration += 1
-        let generation = loadGeneration
-        isLoading = true
-        error = nil
         let trimmedQuery = query?.trimmingCharacters(in: .whitespacesAndNewlines)
         let normalizedQuery: String? = if let trimmedQuery, !trimmedQuery.isEmpty {
             trimmedQuery
         } else {
             nil
         }
-        defer {
-            if generation == loadGeneration {
-                isLoading = false
-            }
-        }
-
-        do {
-            let entries = try await repository.listLibraryEntries(
+        let repository = repository
+        await list.reload { cursor in
+            try await repository.listLibraryEntries(
                 user: "me",
                 query: normalizedQuery,
                 status: status,
-                limit: 100
+                cursor: cursor,
+                limit: 50
             )
-            guard !Task.isCancelled, generation == loadGeneration else { return }
-            hasLoadedSuccessfully = true
-            self.entries = entries
-        } catch is CancellationError {
-            return
-        } catch {
-            guard !Task.isCancelled, generation == loadGeneration else { return }
-            Telemetry.capture(error, feature: "library", operation: "load")
-            self.error = error.localizedDescription
         }
     }
 }
 
 struct LibraryView: View {
-    @StateObject private var viewModel = LibraryViewModel()
+    @State private var viewModel = LibraryViewModel()
     @State private var selectedFilter = LibraryFilter.all
     @State private var searchText = ""
     @State private var navigationPath = NavigationPath()
@@ -194,11 +191,11 @@ struct LibraryView: View {
     private var libraryContent: some View {
         if viewModel.isInitialLoading {
             LibrarySkeleton()
-        } else if let error = viewModel.error {
+        } else if let error = viewModel.error, viewModel.entries.isEmpty {
             VStack(spacing: 12) {
                 Text("Couldn't load your library")
                     .font(.headline)
-                Text(error)
+                Text(error.localizedDescription)
                     .font(.footnote)
                     .foregroundColor(.textSecondary)
                     .multilineTextAlignment(.center)
@@ -217,7 +214,10 @@ struct LibraryView: View {
                         BottleRow(bottle: entry.bottle) {
                             navigationPath.append(BottleNav(entry: entry))
                         }
+                        .loadsMore(of: viewModel.list, after: entry)
                     }
+
+                    PagedListFooter(list: viewModel.list)
                 }
                 .padding(.horizontal)
                 .padding(.top, 8)

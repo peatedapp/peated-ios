@@ -4,21 +4,8 @@ import PeatedAPI
 public protocol FeedRepositoryProtocol: Sendable {
     func getActivity(type: FeedType, cursor: String?, limit: Int) async throws -> ActivityPage
     func refreshActivity(type: FeedType) async throws -> ActivityPage
-    func getBottleTastings(bottleId: String, cursor: String?, limit: Int) async throws -> FeedPage
-    func getUserTastings(userId: String, cursor: String?, limit: Int) async throws -> FeedPage
-}
-
-/// One page of tastings for a bottle, entity, or member profile.
-public struct FeedPage: Sendable {
-    public let tastings: [TastingFeedItem]
-    public let cursor: String?
-    public let hasMore: Bool
-
-    public init(tastings: [TastingFeedItem], cursor: String?, hasMore: Bool) {
-        self.tastings = tastings
-        self.cursor = cursor
-        self.hasMore = hasMore
-    }
+    func getBottleTastings(bottleId: String, cursor: Int, limit: Int) async throws -> ListPage<TastingFeedItem>
+    func getUserTastings(userId: String, cursor: Int, limit: Int) async throws -> ListPage<TastingFeedItem>
 }
 
 public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
@@ -64,7 +51,11 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
 
     // MARK: - Tasting lists
 
-    public func getEntityTastings(entityId: String, cursor: String? = nil, limit: Int = 20) async throws -> FeedPage {
+    public func getEntityTastings(
+        entityId: String,
+        cursor: Int,
+        limit: Int = 20
+    ) async throws -> ListPage<TastingFeedItem> {
         guard let entityIdDouble = Double(entityId) else {
             throw APIError.requestFailed("Invalid entity ID")
         }
@@ -74,7 +65,11 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
         return try await tastingPage(query: query, cursor: cursor, limit: limit)
     }
 
-    public func getBottleTastings(bottleId: String, cursor: String?, limit: Int = 20) async throws -> FeedPage {
+    public func getBottleTastings(
+        bottleId: String,
+        cursor: Int,
+        limit: Int = 20
+    ) async throws -> ListPage<TastingFeedItem> {
         guard let bottleId = Int(bottleId) else {
             throw APIError.requestFailed("Invalid bottle ID")
         }
@@ -84,7 +79,11 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
         return try await tastingPage(query: query, cursor: cursor, limit: limit)
     }
 
-    public func getUserTastings(userId: String, cursor: String?, limit: Int = 20) async throws -> FeedPage {
+    public func getUserTastings(
+        userId: String,
+        cursor: Int,
+        limit: Int = 20
+    ) async throws -> ListPage<TastingFeedItem> {
         guard let userIdDouble = Double(userId) else {
             throw APIError.requestFailed("Invalid user ID")
         }
@@ -96,15 +95,13 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
 
     private func tastingPage(
         query: Operations.listTastings.Input.Query,
-        cursor: String?,
+        cursor: Int,
         limit: Int
-    ) async throws -> FeedPage {
+    ) async throws -> ListPage<TastingFeedItem> {
         let client = await client
         var query = query
         query.limit = Double(limit)
-        if let cursor {
-            query.cursor = Double(cursor)
-        }
+        query.cursor = Double(cursor)
 
         let response = try await client.listTastings(Operations.listTastings.Input(query: query))
         let payload = try response.extractPayload()
@@ -116,9 +113,7 @@ public actor FeedRepository: FeedRepositoryProtocol, BaseRepositoryProtocol {
         }
         seedBottles(payload.results.map { Bottle(from: $0.bottle) })
 
-        let nextCursor: String? = payload.rel.nextCursor.map { String(Int($0)) }
-
-        return FeedPage(tastings: tastings, cursor: nextCursor, hasMore: nextCursor != nil)
+        return ListPage(items: tastings, nextCursor: payload.rel.nextCursor.map { Int($0) })
     }
 
     // MARK: - Store seeding
