@@ -23,17 +23,13 @@ struct DistillerPickerView: View {
                     text: $query,
                     isFocused: $searchFocused
                 )
+                .autocorrectionDisabled()
+                .textInputAutocapitalization(.words)
 
                 if searchFailed {
                     Text("Unable to search distilleries. Keep typing or try again.")
                         .font(.caption)
                         .foregroundColor(.danger)
-                }
-
-                if let createName {
-                    optionRow(title: "Add “\(createName)”", subtitle: nil, systemImage: "plus") {
-                        pick(.new(name: createName))
-                    }
                 }
 
                 ForEach(results) { entity in
@@ -45,6 +41,12 @@ struct DistillerPickerView: View {
                         ) {
                             pick(.existing(id: id, name: entity.name))
                         }
+                    }
+                }
+
+                if let createName {
+                    optionRow(title: "Add “\(createName)”", subtitle: nil, systemImage: "plus") {
+                        pick(.new(name: createName))
                     }
                 }
 

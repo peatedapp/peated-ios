@@ -24,9 +24,16 @@ struct SearchInput: View {
                 .accessibilityIdentifier(identifier ?? "")
             if !text.isEmpty {
                 Button(action: { text = "" }) {
-                    Image(systemName: "xmark.circle.fill").foregroundColor(.textSecondary)
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(.textSecondary)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                // Keep a 44pt target without making the field taller.
+                .padding(.vertical, -12)
+                .padding(.trailing, -12)
+                .accessibilityLabel("Clear search")
             }
         }
         .inputBox(state: focused ? .focused : .normal)
