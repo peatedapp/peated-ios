@@ -1,6 +1,7 @@
 import PeatedCore
 import SwiftUI
 
+/// Adds a bottle to the catalog in steps, like the web create wizard.
 struct ManualBottleEntryView: View {
     @Environment(\.dismiss) private var dismiss
     let onBottleCreated: (Bottle) -> Void
@@ -19,6 +20,8 @@ struct ManualBottleEntryView: View {
     @State private var caskStrength = false
     @State private var vintageYear = ""
     @State private var releaseYear = ""
+    @State private var step: AddBottleStep = .bottle
+    @AccessibilityFocusState private var stepHeadingFocused: Bool
     @State private var isCreating = false
     @State private var showingError = false
     @State private var errorMessage = ""
@@ -67,58 +70,66 @@ struct ManualBottleEntryView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollViewReader { proxy in
-                ScrollView {
-                    VStack(spacing: 16) {
-                        if isReviewingCandidates {
-                            candidateReviewSection
-                        } else {
-                            if candidateInput != nil, !unreviewedCandidates.isEmpty {
-                                BottleCreateCandidateSummary(
-                                    count: unreviewedCandidates.count,
-                                    loading: isCheckingCandidates,
-                                    newSinceReview: !reviewedCandidateIds.isEmpty,
-                                    onReview: { openCandidateReview(addAfterReview: false) }
-                                )
-                                .padding(.horizontal)
+            VStack(spacing: 0) {
+                if !isReviewingCandidates {
+                    ProgressBar(currentStep: step.number, totalSteps: AddBottleStep.allCases.count)
+                        .padding(.horizontal)
+                        .padding(.top, 8)
+                }
+
+                ScrollViewReader { proxy in
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            if isReviewingCandidates {
+                                candidateReviewSection
+                            } else {
+                                if candidateInput != nil, !unreviewedCandidates.isEmpty {
+                                    BottleCreateCandidateSummary(
+                                        count: unreviewedCandidates.count,
+                                        loading: isCheckingCandidates,
+                                        newSinceReview: !reviewedCandidateIds.isEmpty,
+                                        onReview: { openCandidateReview(addAfterReview: false) }
+                                    )
+                                    .padding(.horizontal)
+                                }
+
+                                Text(step.title)
+                                    .font(.title2)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.text)
+                                    .accessibilityAddTraits(.isHeader)
+                                    .accessibilityFocused($stepHeadingFocused)
+                                    .padding(.horizontal)
+
+                                stepContent
                             }
-                            basicInfoSection
-                            madeBySection
-                            detailsSection
-                            datesSection
-                            productionSection
                         }
+                        .padding(.vertical)
+                        .id(Self.scrollTopId)
                     }
-                    .padding(.vertical)
-                    .id(Self.scrollTopId)
+                    .scrollDismissesKeyboard(.interactively)
+                    .onChange(of: isReviewingCandidates) {
+                        proxy.scrollTo(Self.scrollTopId, anchor: .top)
+                    }
+                    .onChange(of: step) {
+                        proxy.scrollTo(Self.scrollTopId, anchor: .top)
+                    }
                 }
-                .onChange(of: isReviewingCandidates) {
-                    proxy.scrollTo(Self.scrollTopId, anchor: .top)
-                }
+
+                navigationBar
             }
-            .navigationTitle(isReviewingCandidates ? "Is it already on Peated?" : "Add Bottle")
+            .navigationTitle(isReviewingCandidates ? "Is it already on Peated?" : "Add a bottle")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    if isReviewingCandidates {
-                        Button("Back") {
-                            closeCandidateReview()
-                        }
-                    } else {
-                        Button("Cancel") {
-                            dismiss()
-                        }
+                    Button("Cancel") {
+                        dismiss()
                     }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
                     if !isReviewingCandidates {
-                        Button(addButtonTitle) {
-                            addBottle()
-                        }
-                        .fontWeight(.medium)
-                        .disabled(!isValid || isCreating || isCheckingCandidates)
-                        .accessibilityHint(isCheckingCandidates ? "Checking existing bottles…" : "")
+                        StepCountLabel(current: step.number, total: AddBottleStep.allCases.count)
                     }
                 }
             }
@@ -147,10 +158,21 @@ struct ManualBottleEntryView: View {
         }
     }
 
+    @ViewBuilder
+    private var stepContent: some View {
+        switch step {
+        case .bottle: basicInfoSection
+        case .madeBy: madeBySection
+        case .release: detailsSection
+        case .dates: datesSection
+        case .production: productionSection
+        }
+    }
+
     // MARK: - Sections
 
     private var basicInfoSection: some View {
-        FormSection("Bottle") {
+        FormSection {
             TextInput(
                 label: "Brand",
                 placeholder: "Laphroaig",
@@ -176,13 +198,7 @@ struct ManualBottleEntryView: View {
                 autocorrection: true,
                 capitalization: .words,
                 helper: "Leave the brand out of the name.",
-                onSubmit: {
-                    if noAgeStatement {
-                        focusAbv = true
-                    } else {
-                        focusAge = true
-                    }
-                },
+                onSubmit: { continueFromKeyboard() },
                 isFocused: $focusName
             )
 
@@ -191,7 +207,7 @@ struct ManualBottleEntryView: View {
     }
 
     private var detailsSection: some View {
-        FormSection("Release") {
+        FormSection {
             TextInput(
                 label: "Age statement (optional)",
                 placeholder: "12",
@@ -238,14 +254,14 @@ struct ManualBottleEntryView: View {
                 leadingSystemImage: "number",
                 submitLabel: .next,
                 capitalization: .words,
-                onSubmit: { focusVintageYear = true },
+                onSubmit: { continueFromKeyboard() },
                 isFocused: $focusEdition
             )
         }
     }
 
     private var madeBySection: some View {
-        FormSection("Made by") {
+        FormSection {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Distilled by (optional)")
                     .font(.caption)
@@ -309,7 +325,7 @@ struct ManualBottleEntryView: View {
     }
 
     private var datesSection: some View {
-        FormSection("Dates") {
+        FormSection {
             TextInput(
                 label: "Distillation year (optional)",
                 placeholder: "2024",
@@ -328,15 +344,16 @@ struct ManualBottleEntryView: View {
                 text: $releaseYear,
                 leadingSystemImage: "calendar",
                 keyboard: .numberPad,
-                submitLabel: .done,
+                submitLabel: .next,
                 error: yearError(releaseYear),
+                onSubmit: { continueFromKeyboard() },
                 isFocused: $focusReleaseYear
             )
         }
     }
 
     private var productionSection: some View {
-        FormSection("Production") {
+        FormSection {
             switchRow(
                 "Single cask",
                 description: "The label states that this is a single-cask bottling.",
@@ -419,12 +436,7 @@ struct ManualBottleEntryView: View {
 
 extension ManualBottleEntryView {
     private var isValid: Bool {
-        !bottleName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-            !brandName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-            abvError == nil &&
-            ageError == nil &&
-            yearError(vintageYear) == nil &&
-            yearError(releaseYear) == nil
+        AddBottleStep.allCases.allSatisfy(isStepValid)
     }
 
     private var abvValue: Double? {
@@ -498,26 +510,11 @@ extension ManualBottleEntryView {
 /// Mirrors the web create form: check the catalog for the draft, then review matches before adding.
 extension ManualBottleEntryView {
     private var candidateReviewSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            BottleCreateCandidateReview(
-                draft: draftBottle,
-                results: reviewResults,
-                onUse: useExistingBottle
-            )
-
-            Button {
-                continueAfterCandidateReview()
-            } label: {
-                // Same look as the photo flow's main action; white on brand fails contrast.
-                Text(addAfterReview ? "Add as a new bottle" : "None of these")
-                    .fontWeight(.medium)
-                    .foregroundColor(.onBrand)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .background(Color.brand)
-                    .cornerRadius(10)
-            }
-        }
+        BottleCreateCandidateReview(
+            draft: draftBottle,
+            results: reviewResults,
+            onUse: useExistingBottle
+        )
         .padding(.horizontal)
     }
 
@@ -533,12 +530,6 @@ extension ManualBottleEntryView {
 
     private var isReviewingCandidates: Bool {
         !reviewResults.isEmpty
-    }
-
-    private var addButtonTitle: String {
-        let count = unreviewedCandidates.count
-        guard count > 0 else { return "Add" }
-        return "Review \(count) \(count == 1 ? "bottle" : "bottles")"
     }
 
     /// The draft as a bottle, so the review shows it with the same identity lines as the matches.
@@ -617,6 +608,134 @@ extension ManualBottleEntryView {
             createBottle()
         } else {
             openCandidateReview(addAfterReview: true)
+        }
+    }
+}
+
+// MARK: - Steps
+
+/// Moves through the steps the way the web wizard's save bar does.
+extension ManualBottleEntryView {
+    private var navigationBar: some View {
+        StepNavigationBar(onBack: backAction) {
+            StepContinueButton(
+                title: primaryTitle,
+                showsChevron: !isReviewingCandidates && !step.isLast,
+                isEnabled: primaryEnabled,
+                action: primaryAction
+            )
+            .accessibilityHint(primaryHint)
+            // A new identity per title keeps the accessibility element in step with the
+            // label; otherwise hit-testing kept the old "Review" button after Back.
+            .id(primaryTitle)
+        }
+    }
+
+    private var backAction: (() -> Void)? {
+        if isReviewingCandidates {
+            return { closeCandidateReview() }
+        }
+        guard let previous = step.previous else { return nil }
+        return { show(previous, focusingFirstField: false) }
+    }
+
+    private var primaryTitle: String {
+        if isReviewingCandidates {
+            return addAfterReview ? "Add as a new bottle" : "None of these"
+        }
+        if !step.isLast {
+            return "Continue"
+        }
+        let count = unreviewedCandidates.count
+        guard count > 0 else { return "Add a bottle" }
+        return "Review \(count) \(count == 1 ? "bottle" : "bottles")"
+    }
+
+    private var primaryEnabled: Bool {
+        if isReviewingCandidates {
+            return true
+        }
+        if !step.isLast {
+            return isStepValid(step)
+        }
+        // Like the web, the final save waits for the duplicate check.
+        return isValid && !isCreating && !isCheckingCandidates
+    }
+
+    private var primaryHint: String {
+        step.isLast && !isReviewingCandidates && isCheckingCandidates ? "Checking existing bottles…" : ""
+    }
+
+    private func primaryAction() {
+        if isReviewingCandidates {
+            continueAfterCandidateReview()
+        } else if let next = step.next {
+            show(next, focusingFirstField: false)
+        } else {
+            addBottle()
+        }
+    }
+
+    /// Return on a step's last text field moves on, like Enter on the web form.
+    private func continueFromKeyboard() {
+        guard isStepValid(step), let next = step.next else { return }
+        show(next, focusingFirstField: true)
+    }
+
+    private func show(_ newStep: AddBottleStep, focusingFirstField: Bool) {
+        clearFocus()
+        withAnimation {
+            step = newStep
+        }
+        // Focus can only move once the new step's fields exist.
+        Task { @MainActor in
+            await Task.yield()
+            if !(focusingFirstField && focusFirstTextField(of: newStep)) {
+                stepHeadingFocused = true
+            }
+        }
+    }
+
+    /// Returns false when the step has no text field.
+    private func focusFirstTextField(of step: AddBottleStep) -> Bool {
+        switch step {
+        case .bottle:
+            focusBrand = true
+        case .release:
+            if noAgeStatement {
+                focusAbv = true
+            } else {
+                focusAge = true
+            }
+        case .dates:
+            focusVintageYear = true
+        case .madeBy, .production:
+            return false
+        }
+        return true
+    }
+
+    private func clearFocus() {
+        focusBrand = false
+        focusName = false
+        focusAge = false
+        focusAbv = false
+        focusEdition = false
+        focusVintageYear = false
+        focusReleaseYear = false
+    }
+
+    private func isStepValid(_ step: AddBottleStep) -> Bool {
+        switch step {
+        case .bottle:
+            !bottleName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
+                !brandName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        case .release:
+            ageError == nil && abvError == nil
+        case .dates:
+            yearError(vintageYear) == nil && yearError(releaseYear) == nil
+        case .madeBy, .production:
+            true
         }
     }
 }
