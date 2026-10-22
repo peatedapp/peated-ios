@@ -419,8 +419,8 @@ struct EntityDetailView: View {
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
 
-                if let category = bottle.category {
-                    Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
+                if let category = BottleDisplayName.categoryName(bottle.category) {
+                    Text(category)
                         .font(.peatedMetadata)
                         .foregroundColor(.textSecondary)
                         .lineLimit(1)

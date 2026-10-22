@@ -28,6 +28,13 @@ jq '
   | walk(
       if type == "object" and (.properties?.file?.not == {})
       then .properties.file = ((.properties.file | del(.not)) + {"type": "string"})
+      # swift-openapi-runtime cannot serialize a deepObject array of objects.
+      # The server (oRPC) reads bracket notation, e.g. distillers[0][name]=Ardbeg,
+      # so expose these as a form-exploded string map and let callers build the keys.
+      elif type == "object" and .in? == "query" and .style? == "deepObject"
+        and .schema?.type? == "array" and .schema?.items?.type? == "object"
+      then {name, in, required, style: "form", explode: true,
+            schema: {type: "object", additionalProperties: {type: "string"}}}
       else .
       end
     )

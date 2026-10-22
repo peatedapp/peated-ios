@@ -49333,31 +49333,24 @@ public enum Operations {
                 }
                 /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/brand`.
                 public var brand: Operations.getBottleCreateCandidates.Input.Query.brandPayload?
-                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/distillersPayload`.
-                public struct distillersPayloadPayload: Codable, Hashable, Sendable {
-                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/distillersPayload/id`.
-                    public var id: Swift.Int?
-                    /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/distillersPayload/name`.
-                    public var name: Swift.String
-                    /// Creates a new `distillersPayloadPayload`.
+                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/distillers`.
+                public struct distillersPayload: Codable, Hashable, Sendable {
+                    /// A container of undocumented properties.
+                    public var additionalProperties: [String: Swift.String]
+                    /// Creates a new `distillersPayload`.
                     ///
                     /// - Parameters:
-                    ///   - id:
-                    ///   - name:
-                    public init(
-                        id: Swift.Int? = nil,
-                        name: Swift.String
-                    ) {
-                        self.id = id
-                        self.name = name
+                    ///   - additionalProperties: A container of undocumented properties.
+                    public init(additionalProperties: [String: Swift.String] = .init()) {
+                        self.additionalProperties = additionalProperties
                     }
-                    public enum CodingKeys: String, CodingKey {
-                        case id
-                        case name
+                    public init(from decoder: any Swift.Decoder) throws {
+                        additionalProperties = try decoder.decodeAdditionalProperties(knownKeys: [])
+                    }
+                    public func encode(to encoder: any Swift.Encoder) throws {
+                        try encoder.encodeAdditionalProperties(additionalProperties)
                     }
                 }
-                /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/distillers`.
-                public typealias distillersPayload = [Operations.getBottleCreateCandidates.Input.Query.distillersPayloadPayload]
                 /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/distillers`.
                 public var distillers: Operations.getBottleCreateCandidates.Input.Query.distillersPayload?
                 /// - Remark: Generated from `#/paths/bottles/create-candidates/GET/query/bottler`.

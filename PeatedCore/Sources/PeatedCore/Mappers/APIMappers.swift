@@ -258,6 +258,80 @@ extension Bottle {
         )
     }
 
+    init(from apiBottle: Operations.getBottleCreateCandidates.Output.Ok.Body.jsonPayload.resultsPayloadPayload) {
+        let ratingSummary = BottleRatingSummary(
+            medianScore: apiBottle.medianScore,
+            minimumScore: apiBottle.minScore,
+            maximumScore: apiBottle.maxScore,
+            memberScoreCount: apiBottle.memberScoreCount,
+            externalScoreCount: apiBottle.externalScoreCount,
+            reviewBandCounts: RatingBandCounts(
+                mediocre: apiBottle.reviewScoreBandCounts.mediocre,
+                good: apiBottle.reviewScoreBandCounts.good,
+                veryGood: apiBottle.reviewScoreBandCounts.very_good,
+                outstanding: apiBottle.reviewScoreBandCounts.outstanding,
+                unicorn: apiBottle.reviewScoreBandCounts.unicorn
+            ),
+            tastingBandCounts: RatingBandCounts(
+                mediocre: apiBottle.tastingBandCounts.mediocre,
+                good: apiBottle.tastingBandCounts.good,
+                veryGood: apiBottle.tastingBandCounts.very_good,
+                outstanding: apiBottle.tastingBandCounts.outstanding,
+                unicorn: apiBottle.tastingBandCounts.unicorn
+            )
+        )
+
+        self.init(
+            id: String(Int(apiBottle.id)),
+            name: apiBottle.name,
+            fullName: apiBottle.fullName,
+            brand: Brand(
+                id: String(Int(apiBottle.brand.id)),
+                name: apiBottle.brand.name,
+                shortName: apiBottle.brand.shortName
+            ),
+            category: apiBottle.category?.rawValue,
+            description: apiBottle.description,
+            edition: apiBottle.edition,
+            series: apiBottle.series.map {
+                BottleSeriesSummary(id: String(Int($0.id)), name: $0.name)
+            },
+            groupName: apiBottle.group?.name,
+            caskStrength: apiBottle.caskStrength ?? false,
+            singleCask: apiBottle.singleCask ?? false,
+            statedAge: apiBottle.statedAge.map { Int($0) },
+            vintageYear: apiBottle.vintageYear.map { Int($0) },
+            bottlingYear: apiBottle.bottlingYear.map { Int($0) },
+            releaseYear: apiBottle.releaseYear.map { Int($0) },
+            releaseMonth: apiBottle.releaseMonth,
+            releaseDay: apiBottle.releaseDay,
+            caskNumber: apiBottle.caskNumber,
+            maturation: apiBottle.maturation,
+            maltPhenolPpm: apiBottle.maltPhenolPpm,
+            naturalColor: apiBottle.naturalColor,
+            nonChillFiltered: apiBottle.nonChillFiltered,
+            noAgeStatement: apiBottle.noAgeStatement,
+            outturn: apiBottle.outturn,
+            distillers: apiBottle.distillers?.map {
+                Brand(id: String(Int($0.id)), name: $0.name)
+            } ?? [],
+            bottler: apiBottle.bottler.map {
+                Brand(id: String(Int($0.id)), name: $0.name)
+            },
+            tastingNotes: apiBottle.tastingNotes.map {
+                BottleTastingNotes(nose: $0.nose, palate: $0.palate, finish: $0.finish)
+            },
+            suggestedTags: apiBottle.suggestedTags ?? [],
+            imageUrl: apiBottle.imageUrl,
+            abv: apiBottle.abv,
+            ratingSummary: ratingSummary,
+            totalTastings: Int(apiBottle.totalTastings),
+            isFavorite: apiBottle.isFavorite,
+            isLibrary: apiBottle.isLibrary,
+            hasTasted: apiBottle.hasTasted
+        )
+    }
+
     init(
         from apiBottle: Components.Schemas.CollectionBottle.bottlePayload,
         imageUrl: String? = nil,

@@ -374,12 +374,12 @@ struct TastingDetailCard: View {
                             .font(.peatedBody)
                             .foregroundColor(.textSecondary)
 
-                        if let category = tasting.bottleCategory {
+                        if let category = BottleDisplayName.categoryName(tasting.bottleCategory) {
                             Text("•")
                                 .font(.peatedBody)
                                 .foregroundColor(.textMuted)
 
-                            Text(category.capitalized)
+                            Text(category)
                                 .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                         }

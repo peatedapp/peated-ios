@@ -60,6 +60,8 @@ struct TextInput: View {
                 .textContentType(contentType)
                 .onSubmit { onSubmit?() }
                 .focused(focusBinding)
+                // The visible label is a separate Text, so name the field for VoiceOver.
+                .accessibilityLabel(fieldLabel)
                 .accessibilityIdentifier(identifier ?? "")
 
                 if let unit, !unit.isEmpty {

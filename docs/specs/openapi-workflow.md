@@ -73,6 +73,7 @@ swift build && swift test
 - OpenAPI version normalization: 3.1.1 → 3.1.0
 - Nullable fields: convert `anyOf [T, null]` to `nullable: true` where appropriate
 - Missing parameter schemas: inject schema objects when absent
+- Query arrays of objects (`style: deepObject`): rewrite as a form-exploded string map. swift-openapi-runtime cannot nest containers, so callers build the server's bracket-notation keys, such as `distillers[0][name]`
 
 ## Example usage
 

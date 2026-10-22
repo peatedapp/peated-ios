@@ -25647,35 +25647,14 @@
             "name": "distillers",
             "in": "query",
             "required": false,
-            "schema": {
-              "type": "array",
-              "maxItems": 20,
-              "items": {
-                "type": "object",
-                "properties": {
-                  "id": {
-                    "type": "integer",
-                    "minimum": -9007199254740991,
-                    "maximum": 9007199254740991,
-                    "exclusiveMinimum": 0,
-                    "nullable": true
-                  },
-                  "name": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 255
-                  }
-                },
-                "required": [
-                  "name"
-                ]
-              },
-              "default": []
-            },
-            "style": "deepObject",
+            "style": "form",
             "explode": true,
-            "allowEmptyValue": true,
-            "allowReserved": true
+            "schema": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
           },
           {
             "name": "bottler",

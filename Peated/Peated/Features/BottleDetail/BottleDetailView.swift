@@ -377,9 +377,9 @@ extension BottleDetailView {
     private func statsSection(_ bottle: Bottle) -> some View {
         HStack(spacing: 0) {
             // Style (formerly Category)
-            if let category = bottle.category {
+            if let category = BottleDisplayName.categoryName(bottle.category) {
                 VStack(spacing: 8) {
-                    Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
+                    Text(category)
                         .font(.peatedMetadata)
                         .fontWeight(.semibold)
                         .foregroundColor(.text)

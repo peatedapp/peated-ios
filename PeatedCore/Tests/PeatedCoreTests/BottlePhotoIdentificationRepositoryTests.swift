@@ -91,7 +91,49 @@ struct BottlePhotoIdentificationRepositoryTests {
             name: "Distillers Edition 2008",
             brandName: "Lagavulin",
             category: .singleMalt,
-            abv: 43
+            abv: 43,
+            vintageYear: 2008
+        ))
+    }
+
+    @Test
+    func downgradedCreatePrefillsReleaseDetailsFromProposedBottle() async throws {
+        let identification = try await identify(Self.response(
+            classification: Self.classified(Self.releaseCreateDecision),
+            suggestedNextStep: "manual_search"
+        ))
+
+        #expect(identification.manualBottleInput == CreateBottleInput(
+            name: "Distillers Edition",
+            brandName: "Lagavulin",
+            category: .singleMalt,
+            abv: 54.2,
+            edition: "Feis Ile 2024",
+            distillers: [.existing(id: 12, name: "Lagavulin"), .new(name: "Port Ellen")],
+            singleCask: true,
+            caskStrength: true,
+            vintageYear: 2009,
+            releaseYear: 2024
+        ))
+    }
+
+    @Test
+    func unmatchedLabelPrefillsReleaseDetailsFromFieldCandidates() async throws {
+        let identification = try await identify(Self.response(
+            fieldCandidates: Self.releaseFieldCandidates,
+            classification: Self.classified(#"{"action": "no_match"}"#),
+            suggestedNextStep: "manual_search"
+        ))
+
+        #expect(identification.manualBottleInput == CreateBottleInput(
+            name: "Distillers Edition",
+            brandName: "Lagavulin",
+            edition: "Islay Festival",
+            distillers: [.new(name: "Lagavulin")],
+            singleCask: true,
+            caskStrength: true,
+            vintageYear: 2010,
+            releaseYear: 2023
         ))
     }
 
@@ -146,6 +188,43 @@ struct BottlePhotoIdentificationRepositoryTests {
         "releaseYear": null,
         "brand": {"id": 7, "name": "Lagavulin"},
         "distillers": [],
+        "bottler": null
+      }
+    }
+    """
+
+    private static let releaseFieldCandidates = """
+    {
+      "brand": {"value": "Lagavulin", "confidence": 0.9, "sourceExtractorIndexes": [0]},
+      "expression": {"value": "Distillers Edition", "confidence": 0.85, "sourceExtractorIndexes": [0]},
+      "edition": {"value": " Islay Festival ", "confidence": 0.8, "sourceExtractorIndexes": [0]},
+      "distillery": {"value": ["Lagavulin", " "], "confidence": 0.8, "sourceExtractorIndexes": [0]},
+      "vintageYear": {"value": 2010, "confidence": 0.8, "sourceExtractorIndexes": [0]},
+      "releaseYear": {"value": 2023, "confidence": 0.8, "sourceExtractorIndexes": [0]},
+      "caskStrength": {"value": true, "confidence": 0.8, "sourceExtractorIndexes": [0]},
+      "singleCask": {"value": true, "confidence": 0.8, "sourceExtractorIndexes": [0]}
+    }
+    """
+
+    private static let releaseCreateDecision = """
+    {
+      "action": "create_bottle",
+      "proposedBottle": {
+        "name": "Distillers Edition",
+        "series": null,
+        "category": "single_malt",
+        "edition": "Feis Ile 2024",
+        "statedAge": null,
+        "abv": 54.2,
+        "caskStrength": true,
+        "singleCask": true,
+        "maturation": null,
+        "caskNumber": null,
+        "outturn": null,
+        "vintageYear": 2009,
+        "releaseYear": 2024,
+        "brand": {"id": 7, "name": "Lagavulin"},
+        "distillers": [{"id": 12, "name": "Lagavulin"}, {"name": "Port Ellen"}],
         "bottler": null
       }
     }

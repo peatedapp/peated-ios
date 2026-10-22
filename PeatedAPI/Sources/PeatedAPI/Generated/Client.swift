@@ -6984,7 +6984,7 @@ public struct Client: APIProtocol {
                 )
                 try converter.setQueryItemAsURI(
                     in: &request,
-                    style: .deepObject,
+                    style: .form,
                     explode: true,
                     name: "distillers",
                     value: input.query.distillers

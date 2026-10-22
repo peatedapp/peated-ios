@@ -4,6 +4,8 @@ import PeatedAPI
 public protocol BottleRepositoryProtocol: Sendable {
     func searchBottles(query: String, limit: Int) async throws -> [Bottle]
     func createBottle(_ input: CreateBottleInput) async throws -> Bottle
+    /// Existing bottles that may be the same as the draft. The check is advisory and never blocks creation.
+    func findCreateCandidates(_ input: CreateBottleInput) async throws -> [Bottle]
     func getBottle(barcode: String) async throws -> Bottle
     func getBottle(id: String) async throws -> Bottle
     func getPopularBottles(limit: Int) async throws -> [Bottle]
@@ -82,6 +84,29 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             throw APIError.serverError(500, nil)
         case let .undocumented(statusCode, _):
             throw APIError.unexpectedResponse(statusCode)
+        }
+    }
+
+    public func findCreateCandidates(_ input: CreateBottleInput) async throws -> [Bottle] {
+        let client = await client
+        let response = try await client.getBottleCreateCandidates(
+            query: Self.makeCreateCandidatesQuery(input)
+        )
+
+        switch response {
+        case let .ok(okResponse):
+            switch okResponse.body {
+            case let .json(payload):
+                return payload.results.map { Bottle(from: $0) }
+            }
+        case .badRequest:
+            throw APIError.requestFailed("Check the bottle details and try again.")
+        case .unauthorized:
+            throw APIError.unauthorized
+        case let .undocumented(statusCode, _):
+            throw APIError.unexpectedResponse(statusCode)
+        default:
+            throw APIError.invalidResponse
         }
     }
 
@@ -166,12 +191,65 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
             value1: .init(name: input.brandName, kind: .brand)
         )
 
+        let distillers = input.distillers.map { distiller in
+            switch distiller {
+            case let .existing(id, _):
+                Payload.distillersPayloadPayload(value2: Double(id))
+            case let .new(name):
+                Payload.distillersPayloadPayload(value1: .init(name: name, kind: .distillery))
+            }
+        }
+
         return Payload(
             name: input.name,
-            statedAge: input.statedAge,
+            // A confirmed "no age statement" wins over any age left in the input.
+            statedAge: input.noAgeStatement ? nil : input.statedAge,
             category: category,
             brand: brand,
-            abv: input.abv
+            distillers: distillers.isEmpty ? nil : distillers,
+            edition: input.edition,
+            noAgeStatement: input.noAgeStatement ? true : nil,
+            abv: input.abv,
+            singleCask: input.singleCask ? true : nil,
+            caskStrength: input.caskStrength ? true : nil,
+            vintageYear: input.vintageYear,
+            releaseYear: input.releaseYear
+        )
+    }
+
+    /// Mirrors the web create form's candidate query. False flags mean "not stated", so they are left unset.
+    static func makeCreateCandidatesQuery(
+        _ input: CreateBottleInput
+    ) -> Operations.getBottleCreateCandidates.Input.Query {
+        typealias Query = Operations.getBottleCreateCandidates.Input.Query
+
+        // update-api.sh turns this array of objects into a string map, because swift-openapi-runtime
+        // cannot nest containers. The keys use the server's bracket notation: distillers[0][name].
+        var distillers: [String: String] = [:]
+        for (index, distiller) in input.distillers.enumerated() {
+            switch distiller {
+            case let .existing(id, name):
+                distillers["distillers[\(index)][id]"] = String(id)
+                distillers["distillers[\(index)][name]"] = name
+            case let .new(name):
+                distillers["distillers[\(index)][name]"] = name
+            }
+        }
+
+        return Query(
+            name: input.name,
+            brand: .init(name: input.brandName),
+            distillers: distillers.isEmpty ? nil : .init(additionalProperties: distillers),
+            category: input.category.flatMap { Query.categoryPayload(rawValue: $0.rawValue) },
+            edition: input.edition,
+            statedAge: input.noAgeStatement ? nil : input.statedAge.map(Double.init),
+            noAgeStatement: input.noAgeStatement ? true : nil,
+            caskStrength: input.caskStrength ? true : nil,
+            singleCask: input.singleCask ? true : nil,
+            abv: input.abv,
+            vintageYear: input.vintageYear.map(Double.init),
+            releaseYear: input.releaseYear.map(Double.init),
+            limit: 3
         )
     }
 
