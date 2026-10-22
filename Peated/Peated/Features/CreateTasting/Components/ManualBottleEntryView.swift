@@ -52,7 +52,7 @@ struct ManualBottleEntryView: View {
         _bottleName = State(initialValue: initialInput?.name ?? "")
         _brandName = State(initialValue: initialInput?.brandName ?? "")
         _category = State(initialValue: initialInput?.category)
-        _abv = State(initialValue: initialInput?.abv.map { String($0) } ?? "")
+        _abv = State(initialValue: initialInput?.abv.map { $0.formatted(.number.grouping(.never)) } ?? "")
         _age = State(initialValue: initialInput?.statedAge.map { String($0) } ?? "")
         _noAgeStatement = State(initialValue: initialInput?.noAgeStatement ?? false)
         _edition = State(initialValue: initialInput?.edition ?? "")
@@ -264,8 +264,13 @@ struct ManualBottleEntryView: View {
                         } label: {
                             Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.textSecondary)
+                                .frame(width: 44, height: 44)
+                                .contentShape(Rectangle())
                         }
                         .buttonStyle(.plain)
+                        // Keep a 44pt target without making the row taller.
+                        .padding(.vertical, -12)
+                        .padding(.trailing, -12)
                         .accessibilityLabel("Remove \(distiller.name)")
                     }
                     .inputBox()
