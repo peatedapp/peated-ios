@@ -54,15 +54,7 @@ struct CreateTastingFlow: View {
                 .animation(.easeInOut, value: currentStep)
                 .ignoresSafeArea(.keyboard)
 
-                // Navigation buttons
                 navigationButtons
-                    .padding()
-                    .overlay(
-                        Rectangle()
-                            .fill(Color.formBorder)
-                            .frame(height: 0.5),
-                        alignment: .top
-                    )
             }
             .navigationTitle("Add Tasting")
             .navigationBarTitleDisplayMode(.inline)
@@ -76,9 +68,7 @@ struct CreateTastingFlow: View {
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Text("\(currentStep)/6")
-                        .font(.caption)
-                        .foregroundColor(.textSecondary)
+                    StepCountLabel(current: currentStep, total: 6)
                 }
             }
             .interactiveDismissDisabled(viewModel.hasUnsavedChanges)
@@ -105,45 +95,10 @@ struct CreateTastingFlow: View {
     // MARK: - Navigation Buttons
 
     private var navigationButtons: some View {
-        HStack(spacing: 16) {
-            if currentStep > 1 {
-                Button(action: previousStep) {
-                    HStack {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 14))
-                        Text("Back")
-                    }
-                    .font(.body)
-                    .foregroundColor(.brand)
-                }
-                .accessibilityIdentifier(AccessibilityID.CreateTasting.back)
-            }
-
-            Spacer()
-
+        StepNavigationBar(onBack: backAction, backIdentifier: AccessibilityID.CreateTasting.back) {
             if currentStep < 6 {
-                Button(action: nextStep) {
-                    HStack {
-                        Text("Continue")
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14))
-                    }
-                    .font(.body)
-                    .fontWeight(.medium)
-                    // A solid muted surface keeps the disabled label readable; a
-                    // translucent brand fill does not meet the contrast minimum.
-                    .foregroundColor(canProceed ? .onBrand : .textSecondary)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                    .background(canProceed ? Color.brand : Color.formSurface)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(canProceed ? Color.clear : Color.formBorder, lineWidth: 1)
-                    )
-                    .cornerRadius(20)
-                }
-                .disabled(!canProceed)
-                .accessibilityIdentifier(AccessibilityID.CreateTasting.continueButton)
+                StepContinueButton(title: "Continue", isEnabled: canProceed, action: nextStep)
+                    .accessibilityIdentifier(AccessibilityID.CreateTasting.continueButton)
             } else {
                 Button(action: submitTasting) {
                     Group {
@@ -173,6 +128,11 @@ struct CreateTastingFlow: View {
     }
 
     // MARK: - Computed Properties
+
+    private var backAction: (() -> Void)? {
+        guard currentStep > 1 else { return nil }
+        return previousStep
+    }
 
     private var canProceed: Bool {
         switch currentStep {
@@ -236,33 +196,5 @@ struct CreateTastingFlow: View {
         if let location = preselectedLocation {
             viewModel.selectedLocation = location
         }
-    }
-}
-
-// MARK: - Progress Bar
-
-struct ProgressBar: View {
-    let currentStep: Int
-    let totalSteps: Int
-
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                // Background
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.border.opacity(0.3))
-                    .frame(height: 4)
-
-                // Progress
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.brand)
-                    .frame(
-                        width: geometry.size.width * (CGFloat(currentStep) / CGFloat(totalSteps)),
-                        height: 4
-                    )
-                    .animation(.easeInOut(duration: 0.3), value: currentStep)
-            }
-        }
-        .frame(height: 4)
     }
 }
