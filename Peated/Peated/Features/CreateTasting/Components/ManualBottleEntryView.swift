@@ -508,12 +508,15 @@ extension ManualBottleEntryView {
             Button {
                 continueAfterCandidateReview()
             } label: {
+                // Same look as the photo flow's main action; white on brand fails contrast.
                 Text(addAfterReview ? "Add as a new bottle" : "None of these")
+                    .fontWeight(.medium)
+                    .foregroundColor(.onBrand)
                     .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.brand)
+                    .cornerRadius(10)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
-            .tint(.brand)
         }
         .padding(.horizontal)
     }

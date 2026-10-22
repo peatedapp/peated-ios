@@ -25,11 +25,15 @@ struct BottleCreateCandidateSummary: View {
 
             Spacer(minLength: 0)
 
-            Button("Review", action: onReview)
-                .font(.peatedBody.weight(.medium))
-                .foregroundColor(.brand)
-                .disabled(loading)
-                .accessibilityLabel("Review \(bottleCount) that may match this one")
+            Button(action: onReview) {
+                Text("Review")
+                    .font(.peatedBody.weight(.medium))
+                    .foregroundColor(.brand)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .contentShape(Rectangle())
+            }
+            .disabled(loading)
+            .accessibilityLabel("Review \(bottleCount) that may match this one")
         }
         .frame(minHeight: 44)
         .padding(.leading, 12)
