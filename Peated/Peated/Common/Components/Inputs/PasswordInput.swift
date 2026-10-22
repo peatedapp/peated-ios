@@ -19,7 +19,7 @@ struct PasswordInput: View {
         VStack(alignment: .leading, spacing: 6) {
             if let label, !label.isEmpty {
                 Text(label)
-                    .font(.caption)
+                    .font(.peatedFieldLabel)
                     .foregroundColor(.textSecondary)
             }
 
@@ -32,6 +32,7 @@ struct PasswordInput: View {
                     }
                 }
                 .textFieldStyle(.plain)
+                .font(.peatedInput)
                 .foregroundColor(.text)
                 .textContentType(.password)
                 .focused($isFocused)
