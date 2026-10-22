@@ -44,6 +44,8 @@ extension Font {
     static let peatedMetadata = Font.custom(PeatedFontName.reading, size: 13, relativeTo: .footnote)
     static let peatedFieldLabel = Font.custom(PeatedFontName.readingSemiBold, size: 13, relativeTo: .footnote)
     static let peatedMicroLabel = Font.custom(PeatedFontName.reading, size: 13, relativeTo: .footnote)
+    /// The italic "Required" and "Optional" markers beside a field label.
+    static let peatedFieldMarker = Font.custom(PeatedFontName.readingItalic, size: 13, relativeTo: .footnote)
 
     // MARK: Data (IBM Plex Mono)
 

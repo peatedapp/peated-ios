@@ -7,6 +7,7 @@ import UIKit
 struct TextInput: View {
     // Content
     let label: String?
+    var requirement: FieldLabel.Requirement?
     let placeholder: String
     @Binding var text: String
     var leadingSystemImage: String?
@@ -31,11 +32,9 @@ struct TextInput: View {
     @FocusState private var internalFocused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             if let label, !label.isEmpty {
-                Text(label)
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
+                FieldLabel(text: label, requirement: requirement)
             }
 
             HStack(spacing: 8) {
@@ -46,12 +45,13 @@ struct TextInput: View {
 
                 Group {
                     if isSecure {
-                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
                     } else {
-                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
                     }
                 }
                 .textFieldStyle(.plain)
+                .font(.peatedInput)
                 .foregroundColor(.text)
                 .keyboardType(keyboard)
                 .submitLabel(submitLabel)
@@ -66,6 +66,7 @@ struct TextInput: View {
 
                 if let unit, !unit.isEmpty {
                     Text(unit)
+                        .font(.peatedMetadata)
                         .foregroundColor(.textSecondary)
                 }
             }
@@ -73,12 +74,13 @@ struct TextInput: View {
             .disabled(disabled)
 
             if let error, !error.isEmpty {
+                // Validation uses the semibold 13pt of the field-label role, like the web.
                 Text(error)
-                    .font(.caption)
+                    .font(.peatedFieldLabel)
                     .foregroundColor(.danger)
             } else if let helper, !helper.isEmpty {
                 Text(helper)
-                    .font(.caption)
+                    .font(.peatedMetadata)
                     .foregroundColor(.textSecondary)
             }
         }
@@ -103,6 +105,9 @@ struct TextInput: View {
         guard let label, !label.isEmpty else {
             return placeholder
         }
-        return label
+        guard requirement == .optional else {
+            return label
+        }
+        return "\(label), optional"
     }
 }

@@ -16,19 +16,25 @@ struct PasswordInput: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             if let label, !label.isEmpty {
-                Text(label)
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
+                FieldLabel(text: label)
             }
 
             HStack(spacing: 8) {
                 Group {
                     if isVisible {
-                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
+                            .font(.peatedInput)
                     } else {
-                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        // In Karla a secure field is 19pt tall, which the accessibility audit
+                        // flags as too small to tap. It shows only bullets, so it keeps the
+                        // system font and only the placeholder uses the reading face.
+                        SecureField(
+                            fieldLabel,
+                            text: $text,
+                            prompt: Text(placeholder).font(.peatedInput).foregroundColor(.textSecondary)
+                        )
                     }
                 }
                 .textFieldStyle(.plain)
@@ -46,6 +52,9 @@ struct PasswordInput: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                // Keep a 44pt target without making the field taller than the others.
+                .padding(.vertical, -10)
+                .padding(.trailing, -12)
                 .accessibilityLabel(isVisible ? "Hide password" : "Show password")
             }
             .inputBox(state: isFocused ? .focused : .normal)

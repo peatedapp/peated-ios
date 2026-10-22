@@ -12,62 +12,42 @@ struct InputBox: ViewModifier {
     }
 
     var state: State = .normal
-    var cornerRadius: CGFloat = 10
-    var horizontalPadding: CGFloat = 12
+    var cornerRadius: CGFloat = DesignSystem.CornerRadius.medium
+    var horizontalPadding: CGFloat = 13
     var verticalPadding: CGFloat = 10
 
+    /// Matches the web field: an inset fill with no outline at rest, a 2pt ring
+    /// drawn inside the box for focus and errors, and a faded disabled state.
     func body(content: Content) -> some View {
+        let shape = RoundedRectangle(cornerRadius: cornerRadius)
+
         content
             .padding(.horizontal, horizontalPadding)
             .padding(.vertical, verticalPadding)
-            .background(Color.formSurface)
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(borderColor, lineWidth: lineWidth)
-            )
-            .cornerRadius(cornerRadius)
-            .animation(.easeInOut(duration: 0.15), value: stateKey)
+            .frame(minHeight: DesignSystem.ControlHeight.large)
+            .background(Color.formSurface, in: shape)
+            .overlay {
+                if let ringColor {
+                    shape.strokeBorder(ringColor, lineWidth: DesignSystem.Border.thick)
+                }
+            }
+            .opacity(state == .disabled ? 0.45 : 1)
+            .animation(.easeInOut(duration: 0.15), value: state)
     }
 
-    private var borderColor: Color {
+    private var ringColor: Color? {
         switch state {
-        case .disabled:
-            Color.formBorder.opacity(0.35)
-        case .error:
-            Color.danger
-        case .focused:
-            Color.brand
-        case .normal:
-            // Match the input background so the outline is effectively hidden by default
-            Color.formSurface
-        }
-    }
-
-    private var lineWidth: CGFloat {
-        switch state {
-        case .focused:
-            1.5
-        case .error:
-            2
-        default:
-            1
-        }
-    }
-
-    private var stateKey: Int {
-        switch state {
-        case .normal: 0
-        case .focused: 1
-        case .error: 2
-        case .disabled: 3
+        case .focused: .brand
+        case .error: .danger
+        case .normal, .disabled: nil
         }
     }
 }
 
 extension View {
     func inputBox(state: InputBox.State = .normal,
-                  cornerRadius: CGFloat = 10,
-                  horizontalPadding: CGFloat = 12,
+                  cornerRadius: CGFloat = DesignSystem.CornerRadius.medium,
+                  horizontalPadding: CGFloat = 13,
                   verticalPadding: CGFloat = 10) -> some View {
         modifier(InputBox(state: state,
                           cornerRadius: cornerRadius,

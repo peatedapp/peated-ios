@@ -19,6 +19,17 @@ enum AddBottleStep: Int, CaseIterable {
         }
     }
 
+    /// One line under the step title that says what the fields are for.
+    var summary: String {
+        switch self {
+        case .bottle: "Name it the way the label does."
+        case .madeBy: "Who made the spirit, if you know."
+        case .release: "Details printed on this release."
+        case .dates: "When it was distilled and released."
+        case .production: "Turn these on only when the label says so."
+        }
+    }
+
     /// One-based, for the step count.
     var number: Int {
         rawValue + 1

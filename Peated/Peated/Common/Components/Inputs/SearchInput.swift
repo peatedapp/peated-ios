@@ -15,8 +15,9 @@ struct SearchInput: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass").foregroundColor(.textSecondary)
-            TextField("", text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+            TextField("", text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
                 .textFieldStyle(.plain)
+                .font(.peatedInput)
                 .foregroundColor(.text)
                 .focused(focusBinding)
                 .submitLabel(.search)
