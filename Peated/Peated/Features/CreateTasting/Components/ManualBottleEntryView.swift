@@ -167,7 +167,7 @@ struct ManualBottleEntryView: View {
 
     /// Fields sit on the page ground, one inset box each, like the web form.
     private func stepFields(@ViewBuilder content: () -> some View) -> some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xLarge) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             content()
         }
     }
@@ -176,6 +176,7 @@ struct ManualBottleEntryView: View {
         stepFields {
             TextInput(
                 label: "Brand",
+                requirement: .required,
                 placeholder: "Laphroaig",
                 text: $brandName,
                 keyboard: .default,
@@ -189,6 +190,7 @@ struct ManualBottleEntryView: View {
 
             TextInput(
                 label: "Bottle name",
+                requirement: .required,
                 placeholder: "12-year-old",
                 text: $bottleName,
                 isSecure: false,
@@ -208,9 +210,10 @@ struct ManualBottleEntryView: View {
     private var detailsSection: some View {
         stepFields {
             // The switch qualifies the age field, so it sits closer to it than to the next field.
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                 TextInput(
-                    label: "Age statement (optional)",
+                    label: "Age statement",
+                    requirement: .optional,
                     placeholder: "12",
                     text: $age,
                     unit: "years",
@@ -236,7 +239,8 @@ struct ManualBottleEntryView: View {
             }
 
             TextInput(
-                label: "Alcohol (optional)",
+                label: "Alcohol",
+                requirement: .optional,
                 placeholder: "40.5",
                 text: $abv,
                 unit: "% ABV",
@@ -248,7 +252,8 @@ struct ManualBottleEntryView: View {
             )
 
             TextInput(
-                label: "Edition or batch (optional)",
+                label: "Edition or batch",
+                requirement: .optional,
                 placeholder: "Batch 24",
                 text: $edition,
                 submitLabel: .next,
@@ -260,8 +265,8 @@ struct ManualBottleEntryView: View {
     }
 
     private var madeBySection: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            fieldLabel("Distilled by (optional)")
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+            FieldLabel(text: "Distilled by", requirement: .optional)
 
             ForEach(distillers, id: \.self) { distiller in
                 HStack(spacing: DesignSystem.Spacing.small) {
@@ -300,7 +305,7 @@ struct ManualBottleEntryView: View {
                         .accessibilityHidden(true)
                     Text("Search distilleries")
                         .font(.peatedInput)
-                        .foregroundColor(.textMuted)
+                        .foregroundColor(.textSecondary)
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.caption)
@@ -319,7 +324,8 @@ struct ManualBottleEntryView: View {
     private var datesSection: some View {
         stepFields {
             TextInput(
-                label: "Distillation year (optional)",
+                label: "Distillation year",
+                requirement: .optional,
                 placeholder: "2024",
                 text: $vintageYear,
                 keyboard: .numberPad,
@@ -330,7 +336,8 @@ struct ManualBottleEntryView: View {
             )
 
             TextInput(
-                label: "Release year (optional)",
+                label: "Release year",
+                requirement: .optional,
                 placeholder: "2024",
                 text: $releaseYear,
                 keyboard: .numberPad,
@@ -365,12 +372,6 @@ struct ManualBottleEntryView: View {
         }
     }
 
-    private func fieldLabel(_ text: String) -> some View {
-        Text(text)
-            .font(.peatedFieldLabel)
-            .foregroundColor(.textSecondary)
-    }
-
     private func helperText(_ text: String) -> some View {
         Text(text)
             .font(.peatedMetadata)
@@ -380,8 +381,8 @@ struct ManualBottleEntryView: View {
     // MARK: - Category Picker in InputBox style
 
     private var categoryPickerRow: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            fieldLabel("Type (optional)")
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+            FieldLabel(text: "Type", requirement: .optional)
                 .accessibilityHidden(true)
 
             Menu {
@@ -397,16 +398,16 @@ struct ManualBottleEntryView: View {
                 HStack(spacing: DesignSystem.Spacing.small) {
                     Text(category?.displayName ?? "Not set")
                         .font(.peatedInput)
-                        .foregroundColor(category == nil ? .textMuted : .text)
+                        .foregroundColor(category == nil ? .textSecondary : .text)
                     Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption)
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 13, weight: .medium))
                         .foregroundColor(.textSecondary)
                         .accessibilityHidden(true)
                 }
                 .inputBox()
             }
-            .accessibilityLabel("Type (optional)")
+            .accessibilityLabel("Type, optional")
             .accessibilityValue(category?.displayName ?? "Not set")
         }
     }

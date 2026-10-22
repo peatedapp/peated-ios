@@ -10,7 +10,7 @@ struct SwitchRow: View {
         Toggle(isOn: $isOn) {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
                 Text(title)
-                    .font(.peatedInput)
+                    .font(.peatedInteractive)
                     .foregroundColor(.text)
                 Text(description)
                     .font(.peatedMetadata)

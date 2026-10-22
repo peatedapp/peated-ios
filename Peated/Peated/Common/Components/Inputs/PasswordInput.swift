@@ -16,19 +16,17 @@ struct PasswordInput: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             if let label, !label.isEmpty {
-                Text(label)
-                    .font(.peatedFieldLabel)
-                    .foregroundColor(.textSecondary)
+                FieldLabel(text: label)
             }
 
             HStack(spacing: 8) {
                 Group {
                     if isVisible {
-                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
                     } else {
-                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textMuted))
+                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
                     }
                 }
                 .textFieldStyle(.plain)

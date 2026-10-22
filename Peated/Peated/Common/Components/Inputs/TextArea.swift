@@ -15,11 +15,9 @@ struct TextArea: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             if let label, !label.isEmpty {
-                Text(label)
-                    .font(.peatedFieldLabel)
-                    .foregroundColor(.textSecondary)
+                FieldLabel(text: label)
             }
 
             ZStack(alignment: .topLeading) {
@@ -32,7 +30,7 @@ struct TextArea: View {
 
                 if text.isEmpty, !isFocused {
                     Text(placeholder)
-                        .foregroundColor(.textMuted)
+                        .foregroundColor(.textSecondary)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 12)
                 }
@@ -41,8 +39,9 @@ struct TextArea: View {
             .disabled(disabled)
 
             if let error, !error.isEmpty {
+                // Validation uses the semibold 13pt of the field-label role, like the web.
                 Text(error)
-                    .font(.peatedMetadata)
+                    .font(.peatedFieldLabel)
                     .foregroundColor(.danger)
             } else if let helper, !helper.isEmpty {
                 Text(helper)
