@@ -218,17 +218,28 @@ public actor BottleRepository: BottleRepositoryProtocol, BaseRepositoryProtocol 
     }
 
     /// Mirrors the web create form's candidate query. False flags mean "not stated", so they are left unset.
-    ///
-    /// Distillers are left out. The generated client sends them as a deepObject array of objects,
-    /// and swift-openapi-runtime throws "Nested containers are not supported" before the request leaves.
     static func makeCreateCandidatesQuery(
         _ input: CreateBottleInput
     ) -> Operations.getBottleCreateCandidates.Input.Query {
         typealias Query = Operations.getBottleCreateCandidates.Input.Query
 
+        // update-api.sh turns this array of objects into a string map, because swift-openapi-runtime
+        // cannot nest containers. The keys use the server's bracket notation: distillers[0][name].
+        var distillers: [String: String] = [:]
+        for (index, distiller) in input.distillers.enumerated() {
+            switch distiller {
+            case let .existing(id, name):
+                distillers["distillers[\(index)][id]"] = String(id)
+                distillers["distillers[\(index)][name]"] = name
+            case let .new(name):
+                distillers["distillers[\(index)][name]"] = name
+            }
+        }
+
         return Query(
             name: input.name,
             brand: .init(name: input.brandName),
+            distillers: distillers.isEmpty ? nil : .init(additionalProperties: distillers),
             category: input.category.flatMap { Query.categoryPayload(rawValue: $0.rawValue) },
             edition: input.edition,
             statedAge: input.noAgeStatement ? nil : input.statedAge.map(Double.init),

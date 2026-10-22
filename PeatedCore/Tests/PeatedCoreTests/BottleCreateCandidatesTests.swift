@@ -38,7 +38,10 @@ struct BottleCreateCandidatesTests {
         #expect(query["releaseYear"] == "2024.0")
         #expect(query["limit"] == "3")
         #expect(query["noAgeStatement"] == nil)
-        #expect(!query.keys.contains { $0.hasPrefix("distillers") })
+        #expect(query["distillers[0][id]"] == "42")
+        #expect(query["distillers[0][name]"] == "Ardbeg")
+        #expect(query["distillers[1][name]"] == "Caol Ila")
+        #expect(query["distillers[1][id]"] == nil)
     }
 
     @Test
@@ -61,6 +64,7 @@ struct BottleCreateCandidatesTests {
         #expect(query["caskStrength"] == nil)
         #expect(query["category"] == nil)
         #expect(query["abv"] == nil)
+        #expect(!query.keys.contains { $0.hasPrefix("distillers") })
     }
 
     @Test
