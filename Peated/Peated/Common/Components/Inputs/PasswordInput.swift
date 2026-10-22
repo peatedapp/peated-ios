@@ -25,12 +25,19 @@ struct PasswordInput: View {
                 Group {
                     if isVisible {
                         TextField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
+                            .font(.peatedInput)
                     } else {
-                        SecureField(fieldLabel, text: $text, prompt: Text(placeholder).foregroundColor(.textSecondary))
+                        // In Karla a secure field is 19pt tall, which the accessibility audit
+                        // flags as too small to tap. It shows only bullets, so it keeps the
+                        // system font and only the placeholder uses the reading face.
+                        SecureField(
+                            fieldLabel,
+                            text: $text,
+                            prompt: Text(placeholder).font(.peatedInput).foregroundColor(.textSecondary)
+                        )
                     }
                 }
                 .textFieldStyle(.plain)
-                .font(.peatedInput)
                 .foregroundColor(.text)
                 .textContentType(.password)
                 .focused($isFocused)
@@ -45,6 +52,9 @@ struct PasswordInput: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
+                // Keep a 44pt target without making the field taller than the others.
+                .padding(.vertical, -10)
+                .padding(.trailing, -12)
                 .accessibilityLabel(isVisible ? "Hide password" : "Show password")
             }
             .inputBox(state: isFocused ? .focused : .normal)
