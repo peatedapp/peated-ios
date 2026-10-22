@@ -101,6 +101,8 @@ public actor BottlePhotoIdentificationRepository: BottlePhotoRepositoryProtocol,
 
 extension BottlePhotoIdentificationRepository {
     typealias Payload = Operations.identifyTastingBottleFromPhoto.Output.Ok.Body.jsonPayload
+    typealias ProposedBottle = Payload.classificationPayload.Value2Payload.decisionPayload.Value2Payload
+        .proposedBottlePayload
 
     static func identificationError(
         for response: Operations.identifyTastingBottleFromPhoto.Output
@@ -172,7 +174,13 @@ extension BottlePhotoIdentificationRepository {
             category: proposed?.category.flatMap { BottleCategory(rawValue: $0.rawValue) }
                 ?? fields?.category.flatMap { BottleCategory(rawValue: $0.value.rawValue) },
             statedAge: proposed?.statedAge.map { Int($0) } ?? fields?.statedAge.map(\.value),
-            abv: proposed?.abv ?? fields?.abv?.value
+            abv: proposed?.abv ?? fields?.abv?.value,
+            edition: nonEmpty(proposed?.edition ?? fields?.edition?.value),
+            distillers: makeDistillers(proposed: proposed?.distillers, fields: fields),
+            singleCask: proposed?.singleCask ?? fields?.singleCask?.value ?? false,
+            caskStrength: proposed?.caskStrength ?? fields?.caskStrength?.value ?? false,
+            vintageYear: proposed?.vintageYear.map { Int($0) } ?? fields?.vintageYear?.value,
+            releaseYear: proposed?.releaseYear.map { Int($0) } ?? fields?.releaseYear?.value
         )
 
         // Matches the web resolver: a match the server downgraded to manual
@@ -211,6 +219,26 @@ extension BottlePhotoIdentificationRepository {
             manualBottleInput: manualInput == CreateBottleInput(name: "", brandName: "") ? nil : manualInput,
             outcome: outcome
         )
+    }
+
+    /// Proposed distillers keep their catalog id. Label text only has names, so the
+    /// server creates those distilleries unless the user picks an existing one.
+    static func makeDistillers(
+        proposed: ProposedBottle.distillersPayload?,
+        fields: Payload.imageEvidencePayload.fieldCandidatesPayload?
+    ) -> [CreateBottleInput.Distiller] {
+        if let proposed, !proposed.isEmpty {
+            return proposed.compactMap { distiller in
+                guard let name = nonEmpty(distiller.name) else { return nil }
+                return distiller.id.map { .existing(id: $0, name: name) } ?? .new(name: name)
+            }
+        }
+        return (fields?.distillery?.value ?? []).compactMap { nonEmpty($0).map { .new(name: $0) } }
+    }
+
+    static func nonEmpty(_ value: String?) -> String? {
+        let trimmed = value?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return trimmed.isEmpty ? nil : trimmed
     }
 
     /// Label details that identify a specific bottle, as opposed to its type.
