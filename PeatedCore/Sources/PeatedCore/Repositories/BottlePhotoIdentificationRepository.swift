@@ -3,9 +3,13 @@ import OpenAPIRuntime
 import PeatedAPI
 
 public protocol BottlePhotoRepositoryProtocol: Sendable {
+    /// Uploads the photo and waits for the final result. `onProgress` receives each
+    /// event the server sends first. Cancelling the task closes the stream, which
+    /// stops the server's work.
     func identifyBottlePhoto(
         fileDataUrl: String,
-        idempotencyKey: String
+        idempotencyKey: String,
+        onProgress: @escaping @Sendable (BottlePhotoProgress) async -> Void
     ) async throws -> BottlePhotoIdentification
 
     func createBottleFromPhoto(createToken: String) async throws -> BottlePhotoCreation
@@ -21,7 +25,8 @@ public actor BottlePhotoIdentificationRepository: BottlePhotoRepositoryProtocol,
 
     public func identifyBottlePhoto(
         fileDataUrl: String,
-        idempotencyKey: String
+        idempotencyKey: String,
+        onProgress: @escaping @Sendable (BottlePhotoProgress) async -> Void
     ) async throws -> BottlePhotoIdentification {
         let client = await client
         guard let imageData = Self.decodeDataURL(fileDataUrl) else {
@@ -44,11 +49,11 @@ public actor BottlePhotoIdentificationRepository: BottlePhotoRepositoryProtocol,
         guard case let .ok(okResponse) = response else {
             throw Self.identificationError(for: response)
         }
-        guard case let .json(payload) = okResponse.body else {
+        guard case let .text_event_hyphen_stream(body) = okResponse.body else {
             throw APIError.invalidResponse
         }
 
-        let identification = Self.map(payload)
+        let identification = try await Self.readEvents(body, onProgress: onProgress)
         if case let .matched(bottle) = identification.outcome {
             await cache(bottle)
         }
@@ -100,9 +105,91 @@ public actor BottlePhotoIdentificationRepository: BottlePhotoRepositoryProtocol,
 }
 
 extension BottlePhotoIdentificationRepository {
-    typealias Payload = Operations.identifyTastingBottleFromPhoto.Output.Ok.Body.jsonPayload
+    typealias Payload = Components.Schemas.identifyTastingBottleFromPhotoDoneEventData
+    typealias ProgressPayload = Components.Schemas.identifyTastingBottleFromPhotoMessageEventData
     typealias ProposedBottle = Payload.classificationPayload.Value2Payload.decisionPayload.Value2Payload
         .proposedBottlePayload
+
+    /// Reads server-sent events until `done`. Keep-alive comments carry no data
+    /// and are skipped. An `error` event means the lookup failed after the
+    /// stream started.
+    static func readEvents(
+        _ body: HTTPBody,
+        onProgress: @Sendable (BottlePhotoProgress) async -> Void
+    ) async throws -> BottlePhotoIdentification {
+        let decoder = makeDecoder()
+        for try await event in body.asDecodedServerSentEvents() {
+            guard let data = event.data.map({ Data($0.utf8) }) else { continue }
+
+            switch event.event {
+            case "done":
+                return try map(decoder.decode(Payload.self, from: data))
+            case "error":
+                throw streamError(try? decoder.decode(StreamError.self, from: data))
+            case "message", nil:
+                // Progress only improves the wait. The `done` event is the result,
+                // so a progress event this version cannot read is skipped.
+                if let progress = try? progress(from: data, decoder: decoder) {
+                    await onProgress(progress)
+                }
+            default:
+                continue
+            }
+        }
+        try Task.checkCancellation()
+        throw APIError.invalidResponse
+    }
+
+    /// Returns nil for progress types this app version does not know.
+    static func progress(from data: Data, decoder: JSONDecoder) throws -> BottlePhotoProgress? {
+        struct Kind: Decodable {
+            let type: String
+        }
+
+        switch try decoder.decode(Kind.self, from: data).type {
+        case "photo":
+            let payload = try decoder.decode(ProgressPayload.Value1Payload.self, from: data)
+            return .photo(pendingImageId: payload.pendingImage.id)
+        case "label":
+            return .labelRead
+        case "candidates":
+            let payload = try decoder.decode(ProgressPayload.Value3Payload.self, from: data)
+            return .candidates(payload.bottles.map(Bottle.init(from:)))
+        case "step":
+            let payload = try decoder.decode(ProgressPayload.Value4Payload.self, from: data)
+            return switch payload.step {
+            case .checking_peated: .step(.checkingPeated)
+            case .checking_web: .step(.checkingWeb)
+            case .comparing: .step(.comparing)
+            }
+        default:
+            return nil
+        }
+    }
+
+    /// The error body oRPC sends in an `error` event.
+    struct StreamError: Decodable {
+        let code: String?
+    }
+
+    static func streamError(_ error: StreamError?) -> APIError {
+        switch error?.code {
+        case "SERVICE_UNAVAILABLE":
+            .requestFailed("Photo identification is temporarily unavailable. Try again later.")
+        default:
+            .serverError(500, nil)
+        }
+    }
+
+    /// Event data skips the generated client's decoder, so match its date handling.
+    static func makeDecoder() -> JSONDecoder {
+        let decoder = JSONDecoder()
+        let transcoder = CustomDateTranscoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            try transcoder.decode(decoder.singleValueContainer().decode(String.self))
+        }
+        return decoder
+    }
 
     static func identificationError(
         for response: Operations.identifyTastingBottleFromPhoto.Output

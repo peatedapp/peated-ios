@@ -137,18 +137,114 @@ struct BottlePhotoIdentificationRepositoryTests {
         ))
     }
 
+    @Test
+    func progressEventsArriveBeforeTheResult() async throws {
+        let log = ProgressLog()
+        let identification = try await identify(
+            stream: [
+                ": \n\n",
+                Self.event("message", #"{"type": "photo", "pendingImage": \#(Self.pendingImage)}"#),
+                Self.event("message", #"{"type": "label", "imageEvidence": {}}"#),
+                ": \n\n",
+                Self.event("message", #"{"type": "candidates", "bottles": [\#(Self.bottle)]}"#),
+                Self.event("message", #"{"type": "step", "step": "checking_peated"}"#),
+                Self.event("message", #"{"type": "step", "step": "checking_web"}"#),
+                Self.event("message", #"{"type": "future_event"}"#),
+                Self.event("message", #"{"type": "step", "step": "future_step"}"#),
+                Self.event("done", Self.response(
+                    classification: Self.classified(#"{"action": "no_match"}"#),
+                    suggestedNextStep: "manual_search"
+                ))
+            ].joined(),
+            onProgress: { await log.append($0) }
+        )
+
+        let progress = await log.events
+        #expect(progress.count == 5)
+        #expect(progress.first == .photo(pendingImageId: "pending-1"))
+        #expect(progress.dropFirst().first == .labelRead)
+        guard case let .candidates(bottles) = progress.dropFirst(2).first else {
+            Issue.record("Expected likely matches, got \(progress)")
+            return
+        }
+        #expect(bottles.map(\.fullName) == ["Lagavulin Distillers Edition"])
+        #expect(Array(progress.suffix(2)) == [.step(.checkingPeated), .step(.checkingWeb)])
+        #expect(identification.outcome == .notFound)
+        #expect(identification.pendingImageId == "pending-1")
+    }
+
+    @Test
+    func errorEventEndsTheLookup() async throws {
+        let log = ProgressLog()
+        let stream = [
+            Self.event("message", #"{"type": "photo", "pendingImage": \#(Self.pendingImage)}"#),
+            Self.event(
+                "error",
+                #"{"defined": false, "code": "SERVICE_UNAVAILABLE", "status": 503, "message": "Unavailable"}"#
+            ),
+            Self.event("done", Self.response(
+                classification: Self.classified(#"{"action": "no_match"}"#),
+                suggestedNextStep: "manual_search"
+            ))
+        ].joined()
+
+        await #expect {
+            try await identify(stream: stream, onProgress: { await log.append($0) })
+        } throws: { error in
+            guard case let APIError.requestFailed(message) = error else { return false }
+            return message.contains("temporarily unavailable")
+        }
+        #expect(await log.events == [.photo(pendingImageId: "pending-1")])
+    }
+
+    @Test
+    func streamWithoutResultIsInvalid() async throws {
+        let stream = ": \n\n" + Self.event("message", #"{"type": "step", "step": "comparing"}"#)
+
+        await #expect {
+            try await identify(stream: stream)
+        } throws: { error in
+            guard case APIError.invalidResponse = error else { return false }
+            return true
+        }
+    }
+
     private func identify(_ response: String) async throws -> BottlePhotoIdentification {
+        try await identify(stream: Self.event("done", response))
+    }
+
+    private func identify(
+        stream: String,
+        onProgress: @escaping @Sendable (BottlePhotoProgress) async -> Void = { _ in }
+    ) async throws -> BottlePhotoIdentification {
         let repository = BottlePhotoIdentificationRepository(apiClient: APIClient(
             transport: StubAPITransport([
-                "identifyTastingBottleFromPhoto": [.json(200, response)]
+                "identifyTastingBottleFromPhoto": [.eventStream(stream)]
             ])
         ))
 
         return try await repository.identifyBottlePhoto(
             fileDataUrl: "data:image/jpeg;base64,\(Data([0xFF, 0xD8]).base64EncodedString())",
-            idempotencyKey: "photo-key"
+            idempotencyKey: "photo-key",
+            onProgress: onProgress
         )
     }
+
+    /// One server-sent event. Multi-line data becomes several `data:` lines.
+    private static func event(_ name: String, _ data: String) -> String {
+        let lines = data.split(separator: "\n", omittingEmptySubsequences: false)
+            .map { "data: \($0)" }
+            .joined(separator: "\n")
+        return "event: \(name)\n\(lines)\n\n"
+    }
+
+    private static let pendingImage = """
+    {
+      "id": "pending-1",
+      "imageUrl": "https://api.peated.com/uploads/pending-1.webp",
+      "expiresAt": "2026-10-19T13:00:00.000Z"
+    }
+    """
 
     private static func classified(_ decision: String) -> String {
         """
@@ -276,11 +372,7 @@ struct BottlePhotoIdentificationRepositoryTests {
     ) -> String {
         """
         {
-          "pendingImage": {
-            "id": "pending-1",
-            "imageUrl": "https://api.peated.com/uploads/pending-1.webp",
-            "expiresAt": "2026-10-19T13:00:00.000Z"
-          },
+          "pendingImage": \(pendingImage),
           "imageEvidence": {
             "sourceImageId": "pending-1",
             "sourceImageHash": "hash-1",
@@ -320,5 +412,13 @@ struct BottlePhotoIdentificationRepositoryTests {
           "createToken": \(createToken.map { "\"\($0)\"" } ?? "null")
         }
         """
+    }
+}
+
+private actor ProgressLog {
+    private(set) var events: [BottlePhotoProgress] = []
+
+    func append(_ event: BottlePhotoProgress) {
+        events.append(event)
     }
 }

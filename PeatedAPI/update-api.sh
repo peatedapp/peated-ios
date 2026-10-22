@@ -8,6 +8,8 @@ cd "$SCRIPT_DIR"
 SPEC_PATH="Sources/PeatedAPI/openapi.json"
 TEMP_SPEC="$(mktemp "Sources/PeatedAPI/.openapi.json.XXXXXX")"
 TEMP_NORMALIZED="${TEMP_SPEC}.normalized"
+# Override to generate from an unreleased spec, e.g. file:///path/to/spec.json.
+SPEC_URL="${PEATED_SPEC_URL:-https://api.peated.com/spec.json}"
 SWIFT_DOCKER_IMAGE="swift:6.1.2-jammy@sha256:5910655d205a5a54b0b9efdf72c4066a8de1932513fdc81793e2544b5d5a0709"
 
 cleanup() {
@@ -19,7 +21,7 @@ echo "🔄 Updating Peated API Client..."
 
 # Download latest spec
 echo "📥 Downloading OpenAPI spec..."
-curl --fail --location --show-error --output "$TEMP_SPEC" https://api.peated.com/spec.json
+curl --fail --location --show-error --output "$TEMP_SPEC" "$SPEC_URL"
 
 # Normalize fields that swift-openapi-generator cannot represent directly.
 echo "🔧 Normalizing OpenAPI compatibility..."
@@ -38,6 +40,21 @@ jq '
       else .
       end
     )
+  # swift-openapi-generator returns text/event-stream bodies as raw bytes and
+  # drops their schemas. Keep each event payload as a named component, such
+  # as identifyTastingBottleFromPhotoDoneEventData, so callers can decode it.
+  | reduce (
+      .paths[][]
+      | select(type == "object" and has("operationId"))
+      | .operationId as $operation
+      | .responses[]?.content?["text/event-stream"]?.schema?.oneOf?[]?
+      | select(.properties?.event?.const? != null and (.properties?.data // {}) != {})
+      | .properties.event.const as $event
+      | {
+          key: ($operation + ($event[0:1] | ascii_upcase) + $event[1:] + "EventData"),
+          value: .properties.data
+        }
+    ) as $entry (.; .components.schemas[$entry.key] = $entry.value)
 ' \
     "$TEMP_SPEC" > "$TEMP_NORMALIZED"
 mv "$TEMP_NORMALIZED" "$TEMP_SPEC"
