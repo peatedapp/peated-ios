@@ -66,7 +66,7 @@ struct ManualBottleEntryView: View {
                     Color.overlay
                         .ignoresSafeArea()
                         .overlay {
-                            ProgressView("Creating bottle...")
+                            ProgressView("Adding bottle…")
                                 .padding()
                                 .background(Color.background)
                                 .cornerRadius(DesignSystem.CornerRadius.medium)
@@ -86,10 +86,24 @@ struct ManualBottleEntryView: View {
     // MARK: - Sections
 
     private var basicInfoSection: some View {
-        FormSection("Basic Information") {
+        FormSection("Bottle") {
             TextInput(
-                label: "Bottle Name",
-                placeholder: "Bottle Name",
+                label: "Brand",
+                placeholder: "Laphroaig",
+                text: $brandName,
+                leadingSystemImage: "building.2",
+                keyboard: .default,
+                submitLabel: .next,
+                autocorrection: true,
+                capitalization: .words,
+                helper: "The main label the bottle is sold under.",
+                onSubmit: { focusName = true },
+                isFocused: $focusBrand
+            )
+
+            TextInput(
+                label: "Bottle name",
+                placeholder: "12-year-old",
                 text: $bottleName,
                 leadingSystemImage: "wineglass",
                 isSecure: false,
@@ -97,58 +111,40 @@ struct ManualBottleEntryView: View {
                 submitLabel: .next,
                 autocorrection: true,
                 capitalization: .words,
-                onSubmit: { focusBrand = true },
+                helper: "Leave the brand out of the name.",
+                onSubmit: { focusAge = true },
                 isFocused: $focusName
             )
 
-            TextInput(
-                label: "Brand",
-                placeholder: "Brand",
-                text: $brandName,
-                leadingSystemImage: "building.2",
-                keyboard: .default,
-                submitLabel: .next,
-                autocorrection: true,
-                capitalization: .words,
-                onSubmit: { focusAbv = true },
-                isFocused: $focusBrand
-            )
-
-            Text("Enter the bottle name without repeating the brand. Both are required.")
-                .font(.caption)
-                .foregroundColor(.textSecondary)
-                .padding(.top, 4)
+            categoryPickerRow
         }
     }
 
     private var detailsSection: some View {
-        FormSection("Details") {
-            categoryPickerRow
-            // ABV
+        FormSection("Release") {
             TextInput(
-                label: "ABV",
-                placeholder: "ABV %",
-                text: $abv,
-                leadingSystemImage: "percent",
-                unit: "%",
-                keyboard: .decimalPad,
-                submitLabel: .next,
-                error: abvError,
-                onSubmit: { focusAge = true },
-                isFocused: $focusAbv
-            )
-
-            // Age
-            TextInput(
-                label: "Age",
-                placeholder: "Age (optional)",
+                label: "Age statement (optional)",
+                placeholder: "12",
                 text: $age,
                 leadingSystemImage: "clock",
                 unit: "years",
                 keyboard: .numberPad,
-                submitLabel: .done,
+                submitLabel: .next,
                 error: ageError,
+                onSubmit: { focusAbv = true },
                 isFocused: $focusAge
+            )
+
+            TextInput(
+                label: "Alcohol (optional)",
+                placeholder: "40.5",
+                text: $abv,
+                leadingSystemImage: "percent",
+                unit: "% ABV",
+                keyboard: .decimalPad,
+                submitLabel: .done,
+                error: abvError,
+                isFocused: $focusAbv
             )
         }
     }
@@ -163,7 +159,7 @@ struct ManualBottleEntryView: View {
 
             if category != nil {
                 Divider()
-                Button("Not specified") { category = nil }
+                Button("Not set") { category = nil }
             }
         } label: {
             HStack(spacing: 8) {
@@ -171,7 +167,7 @@ struct ManualBottleEntryView: View {
                     .foregroundColor(.textSecondary)
                 VStack(alignment: .leading, spacing: 2) {
                     Text("Type (optional)").font(.caption).foregroundColor(.textSecondary)
-                    Text(category?.displayName ?? "Not specified")
+                    Text(category?.displayName ?? "Not set")
                         .foregroundColor(.text)
                 }
                 Spacer()

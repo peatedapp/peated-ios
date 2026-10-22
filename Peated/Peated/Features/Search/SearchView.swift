@@ -323,9 +323,9 @@ extension SearchView {
                             .foregroundColor(.textSecondary)
                             .lineLimit(1)
                             .truncationMode(.tail)
-                        if let category = bottle.category {
+                        if let category = BottleDisplayName.categoryName(bottle.category) {
                             Text("•").foregroundColor(.textMuted)
-                            Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
+                            Text(category)
                                 .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                         }
@@ -539,8 +539,8 @@ extension SearchView {
                     .fixedSize(horizontal: false, vertical: true)
 
                 HStack(spacing: DesignSystem.Spacing.xSmall) {
-                    if let category = bottle.category {
-                        Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
+                    if let category = BottleDisplayName.categoryName(bottle.category) {
+                        Text(category)
                             .font(.peatedMetadata)
                             .foregroundColor(.textSecondary)
                     }

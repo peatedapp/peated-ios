@@ -41,7 +41,8 @@ public actor SearchRepository: SearchRepositoryProtocol, BaseRepositoryProtocol 
                     id: bottle.id,
                     type: .bottle,
                     name: bottle.fullName,
-                    subtitle: [bottle.category, bottle.statedAge.map { "\($0) years" }].compactMap(\.self)
+                    subtitle: [BottleDisplayName.categoryName(bottle.category), bottle.statedAge.map { "\($0) years" }]
+                        .compactMap(\.self)
                         .joined(separator: " • "),
                     imageUrl: bottle.imageUrl,
                     bottle: bottle

@@ -70,12 +70,12 @@ struct BottleRow: View {
                             .truncationMode(.tail)
                             .layoutPriority(1)
 
-                        if let category = bottle.category {
+                        if let category = BottleDisplayName.categoryName(bottle.category) {
                             Text("•")
                                 .font(.peatedBody)
                                 .foregroundColor(.textMuted)
 
-                            Text(category.replacingOccurrences(of: "_", with: " ").capitalized)
+                            Text(category)
                                 .font(.peatedBody)
                                 .foregroundColor(.textSecondary)
                                 .lineLimit(1)

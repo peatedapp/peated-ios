@@ -239,7 +239,7 @@ extension BottlePhotoIdentificationRepository {
             fact("Series", fields.series?.value),
             fact("Distillers", fields.distillery?.value.joined(separator: ", ")),
             fact("Bottler", fields.bottler?.value),
-            fact("Type", fields.category?.value.rawValue.replacingOccurrences(of: "_", with: " ").capitalized),
+            fact("Type", BottleDisplayName.categoryName(fields.category?.value.rawValue)),
             fact("Age", fields.statedAge.map { "\(Int($0.value)) years" }),
             fact("ABV", fields.abv.map { String(format: "%g%%", $0.value) }),
             fact("Edition", fields.edition?.value),

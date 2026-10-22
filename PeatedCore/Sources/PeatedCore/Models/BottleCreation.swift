@@ -10,19 +10,9 @@ public enum BottleCategory: String, CaseIterable, Sendable {
     case singlePotStill = "single_pot_still"
     case wheat
 
+    /// Matches the web label, so "blend" reads as "Blended Whisky".
     public var displayName: String {
-        switch self {
-        case .blend: "Blend"
-        case .blendedGrain: "Blended Grain"
-        case .blendedMalt: "Blended Malt"
-        case .bourbon: "Bourbon"
-        case .corn: "Corn"
-        case .rye: "Rye"
-        case .singleGrain: "Single Grain"
-        case .singleMalt: "Single Malt"
-        case .singlePotStill: "Single Pot Still"
-        case .wheat: "Wheat"
-        }
+        BottleDisplayName.categoryName(rawValue) ?? rawValue
     }
 }
 

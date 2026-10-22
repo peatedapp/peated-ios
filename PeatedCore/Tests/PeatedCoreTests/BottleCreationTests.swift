@@ -49,4 +49,10 @@ struct BottleCreationTests {
             "wheat"
         ])
     }
+
+    @Test
+    func categoryPickerLabelsMatchDisplayedLabels() {
+        #expect(BottleCategory.singleMalt.displayName == "Single Malt")
+        #expect(BottleCategory.blend.displayName == "Blended Whisky")
+    }
 }

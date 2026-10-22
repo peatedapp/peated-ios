@@ -77,30 +77,7 @@ struct TastingPreviewCard: View {
                         BottleImage(imageUrl: bottle.imageUrl)
                             .frame(width: 28, height: 36)
 
-                        VStack(alignment: .leading, spacing: 3) {
-                            // Bottle name
-                            Text(bottle.name)
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.text)
-                                .lineLimit(1)
-
-                            // Brand • Category on one line
-                            HStack(spacing: 4) {
-                                Text(bottle.brandName)
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.textSecondary)
-                                    .lineLimit(1)
-
-                                Text("•")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.textSecondary.opacity(0.5))
-
-                                Text(bottle.category ?? "Whisky")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.textSecondary)
-                                    .lineLimit(1)
-                            }
-                        }
+                        BottleIdentityLines(identity: BottleIdentity(bottle: bottle))
 
                         Spacer()
                     }
@@ -126,7 +103,7 @@ struct TastingPreviewCard: View {
                 if !viewModel.selectedTags.isEmpty {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
-                            ForEach(Array(viewModel.selectedTags), id: \.self) { tag in
+                            ForEach(viewModel.selectedTags.sorted(), id: \.self) { tag in
                                 Text("#\(tag)")
                                     .font(.system(size: 12))
                                     .foregroundColor(.brand)
@@ -202,6 +179,34 @@ struct TastingPreviewCard: View {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(Color.border.opacity(0.3), lineWidth: 1)
             )
+        }
+    }
+}
+
+/// The selected bottle's name, provenance, and release facts, matching the web summary card.
+private struct BottleIdentityLines: View {
+    let identity: BottleIdentity
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            Text(identity.name)
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.text)
+                .lineLimit(2)
+
+            if !identity.provenance.isEmpty {
+                Text(identity.provenance.joined(separator: " · "))
+                    .font(.system(size: 14))
+                    .foregroundColor(.textSecondary)
+                    .lineLimit(1)
+            }
+
+            if !identity.metadata.isEmpty {
+                Text(identity.metadata.joined(separator: " · "))
+                    .font(.system(size: 14))
+                    .foregroundColor(.textSecondary)
+                    .lineLimit(1)
+            }
         }
     }
 }
