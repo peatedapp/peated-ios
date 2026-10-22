@@ -25,6 +25,12 @@ cd PeatedAPI
 ./update-api.sh
 ```
 
+To generate from a spec that is not deployed yet, point `PEATED_SPEC_URL` at it. For example, save `/spec.json` from a local upstream server and run:
+
+```bash
+PEATED_SPEC_URL=file:///path/to/spec.json ./Scripts/update-api.sh
+```
+
 The script will:
 - Download spec to `PeatedAPI/Sources/PeatedAPI/openapi.json`
 - Normalize spec (3.1.1 → 3.1.0, nullable fixes, parameter schema fixes)
@@ -74,6 +80,7 @@ swift build && swift test
 - Nullable fields: convert `anyOf [T, null]` to `nullable: true` where appropriate
 - Missing parameter schemas: inject schema objects when absent
 - Query arrays of objects (`style: deepObject`): rewrite as a form-exploded string map. swift-openapi-runtime cannot nest containers, so callers build the server's bracket-notation keys, such as `distillers[0][name]`
+- Event streams (`text/event-stream`): the generator returns the body as raw bytes and drops its schema. Each event's `data` schema is copied into a component named `<operationId><Event>EventData`, such as `identifyTastingBottleFromPhotoDoneEventData`. Callers read the body with `asDecodedServerSentEvents()` and decode `data` into that type
 
 ## Example usage
 

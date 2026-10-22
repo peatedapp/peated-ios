@@ -86,6 +86,28 @@ public struct BottlePhotoIdentification: Equatable, Sendable {
     }
 }
 
+/// A generic step the server reports while it looks for the bottle.
+public enum BottlePhotoLookupStep: Equatable, Sendable {
+    case checkingPeated
+    case checkingWeb
+    case comparing
+}
+
+/// Progress sent while a photo is identified, before the final result.
+///
+/// The exact-reference fast path sends only `photo` and `labelRead`.
+public enum BottlePhotoProgress: Equatable, Sendable {
+    /// The photo is stored. Its pending image can attach to a tasting before
+    /// the final result arrives.
+    case photo(pendingImageId: String)
+    /// The label has been read.
+    case labelRead
+    /// Up to five bottles already in Peated that may match. They arrive before
+    /// the classifier decides, so the member can pick one early.
+    case candidates([Bottle])
+    case step(BottlePhotoLookupStep)
+}
+
 public struct BottlePhotoCreation: Equatable, Sendable {
     public let bottle: Bottle
     public let warnings: [String]

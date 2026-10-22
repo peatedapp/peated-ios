@@ -265,7 +265,7 @@ public protocol APIProtocol: Sendable {
     func getBottleSuggestedTags(_ input: Operations.getBottleSuggestedTags.Input) async throws -> Operations.getBottleSuggestedTags.Output
     /// Update bottle image
     ///
-    /// Upload a bottle image or update its source and license. Requires the bottle creator, a moderator, or an administrator.
+    /// Upload a bottle image or update its source and license. Uploading requires the bottle creator, a moderator, or an administrator. Setting the source or license requires a moderator or an administrator.
     ///
     /// - Remark: HTTP `POST /bottles/{bottle}/image`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/image/post(updateBottleImage)`.
@@ -851,6 +851,55 @@ public protocol APIProtocol: Sendable {
     /// - Remark: HTTP `GET /tags`.
     /// - Remark: Generated from `#/paths//tags/get(listTags)`.
     func listTags(_ input: Operations.listTags.Input) async throws -> Operations.listTags.Output
+    /// List tasting drafts
+    ///
+    /// List your own tasting drafts, most recently saved first. Drafts are private to the member who saved them.
+    ///
+    /// - Remark: HTTP `GET /tasting-drafts`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/get(listTastingDrafts)`.
+    func listTastingDrafts(_ input: Operations.listTastingDrafts.Input) async throws -> Operations.listTastingDrafts.Output
+    /// Count tasting drafts
+    ///
+    /// Count your own tasting drafts.
+    ///
+    /// - Remark: HTTP `GET /tasting-drafts/count`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/count/get(countTastingDrafts)`.
+    func countTastingDrafts(_ input: Operations.countTastingDrafts.Input) async throws -> Operations.countTastingDrafts.Output
+    /// Get tasting draft
+    ///
+    /// Get one of your own tasting drafts. Another member's draft returns not found.
+    ///
+    /// - Remark: HTTP `GET /tasting-drafts/{draft}`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/get(getTastingDraft)`.
+    func getTastingDraft(_ input: Operations.getTastingDraft.Input) async throws -> Operations.getTastingDraft.Output
+    /// Save tasting draft
+    ///
+    /// Create or replace one of your tasting drafts by its client-chosen ID. The latest save wins. Omitted fields are cleared, except `pendingImageId`: omit it to keep the current photo. Friends you no longer follow are dropped from `friends`. A new photo starts identifying its Bottle in the background; see `identification`. Returns `409 CONFLICT` when the ID belongs to another member's draft, or when the draft was already posted; then `data.tasting` holds the posted tasting's ID.
+    ///
+    /// - Remark: HTTP `PUT /tasting-drafts/{draft}`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/put(upsertTastingDraft)`.
+    func upsertTastingDraft(_ input: Operations.upsertTastingDraft.Input) async throws -> Operations.upsertTastingDraft.Output
+    /// Delete tasting draft
+    ///
+    /// Delete one of your own tasting drafts and its photo. Another member's draft returns not found.
+    ///
+    /// - Remark: HTTP `DELETE /tasting-drafts/{draft}`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/delete(deleteTastingDraft)`.
+    func deleteTastingDraft(_ input: Operations.deleteTastingDraft.Input) async throws -> Operations.deleteTastingDraft.Output
+    /// Publish tasting draft
+    ///
+    /// Post one of your tasting drafts as a tasting and delete the draft. The draft needs a Bottle. The bottle hint is not kept, and friends you no longer follow are left off the tasting. Repeating the request after it succeeded returns the same tasting with no awards; a draft that was never posted returns not found.
+    ///
+    /// - Remark: HTTP `POST /tasting-drafts/{draft}/publish`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/publish/post(publishTastingDraft)`.
+    func publishTastingDraft(_ input: Operations.publishTastingDraft.Input) async throws -> Operations.publishTastingDraft.Output
+    /// Create Bottle for tasting draft
+    ///
+    /// Create the new Bottle proposed by your draft's photo identification and choose it for the draft. Repeating the request returns the same Bottle. Returns `409 CONFLICT` with `data.bottle` when a different Bottle with the same identity already exists, so you can choose that one instead.
+    ///
+    /// - Remark: HTTP `POST /tasting-drafts/{draft}/create-bottle`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/create-bottle/post(createTastingDraftBottle)`.
+    func createTastingDraftBottle(_ input: Operations.createTastingDraftBottle.Input) async throws -> Operations.createTastingDraftBottle.Output
     /// Get tasting details
     ///
     /// Get one tasting
@@ -902,7 +951,7 @@ public protocol APIProtocol: Sendable {
     func deleteTastingImage(_ input: Operations.deleteTastingImage.Input) async throws -> Operations.deleteTastingImage.Output
     /// Identify tasting bottle from photo
     ///
-    /// Upload a temporary bottle photo, extract label evidence, and classify the likely bottle without creating a tasting.
+    /// Upload a temporary bottle photo, extract label evidence, and classify the likely bottle without creating a tasting. The response is a stream of progress events (the stored photo, the label reading, likely Peated matches, and generic steps) that ends with the full result. Closing the stream stops the remaining work.
     ///
     /// - Remark: HTTP `POST /tastings/photo-identification`.
     /// - Remark: Generated from `#/paths//tastings/photo-identification/post(identifyTastingBottleFromPhoto)`.
@@ -1589,7 +1638,7 @@ extension APIProtocol {
     }
     /// Update bottle image
     ///
-    /// Upload a bottle image or update its source and license. Requires the bottle creator, a moderator, or an administrator.
+    /// Upload a bottle image or update its source and license. Uploading requires the bottle creator, a moderator, or an administrator. Setting the source or license requires a moderator or an administrator.
     ///
     /// - Remark: HTTP `POST /bottles/{bottle}/image`.
     /// - Remark: Generated from `#/paths//bottles/{bottle}/image/post(updateBottleImage)`.
@@ -2859,6 +2908,107 @@ extension APIProtocol {
             headers: headers
         ))
     }
+    /// List tasting drafts
+    ///
+    /// List your own tasting drafts, most recently saved first. Drafts are private to the member who saved them.
+    ///
+    /// - Remark: HTTP `GET /tasting-drafts`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/get(listTastingDrafts)`.
+    public func listTastingDrafts(
+        query: Operations.listTastingDrafts.Input.Query = .init(),
+        headers: Operations.listTastingDrafts.Input.Headers = .init()
+    ) async throws -> Operations.listTastingDrafts.Output {
+        try await listTastingDrafts(Operations.listTastingDrafts.Input(
+            query: query,
+            headers: headers
+        ))
+    }
+    /// Count tasting drafts
+    ///
+    /// Count your own tasting drafts.
+    ///
+    /// - Remark: HTTP `GET /tasting-drafts/count`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/count/get(countTastingDrafts)`.
+    public func countTastingDrafts(headers: Operations.countTastingDrafts.Input.Headers = .init()) async throws -> Operations.countTastingDrafts.Output {
+        try await countTastingDrafts(Operations.countTastingDrafts.Input(headers: headers))
+    }
+    /// Get tasting draft
+    ///
+    /// Get one of your own tasting drafts. Another member's draft returns not found.
+    ///
+    /// - Remark: HTTP `GET /tasting-drafts/{draft}`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/get(getTastingDraft)`.
+    public func getTastingDraft(
+        path: Operations.getTastingDraft.Input.Path,
+        headers: Operations.getTastingDraft.Input.Headers = .init()
+    ) async throws -> Operations.getTastingDraft.Output {
+        try await getTastingDraft(Operations.getTastingDraft.Input(
+            path: path,
+            headers: headers
+        ))
+    }
+    /// Save tasting draft
+    ///
+    /// Create or replace one of your tasting drafts by its client-chosen ID. The latest save wins. Omitted fields are cleared, except `pendingImageId`: omit it to keep the current photo. Friends you no longer follow are dropped from `friends`. A new photo starts identifying its Bottle in the background; see `identification`. Returns `409 CONFLICT` when the ID belongs to another member's draft, or when the draft was already posted; then `data.tasting` holds the posted tasting's ID.
+    ///
+    /// - Remark: HTTP `PUT /tasting-drafts/{draft}`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/put(upsertTastingDraft)`.
+    public func upsertTastingDraft(
+        path: Operations.upsertTastingDraft.Input.Path,
+        headers: Operations.upsertTastingDraft.Input.Headers = .init(),
+        body: Operations.upsertTastingDraft.Input.Body
+    ) async throws -> Operations.upsertTastingDraft.Output {
+        try await upsertTastingDraft(Operations.upsertTastingDraft.Input(
+            path: path,
+            headers: headers,
+            body: body
+        ))
+    }
+    /// Delete tasting draft
+    ///
+    /// Delete one of your own tasting drafts and its photo. Another member's draft returns not found.
+    ///
+    /// - Remark: HTTP `DELETE /tasting-drafts/{draft}`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/delete(deleteTastingDraft)`.
+    public func deleteTastingDraft(
+        path: Operations.deleteTastingDraft.Input.Path,
+        headers: Operations.deleteTastingDraft.Input.Headers = .init()
+    ) async throws -> Operations.deleteTastingDraft.Output {
+        try await deleteTastingDraft(Operations.deleteTastingDraft.Input(
+            path: path,
+            headers: headers
+        ))
+    }
+    /// Publish tasting draft
+    ///
+    /// Post one of your tasting drafts as a tasting and delete the draft. The draft needs a Bottle. The bottle hint is not kept, and friends you no longer follow are left off the tasting. Repeating the request after it succeeded returns the same tasting with no awards; a draft that was never posted returns not found.
+    ///
+    /// - Remark: HTTP `POST /tasting-drafts/{draft}/publish`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/publish/post(publishTastingDraft)`.
+    public func publishTastingDraft(
+        path: Operations.publishTastingDraft.Input.Path,
+        headers: Operations.publishTastingDraft.Input.Headers = .init()
+    ) async throws -> Operations.publishTastingDraft.Output {
+        try await publishTastingDraft(Operations.publishTastingDraft.Input(
+            path: path,
+            headers: headers
+        ))
+    }
+    /// Create Bottle for tasting draft
+    ///
+    /// Create the new Bottle proposed by your draft's photo identification and choose it for the draft. Repeating the request returns the same Bottle. Returns `409 CONFLICT` with `data.bottle` when a different Bottle with the same identity already exists, so you can choose that one instead.
+    ///
+    /// - Remark: HTTP `POST /tasting-drafts/{draft}/create-bottle`.
+    /// - Remark: Generated from `#/paths//tasting-drafts/{draft}/create-bottle/post(createTastingDraftBottle)`.
+    public func createTastingDraftBottle(
+        path: Operations.createTastingDraftBottle.Input.Path,
+        headers: Operations.createTastingDraftBottle.Input.Headers = .init()
+    ) async throws -> Operations.createTastingDraftBottle.Output {
+        try await createTastingDraftBottle(Operations.createTastingDraftBottle.Input(
+            path: path,
+            headers: headers
+        ))
+    }
     /// Get tasting details
     ///
     /// Get one tasting
@@ -2970,7 +3120,7 @@ extension APIProtocol {
     }
     /// Identify tasting bottle from photo
     ///
-    /// Upload a temporary bottle photo, extract label evidence, and classify the likely bottle without creating a tasting.
+    /// Upload a temporary bottle photo, extract label evidence, and classify the likely bottle without creating a tasting. The response is a stream of progress events (the stored photo, the label reading, likely Peated matches, and generic steps) that ends with the full result. Closing the stream stops the remaining work.
     ///
     /// - Remark: HTTP `POST /tastings/photo-identification`.
     /// - Remark: Generated from `#/paths//tastings/photo-identification/post(identifyTastingBottleFromPhoto)`.

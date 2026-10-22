@@ -17,15 +17,22 @@
         public struct Response: Sendable {
             public var status: Int
             public var body: Data
+            public var contentType: String
 
-            public init(status: Int = 200, body: Data = Data()) {
+            public init(status: Int = 200, body: Data = Data(), contentType: String = "application/json") {
                 self.status = status
                 self.body = body
+                self.contentType = contentType
             }
 
             /// A response whose body is the given JSON text.
             public static func json(_ status: Int = 200, _ text: String) -> Response {
                 Response(status: status, body: Data(text.utf8))
+            }
+
+            /// A 200 response whose body is the given server-sent events text.
+            public static func eventStream(_ text: String) -> Response {
+                Response(body: Data(text.utf8), contentType: "text/event-stream")
             }
         }
 
@@ -52,7 +59,7 @@
                 ?? .json(404, #"{"message":"No stubbed response for \#(operationID)"}"#)
 
             var head = HTTPResponse(status: .init(code: response.status))
-            head.headerFields[.contentType] = "application/json"
+            head.headerFields[.contentType] = response.contentType
             return (head, HTTPBody(response.body))
         }
 

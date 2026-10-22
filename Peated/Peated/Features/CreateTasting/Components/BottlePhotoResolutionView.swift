@@ -5,6 +5,7 @@ struct BottlePhotoResolutionView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: BottlePhotoResolutionViewModel
     @State private var showingManualEntry = false
+    @State private var isSlow = false
 
     let image: UIImage
     let onBottleResolved: (Bottle, String) -> Void
@@ -71,17 +72,7 @@ struct BottlePhotoResolutionView: View {
     @ViewBuilder
     private var content: some View {
         if viewModel.isIdentifying {
-            VStack(spacing: 14) {
-                ProgressView()
-                    .scaleEffect(1.2)
-                Text("Reading the bottle label...")
-                    .font(.headline)
-                Text("This can take a moment while Peated checks the catalog.")
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 32)
+            identifyingContent
         } else if let identification = viewModel.identification {
             identificationContent(identification)
         } else {
@@ -101,6 +92,53 @@ struct BottlePhotoResolutionView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 24)
+        }
+    }
+
+    private var identifyingContent: some View {
+        VStack(spacing: 20) {
+            VStack(spacing: 14) {
+                ProgressView()
+                    .scaleEffect(1.2)
+                    .accessibilityHidden(true)
+                Text(viewModel.statusText)
+                    .font(.headline)
+                    .accessibilityAddTraits(.updatesFrequently)
+                if isSlow {
+                    Text("This one is taking a while.")
+                        .font(.subheadline)
+                        .foregroundColor(.textSecondary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 24)
+
+            if !viewModel.likelyMatches.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Possible matches")
+                        .font(.headline)
+                        .foregroundColor(.text)
+                        .accessibilityAddTraits(.isHeader)
+                    ForEach(viewModel.likelyMatches) { bottle in
+                        Button {
+                            guard let pendingImageId = viewModel.pickLikelyMatch() else { return }
+                            resolve(bottle, pendingImageId: pendingImageId)
+                        } label: {
+                            bottleCard(bottle)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
+        .onChange(of: viewModel.statusText) { _, status in
+            AccessibilityNotification.Announcement(status).post()
+        }
+        .task {
+            // Matches the web resolver's slow-lookup notice.
+            isSlow = false
+            guard await (try? Task.sleep(for: .seconds(45))) != nil else { return }
+            isSlow = true
         }
     }
 

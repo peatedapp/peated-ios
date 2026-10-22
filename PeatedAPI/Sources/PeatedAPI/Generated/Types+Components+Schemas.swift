@@ -443,6 +443,18 @@ extension Components {
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/shortName`.
                 public var shortName: Swift.String?
+                /// How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                ///
+                /// - Remark: Generated from `#/components/schemas/Bottle/brand/pronunciation`.
+                public var pronunciation: Swift.String?
+                /// How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                ///
+                /// - Remark: Generated from `#/components/schemas/Bottle/brand/pronunciationIpa`.
+                public var pronunciationIpa: Swift.String?
+                /// URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
+                ///
+                /// - Remark: Generated from `#/components/schemas/Bottle/brand/pronunciationAudioUrl`.
+                public var pronunciationAudioUrl: Swift.String?
                 /// Best short description of what this entity is
                 ///
                 /// - Remark: Generated from `#/components/schemas/Bottle/brand/kind`.
@@ -597,6 +609,9 @@ extension Components {
                 ///   - peatedId: Permanent Peated ID for the entity
                 ///   - name: Name of the entity (brand, distillery, etc.)
                 ///   - shortName: Abbreviated or short name for the entity
+                ///   - pronunciation: How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                ///   - pronunciationIpa: How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                ///   - pronunciationAudioUrl: URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
                 ///   - kind: Best short description of what this entity is
                 ///   - status: Current status, or null when it is unknown
                 ///   - ownerId: ID of the entity's current owner
@@ -620,6 +635,9 @@ extension Components {
                     peatedId: Swift.String,
                     name: Swift.String,
                     shortName: Swift.String? = nil,
+                    pronunciation: Swift.String? = nil,
+                    pronunciationIpa: Swift.String? = nil,
+                    pronunciationAudioUrl: Swift.String? = nil,
                     kind: Components.Schemas.Bottle.brandPayload.kindPayload,
                     status: Components.Schemas.Bottle.brandPayload.statusPayload? = nil,
                     ownerId: Swift.Double? = nil,
@@ -643,6 +661,9 @@ extension Components {
                     self.peatedId = peatedId
                     self.name = name
                     self.shortName = shortName
+                    self.pronunciation = pronunciation
+                    self.pronunciationIpa = pronunciationIpa
+                    self.pronunciationAudioUrl = pronunciationAudioUrl
                     self.kind = kind
                     self.status = status
                     self.ownerId = ownerId
@@ -667,6 +688,9 @@ extension Components {
                     case peatedId
                     case name
                     case shortName
+                    case pronunciation
+                    case pronunciationIpa
+                    case pronunciationAudioUrl
                     case kind
                     case status
                     case ownerId
@@ -1321,6 +1345,18 @@ extension Components {
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/shortName`.
             public var shortName: Swift.String?
+            /// How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+            ///
+            /// - Remark: Generated from `#/components/schemas/Entity/pronunciation`.
+            public var pronunciation: Swift.String?
+            /// How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+            ///
+            /// - Remark: Generated from `#/components/schemas/Entity/pronunciationIpa`.
+            public var pronunciationIpa: Swift.String?
+            /// URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
+            ///
+            /// - Remark: Generated from `#/components/schemas/Entity/pronunciationAudioUrl`.
+            public var pronunciationAudioUrl: Swift.String?
             /// Best short description of what this entity is
             ///
             /// - Remark: Generated from `#/components/schemas/Entity/kind`.
@@ -1475,6 +1511,9 @@ extension Components {
             ///   - peatedId: Permanent Peated ID for the entity
             ///   - name: Name of the entity (brand, distillery, etc.)
             ///   - shortName: Abbreviated or short name for the entity
+            ///   - pronunciation: How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+            ///   - pronunciationIpa: How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+            ///   - pronunciationAudioUrl: URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
             ///   - kind: Best short description of what this entity is
             ///   - status: Current status, or null when it is unknown
             ///   - ownerId: ID of the entity's current owner
@@ -1498,6 +1537,9 @@ extension Components {
                 peatedId: Swift.String,
                 name: Swift.String,
                 shortName: Swift.String? = nil,
+                pronunciation: Swift.String? = nil,
+                pronunciationIpa: Swift.String? = nil,
+                pronunciationAudioUrl: Swift.String? = nil,
                 kind: Components.Schemas.Entity.kindPayload,
                 status: Components.Schemas.Entity.statusPayload? = nil,
                 ownerId: Swift.Double? = nil,
@@ -1521,6 +1563,9 @@ extension Components {
                 self.peatedId = peatedId
                 self.name = name
                 self.shortName = shortName
+                self.pronunciation = pronunciation
+                self.pronunciationIpa = pronunciationIpa
+                self.pronunciationAudioUrl = pronunciationAudioUrl
                 self.kind = kind
                 self.status = status
                 self.ownerId = ownerId
@@ -1545,6 +1590,9 @@ extension Components {
                 case peatedId
                 case name
                 case shortName
+                case pronunciation
+                case pronunciationIpa
+                case pronunciationAudioUrl
                 case kind
                 case status
                 case ownerId
@@ -2537,6 +2585,18 @@ extension Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/shortName`.
                     public var shortName: Swift.String?
+                    /// How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/pronunciation`.
+                    public var pronunciation: Swift.String?
+                    /// How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/pronunciationIpa`.
+                    public var pronunciationIpa: Swift.String?
+                    /// URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/pronunciationAudioUrl`.
+                    public var pronunciationAudioUrl: Swift.String?
                     /// Best short description of what this entity is
                     ///
                     /// - Remark: Generated from `#/components/schemas/Tasting/bottle/brand/kind`.
@@ -2691,6 +2751,9 @@ extension Components {
                     ///   - peatedId: Permanent Peated ID for the entity
                     ///   - name: Name of the entity (brand, distillery, etc.)
                     ///   - shortName: Abbreviated or short name for the entity
+                    ///   - pronunciation: How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                    ///   - pronunciationIpa: How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                    ///   - pronunciationAudioUrl: URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
                     ///   - kind: Best short description of what this entity is
                     ///   - status: Current status, or null when it is unknown
                     ///   - ownerId: ID of the entity's current owner
@@ -2714,6 +2777,9 @@ extension Components {
                         peatedId: Swift.String,
                         name: Swift.String,
                         shortName: Swift.String? = nil,
+                        pronunciation: Swift.String? = nil,
+                        pronunciationIpa: Swift.String? = nil,
+                        pronunciationAudioUrl: Swift.String? = nil,
                         kind: Components.Schemas.Tasting.bottlePayload.brandPayload.kindPayload,
                         status: Components.Schemas.Tasting.bottlePayload.brandPayload.statusPayload? = nil,
                         ownerId: Swift.Double? = nil,
@@ -2737,6 +2803,9 @@ extension Components {
                         self.peatedId = peatedId
                         self.name = name
                         self.shortName = shortName
+                        self.pronunciation = pronunciation
+                        self.pronunciationIpa = pronunciationIpa
+                        self.pronunciationAudioUrl = pronunciationAudioUrl
                         self.kind = kind
                         self.status = status
                         self.ownerId = ownerId
@@ -2761,6 +2830,9 @@ extension Components {
                         case peatedId
                         case name
                         case shortName
+                        case pronunciation
+                        case pronunciationIpa
+                        case pronunciationAudioUrl
                         case kind
                         case status
                         case ownerId
@@ -4663,6 +4735,18 @@ extension Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/shortName`.
                     public var shortName: Swift.String?
+                    /// How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/pronunciation`.
+                    public var pronunciation: Swift.String?
+                    /// How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/pronunciationIpa`.
+                    public var pronunciationIpa: Swift.String?
+                    /// URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/pronunciationAudioUrl`.
+                    public var pronunciationAudioUrl: Swift.String?
                     /// Best short description of what this entity is
                     ///
                     /// - Remark: Generated from `#/components/schemas/CollectionBottle/bottle/brand/kind`.
@@ -4817,6 +4901,9 @@ extension Components {
                     ///   - peatedId: Permanent Peated ID for the entity
                     ///   - name: Name of the entity (brand, distillery, etc.)
                     ///   - shortName: Abbreviated or short name for the entity
+                    ///   - pronunciation: How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                    ///   - pronunciationIpa: How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                    ///   - pronunciationAudioUrl: URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
                     ///   - kind: Best short description of what this entity is
                     ///   - status: Current status, or null when it is unknown
                     ///   - ownerId: ID of the entity's current owner
@@ -4840,6 +4927,9 @@ extension Components {
                         peatedId: Swift.String,
                         name: Swift.String,
                         shortName: Swift.String? = nil,
+                        pronunciation: Swift.String? = nil,
+                        pronunciationIpa: Swift.String? = nil,
+                        pronunciationAudioUrl: Swift.String? = nil,
                         kind: Components.Schemas.CollectionBottle.bottlePayload.brandPayload.kindPayload,
                         status: Components.Schemas.CollectionBottle.bottlePayload.brandPayload.statusPayload? = nil,
                         ownerId: Swift.Double? = nil,
@@ -4863,6 +4953,9 @@ extension Components {
                         self.peatedId = peatedId
                         self.name = name
                         self.shortName = shortName
+                        self.pronunciation = pronunciation
+                        self.pronunciationIpa = pronunciationIpa
+                        self.pronunciationAudioUrl = pronunciationAudioUrl
                         self.kind = kind
                         self.status = status
                         self.ownerId = ownerId
@@ -4887,6 +4980,9 @@ extension Components {
                         case peatedId
                         case name
                         case shortName
+                        case pronunciation
+                        case pronunciationIpa
+                        case pronunciationAudioUrl
                         case kind
                         case status
                         case ownerId
@@ -7203,6 +7299,18 @@ extension Components {
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/shortName`.
                     public var shortName: Swift.String?
+                    /// How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/pronunciation`.
+                    public var pronunciation: Swift.String?
+                    /// How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/pronunciationIpa`.
+                    public var pronunciationIpa: Swift.String?
+                    /// URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/pronunciationAudioUrl`.
+                    public var pronunciationAudioUrl: Swift.String?
                     /// Best short description of what this entity is
                     ///
                     /// - Remark: Generated from `#/components/schemas/PriceChange/bottle/brand/kind`.
@@ -7357,6 +7465,9 @@ extension Components {
                     ///   - peatedId: Permanent Peated ID for the entity
                     ///   - name: Name of the entity (brand, distillery, etc.)
                     ///   - shortName: Abbreviated or short name for the entity
+                    ///   - pronunciation: How to say the name in plain English: lowercase syllables joined by hyphens, with a stressed syllable in capitals when known, like "glen GEER-ee"
+                    ///   - pronunciationIpa: How to say the name in the International Phonetic Alphabet, without slashes, like "ɡlɛn ˈɡɪəri"
+                    ///   - pronunciationAudioUrl: URL of an MP3 that reads `pronunciationIpa` aloud, or null when no audio exists yet. Peated generates it from the IPA.
                     ///   - kind: Best short description of what this entity is
                     ///   - status: Current status, or null when it is unknown
                     ///   - ownerId: ID of the entity's current owner
@@ -7380,6 +7491,9 @@ extension Components {
                         peatedId: Swift.String,
                         name: Swift.String,
                         shortName: Swift.String? = nil,
+                        pronunciation: Swift.String? = nil,
+                        pronunciationIpa: Swift.String? = nil,
+                        pronunciationAudioUrl: Swift.String? = nil,
                         kind: Components.Schemas.PriceChange.bottlePayload.brandPayload.kindPayload,
                         status: Components.Schemas.PriceChange.bottlePayload.brandPayload.statusPayload? = nil,
                         ownerId: Swift.Double? = nil,
@@ -7403,6 +7517,9 @@ extension Components {
                         self.peatedId = peatedId
                         self.name = name
                         self.shortName = shortName
+                        self.pronunciation = pronunciation
+                        self.pronunciationIpa = pronunciationIpa
+                        self.pronunciationAudioUrl = pronunciationAudioUrl
                         self.kind = kind
                         self.status = status
                         self.ownerId = ownerId
@@ -7427,6 +7544,9 @@ extension Components {
                         case peatedId
                         case name
                         case shortName
+                        case pronunciation
+                        case pronunciationIpa
+                        case pronunciationAudioUrl
                         case kind
                         case status
                         case ownerId
@@ -8166,6 +8286,3819 @@ extension Components {
             public enum CodingKeys: String, CodingKey {
                 case user
                 case accessToken
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData`.
+        public struct identifyTastingBottleFromPhotoMessageEventData: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1`.
+            public struct Value1Payload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1/type`.
+                public var _type: OpenAPIRuntime.OpenAPIValueContainer
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1/pendingImage`.
+                public struct pendingImagePayload: Codable, Hashable, Sendable {
+                    /// Stable identifier for the pending upload
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1/pendingImage/id`.
+                    public var id: Swift.String
+                    /// URL for the processed pending image
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1/pendingImage/imageUrl`.
+                    public var imageUrl: Swift.String
+                    /// When the pending upload expires
+                    ///
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1/pendingImage/expiresAt`.
+                    public var expiresAt: Foundation.Date
+                    /// Creates a new `pendingImagePayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - id: Stable identifier for the pending upload
+                    ///   - imageUrl: URL for the processed pending image
+                    ///   - expiresAt: When the pending upload expires
+                    public init(
+                        id: Swift.String,
+                        imageUrl: Swift.String,
+                        expiresAt: Foundation.Date
+                    ) {
+                        self.id = id
+                        self.imageUrl = imageUrl
+                        self.expiresAt = expiresAt
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case id
+                        case imageUrl
+                        case expiresAt
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1/pendingImage`.
+                public var pendingImage: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value1Payload.pendingImagePayload
+                /// Creates a new `Value1Payload`.
+                ///
+                /// - Parameters:
+                ///   - _type:
+                ///   - pendingImage:
+                public init(
+                    _type: OpenAPIRuntime.OpenAPIValueContainer,
+                    pendingImage: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value1Payload.pendingImagePayload
+                ) {
+                    self._type = _type
+                    self.pendingImage = pendingImage
+                }
+                public enum CodingKeys: String, CodingKey {
+                    case _type = "type"
+                    case pendingImage
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value1`.
+            public var value1: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value1Payload?
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2`.
+            public struct Value2Payload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/type`.
+                public var _type: OpenAPIRuntime.OpenAPIValueContainer
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence`.
+                public struct imageEvidencePayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/sourceImageId`.
+                    public var sourceImageId: Swift.String
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/sourceImageHash`.
+                    public var sourceImageHash: Swift.String?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload`.
+                    public struct extractorsPayloadPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/kind`.
+                        @frozen public enum kindPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                            case ocr = "ocr"
+                            case vision = "vision"
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/kind`.
+                        public var kind: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.kindPayload
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/model`.
+                        public var model: Swift.String?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload`.
+                        public struct textSpansPayloadPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/text`.
+                            public var text: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/region`.
+                            public struct regionPayload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/region/x`.
+                                public var x: Swift.Double
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/region/y`.
+                                public var y: Swift.Double
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/region/width`.
+                                public var width: Swift.Double
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/region/height`.
+                                public var height: Swift.Double
+                                /// Creates a new `regionPayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - x:
+                                ///   - y:
+                                ///   - width:
+                                ///   - height:
+                                public init(
+                                    x: Swift.Double,
+                                    y: Swift.Double,
+                                    width: Swift.Double,
+                                    height: Swift.Double
+                                ) {
+                                    self.x = x
+                                    self.y = y
+                                    self.width = width
+                                    self.height = height
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case x
+                                    case y
+                                    case width
+                                    case height
+                                }
+                                public init(from decoder: any Swift.Decoder) throws {
+                                    let container = try decoder.container(keyedBy: CodingKeys.self)
+                                    self.x = try container.decode(
+                                        Swift.Double.self,
+                                        forKey: .x
+                                    )
+                                    self.y = try container.decode(
+                                        Swift.Double.self,
+                                        forKey: .y
+                                    )
+                                    self.width = try container.decode(
+                                        Swift.Double.self,
+                                        forKey: .width
+                                    )
+                                    self.height = try container.decode(
+                                        Swift.Double.self,
+                                        forKey: .height
+                                    )
+                                    try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                        "x",
+                                        "y",
+                                        "width",
+                                        "height"
+                                    ])
+                                }
+                            }
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpansPayload/region`.
+                            public var region: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload.regionPayload?
+                            /// Creates a new `textSpansPayloadPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - text:
+                            ///   - confidence:
+                            ///   - region:
+                            public init(
+                                text: Swift.String,
+                                confidence: Swift.Double,
+                                region: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload.regionPayload? = nil
+                            ) {
+                                self.text = text
+                                self.confidence = confidence
+                                self.region = region
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case text
+                                case confidence
+                                case region
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.text = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .text
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.region = try container.decodeIfPresent(
+                                    Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload.regionPayload.self,
+                                    forKey: .region
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "text",
+                                    "confidence",
+                                    "region"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpans`.
+                        public typealias textSpansPayload = [Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload]
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/textSpans`.
+                        public var textSpans: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.textSpansPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractorsPayload/observations`.
+                        public var observations: [Swift.String]?
+                        /// Creates a new `extractorsPayloadPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - kind:
+                        ///   - model:
+                        ///   - confidence:
+                        ///   - textSpans:
+                        ///   - observations:
+                        public init(
+                            kind: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.kindPayload,
+                            model: Swift.String? = nil,
+                            confidence: Swift.Double,
+                            textSpans: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.textSpansPayload? = nil,
+                            observations: [Swift.String]? = nil
+                        ) {
+                            self.kind = kind
+                            self.model = model
+                            self.confidence = confidence
+                            self.textSpans = textSpans
+                            self.observations = observations
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case kind
+                            case model
+                            case confidence
+                            case textSpans
+                            case observations
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.kind = try container.decode(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.kindPayload.self,
+                                forKey: .kind
+                            )
+                            self.model = try container.decodeIfPresent(
+                                Swift.String.self,
+                                forKey: .model
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.textSpans = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload.textSpansPayload.self,
+                                forKey: .textSpans
+                            )
+                            self.observations = try container.decodeIfPresent(
+                                [Swift.String].self,
+                                forKey: .observations
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "kind",
+                                "model",
+                                "confidence",
+                                "textSpans",
+                                "observations"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractors`.
+                    public typealias extractorsPayload = [Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayloadPayload]
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/extractors`.
+                    public var extractors: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayload
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates`.
+                    public struct fieldCandidatesPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/brand`.
+                        public struct brandPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/brand/value`.
+                            public var value: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/brand/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/brand/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `brandPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.String,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/brand`.
+                        public var brand: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.brandPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/expression`.
+                        public struct expressionPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/expression/value`.
+                            public var value: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/expression/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/expression/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `expressionPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.String,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/expression`.
+                        public var expression: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.expressionPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/series`.
+                        public struct seriesPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/series/value`.
+                            public var value: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/series/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/series/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `seriesPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.String,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/series`.
+                        public var series: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.seriesPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/distillery`.
+                        public struct distilleryPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/distillery/value`.
+                            public var value: [Swift.String]
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/distillery/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/distillery/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `distilleryPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: [Swift.String],
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    [Swift.String].self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/distillery`.
+                        public var distillery: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.distilleryPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottler`.
+                        public struct bottlerPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottler/value`.
+                            public var value: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottler/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottler/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `bottlerPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.String,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottler`.
+                        public var bottler: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.bottlerPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/category`.
+                        public struct categoryPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/category/value`.
+                            @frozen public enum valuePayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                case blend = "blend"
+                                case blended_grain = "blended_grain"
+                                case blended_malt = "blended_malt"
+                                case bourbon = "bourbon"
+                                case corn = "corn"
+                                case rye = "rye"
+                                case single_grain = "single_grain"
+                                case single_malt = "single_malt"
+                                case single_pot_still = "single_pot_still"
+                                case wheat = "wheat"
+                            }
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/category/value`.
+                            public var value: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.valuePayload
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/category/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/category/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `categoryPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.valuePayload,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.valuePayload.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/category`.
+                        public var category: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.categoryPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/statedAge`.
+                        public struct statedAgePayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/statedAge/value`.
+                            public var value: Swift.Int
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/statedAge/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/statedAge/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `statedAgePayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Int,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Int.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/statedAge`.
+                        public var statedAge: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.statedAgePayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/abv`.
+                        public struct abvPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/abv/value`.
+                            public var value: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/abv/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/abv/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `abvPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Double,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/abv`.
+                        public var abv: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.abvPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/vintageYear`.
+                        public struct vintageYearPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/vintageYear/value`.
+                            public var value: Swift.Int
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/vintageYear/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/vintageYear/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `vintageYearPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Int,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Int.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/vintageYear`.
+                        public var vintageYear: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.vintageYearPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottlingYear`.
+                        public struct bottlingYearPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottlingYear/value`.
+                            public var value: Swift.Int
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottlingYear/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottlingYear/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `bottlingYearPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Int,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Int.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/bottlingYear`.
+                        public var bottlingYear: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.bottlingYearPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/releaseYear`.
+                        public struct releaseYearPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/releaseYear/value`.
+                            public var value: Swift.Int
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/releaseYear/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/releaseYear/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `releaseYearPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Int,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Int.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/releaseYear`.
+                        public var releaseYear: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.releaseYearPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/edition`.
+                        public struct editionPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/edition/value`.
+                            public var value: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/edition/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/edition/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `editionPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.String,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/edition`.
+                        public var edition: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.editionPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskNumber`.
+                        public struct caskNumberPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskNumber/value`.
+                            public var value: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskNumber/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskNumber/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `caskNumberPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.String,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskNumber`.
+                        public var caskNumber: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.caskNumberPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/maturation`.
+                        public struct maturationPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/maturation/value`.
+                            public var value: Swift.String
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/maturation/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/maturation/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `maturationPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.String,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/maturation`.
+                        public var maturation: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.maturationPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/outturn`.
+                        public struct outturnPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/outturn/value`.
+                            public var value: Swift.Int
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/outturn/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/outturn/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `outturnPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Int,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Int.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/outturn`.
+                        public var outturn: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.outturnPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskStrength`.
+                        public struct caskStrengthPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskStrength/value`.
+                            public var value: Swift.Bool
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskStrength/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskStrength/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `caskStrengthPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Bool,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Bool.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/caskStrength`.
+                        public var caskStrength: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.caskStrengthPayload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/singleCask`.
+                        public struct singleCaskPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/singleCask/value`.
+                            public var value: Swift.Bool
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/singleCask/confidence`.
+                            public var confidence: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/singleCask/sourceExtractorIndexes`.
+                            public var sourceExtractorIndexes: [Swift.Int]?
+                            /// Creates a new `singleCaskPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - value:
+                            ///   - confidence:
+                            ///   - sourceExtractorIndexes:
+                            public init(
+                                value: Swift.Bool,
+                                confidence: Swift.Double,
+                                sourceExtractorIndexes: [Swift.Int]? = nil
+                            ) {
+                                self.value = value
+                                self.confidence = confidence
+                                self.sourceExtractorIndexes = sourceExtractorIndexes
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case value
+                                case confidence
+                                case sourceExtractorIndexes
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.value = try container.decode(
+                                    Swift.Bool.self,
+                                    forKey: .value
+                                )
+                                self.confidence = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .confidence
+                                )
+                                self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                    [Swift.Int].self,
+                                    forKey: .sourceExtractorIndexes
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "value",
+                                    "confidence",
+                                    "sourceExtractorIndexes"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates/singleCask`.
+                        public var singleCask: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.singleCaskPayload?
+                        /// Creates a new `fieldCandidatesPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - brand:
+                        ///   - expression:
+                        ///   - series:
+                        ///   - distillery:
+                        ///   - bottler:
+                        ///   - category:
+                        ///   - statedAge:
+                        ///   - abv:
+                        ///   - vintageYear:
+                        ///   - bottlingYear:
+                        ///   - releaseYear:
+                        ///   - edition:
+                        ///   - caskNumber:
+                        ///   - maturation:
+                        ///   - outturn:
+                        ///   - caskStrength:
+                        ///   - singleCask:
+                        public init(
+                            brand: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.brandPayload? = nil,
+                            expression: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.expressionPayload? = nil,
+                            series: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.seriesPayload? = nil,
+                            distillery: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.distilleryPayload? = nil,
+                            bottler: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.bottlerPayload? = nil,
+                            category: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.categoryPayload? = nil,
+                            statedAge: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.statedAgePayload? = nil,
+                            abv: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.abvPayload? = nil,
+                            vintageYear: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.vintageYearPayload? = nil,
+                            bottlingYear: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.bottlingYearPayload? = nil,
+                            releaseYear: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.releaseYearPayload? = nil,
+                            edition: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.editionPayload? = nil,
+                            caskNumber: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.caskNumberPayload? = nil,
+                            maturation: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.maturationPayload? = nil,
+                            outturn: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.outturnPayload? = nil,
+                            caskStrength: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.caskStrengthPayload? = nil,
+                            singleCask: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.singleCaskPayload? = nil
+                        ) {
+                            self.brand = brand
+                            self.expression = expression
+                            self.series = series
+                            self.distillery = distillery
+                            self.bottler = bottler
+                            self.category = category
+                            self.statedAge = statedAge
+                            self.abv = abv
+                            self.vintageYear = vintageYear
+                            self.bottlingYear = bottlingYear
+                            self.releaseYear = releaseYear
+                            self.edition = edition
+                            self.caskNumber = caskNumber
+                            self.maturation = maturation
+                            self.outturn = outturn
+                            self.caskStrength = caskStrength
+                            self.singleCask = singleCask
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case brand
+                            case expression
+                            case series
+                            case distillery
+                            case bottler
+                            case category
+                            case statedAge
+                            case abv
+                            case vintageYear
+                            case bottlingYear
+                            case releaseYear
+                            case edition
+                            case caskNumber
+                            case maturation
+                            case outturn
+                            case caskStrength
+                            case singleCask
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.brand = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.brandPayload.self,
+                                forKey: .brand
+                            )
+                            self.expression = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.expressionPayload.self,
+                                forKey: .expression
+                            )
+                            self.series = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.seriesPayload.self,
+                                forKey: .series
+                            )
+                            self.distillery = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.distilleryPayload.self,
+                                forKey: .distillery
+                            )
+                            self.bottler = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.bottlerPayload.self,
+                                forKey: .bottler
+                            )
+                            self.category = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.self,
+                                forKey: .category
+                            )
+                            self.statedAge = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.statedAgePayload.self,
+                                forKey: .statedAge
+                            )
+                            self.abv = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.abvPayload.self,
+                                forKey: .abv
+                            )
+                            self.vintageYear = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.vintageYearPayload.self,
+                                forKey: .vintageYear
+                            )
+                            self.bottlingYear = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.bottlingYearPayload.self,
+                                forKey: .bottlingYear
+                            )
+                            self.releaseYear = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.releaseYearPayload.self,
+                                forKey: .releaseYear
+                            )
+                            self.edition = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.editionPayload.self,
+                                forKey: .edition
+                            )
+                            self.caskNumber = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.caskNumberPayload.self,
+                                forKey: .caskNumber
+                            )
+                            self.maturation = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.maturationPayload.self,
+                                forKey: .maturation
+                            )
+                            self.outturn = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.outturnPayload.self,
+                                forKey: .outturn
+                            )
+                            self.caskStrength = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.caskStrengthPayload.self,
+                                forKey: .caskStrength
+                            )
+                            self.singleCask = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.singleCaskPayload.self,
+                                forKey: .singleCask
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "brand",
+                                "expression",
+                                "series",
+                                "distillery",
+                                "bottler",
+                                "category",
+                                "statedAge",
+                                "abv",
+                                "vintageYear",
+                                "bottlingYear",
+                                "releaseYear",
+                                "edition",
+                                "caskNumber",
+                                "maturation",
+                                "outturn",
+                                "caskStrength",
+                                "singleCask"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/fieldCandidates`.
+                    public var fieldCandidates: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/photoSuitability`.
+                    public struct photoSuitabilityPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/photoSuitability/isSingleBottlePhoto`.
+                        public var isSingleBottlePhoto: Swift.Bool
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/photoSuitability/labelReadable`.
+                        public var labelReadable: Swift.Bool
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/photoSuitability/suitableAsTastingImage`.
+                        public var suitableAsTastingImage: Swift.Bool
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/photoSuitability/suitableAsBottleImage`.
+                        public var suitableAsBottleImage: Swift.Bool
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/photoSuitability/reason`.
+                        public var reason: Swift.String?
+                        /// Creates a new `photoSuitabilityPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - isSingleBottlePhoto:
+                        ///   - labelReadable:
+                        ///   - suitableAsTastingImage:
+                        ///   - suitableAsBottleImage:
+                        ///   - reason:
+                        public init(
+                            isSingleBottlePhoto: Swift.Bool,
+                            labelReadable: Swift.Bool,
+                            suitableAsTastingImage: Swift.Bool,
+                            suitableAsBottleImage: Swift.Bool,
+                            reason: Swift.String? = nil
+                        ) {
+                            self.isSingleBottlePhoto = isSingleBottlePhoto
+                            self.labelReadable = labelReadable
+                            self.suitableAsTastingImage = suitableAsTastingImage
+                            self.suitableAsBottleImage = suitableAsBottleImage
+                            self.reason = reason
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case isSingleBottlePhoto
+                            case labelReadable
+                            case suitableAsTastingImage
+                            case suitableAsBottleImage
+                            case reason
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.isSingleBottlePhoto = try container.decode(
+                                Swift.Bool.self,
+                                forKey: .isSingleBottlePhoto
+                            )
+                            self.labelReadable = try container.decode(
+                                Swift.Bool.self,
+                                forKey: .labelReadable
+                            )
+                            self.suitableAsTastingImage = try container.decode(
+                                Swift.Bool.self,
+                                forKey: .suitableAsTastingImage
+                            )
+                            self.suitableAsBottleImage = try container.decode(
+                                Swift.Bool.self,
+                                forKey: .suitableAsBottleImage
+                            )
+                            self.reason = try container.decodeIfPresent(
+                                Swift.String.self,
+                                forKey: .reason
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "isSingleBottlePhoto",
+                                "labelReadable",
+                                "suitableAsTastingImage",
+                                "suitableAsBottleImage",
+                                "reason"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/photoSuitability`.
+                    public var photoSuitability: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.photoSuitabilityPayload
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/conflictsPayload`.
+                    public struct conflictsPayloadPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/conflictsPayload/field`.
+                        public var field: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/conflictsPayload/values`.
+                        public var values: [OpenAPIRuntime.OpenAPIValueContainer]
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/conflictsPayload/reason`.
+                        public var reason: Swift.String
+                        /// Creates a new `conflictsPayloadPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - field:
+                        ///   - values:
+                        ///   - reason:
+                        public init(
+                            field: Swift.String,
+                            values: [OpenAPIRuntime.OpenAPIValueContainer],
+                            reason: Swift.String
+                        ) {
+                            self.field = field
+                            self.values = values
+                            self.reason = reason
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case field
+                            case values
+                            case reason
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.field = try container.decode(
+                                Swift.String.self,
+                                forKey: .field
+                            )
+                            self.values = try container.decode(
+                                [OpenAPIRuntime.OpenAPIValueContainer].self,
+                                forKey: .values
+                            )
+                            self.reason = try container.decode(
+                                Swift.String.self,
+                                forKey: .reason
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "field",
+                                "values",
+                                "reason"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/conflicts`.
+                    public typealias conflictsPayload = [Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.conflictsPayloadPayload]
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence/conflicts`.
+                    public var conflicts: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.conflictsPayload?
+                    /// Creates a new `imageEvidencePayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - sourceImageId:
+                    ///   - sourceImageHash:
+                    ///   - extractors:
+                    ///   - fieldCandidates:
+                    ///   - photoSuitability:
+                    ///   - conflicts:
+                    public init(
+                        sourceImageId: Swift.String,
+                        sourceImageHash: Swift.String? = nil,
+                        extractors: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayload,
+                        fieldCandidates: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload? = nil,
+                        photoSuitability: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.photoSuitabilityPayload,
+                        conflicts: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.conflictsPayload? = nil
+                    ) {
+                        self.sourceImageId = sourceImageId
+                        self.sourceImageHash = sourceImageHash
+                        self.extractors = extractors
+                        self.fieldCandidates = fieldCandidates
+                        self.photoSuitability = photoSuitability
+                        self.conflicts = conflicts
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case sourceImageId
+                        case sourceImageHash
+                        case extractors
+                        case fieldCandidates
+                        case photoSuitability
+                        case conflicts
+                    }
+                    public init(from decoder: any Swift.Decoder) throws {
+                        let container = try decoder.container(keyedBy: CodingKeys.self)
+                        self.sourceImageId = try container.decode(
+                            Swift.String.self,
+                            forKey: .sourceImageId
+                        )
+                        self.sourceImageHash = try container.decodeIfPresent(
+                            Swift.String.self,
+                            forKey: .sourceImageHash
+                        )
+                        self.extractors = try container.decode(
+                            Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.extractorsPayload.self,
+                            forKey: .extractors
+                        )
+                        self.fieldCandidates = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.fieldCandidatesPayload.self,
+                            forKey: .fieldCandidates
+                        )
+                        self.photoSuitability = try container.decode(
+                            Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.photoSuitabilityPayload.self,
+                            forKey: .photoSuitability
+                        )
+                        self.conflicts = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload.conflictsPayload.self,
+                            forKey: .conflicts
+                        )
+                        try decoder.ensureNoAdditionalProperties(knownKeys: [
+                            "sourceImageId",
+                            "sourceImageHash",
+                            "extractors",
+                            "fieldCandidates",
+                            "photoSuitability",
+                            "conflicts"
+                        ])
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2/imageEvidence`.
+                public var imageEvidence: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload
+                /// Creates a new `Value2Payload`.
+                ///
+                /// - Parameters:
+                ///   - _type:
+                ///   - imageEvidence:
+                public init(
+                    _type: OpenAPIRuntime.OpenAPIValueContainer,
+                    imageEvidence: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload.imageEvidencePayload
+                ) {
+                    self._type = _type
+                    self.imageEvidence = imageEvidence
+                }
+                public enum CodingKeys: String, CodingKey {
+                    case _type = "type"
+                    case imageEvidence
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value2`.
+            public var value2: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload?
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value3`.
+            public struct Value3Payload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value3/type`.
+                public var _type: OpenAPIRuntime.OpenAPIValueContainer
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value3/bottles`.
+                public var bottles: [Components.Schemas.Bottle]
+                /// Creates a new `Value3Payload`.
+                ///
+                /// - Parameters:
+                ///   - _type:
+                ///   - bottles:
+                public init(
+                    _type: OpenAPIRuntime.OpenAPIValueContainer,
+                    bottles: [Components.Schemas.Bottle]
+                ) {
+                    self._type = _type
+                    self.bottles = bottles
+                }
+                public enum CodingKeys: String, CodingKey {
+                    case _type = "type"
+                    case bottles
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value3`.
+            public var value3: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value3Payload?
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value4`.
+            public struct Value4Payload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value4/type`.
+                public var _type: OpenAPIRuntime.OpenAPIValueContainer
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value4/step`.
+                @frozen public enum stepPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                    case checking_peated = "checking_peated"
+                    case checking_web = "checking_web"
+                    case comparing = "comparing"
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value4/step`.
+                public var step: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value4Payload.stepPayload
+                /// Creates a new `Value4Payload`.
+                ///
+                /// - Parameters:
+                ///   - _type:
+                ///   - step:
+                public init(
+                    _type: OpenAPIRuntime.OpenAPIValueContainer,
+                    step: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value4Payload.stepPayload
+                ) {
+                    self._type = _type
+                    self.step = step
+                }
+                public enum CodingKeys: String, CodingKey {
+                    case _type = "type"
+                    case step
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoMessageEventData/value4`.
+            public var value4: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value4Payload?
+            /// Creates a new `identifyTastingBottleFromPhotoMessageEventData`.
+            ///
+            /// - Parameters:
+            ///   - value1:
+            ///   - value2:
+            ///   - value3:
+            ///   - value4:
+            public init(
+                value1: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value1Payload? = nil,
+                value2: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value2Payload? = nil,
+                value3: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value3Payload? = nil,
+                value4: Components.Schemas.identifyTastingBottleFromPhotoMessageEventData.Value4Payload? = nil
+            ) {
+                self.value1 = value1
+                self.value2 = value2
+                self.value3 = value3
+                self.value4 = value4
+            }
+            public init(from decoder: any Swift.Decoder) throws {
+                var errors: [any Swift.Error] = []
+                do {
+                    self.value1 = try .init(from: decoder)
+                } catch {
+                    errors.append(error)
+                }
+                do {
+                    self.value2 = try .init(from: decoder)
+                } catch {
+                    errors.append(error)
+                }
+                do {
+                    self.value3 = try .init(from: decoder)
+                } catch {
+                    errors.append(error)
+                }
+                do {
+                    self.value4 = try .init(from: decoder)
+                } catch {
+                    errors.append(error)
+                }
+                try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
+                    [
+                        self.value1,
+                        self.value2,
+                        self.value3,
+                        self.value4
+                    ],
+                    type: Self.self,
+                    codingPath: decoder.codingPath,
+                    errors: errors
+                )
+            }
+            public func encode(to encoder: any Swift.Encoder) throws {
+                try self.value1?.encode(to: encoder)
+                try self.value2?.encode(to: encoder)
+                try self.value3?.encode(to: encoder)
+                try self.value4?.encode(to: encoder)
+            }
+        }
+        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData`.
+        public struct identifyTastingBottleFromPhotoDoneEventData: Codable, Hashable, Sendable {
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/pendingImage`.
+            public struct pendingImagePayload: Codable, Hashable, Sendable {
+                /// Stable identifier for the pending upload
+                ///
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/pendingImage/id`.
+                public var id: Swift.String
+                /// URL for the processed pending image
+                ///
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/pendingImage/imageUrl`.
+                public var imageUrl: Swift.String
+                /// When the pending upload expires
+                ///
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/pendingImage/expiresAt`.
+                public var expiresAt: Foundation.Date
+                /// Creates a new `pendingImagePayload`.
+                ///
+                /// - Parameters:
+                ///   - id: Stable identifier for the pending upload
+                ///   - imageUrl: URL for the processed pending image
+                ///   - expiresAt: When the pending upload expires
+                public init(
+                    id: Swift.String,
+                    imageUrl: Swift.String,
+                    expiresAt: Foundation.Date
+                ) {
+                    self.id = id
+                    self.imageUrl = imageUrl
+                    self.expiresAt = expiresAt
+                }
+                public enum CodingKeys: String, CodingKey {
+                    case id
+                    case imageUrl
+                    case expiresAt
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/pendingImage`.
+            public var pendingImage: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.pendingImagePayload
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence`.
+            public struct imageEvidencePayload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/sourceImageId`.
+                public var sourceImageId: Swift.String
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/sourceImageHash`.
+                public var sourceImageHash: Swift.String?
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload`.
+                public struct extractorsPayloadPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/kind`.
+                    @frozen public enum kindPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                        case ocr = "ocr"
+                        case vision = "vision"
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/kind`.
+                    public var kind: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.kindPayload
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/model`.
+                    public var model: Swift.String?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/confidence`.
+                    public var confidence: Swift.Double
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload`.
+                    public struct textSpansPayloadPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/text`.
+                        public var text: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/region`.
+                        public struct regionPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/region/x`.
+                            public var x: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/region/y`.
+                            public var y: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/region/width`.
+                            public var width: Swift.Double
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/region/height`.
+                            public var height: Swift.Double
+                            /// Creates a new `regionPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - x:
+                            ///   - y:
+                            ///   - width:
+                            ///   - height:
+                            public init(
+                                x: Swift.Double,
+                                y: Swift.Double,
+                                width: Swift.Double,
+                                height: Swift.Double
+                            ) {
+                                self.x = x
+                                self.y = y
+                                self.width = width
+                                self.height = height
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case x
+                                case y
+                                case width
+                                case height
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.x = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .x
+                                )
+                                self.y = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .y
+                                )
+                                self.width = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .width
+                                )
+                                self.height = try container.decode(
+                                    Swift.Double.self,
+                                    forKey: .height
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "x",
+                                    "y",
+                                    "width",
+                                    "height"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpansPayload/region`.
+                        public var region: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload.regionPayload?
+                        /// Creates a new `textSpansPayloadPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - text:
+                        ///   - confidence:
+                        ///   - region:
+                        public init(
+                            text: Swift.String,
+                            confidence: Swift.Double,
+                            region: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload.regionPayload? = nil
+                        ) {
+                            self.text = text
+                            self.confidence = confidence
+                            self.region = region
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case text
+                            case confidence
+                            case region
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.text = try container.decode(
+                                Swift.String.self,
+                                forKey: .text
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.region = try container.decodeIfPresent(
+                                Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload.regionPayload.self,
+                                forKey: .region
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "text",
+                                "confidence",
+                                "region"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpans`.
+                    public typealias textSpansPayload = [Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.textSpansPayloadPayload]
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/textSpans`.
+                    public var textSpans: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.textSpansPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractorsPayload/observations`.
+                    public var observations: [Swift.String]?
+                    /// Creates a new `extractorsPayloadPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - kind:
+                    ///   - model:
+                    ///   - confidence:
+                    ///   - textSpans:
+                    ///   - observations:
+                    public init(
+                        kind: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.kindPayload,
+                        model: Swift.String? = nil,
+                        confidence: Swift.Double,
+                        textSpans: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.textSpansPayload? = nil,
+                        observations: [Swift.String]? = nil
+                    ) {
+                        self.kind = kind
+                        self.model = model
+                        self.confidence = confidence
+                        self.textSpans = textSpans
+                        self.observations = observations
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case kind
+                        case model
+                        case confidence
+                        case textSpans
+                        case observations
+                    }
+                    public init(from decoder: any Swift.Decoder) throws {
+                        let container = try decoder.container(keyedBy: CodingKeys.self)
+                        self.kind = try container.decode(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.kindPayload.self,
+                            forKey: .kind
+                        )
+                        self.model = try container.decodeIfPresent(
+                            Swift.String.self,
+                            forKey: .model
+                        )
+                        self.confidence = try container.decode(
+                            Swift.Double.self,
+                            forKey: .confidence
+                        )
+                        self.textSpans = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload.textSpansPayload.self,
+                            forKey: .textSpans
+                        )
+                        self.observations = try container.decodeIfPresent(
+                            [Swift.String].self,
+                            forKey: .observations
+                        )
+                        try decoder.ensureNoAdditionalProperties(knownKeys: [
+                            "kind",
+                            "model",
+                            "confidence",
+                            "textSpans",
+                            "observations"
+                        ])
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractors`.
+                public typealias extractorsPayload = [Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayloadPayload]
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/extractors`.
+                public var extractors: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayload
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates`.
+                public struct fieldCandidatesPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/brand`.
+                    public struct brandPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/brand/value`.
+                        public var value: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/brand/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/brand/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `brandPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.String,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.String.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/brand`.
+                    public var brand: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.brandPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/expression`.
+                    public struct expressionPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/expression/value`.
+                        public var value: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/expression/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/expression/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `expressionPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.String,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.String.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/expression`.
+                    public var expression: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.expressionPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/series`.
+                    public struct seriesPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/series/value`.
+                        public var value: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/series/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/series/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `seriesPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.String,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.String.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/series`.
+                    public var series: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.seriesPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/distillery`.
+                    public struct distilleryPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/distillery/value`.
+                        public var value: [Swift.String]
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/distillery/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/distillery/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `distilleryPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: [Swift.String],
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                [Swift.String].self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/distillery`.
+                    public var distillery: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.distilleryPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottler`.
+                    public struct bottlerPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottler/value`.
+                        public var value: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottler/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottler/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `bottlerPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.String,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.String.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottler`.
+                    public var bottler: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.bottlerPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/category`.
+                    public struct categoryPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/category/value`.
+                        @frozen public enum valuePayload: String, Codable, Hashable, Sendable, CaseIterable {
+                            case blend = "blend"
+                            case blended_grain = "blended_grain"
+                            case blended_malt = "blended_malt"
+                            case bourbon = "bourbon"
+                            case corn = "corn"
+                            case rye = "rye"
+                            case single_grain = "single_grain"
+                            case single_malt = "single_malt"
+                            case single_pot_still = "single_pot_still"
+                            case wheat = "wheat"
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/category/value`.
+                        public var value: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.valuePayload
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/category/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/category/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `categoryPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.valuePayload,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.valuePayload.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/category`.
+                    public var category: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.categoryPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/statedAge`.
+                    public struct statedAgePayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/statedAge/value`.
+                        public var value: Swift.Int
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/statedAge/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/statedAge/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `statedAgePayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Int,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Int.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/statedAge`.
+                    public var statedAge: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.statedAgePayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/abv`.
+                    public struct abvPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/abv/value`.
+                        public var value: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/abv/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/abv/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `abvPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Double,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Double.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/abv`.
+                    public var abv: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.abvPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/vintageYear`.
+                    public struct vintageYearPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/vintageYear/value`.
+                        public var value: Swift.Int
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/vintageYear/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/vintageYear/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `vintageYearPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Int,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Int.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/vintageYear`.
+                    public var vintageYear: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.vintageYearPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottlingYear`.
+                    public struct bottlingYearPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottlingYear/value`.
+                        public var value: Swift.Int
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottlingYear/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottlingYear/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `bottlingYearPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Int,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Int.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/bottlingYear`.
+                    public var bottlingYear: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.bottlingYearPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/releaseYear`.
+                    public struct releaseYearPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/releaseYear/value`.
+                        public var value: Swift.Int
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/releaseYear/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/releaseYear/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `releaseYearPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Int,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Int.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/releaseYear`.
+                    public var releaseYear: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.releaseYearPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/edition`.
+                    public struct editionPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/edition/value`.
+                        public var value: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/edition/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/edition/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `editionPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.String,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.String.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/edition`.
+                    public var edition: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.editionPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskNumber`.
+                    public struct caskNumberPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskNumber/value`.
+                        public var value: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskNumber/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskNumber/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `caskNumberPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.String,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.String.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskNumber`.
+                    public var caskNumber: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.caskNumberPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/maturation`.
+                    public struct maturationPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/maturation/value`.
+                        public var value: Swift.String
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/maturation/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/maturation/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `maturationPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.String,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.String.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/maturation`.
+                    public var maturation: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.maturationPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/outturn`.
+                    public struct outturnPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/outturn/value`.
+                        public var value: Swift.Int
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/outturn/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/outturn/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `outturnPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Int,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Int.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/outturn`.
+                    public var outturn: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.outturnPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskStrength`.
+                    public struct caskStrengthPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskStrength/value`.
+                        public var value: Swift.Bool
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskStrength/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskStrength/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `caskStrengthPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Bool,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Bool.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/caskStrength`.
+                    public var caskStrength: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.caskStrengthPayload?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/singleCask`.
+                    public struct singleCaskPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/singleCask/value`.
+                        public var value: Swift.Bool
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/singleCask/confidence`.
+                        public var confidence: Swift.Double
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/singleCask/sourceExtractorIndexes`.
+                        public var sourceExtractorIndexes: [Swift.Int]?
+                        /// Creates a new `singleCaskPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value:
+                        ///   - confidence:
+                        ///   - sourceExtractorIndexes:
+                        public init(
+                            value: Swift.Bool,
+                            confidence: Swift.Double,
+                            sourceExtractorIndexes: [Swift.Int]? = nil
+                        ) {
+                            self.value = value
+                            self.confidence = confidence
+                            self.sourceExtractorIndexes = sourceExtractorIndexes
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case value
+                            case confidence
+                            case sourceExtractorIndexes
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            let container = try decoder.container(keyedBy: CodingKeys.self)
+                            self.value = try container.decode(
+                                Swift.Bool.self,
+                                forKey: .value
+                            )
+                            self.confidence = try container.decode(
+                                Swift.Double.self,
+                                forKey: .confidence
+                            )
+                            self.sourceExtractorIndexes = try container.decodeIfPresent(
+                                [Swift.Int].self,
+                                forKey: .sourceExtractorIndexes
+                            )
+                            try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                "value",
+                                "confidence",
+                                "sourceExtractorIndexes"
+                            ])
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates/singleCask`.
+                    public var singleCask: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.singleCaskPayload?
+                    /// Creates a new `fieldCandidatesPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - brand:
+                    ///   - expression:
+                    ///   - series:
+                    ///   - distillery:
+                    ///   - bottler:
+                    ///   - category:
+                    ///   - statedAge:
+                    ///   - abv:
+                    ///   - vintageYear:
+                    ///   - bottlingYear:
+                    ///   - releaseYear:
+                    ///   - edition:
+                    ///   - caskNumber:
+                    ///   - maturation:
+                    ///   - outturn:
+                    ///   - caskStrength:
+                    ///   - singleCask:
+                    public init(
+                        brand: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.brandPayload? = nil,
+                        expression: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.expressionPayload? = nil,
+                        series: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.seriesPayload? = nil,
+                        distillery: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.distilleryPayload? = nil,
+                        bottler: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.bottlerPayload? = nil,
+                        category: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.categoryPayload? = nil,
+                        statedAge: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.statedAgePayload? = nil,
+                        abv: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.abvPayload? = nil,
+                        vintageYear: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.vintageYearPayload? = nil,
+                        bottlingYear: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.bottlingYearPayload? = nil,
+                        releaseYear: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.releaseYearPayload? = nil,
+                        edition: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.editionPayload? = nil,
+                        caskNumber: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.caskNumberPayload? = nil,
+                        maturation: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.maturationPayload? = nil,
+                        outturn: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.outturnPayload? = nil,
+                        caskStrength: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.caskStrengthPayload? = nil,
+                        singleCask: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.singleCaskPayload? = nil
+                    ) {
+                        self.brand = brand
+                        self.expression = expression
+                        self.series = series
+                        self.distillery = distillery
+                        self.bottler = bottler
+                        self.category = category
+                        self.statedAge = statedAge
+                        self.abv = abv
+                        self.vintageYear = vintageYear
+                        self.bottlingYear = bottlingYear
+                        self.releaseYear = releaseYear
+                        self.edition = edition
+                        self.caskNumber = caskNumber
+                        self.maturation = maturation
+                        self.outturn = outturn
+                        self.caskStrength = caskStrength
+                        self.singleCask = singleCask
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case brand
+                        case expression
+                        case series
+                        case distillery
+                        case bottler
+                        case category
+                        case statedAge
+                        case abv
+                        case vintageYear
+                        case bottlingYear
+                        case releaseYear
+                        case edition
+                        case caskNumber
+                        case maturation
+                        case outturn
+                        case caskStrength
+                        case singleCask
+                    }
+                    public init(from decoder: any Swift.Decoder) throws {
+                        let container = try decoder.container(keyedBy: CodingKeys.self)
+                        self.brand = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.brandPayload.self,
+                            forKey: .brand
+                        )
+                        self.expression = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.expressionPayload.self,
+                            forKey: .expression
+                        )
+                        self.series = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.seriesPayload.self,
+                            forKey: .series
+                        )
+                        self.distillery = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.distilleryPayload.self,
+                            forKey: .distillery
+                        )
+                        self.bottler = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.bottlerPayload.self,
+                            forKey: .bottler
+                        )
+                        self.category = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.categoryPayload.self,
+                            forKey: .category
+                        )
+                        self.statedAge = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.statedAgePayload.self,
+                            forKey: .statedAge
+                        )
+                        self.abv = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.abvPayload.self,
+                            forKey: .abv
+                        )
+                        self.vintageYear = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.vintageYearPayload.self,
+                            forKey: .vintageYear
+                        )
+                        self.bottlingYear = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.bottlingYearPayload.self,
+                            forKey: .bottlingYear
+                        )
+                        self.releaseYear = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.releaseYearPayload.self,
+                            forKey: .releaseYear
+                        )
+                        self.edition = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.editionPayload.self,
+                            forKey: .edition
+                        )
+                        self.caskNumber = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.caskNumberPayload.self,
+                            forKey: .caskNumber
+                        )
+                        self.maturation = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.maturationPayload.self,
+                            forKey: .maturation
+                        )
+                        self.outturn = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.outturnPayload.self,
+                            forKey: .outturn
+                        )
+                        self.caskStrength = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.caskStrengthPayload.self,
+                            forKey: .caskStrength
+                        )
+                        self.singleCask = try container.decodeIfPresent(
+                            Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.singleCaskPayload.self,
+                            forKey: .singleCask
+                        )
+                        try decoder.ensureNoAdditionalProperties(knownKeys: [
+                            "brand",
+                            "expression",
+                            "series",
+                            "distillery",
+                            "bottler",
+                            "category",
+                            "statedAge",
+                            "abv",
+                            "vintageYear",
+                            "bottlingYear",
+                            "releaseYear",
+                            "edition",
+                            "caskNumber",
+                            "maturation",
+                            "outturn",
+                            "caskStrength",
+                            "singleCask"
+                        ])
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/fieldCandidates`.
+                public var fieldCandidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload?
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/photoSuitability`.
+                public struct photoSuitabilityPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/photoSuitability/isSingleBottlePhoto`.
+                    public var isSingleBottlePhoto: Swift.Bool
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/photoSuitability/labelReadable`.
+                    public var labelReadable: Swift.Bool
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/photoSuitability/suitableAsTastingImage`.
+                    public var suitableAsTastingImage: Swift.Bool
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/photoSuitability/suitableAsBottleImage`.
+                    public var suitableAsBottleImage: Swift.Bool
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/photoSuitability/reason`.
+                    public var reason: Swift.String?
+                    /// Creates a new `photoSuitabilityPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - isSingleBottlePhoto:
+                    ///   - labelReadable:
+                    ///   - suitableAsTastingImage:
+                    ///   - suitableAsBottleImage:
+                    ///   - reason:
+                    public init(
+                        isSingleBottlePhoto: Swift.Bool,
+                        labelReadable: Swift.Bool,
+                        suitableAsTastingImage: Swift.Bool,
+                        suitableAsBottleImage: Swift.Bool,
+                        reason: Swift.String? = nil
+                    ) {
+                        self.isSingleBottlePhoto = isSingleBottlePhoto
+                        self.labelReadable = labelReadable
+                        self.suitableAsTastingImage = suitableAsTastingImage
+                        self.suitableAsBottleImage = suitableAsBottleImage
+                        self.reason = reason
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case isSingleBottlePhoto
+                        case labelReadable
+                        case suitableAsTastingImage
+                        case suitableAsBottleImage
+                        case reason
+                    }
+                    public init(from decoder: any Swift.Decoder) throws {
+                        let container = try decoder.container(keyedBy: CodingKeys.self)
+                        self.isSingleBottlePhoto = try container.decode(
+                            Swift.Bool.self,
+                            forKey: .isSingleBottlePhoto
+                        )
+                        self.labelReadable = try container.decode(
+                            Swift.Bool.self,
+                            forKey: .labelReadable
+                        )
+                        self.suitableAsTastingImage = try container.decode(
+                            Swift.Bool.self,
+                            forKey: .suitableAsTastingImage
+                        )
+                        self.suitableAsBottleImage = try container.decode(
+                            Swift.Bool.self,
+                            forKey: .suitableAsBottleImage
+                        )
+                        self.reason = try container.decodeIfPresent(
+                            Swift.String.self,
+                            forKey: .reason
+                        )
+                        try decoder.ensureNoAdditionalProperties(knownKeys: [
+                            "isSingleBottlePhoto",
+                            "labelReadable",
+                            "suitableAsTastingImage",
+                            "suitableAsBottleImage",
+                            "reason"
+                        ])
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/photoSuitability`.
+                public var photoSuitability: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.photoSuitabilityPayload
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/conflictsPayload`.
+                public struct conflictsPayloadPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/conflictsPayload/field`.
+                    public var field: Swift.String
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/conflictsPayload/values`.
+                    public var values: [OpenAPIRuntime.OpenAPIValueContainer]
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/conflictsPayload/reason`.
+                    public var reason: Swift.String
+                    /// Creates a new `conflictsPayloadPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - field:
+                    ///   - values:
+                    ///   - reason:
+                    public init(
+                        field: Swift.String,
+                        values: [OpenAPIRuntime.OpenAPIValueContainer],
+                        reason: Swift.String
+                    ) {
+                        self.field = field
+                        self.values = values
+                        self.reason = reason
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case field
+                        case values
+                        case reason
+                    }
+                    public init(from decoder: any Swift.Decoder) throws {
+                        let container = try decoder.container(keyedBy: CodingKeys.self)
+                        self.field = try container.decode(
+                            Swift.String.self,
+                            forKey: .field
+                        )
+                        self.values = try container.decode(
+                            [OpenAPIRuntime.OpenAPIValueContainer].self,
+                            forKey: .values
+                        )
+                        self.reason = try container.decode(
+                            Swift.String.self,
+                            forKey: .reason
+                        )
+                        try decoder.ensureNoAdditionalProperties(knownKeys: [
+                            "field",
+                            "values",
+                            "reason"
+                        ])
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/conflicts`.
+                public typealias conflictsPayload = [Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.conflictsPayloadPayload]
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence/conflicts`.
+                public var conflicts: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.conflictsPayload?
+                /// Creates a new `imageEvidencePayload`.
+                ///
+                /// - Parameters:
+                ///   - sourceImageId:
+                ///   - sourceImageHash:
+                ///   - extractors:
+                ///   - fieldCandidates:
+                ///   - photoSuitability:
+                ///   - conflicts:
+                public init(
+                    sourceImageId: Swift.String,
+                    sourceImageHash: Swift.String? = nil,
+                    extractors: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayload,
+                    fieldCandidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload? = nil,
+                    photoSuitability: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.photoSuitabilityPayload,
+                    conflicts: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.conflictsPayload? = nil
+                ) {
+                    self.sourceImageId = sourceImageId
+                    self.sourceImageHash = sourceImageHash
+                    self.extractors = extractors
+                    self.fieldCandidates = fieldCandidates
+                    self.photoSuitability = photoSuitability
+                    self.conflicts = conflicts
+                }
+                public enum CodingKeys: String, CodingKey {
+                    case sourceImageId
+                    case sourceImageHash
+                    case extractors
+                    case fieldCandidates
+                    case photoSuitability
+                    case conflicts
+                }
+                public init(from decoder: any Swift.Decoder) throws {
+                    let container = try decoder.container(keyedBy: CodingKeys.self)
+                    self.sourceImageId = try container.decode(
+                        Swift.String.self,
+                        forKey: .sourceImageId
+                    )
+                    self.sourceImageHash = try container.decodeIfPresent(
+                        Swift.String.self,
+                        forKey: .sourceImageHash
+                    )
+                    self.extractors = try container.decode(
+                        Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.extractorsPayload.self,
+                        forKey: .extractors
+                    )
+                    self.fieldCandidates = try container.decodeIfPresent(
+                        Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.fieldCandidatesPayload.self,
+                        forKey: .fieldCandidates
+                    )
+                    self.photoSuitability = try container.decode(
+                        Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.photoSuitabilityPayload.self,
+                        forKey: .photoSuitability
+                    )
+                    self.conflicts = try container.decodeIfPresent(
+                        Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload.conflictsPayload.self,
+                        forKey: .conflicts
+                    )
+                    try decoder.ensureNoAdditionalProperties(knownKeys: [
+                        "sourceImageId",
+                        "sourceImageHash",
+                        "extractors",
+                        "fieldCandidates",
+                        "photoSuitability",
+                        "conflicts"
+                    ])
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/imageEvidence`.
+            public var imageEvidence: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification`.
+            public struct classificationPayload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1`.
+                public struct Value1Payload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/status`.
+                    public var status: OpenAPIRuntime.OpenAPIValueContainer
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/reason`.
+                    public var reason: Swift.String
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/artifacts`.
+                    public struct artifactsPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/artifacts/candidatesPayload`.
+                        public struct candidatesPayloadPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/artifacts/candidatesPayload/fullName`.
+                            public var fullName: Swift.String
+                            /// Creates a new `candidatesPayloadPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - fullName:
+                            public init(fullName: Swift.String) {
+                                self.fullName = fullName
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case fullName
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.fullName = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .fullName
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "fullName"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/artifacts/candidates`.
+                        public typealias candidatesPayload = [Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value1Payload.artifactsPayload.candidatesPayloadPayload]
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/artifacts/candidates`.
+                        public var candidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value1Payload.artifactsPayload.candidatesPayload
+                        /// Creates a new `artifactsPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - candidates:
+                        public init(candidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value1Payload.artifactsPayload.candidatesPayload) {
+                            self.candidates = candidates
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case candidates
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1/artifacts`.
+                    public var artifacts: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value1Payload.artifactsPayload
+                    /// Creates a new `Value1Payload`.
+                    ///
+                    /// - Parameters:
+                    ///   - status:
+                    ///   - reason:
+                    ///   - artifacts:
+                    public init(
+                        status: OpenAPIRuntime.OpenAPIValueContainer,
+                        reason: Swift.String,
+                        artifacts: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value1Payload.artifactsPayload
+                    ) {
+                        self.status = status
+                        self.reason = reason
+                        self.artifacts = artifacts
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case status
+                        case reason
+                        case artifacts
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value1`.
+                public var value1: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value1Payload?
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2`.
+                public struct Value2Payload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/status`.
+                    public var status: OpenAPIRuntime.OpenAPIValueContainer
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision`.
+                    public struct decisionPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value1`.
+                        public struct Value1Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value1/action`.
+                            public var action: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value1/matchedBottle`.
+                            public var matchedBottle: Components.Schemas.Bottle
+                            /// Creates a new `Value1Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - action:
+                            ///   - matchedBottle:
+                            public init(
+                                action: OpenAPIRuntime.OpenAPIValueContainer,
+                                matchedBottle: Components.Schemas.Bottle
+                            ) {
+                                self.action = action
+                                self.matchedBottle = matchedBottle
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case action
+                                case matchedBottle
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value1`.
+                        public var value1: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value1Payload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2`.
+                        public struct Value2Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/action`.
+                            public var action: OpenAPIRuntime.OpenAPIValueContainer
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle`.
+                            public struct proposedBottlePayload: Codable, Hashable, Sendable {
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/name`.
+                                public var name: Swift.String
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/series`.
+                                public struct seriesPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/series/id`.
+                                    public var id: Swift.Int?
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/series/name`.
+                                    public var name: Swift.String
+                                    /// Creates a new `seriesPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - id:
+                                    ///   - name:
+                                    public init(
+                                        id: Swift.Int? = nil,
+                                        name: Swift.String
+                                    ) {
+                                        self.id = id
+                                        self.name = name
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case id
+                                        case name
+                                    }
+                                }
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/series`.
+                                public var series: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.seriesPayload?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/category`.
+                                @frozen public enum categoryPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                                    case blend = "blend"
+                                    case blended_grain = "blended_grain"
+                                    case blended_malt = "blended_malt"
+                                    case bourbon = "bourbon"
+                                    case corn = "corn"
+                                    case rye = "rye"
+                                    case single_grain = "single_grain"
+                                    case single_malt = "single_malt"
+                                    case single_pot_still = "single_pot_still"
+                                    case wheat = "wheat"
+                                }
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/category`.
+                                public var category: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.categoryPayload?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/edition`.
+                                public var edition: Swift.String?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/statedAge`.
+                                public var statedAge: Swift.Double?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/abv`.
+                                public var abv: Swift.Double?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/caskStrength`.
+                                public var caskStrength: Swift.Bool?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/singleCask`.
+                                public var singleCask: Swift.Bool?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/maturation`.
+                                public var maturation: Swift.String?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/caskNumber`.
+                                public var caskNumber: Swift.String?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/outturn`.
+                                public var outturn: Swift.Int?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/vintageYear`.
+                                public var vintageYear: Swift.Double?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/bottlingYear`.
+                                public var bottlingYear: Swift.Double?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/releaseYear`.
+                                public var releaseYear: Swift.Double?
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/brand`.
+                                public struct brandPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/brand/id`.
+                                    public var id: Swift.Int?
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/brand/name`.
+                                    public var name: Swift.String
+                                    /// Creates a new `brandPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - id:
+                                    ///   - name:
+                                    public init(
+                                        id: Swift.Int? = nil,
+                                        name: Swift.String
+                                    ) {
+                                        self.id = id
+                                        self.name = name
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case id
+                                        case name
+                                    }
+                                }
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/brand`.
+                                public var brand: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.brandPayload
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/distillersPayload`.
+                                public struct distillersPayloadPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/distillersPayload/id`.
+                                    public var id: Swift.Int?
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/distillersPayload/name`.
+                                    public var name: Swift.String
+                                    /// Creates a new `distillersPayloadPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - id:
+                                    ///   - name:
+                                    public init(
+                                        id: Swift.Int? = nil,
+                                        name: Swift.String
+                                    ) {
+                                        self.id = id
+                                        self.name = name
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case id
+                                        case name
+                                    }
+                                }
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/distillers`.
+                                public typealias distillersPayload = [Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.distillersPayloadPayload]
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/distillers`.
+                                public var distillers: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.distillersPayload
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/bottler`.
+                                public struct bottlerPayload: Codable, Hashable, Sendable {
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/bottler/id`.
+                                    public var id: Swift.Int?
+                                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/bottler/name`.
+                                    public var name: Swift.String
+                                    /// Creates a new `bottlerPayload`.
+                                    ///
+                                    /// - Parameters:
+                                    ///   - id:
+                                    ///   - name:
+                                    public init(
+                                        id: Swift.Int? = nil,
+                                        name: Swift.String
+                                    ) {
+                                        self.id = id
+                                        self.name = name
+                                    }
+                                    public enum CodingKeys: String, CodingKey {
+                                        case id
+                                        case name
+                                    }
+                                }
+                                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle/bottler`.
+                                public var bottler: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.bottlerPayload?
+                                /// Creates a new `proposedBottlePayload`.
+                                ///
+                                /// - Parameters:
+                                ///   - name:
+                                ///   - series:
+                                ///   - category:
+                                ///   - edition:
+                                ///   - statedAge:
+                                ///   - abv:
+                                ///   - caskStrength:
+                                ///   - singleCask:
+                                ///   - maturation:
+                                ///   - caskNumber:
+                                ///   - outturn:
+                                ///   - vintageYear:
+                                ///   - bottlingYear:
+                                ///   - releaseYear:
+                                ///   - brand:
+                                ///   - distillers:
+                                ///   - bottler:
+                                public init(
+                                    name: Swift.String,
+                                    series: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.seriesPayload? = nil,
+                                    category: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.categoryPayload? = nil,
+                                    edition: Swift.String? = nil,
+                                    statedAge: Swift.Double? = nil,
+                                    abv: Swift.Double? = nil,
+                                    caskStrength: Swift.Bool? = nil,
+                                    singleCask: Swift.Bool? = nil,
+                                    maturation: Swift.String? = nil,
+                                    caskNumber: Swift.String? = nil,
+                                    outturn: Swift.Int? = nil,
+                                    vintageYear: Swift.Double? = nil,
+                                    bottlingYear: Swift.Double? = nil,
+                                    releaseYear: Swift.Double? = nil,
+                                    brand: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.brandPayload,
+                                    distillers: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.distillersPayload,
+                                    bottler: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload.bottlerPayload? = nil
+                                ) {
+                                    self.name = name
+                                    self.series = series
+                                    self.category = category
+                                    self.edition = edition
+                                    self.statedAge = statedAge
+                                    self.abv = abv
+                                    self.caskStrength = caskStrength
+                                    self.singleCask = singleCask
+                                    self.maturation = maturation
+                                    self.caskNumber = caskNumber
+                                    self.outturn = outturn
+                                    self.vintageYear = vintageYear
+                                    self.bottlingYear = bottlingYear
+                                    self.releaseYear = releaseYear
+                                    self.brand = brand
+                                    self.distillers = distillers
+                                    self.bottler = bottler
+                                }
+                                public enum CodingKeys: String, CodingKey {
+                                    case name
+                                    case series
+                                    case category
+                                    case edition
+                                    case statedAge
+                                    case abv
+                                    case caskStrength
+                                    case singleCask
+                                    case maturation
+                                    case caskNumber
+                                    case outturn
+                                    case vintageYear
+                                    case bottlingYear
+                                    case releaseYear
+                                    case brand
+                                    case distillers
+                                    case bottler
+                                }
+                            }
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2/proposedBottle`.
+                            public var proposedBottle: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload
+                            /// Creates a new `Value2Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - action:
+                            ///   - proposedBottle:
+                            public init(
+                                action: OpenAPIRuntime.OpenAPIValueContainer,
+                                proposedBottle: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload.proposedBottlePayload
+                            ) {
+                                self.action = action
+                                self.proposedBottle = proposedBottle
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case action
+                                case proposedBottle
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value2`.
+                        public var value2: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload?
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value3`.
+                        public struct Value3Payload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value3/action`.
+                            public var action: OpenAPIRuntime.OpenAPIValueContainer
+                            /// Creates a new `Value3Payload`.
+                            ///
+                            /// - Parameters:
+                            ///   - action:
+                            public init(action: OpenAPIRuntime.OpenAPIValueContainer) {
+                                self.action = action
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case action
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision/value3`.
+                        public var value3: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value3Payload?
+                        /// Creates a new `decisionPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - value1:
+                        ///   - value2:
+                        ///   - value3:
+                        public init(
+                            value1: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value1Payload? = nil,
+                            value2: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value2Payload? = nil,
+                            value3: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload.Value3Payload? = nil
+                        ) {
+                            self.value1 = value1
+                            self.value2 = value2
+                            self.value3 = value3
+                        }
+                        public init(from decoder: any Swift.Decoder) throws {
+                            var errors: [any Swift.Error] = []
+                            do {
+                                self.value1 = try .init(from: decoder)
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self.value2 = try .init(from: decoder)
+                            } catch {
+                                errors.append(error)
+                            }
+                            do {
+                                self.value3 = try .init(from: decoder)
+                            } catch {
+                                errors.append(error)
+                            }
+                            try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
+                                [
+                                    self.value1,
+                                    self.value2,
+                                    self.value3
+                                ],
+                                type: Self.self,
+                                codingPath: decoder.codingPath,
+                                errors: errors
+                            )
+                        }
+                        public func encode(to encoder: any Swift.Encoder) throws {
+                            try self.value1?.encode(to: encoder)
+                            try self.value2?.encode(to: encoder)
+                            try self.value3?.encode(to: encoder)
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/decision`.
+                    public var decision: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/artifacts`.
+                    public struct artifactsPayload: Codable, Hashable, Sendable {
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/artifacts/candidatesPayload`.
+                        public struct candidatesPayloadPayload: Codable, Hashable, Sendable {
+                            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/artifacts/candidatesPayload/fullName`.
+                            public var fullName: Swift.String
+                            /// Creates a new `candidatesPayloadPayload`.
+                            ///
+                            /// - Parameters:
+                            ///   - fullName:
+                            public init(fullName: Swift.String) {
+                                self.fullName = fullName
+                            }
+                            public enum CodingKeys: String, CodingKey {
+                                case fullName
+                            }
+                            public init(from decoder: any Swift.Decoder) throws {
+                                let container = try decoder.container(keyedBy: CodingKeys.self)
+                                self.fullName = try container.decode(
+                                    Swift.String.self,
+                                    forKey: .fullName
+                                )
+                                try decoder.ensureNoAdditionalProperties(knownKeys: [
+                                    "fullName"
+                                ])
+                            }
+                        }
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/artifacts/candidates`.
+                        public typealias candidatesPayload = [Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.artifactsPayload.candidatesPayloadPayload]
+                        /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/artifacts/candidates`.
+                        public var candidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.artifactsPayload.candidatesPayload
+                        /// Creates a new `artifactsPayload`.
+                        ///
+                        /// - Parameters:
+                        ///   - candidates:
+                        public init(candidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.artifactsPayload.candidatesPayload) {
+                            self.candidates = candidates
+                        }
+                        public enum CodingKeys: String, CodingKey {
+                            case candidates
+                        }
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2/artifacts`.
+                    public var artifacts: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.artifactsPayload
+                    /// Creates a new `Value2Payload`.
+                    ///
+                    /// - Parameters:
+                    ///   - status:
+                    ///   - decision:
+                    ///   - artifacts:
+                    public init(
+                        status: OpenAPIRuntime.OpenAPIValueContainer,
+                        decision: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.decisionPayload,
+                        artifacts: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload.artifactsPayload
+                    ) {
+                        self.status = status
+                        self.decision = decision
+                        self.artifacts = artifacts
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case status
+                        case decision
+                        case artifacts
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification/value2`.
+                public var value2: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload?
+                /// Creates a new `classificationPayload`.
+                ///
+                /// - Parameters:
+                ///   - value1:
+                ///   - value2:
+                public init(
+                    value1: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value1Payload? = nil,
+                    value2: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload.Value2Payload? = nil
+                ) {
+                    self.value1 = value1
+                    self.value2 = value2
+                }
+                public init(from decoder: any Swift.Decoder) throws {
+                    var errors: [any Swift.Error] = []
+                    do {
+                        self.value1 = try .init(from: decoder)
+                    } catch {
+                        errors.append(error)
+                    }
+                    do {
+                        self.value2 = try .init(from: decoder)
+                    } catch {
+                        errors.append(error)
+                    }
+                    try Swift.DecodingError.verifyAtLeastOneSchemaIsNotNil(
+                        [
+                            self.value1,
+                            self.value2
+                        ],
+                        type: Self.self,
+                        codingPath: decoder.codingPath,
+                        errors: errors
+                    )
+                }
+                public func encode(to encoder: any Swift.Encoder) throws {
+                    try self.value1?.encode(to: encoder)
+                    try self.value2?.encode(to: encoder)
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/classification`.
+            public var classification: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/suggestedNextStep`.
+            @frozen public enum suggestedNextStepPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                case confirm_match = "confirm_match"
+                case confirm_create = "confirm_create"
+                case manual_search = "manual_search"
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/suggestedNextStep`.
+            public var suggestedNextStep: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.suggestedNextStepPayload
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics`.
+            public struct diagnosticsPayload: Codable, Hashable, Sendable {
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/extraction`.
+                public struct extractionPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/extraction/status`.
+                    @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                        case found = "found"
+                        case empty = "empty"
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/extraction/status`.
+                    public var status: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.extractionPayload.statusPayload
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/extraction/summary`.
+                    public var summary: Swift.String?
+                    /// Creates a new `extractionPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - status:
+                    ///   - summary:
+                    public init(
+                        status: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.extractionPayload.statusPayload,
+                        summary: Swift.String? = nil
+                    ) {
+                        self.status = status
+                        self.summary = summary
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case status
+                        case summary
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/extraction`.
+                public var extraction: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.extractionPayload
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/candidates`.
+                public struct candidatesPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/candidates/count`.
+                    public var count: Swift.Int
+                    /// Creates a new `candidatesPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - count:
+                    public init(count: Swift.Int) {
+                        self.count = count
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case count
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/candidates`.
+                public var candidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.candidatesPayload
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/classification`.
+                public struct classificationPayload: Codable, Hashable, Sendable {
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/classification/status`.
+                    @frozen public enum statusPayload: String, Codable, Hashable, Sendable, CaseIterable {
+                        case ignored = "ignored"
+                        case classified = "classified"
+                    }
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/classification/status`.
+                    public var status: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.classificationPayload.statusPayload
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/classification/action`.
+                    public var action: Swift.String?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/classification/confidence`.
+                    public var confidence: Swift.Double?
+                    /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/classification/reason`.
+                    public var reason: Swift.String?
+                    /// Creates a new `classificationPayload`.
+                    ///
+                    /// - Parameters:
+                    ///   - status:
+                    ///   - action:
+                    ///   - confidence:
+                    ///   - reason:
+                    public init(
+                        status: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.classificationPayload.statusPayload,
+                        action: Swift.String? = nil,
+                        confidence: Swift.Double? = nil,
+                        reason: Swift.String? = nil
+                    ) {
+                        self.status = status
+                        self.action = action
+                        self.confidence = confidence
+                        self.reason = reason
+                    }
+                    public enum CodingKeys: String, CodingKey {
+                        case status
+                        case action
+                        case confidence
+                        case reason
+                    }
+                }
+                /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics/classification`.
+                public var classification: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.classificationPayload
+                /// Creates a new `diagnosticsPayload`.
+                ///
+                /// - Parameters:
+                ///   - extraction:
+                ///   - candidates:
+                ///   - classification:
+                public init(
+                    extraction: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.extractionPayload,
+                    candidates: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.candidatesPayload,
+                    classification: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload.classificationPayload
+                ) {
+                    self.extraction = extraction
+                    self.candidates = candidates
+                    self.classification = classification
+                }
+                public enum CodingKeys: String, CodingKey {
+                    case extraction
+                    case candidates
+                    case classification
+                }
+            }
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/diagnostics`.
+            public var diagnostics: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload
+            /// Signed token for creating an auto-approved photo proposal
+            ///
+            /// - Remark: Generated from `#/components/schemas/identifyTastingBottleFromPhotoDoneEventData/createToken`.
+            public var createToken: Swift.String?
+            /// Creates a new `identifyTastingBottleFromPhotoDoneEventData`.
+            ///
+            /// - Parameters:
+            ///   - pendingImage:
+            ///   - imageEvidence:
+            ///   - classification:
+            ///   - suggestedNextStep:
+            ///   - diagnostics:
+            ///   - createToken: Signed token for creating an auto-approved photo proposal
+            public init(
+                pendingImage: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.pendingImagePayload,
+                imageEvidence: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.imageEvidencePayload,
+                classification: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.classificationPayload,
+                suggestedNextStep: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.suggestedNextStepPayload,
+                diagnostics: Components.Schemas.identifyTastingBottleFromPhotoDoneEventData.diagnosticsPayload,
+                createToken: Swift.String? = nil
+            ) {
+                self.pendingImage = pendingImage
+                self.imageEvidence = imageEvidence
+                self.classification = classification
+                self.suggestedNextStep = suggestedNextStep
+                self.diagnostics = diagnostics
+                self.createToken = createToken
+            }
+            public enum CodingKeys: String, CodingKey {
+                case pendingImage
+                case imageEvidence
+                case classification
+                case suggestedNextStep
+                case diagnostics
+                case createToken
             }
         }
     }

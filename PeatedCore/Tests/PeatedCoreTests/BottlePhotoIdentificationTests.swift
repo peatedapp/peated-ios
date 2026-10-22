@@ -24,8 +24,8 @@ struct BottlePhotoIdentificationTests {
 
     @Test
     func labelFactsIncludeStructuredBottleDetails() {
-        typealias Fields = Operations.identifyTastingBottleFromPhoto.Output.Ok.Body
-            .jsonPayload.imageEvidencePayload.fieldCandidatesPayload
+        typealias Fields = BottlePhotoIdentificationRepository.Payload
+            .imageEvidencePayload.fieldCandidatesPayload
 
         let fields = Fields(
             brand: .init(value: "Ardbeg", confidence: 0.99),

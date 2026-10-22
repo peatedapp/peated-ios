@@ -38,6 +38,45 @@ struct BottlePhotoResolutionViewModelTests {
     }
 
     @Test
+    func statusFollowsTheLatestStep() async {
+        let repository = BottlePhotoRepositoryStub(
+            identification: .stub,
+            progress: [.photo(pendingImageId: "pending-photo"), .labelRead, .step(.checkingWeb)]
+        )
+        let viewModel = BottlePhotoResolutionViewModel(repository: repository)
+        #expect(viewModel.statusText == "Reading the label…")
+
+        await viewModel.identify(imageData: Data([0x01]))
+
+        #expect(viewModel.statusText == "Checking the web…")
+        #expect(viewModel.pendingImageId == "pending-photo")
+    }
+
+    @Test
+    func pickingALikelyMatchStopsTheLookup() async {
+        let repository = BottlePhotoRepositoryStub(
+            identification: .stub,
+            progress: [.photo(pendingImageId: "pending-photo"), .candidates([.stub])],
+            waitsForCancellation: true
+        )
+        let viewModel = BottlePhotoResolutionViewModel(repository: repository)
+
+        let lookup = Task { await viewModel.identify(imageData: Data([0x01])) }
+        for _ in 0 ..< 1000 where viewModel.likelyMatches.isEmpty {
+            await Task.yield()
+        }
+        #expect(viewModel.likelyMatches == [.stub])
+
+        #expect(viewModel.pickLikelyMatch() == "pending-photo")
+        await lookup.value
+
+        #expect(await repository.wasCancelled)
+        #expect(viewModel.identification == nil)
+        #expect(viewModel.errorMessage == nil)
+        #expect(!viewModel.isIdentifying)
+    }
+
+    @Test
     func createsApprovedPhotoProposal() async {
         let expectedBottle = Bottle.stub
         let repository = BottlePhotoRepositoryStub(
@@ -94,22 +133,30 @@ private actor BottlePhotoRepositoryStub: BottlePhotoRepositoryProtocol {
     private let identification: BottlePhotoIdentification
     private let creation: BottlePhotoCreation
     private let error: (any Error & Sendable)?
+    private let progress: [BottlePhotoProgress]
+    private let waitsForCancellation: Bool
     private var receivedIdentificationRequests: [IdentificationRequest] = []
     private var receivedCreationToken: String?
+    private(set) var wasCancelled = false
 
     init(
         identification: BottlePhotoIdentification,
         creation: BottlePhotoCreation = BottlePhotoCreation(bottle: .stub),
-        error: (any Error & Sendable)? = nil
+        error: (any Error & Sendable)? = nil,
+        progress: [BottlePhotoProgress] = [],
+        waitsForCancellation: Bool = false
     ) {
         self.identification = identification
         self.creation = creation
         self.error = error
+        self.progress = progress
+        self.waitsForCancellation = waitsForCancellation
     }
 
     func identifyBottlePhoto(
         fileDataUrl: String,
-        idempotencyKey: String
+        idempotencyKey: String,
+        onProgress: @escaping @Sendable (BottlePhotoProgress) async -> Void
     ) async throws -> BottlePhotoIdentification {
         receivedIdentificationRequests.append(IdentificationRequest(
             fileDataUrl: fileDataUrl,
@@ -117,6 +164,17 @@ private actor BottlePhotoRepositoryStub: BottlePhotoRepositoryProtocol {
         ))
         if let error {
             throw error
+        }
+        for event in progress {
+            await onProgress(event)
+        }
+        if waitsForCancellation {
+            do {
+                try await Task.sleep(for: .seconds(60))
+            } catch {
+                wasCancelled = true
+                throw error
+            }
         }
         return identification
     }
