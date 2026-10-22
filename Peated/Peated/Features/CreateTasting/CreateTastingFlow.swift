@@ -104,23 +104,16 @@ struct CreateTastingFlow: View {
                     Group {
                         if viewModel.isSubmitting {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .onStatus))
+                                .progressViewStyle(CircularProgressViewStyle(tint: .textSecondary))
                         } else {
-                            HStack {
+                            HStack(spacing: DesignSystem.Spacing.small) {
                                 Image(systemName: "checkmark.circle.fill")
                                 Text("Cheers!")
                             }
                         }
                     }
-                    .font(.body)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.onBrand)
-                    .frame(minWidth: 120)
-                    .padding(.horizontal, 24)
-                    .padding(.vertical, 12)
-                    .background(Color.brand)
-                    .cornerRadius(25)
                 }
+                .buttonStyle(.stepPrimary)
                 .disabled(viewModel.isSubmitting)
                 .accessibilityIdentifier(AccessibilityID.CreateTasting.submit)
             }

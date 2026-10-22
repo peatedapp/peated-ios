@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The pill-shaped primary action in a `StepNavigationBar`.
+/// The filled primary action in a `StepNavigationBar`. It fills the space Back leaves.
 struct StepContinueButton: View {
     let title: String
     var showsChevron = true
@@ -9,28 +9,52 @@ struct StepContinueButton: View {
 
     var body: some View {
         Button(action: action) {
-            HStack {
+            HStack(spacing: DesignSystem.Spacing.small) {
                 Text(title)
                 if showsChevron {
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 14))
+                        .font(.system(size: 14, weight: .semibold))
                         .accessibilityHidden(true)
                 }
             }
-            .font(.body)
-            .fontWeight(.medium)
+        }
+        .buttonStyle(.stepPrimary)
+        .disabled(!isEnabled)
+    }
+}
+
+/// The filled, full-width look shared by every primary action in a step bar.
+struct StepPrimaryButtonStyle: ButtonStyle {
+    @Environment(\.isEnabled) private var isEnabled
+
+    func makeBody(configuration: Configuration) -> some View {
+        let shape = RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.medium)
+
+        configuration.label
+            .font(.peatedInteractive)
+            .lineLimit(1)
             // A solid muted surface keeps the disabled label readable; a
             // translucent brand fill does not meet the contrast minimum.
             .foregroundColor(isEnabled ? .onBrand : .textSecondary)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
-            .background(isEnabled ? Color.brand : Color.formSurface)
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(isEnabled ? Color.clear : Color.formBorder, lineWidth: 1)
-            )
-            .cornerRadius(20)
-        }
-        .disabled(!isEnabled)
+            .frame(maxWidth: .infinity, minHeight: DesignSystem.ControlHeight.large)
+            .padding(.horizontal, DesignSystem.Spacing.large)
+            .background(background(isPressed: configuration.isPressed), in: shape)
+            .overlay {
+                if !isEnabled {
+                    shape.strokeBorder(Color.formBorder, lineWidth: DesignSystem.Border.thin)
+                }
+            }
+            .contentShape(shape)
+    }
+
+    private func background(isPressed: Bool) -> Color {
+        guard isEnabled else { return .formSurface }
+        return isPressed ? .brandEmphasis : .brand
+    }
+}
+
+extension ButtonStyle where Self == StepPrimaryButtonStyle {
+    static var stepPrimary: StepPrimaryButtonStyle {
+        StepPrimaryButtonStyle()
     }
 }

@@ -79,10 +79,14 @@ struct ManualBottleEntryView: View {
 
                 ScrollViewReader { proxy in
                     ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xLarge) {
                             if isReviewingCandidates {
                                 candidateReviewSection
                             } else {
+                                StepHeader(title: step.title, summary: step.summary, isFocused: $stepHeadingFocused)
+                                stepContent
+
+                                // Below the fields so it does not compete with the step title.
                                 if candidateInput != nil, !unreviewedCandidates.isEmpty {
                                     BottleCreateCandidateSummary(
                                         count: unreviewedCandidates.count,
@@ -90,21 +94,11 @@ struct ManualBottleEntryView: View {
                                         newSinceReview: !reviewedCandidateIds.isEmpty,
                                         onReview: { openCandidateReview(addAfterReview: false) }
                                     )
-                                    .padding(.horizontal)
                                 }
-
-                                Text(step.title)
-                                    .font(.title2)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.text)
-                                    .accessibilityAddTraits(.isHeader)
-                                    .accessibilityFocused($stepHeadingFocused)
-                                    .padding(.horizontal)
-
-                                stepContent
                             }
                         }
-                        .padding(.vertical)
+                        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
+                        .padding(.vertical, DesignSystem.Spacing.xLarge)
                         .id(Self.scrollTopId)
                     }
                     .scrollDismissesKeyboard(.interactively)
@@ -171,13 +165,19 @@ struct ManualBottleEntryView: View {
 
     // MARK: - Sections
 
+    /// Fields sit on the page ground, one inset box each, like the web form.
+    private func stepFields(@ViewBuilder content: () -> some View) -> some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xLarge) {
+            content()
+        }
+    }
+
     private var basicInfoSection: some View {
-        FormSection {
+        stepFields {
             TextInput(
                 label: "Brand",
                 placeholder: "Laphroaig",
                 text: $brandName,
-                leadingSystemImage: "building.2",
                 keyboard: .default,
                 submitLabel: .next,
                 autocorrection: true,
@@ -191,7 +191,6 @@ struct ManualBottleEntryView: View {
                 label: "Bottle name",
                 placeholder: "12-year-old",
                 text: $bottleName,
-                leadingSystemImage: "wineglass",
                 isSecure: false,
                 keyboard: .default,
                 submitLabel: .next,
@@ -207,30 +206,32 @@ struct ManualBottleEntryView: View {
     }
 
     private var detailsSection: some View {
-        FormSection {
-            TextInput(
-                label: "Age statement (optional)",
-                placeholder: "12",
-                text: $age,
-                leadingSystemImage: "clock",
-                unit: "years",
-                keyboard: .numberPad,
-                submitLabel: .next,
-                disabled: noAgeStatement,
-                error: ageError,
-                onSubmit: { focusAbv = true },
-                isFocused: $focusAge
-            )
+        stepFields {
+            // The switch qualifies the age field, so it sits closer to it than to the next field.
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
+                TextInput(
+                    label: "Age statement (optional)",
+                    placeholder: "12",
+                    text: $age,
+                    unit: "years",
+                    keyboard: .numberPad,
+                    submitLabel: .next,
+                    disabled: noAgeStatement,
+                    error: ageError,
+                    onSubmit: { focusAbv = true },
+                    isFocused: $focusAge
+                )
 
-            switchRow(
-                "No age statement (NAS)",
-                description: "The label does not state an age.",
-                isOn: $noAgeStatement
-            )
-            .onChange(of: noAgeStatement) { _, isOn in
-                if isOn {
-                    age = ""
-                    focusAge = false
+                SwitchRow(
+                    title: "No age statement (NAS)",
+                    description: "The label does not state an age.",
+                    isOn: $noAgeStatement
+                )
+                .onChange(of: noAgeStatement) { _, isOn in
+                    if isOn {
+                        age = ""
+                        focusAge = false
+                    }
                 }
             }
 
@@ -238,7 +239,6 @@ struct ManualBottleEntryView: View {
                 label: "Alcohol (optional)",
                 placeholder: "40.5",
                 text: $abv,
-                leadingSystemImage: "percent",
                 unit: "% ABV",
                 keyboard: .decimalPad,
                 submitLabel: .next,
@@ -251,7 +251,6 @@ struct ManualBottleEntryView: View {
                 label: "Edition or batch (optional)",
                 placeholder: "Batch 24",
                 text: $edition,
-                leadingSystemImage: "number",
                 submitLabel: .next,
                 capitalization: .words,
                 onSubmit: { continueFromKeyboard() },
@@ -261,76 +260,68 @@ struct ManualBottleEntryView: View {
     }
 
     private var madeBySection: some View {
-        FormSection {
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Distilled by (optional)")
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
+        VStack(alignment: .leading, spacing: 6) {
+            fieldLabel("Distilled by (optional)")
 
-                ForEach(distillers, id: \.self) { distiller in
-                    HStack(spacing: 8) {
-                        Image(systemName: "building.columns")
+            ForEach(distillers, id: \.self) { distiller in
+                HStack(spacing: DesignSystem.Spacing.small) {
+                    Text(distiller.name)
+                        .font(.peatedInput)
+                        .foregroundColor(.text)
+                    Spacer()
+                    Button {
+                        distillers.removeAll { $0 == distiller }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
                             .foregroundColor(.textSecondary)
-                            .accessibilityHidden(true)
-                        Text(distiller.name)
-                            .foregroundColor(.text)
-                        Spacer()
-                        Button {
-                            distillers.removeAll { $0 == distiller }
-                        } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .foregroundColor(.textSecondary)
-                                .frame(width: 44, height: 44)
-                                .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        // Keep a 44pt target without making the row taller.
-                        .padding(.vertical, -12)
-                        .padding(.trailing, -12)
-                        .accessibilityLabel("Remove \(distiller.name)")
+                            .frame(width: 44, height: 44)
+                            .contentShape(Rectangle())
                     }
-                    .inputBox()
+                    .buttonStyle(.plain)
+                    // Keep a 44pt target without making the row taller.
+                    .padding(.vertical, -12)
+                    .padding(.trailing, -12)
+                    .accessibilityLabel("Remove \(distiller.name)")
                 }
-
-                NavigationLink {
-                    DistillerPickerView(
-                        selected: distillers,
-                        entityRepository: entityRepository
-                    ) { distiller in
-                        distillers.append(distiller)
-                    }
-                } label: {
-                    HStack(spacing: 8) {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.textSecondary)
-                            .accessibilityHidden(true)
-                        Text("Search distilleries")
-                            .foregroundColor(.textMuted)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption)
-                            .foregroundColor(.textSecondary)
-                            .accessibilityHidden(true)
-                    }
-                    .contentShape(Rectangle())
-                    .inputBox()
-                }
-                .buttonStyle(.plain)
-
-                Text("The distilleries that produced the spirit.")
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
+                .inputBox()
             }
+
+            NavigationLink {
+                DistillerPickerView(
+                    selected: distillers,
+                    entityRepository: entityRepository
+                ) { distiller in
+                    distillers.append(distiller)
+                }
+            } label: {
+                HStack(spacing: DesignSystem.Spacing.small) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.textSecondary)
+                        .accessibilityHidden(true)
+                    Text("Search distilleries")
+                        .font(.peatedInput)
+                        .foregroundColor(.textMuted)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.textSecondary)
+                        .accessibilityHidden(true)
+                }
+                .contentShape(Rectangle())
+                .inputBox()
+            }
+            .buttonStyle(.plain)
+
+            helperText("The distilleries that produced the spirit.")
         }
     }
 
     private var datesSection: some View {
-        FormSection {
+        stepFields {
             TextInput(
                 label: "Distillation year (optional)",
                 placeholder: "2024",
                 text: $vintageYear,
-                leadingSystemImage: "calendar",
                 keyboard: .numberPad,
                 submitLabel: .next,
                 error: yearError(vintageYear),
@@ -342,7 +333,6 @@ struct ManualBottleEntryView: View {
                 label: "Release year (optional)",
                 placeholder: "2024",
                 text: $releaseYear,
-                leadingSystemImage: "calendar",
                 keyboard: .numberPad,
                 submitLabel: .next,
                 error: yearError(releaseYear),
@@ -353,61 +343,71 @@ struct ManualBottleEntryView: View {
     }
 
     private var productionSection: some View {
-        FormSection {
-            switchRow(
-                "Single cask",
+        VStack(alignment: .leading, spacing: 0) {
+            SwitchRow(
+                title: "Single cask",
                 description: "The label states that this is a single-cask bottling.",
                 isOn: $singleCask
             )
+            .padding(.bottom, DesignSystem.Spacing.large)
 
-            switchRow(
-                "Cask strength",
+            Rectangle()
+                .fill(Color.sectionRule)
+                .frame(height: 0.5)
+                .accessibilityHidden(true)
+
+            SwitchRow(
+                title: "Cask strength",
                 description: "The label states that this was bottled at cask strength.",
                 isOn: $caskStrength
             )
+            .padding(.top, DesignSystem.Spacing.large)
         }
     }
 
-    private func switchRow(_ title: String, description: String, isOn: Binding<Bool>) -> some View {
-        Toggle(isOn: isOn) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .foregroundColor(.text)
-                Text(description)
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
-            }
-        }
-        .tint(.brand)
+    private func fieldLabel(_ text: String) -> some View {
+        Text(text)
+            .font(.peatedFieldLabel)
+            .foregroundColor(.textSecondary)
+    }
+
+    private func helperText(_ text: String) -> some View {
+        Text(text)
+            .font(.peatedMetadata)
+            .foregroundColor(.textSecondary)
     }
 
     // MARK: - Category Picker in InputBox style
 
     private var categoryPickerRow: some View {
-        Menu {
-            ForEach(BottleCategory.allCases, id: \.self) { value in
-                Button(value.displayName) { category = value }
-            }
+        VStack(alignment: .leading, spacing: 6) {
+            fieldLabel("Type (optional)")
+                .accessibilityHidden(true)
 
-            if category != nil {
-                Divider()
-                Button("Not set") { category = nil }
-            }
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: "tag")
-                    .foregroundColor(.textSecondary)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Type (optional)").font(.caption).foregroundColor(.textSecondary)
-                    Text(category?.displayName ?? "Not set")
-                        .foregroundColor(.text)
+            Menu {
+                ForEach(BottleCategory.allCases, id: \.self) { value in
+                    Button(value.displayName) { category = value }
                 }
-                Spacer()
-                Image(systemName: "chevron.up.chevron.down")
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
+
+                if category != nil {
+                    Divider()
+                    Button("Not set") { category = nil }
+                }
+            } label: {
+                HStack(spacing: DesignSystem.Spacing.small) {
+                    Text(category?.displayName ?? "Not set")
+                        .font(.peatedInput)
+                        .foregroundColor(category == nil ? .textMuted : .text)
+                    Spacer()
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.caption)
+                        .foregroundColor(.textSecondary)
+                        .accessibilityHidden(true)
+                }
+                .inputBox()
             }
-            .inputBox()
+            .accessibilityLabel("Type (optional)")
+            .accessibilityValue(category?.displayName ?? "Not set")
         }
     }
 
@@ -515,7 +515,6 @@ extension ManualBottleEntryView {
             results: reviewResults,
             onUse: useExistingBottle
         )
-        .padding(.horizontal)
     }
 
     /// The draft to check against the catalog, once it has a brand and a name.

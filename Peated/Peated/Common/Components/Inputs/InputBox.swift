@@ -12,7 +12,7 @@ struct InputBox: ViewModifier {
     }
 
     var state: State = .normal
-    var cornerRadius: CGFloat = 10
+    var cornerRadius: CGFloat = DesignSystem.CornerRadius.medium
     var horizontalPadding: CGFloat = 12
     var verticalPadding: CGFloat = 10
 
@@ -66,7 +66,7 @@ struct InputBox: ViewModifier {
 
 extension View {
     func inputBox(state: InputBox.State = .normal,
-                  cornerRadius: CGFloat = 10,
+                  cornerRadius: CGFloat = DesignSystem.CornerRadius.medium,
                   horizontalPadding: CGFloat = 12,
                   verticalPadding: CGFloat = 10) -> some View {
         modifier(InputBox(state: state,

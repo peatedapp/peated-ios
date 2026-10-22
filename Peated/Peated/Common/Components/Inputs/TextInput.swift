@@ -34,7 +34,7 @@ struct TextInput: View {
         VStack(alignment: .leading, spacing: 6) {
             if let label, !label.isEmpty {
                 Text(label)
-                    .font(.caption)
+                    .font(.peatedFieldLabel)
                     .foregroundColor(.textSecondary)
             }
 
@@ -52,6 +52,7 @@ struct TextInput: View {
                     }
                 }
                 .textFieldStyle(.plain)
+                .font(.peatedInput)
                 .foregroundColor(.text)
                 .keyboardType(keyboard)
                 .submitLabel(submitLabel)
@@ -66,6 +67,7 @@ struct TextInput: View {
 
                 if let unit, !unit.isEmpty {
                     Text(unit)
+                        .font(.peatedInput)
                         .foregroundColor(.textSecondary)
                 }
             }
@@ -74,11 +76,11 @@ struct TextInput: View {
 
             if let error, !error.isEmpty {
                 Text(error)
-                    .font(.caption)
+                    .font(.peatedMetadata)
                     .foregroundColor(.danger)
             } else if let helper, !helper.isEmpty {
                 Text(helper)
-                    .font(.caption)
+                    .font(.peatedMetadata)
                     .foregroundColor(.textSecondary)
             }
         }
